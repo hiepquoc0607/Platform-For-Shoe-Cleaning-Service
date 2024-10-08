@@ -1,28 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{BD098ED5-54C2-4449-BB4C-FFB7181C9C4A}|TP4SCS.API\\TP4SCS.API.csproj|D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\tp4scs.api\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BD098ED5-54C2-4449-BB4C-FFB7181C9C4A}|TP4SCS.API\\TP4SCS.API.csproj|solutionrelative:tp4scs.api\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8CD8CD5C-EA4F-4728-AE11-AE34188F2C24}|TP4SCS.Library\\TP4SCS.Library.csproj|d:\\capstoneproject\\tp4scs.be\\tp4scs.solution\\tp4scs.library\\utils\\mapper\\servicemapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8CD8CD5C-EA4F-4728-AE11-AE34188F2C24}|TP4SCS.Library\\TP4SCS.Library.csproj|solutionrelative:tp4scs.library\\utils\\mapper\\servicemapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{241C259F-EFA9-4D55-9B25-F6797B15F0D4}|TP4SCS.Repositry\\TP4SCS.Repository.csproj|d:\\capstoneproject\\tp4scs.be\\tp4scs.solution\\tp4scs.repositry\\implements\\servicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{241C259F-EFA9-4D55-9B25-F6797B15F0D4}|TP4SCS.Repositry\\TP4SCS.Repository.csproj|solutionrelative:tp4scs.repositry\\implements\\servicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD5ADA78-0724-449E-BD20-0FDC72C53475}|TP4SCS.Service\\TP4SCS.Services.csproj|D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\tp4scs.service\\interfaces\\iserviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD5ADA78-0724-449E-BD20-0FDC72C53475}|TP4SCS.Service\\TP4SCS.Services.csproj|solutionrelative:tp4scs.service\\interfaces\\iserviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FD5ADA78-0724-449E-BD20-0FDC72C53475}|TP4SCS.Service\\TP4SCS.Services.csproj|d:\\capstoneproject\\tp4scs.be\\tp4scs.solution\\tp4scs.service\\implements\\serviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FD5ADA78-0724-449E-BD20-0FDC72C53475}|TP4SCS.Service\\TP4SCS.Services.csproj|solutionrelative:tp4scs.service\\implements\\serviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -30,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -39,71 +18,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ServiceMapper.cs",
-              "DocumentMoniker": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Library\\Utils\\Mapper\\ServiceMapper.cs",
-              "RelativeDocumentMoniker": "TP4SCS.Library\\Utils\\Mapper\\ServiceMapper.cs",
-              "ToolTip": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Library\\Utils\\Mapper\\ServiceMapper.cs",
-              "RelativeToolTip": "TP4SCS.Library\\Utils\\Mapper\\ServiceMapper.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T09:47:06.594Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ServiceRepository.cs",
-              "DocumentMoniker": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Repositry\\Implements\\ServiceRepository.cs",
-              "RelativeDocumentMoniker": "TP4SCS.Repositry\\Implements\\ServiceRepository.cs",
-              "ToolTip": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Repositry\\Implements\\ServiceRepository.cs",
-              "RelativeToolTip": "TP4SCS.Repositry\\Implements\\ServiceRepository.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAAwB8AAAAsAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T08:52:11.154Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ServiceController.cs",
-              "DocumentMoniker": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\Controllers\\ServiceController.cs",
-              "RelativeDocumentMoniker": "TP4SCS.API\\Controllers\\ServiceController.cs",
-              "ToolTip": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\Controllers\\ServiceController.cs",
-              "RelativeToolTip": "TP4SCS.API\\Controllers\\ServiceController.cs",
-              "ViewState": "AQIAAFQAAAAAAAAAAAAMwFwAAAAjAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T05:34:55.994Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ServiceService.cs",
-              "DocumentMoniker": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\Implements\\ServiceService.cs",
-              "RelativeDocumentMoniker": "TP4SCS.Service\\Implements\\ServiceService.cs",
-              "ToolTip": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\Implements\\ServiceService.cs",
-              "RelativeToolTip": "TP4SCS.Service\\Implements\\ServiceService.cs",
-              "ViewState": "AQIAAFoAAAAAAAAAAADwv2IAAAA8AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T05:21:52.489Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IServiceService.cs",
-              "DocumentMoniker": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\Interfaces\\IServiceService.cs",
-              "RelativeDocumentMoniker": "TP4SCS.Service\\Interfaces\\IServiceService.cs",
-              "ToolTip": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\Interfaces\\IServiceService.cs",
-              "RelativeToolTip": "TP4SCS.Service\\Interfaces\\IServiceService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAuwA0AAAAkAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T05:21:35.12Z",
-              "EditorCaption": ""
             }
           ]
         }
