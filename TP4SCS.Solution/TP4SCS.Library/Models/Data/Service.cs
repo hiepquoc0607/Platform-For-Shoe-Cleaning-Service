@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class Service
 {
@@ -21,14 +23,14 @@ public partial class Service
     public int FeedbackedNum { get; set; }
 
     public string Status { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
 
     public virtual BusinessBranch Branch { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
+    [JsonIgnore]
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-
+    [JsonIgnore]
     public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
 }
