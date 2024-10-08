@@ -1,0 +1,16 @@
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\bin\Debug\net8.0\TP4SCS.Repositry.deps.json
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\bin\Debug\net8.0\TP4SCS.Repositry.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\bin\Debug\net8.0\TP4SCS.Repositry.pdb
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\bin\Debug\net8.0\TP4SCS.Library.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\bin\Debug\net8.0\TP4SCS.Library.pdb
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.csproj.AssemblyReference.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.GeneratedMSBuildEditorConfig.editorconfig
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.AssemblyInfoInputs.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.AssemblyInfo.cs
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.csproj.CoreCompileInputs.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.sourcelink.json
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.R.91C2E112.Up2Date
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\refint\TP4SCS.Repositry.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\TP4SCS.Repositry.pdb
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Repositry\obj\Debug\net8.0\ref\TP4SCS.Repositry.dll

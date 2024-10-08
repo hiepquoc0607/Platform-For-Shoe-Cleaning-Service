@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TP4SCS.Service\TP4SCS.Service.csproj" />
+    <ProjectReference Include="..\TP4SCS.Service\TP4SCS.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
