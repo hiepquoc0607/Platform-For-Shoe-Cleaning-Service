@@ -39,14 +39,13 @@ namespace TP4SCS.API.Controllers
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Success", pagedResponse));
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceById(int id)
         {
             try
             {
                 var service = await _serviceService.GetServiceById(id);
-                if(service == null)
+                if (service == null)
                 {
                     Ok(new ResponseObject<ServiceResponse>($"Service with ID {id} not found.", null));
                 }
@@ -83,7 +82,6 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-
         [HttpPut("{existingServiceId}")]
         public async Task<IActionResult> UpdateService(int existingServiceId, [FromBody] ServiceUpdateRequest request)
         {
@@ -111,7 +109,6 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<ServiceResponse>($"An error occurred: {ex.Message}"));
             }
         }
-
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(int id)

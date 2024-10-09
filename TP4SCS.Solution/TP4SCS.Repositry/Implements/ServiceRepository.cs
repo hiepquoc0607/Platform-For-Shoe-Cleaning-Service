@@ -1,16 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class ServiceRepository : BaseRepository<Service>, IServiceRepository
+    public class ServiceRepository : GenericRepoistory<Service>, IServiceRepository
     {
         public ServiceRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
