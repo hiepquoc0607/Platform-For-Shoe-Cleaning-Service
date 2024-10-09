@@ -1,19 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class BaseRepository<T> where T : class
+    public class GenericRepoistory<T> : IGenericRepository<T> where T : class
     {
         protected readonly Tp4scsDevDatabaseContext _dbContext;
         protected DbSet<T> dbSet;
 
-        public BaseRepository(Tp4scsDevDatabaseContext dbContext)
+        public GenericRepoistory(Tp4scsDevDatabaseContext dbContext)
         {
             _dbContext = dbContext;
             this.dbSet = dbContext.Set<T>();

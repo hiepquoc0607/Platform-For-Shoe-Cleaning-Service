@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TP4SCS.Library.Models.Data;
+﻿using TP4SCS.Library.Models.Data;
 
 namespace TP4SCS.Repository.Interfaces
 {
