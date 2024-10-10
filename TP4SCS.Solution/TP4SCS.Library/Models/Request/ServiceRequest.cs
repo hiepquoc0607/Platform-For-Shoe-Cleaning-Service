@@ -3,6 +3,7 @@
     public class ServiceRequest
     {
         public int BranchId { get; set; }
+        public int CategoryId { get; set; }
 
         public string Name { get; set; } = null!;
 

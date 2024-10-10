@@ -64,7 +64,7 @@ namespace TP4SCS.Services.Implements
         }
 
 
-        public async Task<Service> GetServiceById(int id)
+        public async Task<Service?> GetServiceById(int id)
         {
             var service = await _serviceRepository.GetServiceById(id);
             return service;
@@ -123,6 +123,7 @@ namespace TP4SCS.Services.Implements
             }
 
             existingService.Name = serviceUpdateRequest.Name;
+            existingService.CategoryId = serviceUpdateRequest.CategoryId;
             existingService.Description = serviceUpdateRequest.Description;
             existingService.Price = serviceUpdateRequest.Price;
             existingService.Rating = serviceUpdateRequest.Rating;
