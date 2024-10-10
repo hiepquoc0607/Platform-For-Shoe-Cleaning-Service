@@ -13,9 +13,7 @@ namespace TP4SCS.Repository.Interfaces
         Task<T> GetByID(object id);
         Task Insert(T entity);
         Task Delete(object id);
-        Task Delete(T entityToDelete);
         Task Update(T entityToUpdate);
-        Task SaveAsync();
     }
 }
 

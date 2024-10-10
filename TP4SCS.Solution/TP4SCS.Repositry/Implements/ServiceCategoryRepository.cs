@@ -9,7 +9,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class ServiceCategoryRepository : BaseRepository<ServiceCategory>, IServiceCategoryRepository
+    public class ServiceCategoryRepository : GenericRepoistory<ServiceCategory>, IServiceCategoryRepository
     {
         public ServiceCategoryRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
