@@ -119,7 +119,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 await _serviceService.DeleteService(id);
-                return Ok(new ResponseObject<ServiceResponse>("Delete Service Success", null));
+                return NoContent();
             }
             catch (Exception ex)
             {

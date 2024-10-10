@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using TP4SCS.Library.Models.Data;
 
 namespace TP4SCS.Repository.Implements
@@ -42,7 +38,6 @@ namespace TP4SCS.Repository.Implements
             {
                 query = orderBy(query);
             }
-
             // Implementing pagination
             if (pageIndex.HasValue && pageSize.HasValue)
             {
@@ -56,7 +51,7 @@ namespace TP4SCS.Repository.Implements
             return await query.ToListAsync(); // Sử dụng ToListAsync để thực hiện truy vấn không đồng bộ
         }
 
-        public virtual async Task<T> GetByID(object id)
+        public virtual async Task<T?> GetByID(object id)
         {
             return await dbSet.FindAsync(id); // Sử dụng FindAsync để tìm kiếm không đồng bộ
         }
@@ -69,11 +64,17 @@ namespace TP4SCS.Repository.Implements
 
         public virtual async Task Delete(object id)
         {
-            T entityToDelete = await dbSet.FindAsync(id); // Tìm kiếm không đồng bộ
-            await Delete(entityToDelete); // Gọi phương thức xóa không đồng bộ
+            T? entityToDelete = await dbSet.FindAsync(id);
+
+            if (entityToDelete == null)
+            {
+                throw new KeyNotFoundException($"Entity with id {id} not found.");
+            }
+            await Delete(entityToDelete);
         }
 
-        public virtual async Task Delete(T entityToDelete)
+
+        private async Task Delete(T entityToDelete)
         {
             if (_dbContext.Entry(entityToDelete).State == EntityState.Detached)
             {
@@ -88,10 +89,6 @@ namespace TP4SCS.Repository.Implements
             dbSet.Attach(entityToUpdate);
             _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
-        }
-        public async Task SaveAsync()
-        {
-            await _dbContext.SaveChangesAsync();
         }
     }
 }

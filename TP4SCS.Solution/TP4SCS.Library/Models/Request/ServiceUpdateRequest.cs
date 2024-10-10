@@ -10,6 +10,7 @@ namespace TP4SCS.Library.Models.Request
     {
 
         public string Name { get; set; } = null!;
+        public int CategoryId { get; set; }
 
         public string? Description { get; set; }
         public string Status { get; set; }

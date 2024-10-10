@@ -10,12 +10,16 @@ using TP4SCS.Library.Models.Response;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
-    public class ServiceMapper : Profile
+    public class AppMapper : Profile
     {
-        public ServiceMapper()
+        public AppMapper()
         {
             CreateMap<Service, ServiceResponse>();
             CreateMap<ServiceRequest, Service>();
+
+            // Category Mappings
+            CreateMap<ServiceCategory, ServiceCategoryResponse>();
+            CreateMap<ServiceCategoryRequest, ServiceCategory>();
         }
     }
 }

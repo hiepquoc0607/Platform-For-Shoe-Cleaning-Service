@@ -13,7 +13,7 @@ namespace TP4SCS.Repository.Interfaces
         int pageIndex = 1,
         int pageSize = 5,
         string orderBy = "Name");
-        Task<Service> GetServiceById(int id);
+        Task<Service?> GetServiceById(int id);
         Task AddService(Service service);
         Task UpdateService(Service service);
         Task DeleteService(int id);
