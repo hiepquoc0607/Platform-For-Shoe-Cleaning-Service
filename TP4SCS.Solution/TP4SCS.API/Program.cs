@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.Mapper;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
@@ -13,18 +14,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
-builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
+
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
-builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
+
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 //Add DBContext
 builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 {
