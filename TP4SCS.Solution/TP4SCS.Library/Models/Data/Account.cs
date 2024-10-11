@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TP4SCS.Library.Models.Data;
+﻿namespace TP4SCS.Library.Models.Data;
 
 public partial class Account
 {
