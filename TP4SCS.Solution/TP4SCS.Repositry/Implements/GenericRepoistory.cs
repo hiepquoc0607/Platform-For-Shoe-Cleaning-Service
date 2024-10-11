@@ -65,13 +65,13 @@ namespace TP4SCS.Repository.Implements
 
         public virtual async Task DeleteAsync(object id)
         {
-            T? entityToDelete = await dbSet.FindAsync(id);
+            T? entityToDelete = await _dbSet.FindAsync(id);
 
             if (entityToDelete == null)
             {
                 throw new KeyNotFoundException($"Entity with id {id} not found.");
             }
-            await Delete(entityToDelete);
+            await DeleteAsync(entityToDelete);
         }
 
         public virtual async Task DeleteAsync(T entityToDelete)

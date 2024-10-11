@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils;
-using TP4SCS.Library.Utils.Mapper;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
