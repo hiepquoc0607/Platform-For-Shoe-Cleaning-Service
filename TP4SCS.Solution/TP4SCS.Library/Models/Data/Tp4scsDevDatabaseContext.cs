@@ -363,6 +363,10 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasForeignKey(d => d.BranchId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Service__BranchI__5070F446");
+            entity.HasOne(d => d.ServiceCategory).WithMany(p => p.Services)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Service__Category__6112A204");
         });
 
         modelBuilder.Entity<ServiceCategory>(entity =>

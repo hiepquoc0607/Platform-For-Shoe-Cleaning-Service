@@ -13,14 +13,12 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddService(Service service)
         {
-            await InsertAsync(service);
-            await SaveAsync();
+            await Insert(service);
         }
 
         public async Task DeleteService(int id)
         {
-            await DeleteAsync(id);
-            await SaveAsync();
+            await Delete(id);
         }
 
         public async Task<Service?> GetServiceById(int id)
@@ -52,8 +50,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task UpdateService(Service service)
         {
-            await UpdateAsync(service);
-            await SaveAsync();
+            await Update(service);
         }
     }
 }

@@ -7,4 +7,5 @@ public partial class ServiceCategory
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
+    public virtual ICollection<Service> Services { get; set; } = new List<Service>();
 }

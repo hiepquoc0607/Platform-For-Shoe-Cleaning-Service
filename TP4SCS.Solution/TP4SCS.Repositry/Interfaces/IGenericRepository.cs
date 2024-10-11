@@ -18,3 +18,4 @@ namespace TP4SCS.Repository.Interfaces
         Task SaveAsync();
     }
 }
+

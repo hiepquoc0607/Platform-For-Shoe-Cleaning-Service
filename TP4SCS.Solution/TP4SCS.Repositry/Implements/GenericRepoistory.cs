@@ -39,7 +39,6 @@ namespace TP4SCS.Repository.Implements
             {
                 query = orderBy(query);
             }
-
             // Implementing pagination
             if (pageIndex.HasValue && pageSize.HasValue)
             {
@@ -66,8 +65,13 @@ namespace TP4SCS.Repository.Implements
 
         public virtual async Task DeleteAsync(object id)
         {
-            T? entityToDelete = await _dbSet.FindAsync(id); // Tìm kiếm không đồng bộ
-            await DeleteAsync(entityToDelete!); // Gọi phương thức xóa không đồng bộ
+            T? entityToDelete = await dbSet.FindAsync(id);
+
+            if (entityToDelete == null)
+            {
+                throw new KeyNotFoundException($"Entity with id {id} not found.");
+            }
+            await Delete(entityToDelete);
         }
 
         public virtual async Task DeleteAsync(T entityToDelete)
