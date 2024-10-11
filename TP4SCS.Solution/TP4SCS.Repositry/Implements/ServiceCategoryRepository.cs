@@ -17,12 +17,12 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddCategory(ServiceCategory category)
         {
-            await Insert(category);
+            await InsertAsync(category);
         }
 
         public async Task DeleteCategory(int id)
         {
-            await Delete(id);
+            await DeleteCategory(id);
         }
 
         public Task<IEnumerable<ServiceCategory>> GetCategories(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
@@ -35,7 +35,7 @@ namespace TP4SCS.Repository.Implements
                 "namedesc" => q.OrderByDescending(c => c.Name),
                 _ => q.OrderBy(c => c.Name)
             };
-            return Get(
+            return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
@@ -45,12 +45,12 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<ServiceCategory?> GetCategoryById(int id)
         {
-            return await GetByID(id);
+            return await GetCategoryById(id);
         }
 
         public async Task UpdateCategory(ServiceCategory category)
         {
-            await Update(category);
+            await UpdateCategory(category);
         }
     }
 }

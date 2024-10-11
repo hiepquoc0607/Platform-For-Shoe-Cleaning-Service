@@ -6,18 +6,36 @@
         {
         }
 
-        public bool IsValidPassword(string password)
+        public string CheckPasswordErrorType(string password)
         {
-            /*
-            (?=.*[0-9]) contain at least 1 number digit character
-            (?=.*[a-z]) contain at least 1 lower case character
-            (?=.*[A-Z]) contain at least 1 upper case character
-            (?=.*[\W_]) contain at least 1 special character
-            {8,} at least 8 character
-             */
-            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$");
+            if (password.Length < 8)
+            {
+                return "Length";
+            }
+            if (!password.Any(char.IsDigit))
+            {
+                return "Number";
+            }
+            if (!password.Any(char.IsLower))
+            {
+                return "Lower";
+            }
+            if (!password.Any(char.IsUpper))
+            {
+                return "Upper";
+            }
+            if (!password.Any(ch => !char.IsLetterOrDigit(ch)))
+            {
+                return "Special";
+            }
 
-            return regex.IsMatch(password);
+            return "None";
+
+        }
+
+        public string UpperCaseString(string input)
+        {
+            return input.ToUpper();
         }
     }
 }

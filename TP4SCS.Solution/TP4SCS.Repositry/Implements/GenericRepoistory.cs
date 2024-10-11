@@ -8,22 +8,22 @@ namespace TP4SCS.Repository.Implements
     public class GenericRepoistory<T> : IGenericRepository<T> where T : class
     {
         protected readonly Tp4scsDevDatabaseContext _dbContext;
-        protected DbSet<T> dbSet;
+        private readonly DbSet<T> _dbSet;
 
         public GenericRepoistory(Tp4scsDevDatabaseContext dbContext)
         {
             _dbContext = dbContext;
-            this.dbSet = dbContext.Set<T>();
+            _dbSet = dbContext.Set<T>();
         }
 
-        public virtual async Task<IEnumerable<T>> Get(
+        public virtual async Task<IEnumerable<T>?> GetAsync(
            Expression<Func<T, bool>>? filter = null,
            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
            string includeProperties = "",
            int? pageIndex = null, // Optional parameter for pagination (page number)
            int? pageSize = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = _dbSet;
 
             if (filter != null)
             {
@@ -52,44 +52,47 @@ namespace TP4SCS.Repository.Implements
             return await query.ToListAsync(); // Sử dụng ToListAsync để thực hiện truy vấn không đồng bộ
         }
 
-        public virtual async Task<T?> GetByID(object id)
+        public virtual async Task<T?> GetByIDAsync(object id)
         {
-            return await dbSet.FindAsync(id); // Sử dụng FindAsync để tìm kiếm không đồng bộ
+            return await _dbSet.FindAsync(id); // Sử dụng FindAsync để tìm kiếm không đồng bộ
         }
 
-        public virtual async Task Insert(T entity)
+        public virtual async Task InsertAsync(T entity)
         {
-            await dbSet.AddAsync(entity); // Sử dụng AddAsync để thêm không đồng bộ
+            await _dbSet.AddAsync(entity); // Sử dụng AddAsync để thêm không đồng bộ
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
         }
 
-        public virtual async Task Delete(object id)
+        public virtual async Task DeleteAsync(object id)
         {
-            T? entityToDelete = await dbSet.FindAsync(id);
+            T? entityToDelete = await _dbSet.FindAsync(id);
 
             if (entityToDelete == null)
             {
                 throw new KeyNotFoundException($"Entity with id {id} not found.");
             }
-            await Delete(entityToDelete);
+            await DeleteAsync(entityToDelete);
         }
 
-
-        private async Task Delete(T entityToDelete)
+        public virtual async Task DeleteAsync(T entityToDelete)
         {
             if (_dbContext.Entry(entityToDelete).State == EntityState.Detached)
             {
-                dbSet.Attach(entityToDelete);
+                _dbSet.Attach(entityToDelete);
             }
-            dbSet.Remove(entityToDelete);
+            _dbSet.Remove(entityToDelete);
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
         }
 
-        public virtual async Task Update(T entityToUpdate)
+        public virtual async Task UpdateAsync(T entityToUpdate)
         {
-            dbSet.Attach(entityToUpdate);
+            _dbSet.Attach(entityToUpdate);
             _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
+        }
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

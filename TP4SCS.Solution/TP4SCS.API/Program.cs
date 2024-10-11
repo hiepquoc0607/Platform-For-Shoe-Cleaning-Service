@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
@@ -11,25 +12,31 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+//Config authentication ui for Swagger
 builder.Services.AddSwaggerGen();
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//Inject Repo
-builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
-builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
-//Inject Service
-builder.Services.AddScoped<IServiceService, ServiceService>();
-builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
-//Add Mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //Add DBContext
 builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//Inject Util
+builder.Services.AddScoped<Util>();
+
+//Inject Repo
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
+
+//Inject Service
+builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
+
+//Add Mapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

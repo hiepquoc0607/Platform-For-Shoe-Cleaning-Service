@@ -13,20 +13,20 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddService(Service service)
         {
-            await Insert(service);
+            await InsertAsync(service);
         }
 
         public async Task DeleteService(int id)
         {
-            await Delete(id);
+            await DeleteAsync(id);
         }
 
         public async Task<Service?> GetServiceById(int id)
         {
-            return await GetByID(id);
+            return await GetByIDAsync(id);
         }
 
-        public Task<IEnumerable<Service>> GetServices(
+        public Task<IEnumerable<Service>?> GetServices(
         string? keyword = null,
         int pageIndex = 1,
         int pageSize = 5,
@@ -40,7 +40,7 @@ namespace TP4SCS.Repository.Implements
                 "namedesc" => q.OrderByDescending(c => c.Name),
                 _ => q.OrderBy(c => c.Name)
             };
-            return Get(
+            return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
@@ -50,7 +50,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task UpdateService(Service service)
         {
-            await Update(service);
+            await UpdateAsync(service);
         }
     }
 }

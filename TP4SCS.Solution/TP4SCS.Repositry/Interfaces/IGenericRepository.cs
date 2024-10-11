@@ -4,16 +4,18 @@ namespace TP4SCS.Repository.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<IEnumerable<T>> Get(
+        Task<IEnumerable<T>?> GetAsync(
            Expression<Func<T, bool>>? filter = null,
            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
            string includeProperties = "",
            int? pageIndex = null,
            int? pageSize = null);
-        Task<T> GetByID(object id);
-        Task Insert(T entity);
-        Task Delete(object id);
-        Task Update(T entityToUpdate);
+        Task<T?> GetByIDAsync(object id);
+        Task InsertAsync(T entity);
+        Task DeleteAsync(object id);
+        Task DeleteAsync(T entityToDelete);
+        Task UpdateAsync(T entityToUpdate);
+        Task SaveAsync();
     }
 }
 

@@ -5010,19 +5010,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sasak\\.nuget\\packages\\": {}
+    "C:\\Users\\lnhqu\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\TP4SCS.API.csproj",
+      "projectUniqueName": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\TP4SCS.API.csproj",
       "projectName": "TP4SCS.API",
-      "projectPath": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\TP4SCS.API.csproj",
-      "packagesPath": "C:\\Users\\sasak\\.nuget\\packages\\",
-      "outputPath": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\obj\\",
+      "projectPath": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\TP4SCS.API.csproj",
+      "packagesPath": "C:\\Users\\lnhqu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\sasak\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\lnhqu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5030,14 +5035,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\TP4SCS.Services.csproj": {
-              "projectPath": "D:\\CapstoneProject\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\TP4SCS.Services.csproj"
+            "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\TP4SCS.Services.csproj": {
+              "projectPath": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Service\\TP4SCS.Services.csproj"
             }
           }
         }
@@ -5091,7 +5097,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.205/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
