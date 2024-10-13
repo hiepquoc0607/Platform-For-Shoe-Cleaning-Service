@@ -90,9 +90,5 @@ namespace TP4SCS.Repository.Implements
             _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
         }
-        public async Task SaveAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-        }
     }
 }

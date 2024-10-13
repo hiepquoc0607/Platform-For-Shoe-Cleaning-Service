@@ -10,10 +10,11 @@ namespace TP4SCS.Services.Interfaces
         Task<IEnumerable<AccountResponse>?> GetAccountsAsync(GetAccountRequest getAccountRequest);
         Task<AccountResponse?> GetAccountByIdAsync(int id);
         Task<int> GetAccountMaxIdAsync();
-        Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, RoleRequest roleRequest);
+        Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, int role);
         Task<Result> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
+        Task<Result> UpdateAccountStatusForAdminAsync(int id, StatusAdminRequest status);
         Task<Result> DeleteAccountAsync(int id);
-        Task<Result> SuspendAccountAsync(int id);
-        Task<Result> UnsuspendAccountAsync(int id);
+        Task<Result> LoginAsync(LoginRequest loginRequest);
+        Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     }
 }

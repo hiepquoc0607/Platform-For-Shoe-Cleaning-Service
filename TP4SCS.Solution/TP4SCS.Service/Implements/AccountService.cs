@@ -13,21 +13,35 @@ namespace TP4SCS.Services.Implements
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IAuthService _authService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, Util util)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IAuthService authService, Util util)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _authService = authService;
             _util = util;
         }
 
-        public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, RoleRequest roleRequest)
+        public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, int role)
         {
-            var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
             var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email);
+
+            if (isEmailExisted == true)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Has Already Been Registered!" };
+            }
+
             var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
+
+            if (isPhoneExisted == true)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Phone Has Already Been Registered!" };
+            }
+
+            var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
 
             var passwordErrorMessages = new Dictionary<string, string>
             {
@@ -43,30 +57,21 @@ namespace TP4SCS.Services.Implements
                 return new Result { IsSuccess = false, Message = message };
             }
 
-            if (isEmailExisted == true)
-            {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Has Already Been Registered!" };
-            }
-
-            if (isPhoneExisted == true)
-            {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Phone Has Already Been Registered!" };
-            }
-
             var newAccount = _mapper.Map<Account>(createAccountRequest);
 
-            newAccount.Role = roleRequest.CreateRole switch
+            newAccount.Role = role switch
             {
-                RoleOption.Owner => "OWNER",
-                RoleOption.Employee => "EMPLOYEE",
-                RoleOption.Moderator => "MODERATOR",
+                1 => "OWNER",
+                2 => "EMPLOYEE",
+                3 => "MODERATOR",
                 _ => "CUSTOMER"
             };
+
+            newAccount.Password = _util.HashPassword(createAccountRequest.Password);
 
             try
             {
                 await _accountRepository.InsertAsync(newAccount);
-                await _accountRepository.SaveAsync();
 
                 return new Result { IsSuccess = true };
             }
@@ -92,7 +97,6 @@ namespace TP4SCS.Services.Implements
             try
             {
                 await _accountRepository.UpdateAccountAsync(newAccount);
-                await _accountRepository.SaveAsync();
 
                 return new Result { IsSuccess = true };
             }
@@ -111,10 +115,11 @@ namespace TP4SCS.Services.Implements
             {
                 return null;
             }
-            else
-            {
-                return result;
-            }
+
+            result.Role = _util.TranslateAccountRole(result.Role);
+            result.Status = _util.TranslateAccountStatus(result.Status);
+
+            return result;
         }
 
         public async Task<int> GetAccountMaxIdAsync()
@@ -160,62 +165,57 @@ namespace TP4SCS.Services.Implements
 
             //Paging
             int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
-            result = result.Skip(skipNum).Take(getAccountRequest.PageSize);
 
-            return result.ToList();
+            return result.Skip(skipNum).Take(getAccountRequest.PageSize).ToList();
         }
 
-        public async Task<Result> SuspendAccountAsync(int id)
+        public async Task<Result> LoginAsync(LoginRequest loginRequest)
         {
-            var account = await _accountRepository.GetAccountByIdAsync(id);
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email);
 
             if (account == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Not Found!" };
             }
 
-            account.Status = "SUSPENDED";
+            if (!_util.CompareHashedPassword(loginRequest.Password, account.Password))
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Password Is Incorrect!" };
+            }
+
+            var token = _authService.GenerateToken(account);
+
+            return new Result { IsSuccess = true, Token = token };
+        }
+
+        public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+        {
+            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email);
+
+            if (account == null)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Email Not Found!" };
+            }
+
+            if (!resetPasswordRequest.NewPassword.Equals(resetPasswordRequest.ConfirmPassword))
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Password Not Match!" };
+            }
+
+            account.Password = _util.HashPassword(resetPasswordRequest.NewPassword);
 
             var newAccount = _mapper.Map<Account>(account);
 
             try
             {
                 await _accountRepository.UpdateAccountAsync(newAccount);
-                await _accountRepository.SaveAsync();
 
                 return new Result { IsSuccess = true };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Suspended Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Password Updated Fail!" };
             }
-        }
-
-        public async Task<Result> UnsuspendAccountAsync(int id)
-        {
-            var account = await _accountRepository.GetAccountByIdAsync(id);
-
-            if (account == null)
-            {
-                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
-            }
-
-            account.Status = "ACTIVE";
-
-            var newAccount = _mapper.Map<Account>(account);
-
-            try
-            {
-                await _accountRepository.UpdateAccountAsync(newAccount);
-                await _accountRepository.SaveAsync();
-
-                return new Result { IsSuccess = true };
-            }
-            catch (Exception)
-            {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Unsuspended Fail!" };
-            }
-
         }
 
         public async Task<Result> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest)
@@ -234,16 +234,49 @@ namespace TP4SCS.Services.Implements
             try
             {
                 await _accountRepository.UpdateAccountAsync(newAccount);
-                await _accountRepository.SaveAsync();
 
                 return new Result { IsSuccess = true };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                //return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Updated Fail!" };
-                return new Result { IsSuccess = false, StatusCode = 400, Message = ex.ToString() };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Updated Fail!" };
             }
 
+        }
+
+        public async Task<Result> UpdateAccountStatusForAdminAsync(int id, StatusAdminRequest status)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(id);
+
+            if (account == null)
+            {
+                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
+            }
+
+            if (!_util.CheckAccountStatusForAdmin(account.Status, status))
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Status Is At This State" };
+            }
+
+            account.Status = status switch
+            {
+                StatusAdminRequest.INACTIVE => "INACTIVE",
+                StatusAdminRequest.SUSPENDED => "SUSPENDED",
+                _ => "ACTIVE"
+            };
+
+            var newAccount = _mapper.Map<Account>(account);
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(newAccount);
+
+                return new Result { IsSuccess = true };
+            }
+            catch (Exception)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Status Updated Fail!" };
+            }
         }
     }
 

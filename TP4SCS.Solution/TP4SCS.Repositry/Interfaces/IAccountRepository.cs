@@ -7,7 +7,8 @@ namespace TP4SCS.Repository.Interfaces
     {
         Task<IEnumerable<AccountResponse>?> GetAccountsAsync();
         Task<AccountResponse?> GetAccountByIdAsync(int id);
-        Task<Account?> GetAccountByEmailAndPasswordAsync(string email, string password);
+        Task<Account?> GetAccountLoginByEmailAsync(string email);
+        Task<AccountResponse?> GetAccountByEmailAsync(string email);
         Task<bool> IsEmailExistedAsync(string email);
         Task<bool> IsPhoneExistedAsync(string phone);
         Task<int> GetAccountMaxIdAsync();
