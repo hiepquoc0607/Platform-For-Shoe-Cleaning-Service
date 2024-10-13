@@ -18,7 +18,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAccounts([FromQuery] GetAccountRequest getAccountRequest)
+        public async Task<IActionResult> GetAccountsAsync([FromQuery] GetAccountRequest getAccountRequest)
         {
             var result = await _accountService.GetAccountsAsync(getAccountRequest);
 
@@ -31,7 +31,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAccountById(int id)
+        public async Task<IActionResult> GetAccountByIdAsync([FromRoute] int id)
         {
             var result = await _accountService.GetAccountByIdAsync(id);
 
@@ -44,9 +44,9 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest createAccountRequest, [FromQuery] RoleRequest roleRequest)
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest, [FromQuery] RoleRequest roleRequest)
         {
-            var result = await _accountService.CreateAccountAsync(createAccountRequest, roleRequest);
+            var result = await _accountService.CreateAccountAsync(createAccountRequest, (int)roleRequest);
 
             if (!ModelState.IsValid)
             {
@@ -61,11 +61,11 @@ namespace TP4SCS.API.Controllers
             int newAccId = await _accountService.GetAccountMaxIdAsync();
             var newAcc = await _accountService.GetAccountByIdAsync(newAccId);
 
-            return CreatedAtAction(nameof(GetAccountById), new { id = newAccId }, newAcc);
+            return CreatedAtAction(nameof(GetAccountByIdAsync), new { id = newAccId }, newAcc);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(int id, UpdateAccountRequest updateAccountRequest)
+        public async Task<IActionResult> UpdateAccountAsync([FromRoute] int id, UpdateAccountRequest updateAccountRequest)
         {
             var result = await _accountService.UpdateAccountAsync(id, updateAccountRequest);
 
@@ -77,24 +77,10 @@ namespace TP4SCS.API.Controllers
             return Ok("Account Updated Successfully!");
         }
 
-
-        [HttpPut("suspend/{id}")]
-        public async Task<IActionResult> SuspendAccount(int id)
+        [HttpPut("admin/{id}/status")]
+        public async Task<IActionResult> UpdateAccountStatusForAdminAsync([FromRoute] int id, StatusAdminRequest status)
         {
-            var result = await _accountService.SuspendAccountAsync(id);
-
-            if (!result.IsSuccess)
-            {
-                return StatusCode(result.StatusCode, result.Message);
-            }
-
-            return Ok("Account Suspended Successfully!");
-        }
-
-        [HttpPut("unsuspend/{id}")]
-        public async Task<IActionResult> UnuspendAccount(int id)
-        {
-            var result = await _accountService.UnsuspendAccountAsync(id);
+            var result = await _accountService.UpdateAccountStatusForAdminAsync(id, status);
 
             if (!result.IsSuccess)
             {
@@ -105,7 +91,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(int id)
+        public async Task<IActionResult> DeleteAccountAsync([FromRoute] int id)
         {
             var result = await _accountService.DeleteAccountAsync(id);
 

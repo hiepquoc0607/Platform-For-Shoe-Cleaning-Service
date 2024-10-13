@@ -2,9 +2,9 @@
 
 namespace TP4SCS.Library.Models.Request.Account
 {
-    public enum RoleRequest
+    public enum RegisterRoleRequest
     {
-        EMPLOYEE = 0,
-        MODERATOR = 1
+        CUSTOMER = 0,
+        OWNER = 1
     }
 }

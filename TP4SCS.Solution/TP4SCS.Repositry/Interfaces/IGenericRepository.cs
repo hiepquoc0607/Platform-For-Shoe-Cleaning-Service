@@ -15,7 +15,6 @@ namespace TP4SCS.Repository.Interfaces
         Task DeleteAsync(object id);
         Task DeleteAsync(T entityToDelete);
         Task UpdateAsync(T entityToUpdate);
-        Task SaveAsync();
     }
 }
 
