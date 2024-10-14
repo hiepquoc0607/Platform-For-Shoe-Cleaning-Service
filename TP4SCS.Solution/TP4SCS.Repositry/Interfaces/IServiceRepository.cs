@@ -7,7 +7,7 @@ namespace TP4SCS.Repository.Interfaces
         Task<IEnumerable<Service>?> GetServices(string? keyword = null,
         int pageIndex = 1,
         int pageSize = 5,
-        string orderBy = "Name");
+        string orderBy = "Id");
         Task<Service?> GetServiceById(int id);
         Task AddService(Service service);
         Task UpdateService(Service service);

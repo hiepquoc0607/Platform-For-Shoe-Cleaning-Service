@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request;
-using TP4SCS.Library.Models.Response;
+using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Services.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,28 +25,29 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServices(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _serviceService.GetServices(keyword, pageIndex, pageSize, orderBy);
-            var totalServices = await _serviceService.GetServices(keyword);
-            var totalCount = services.Count();
+            var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword, pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
+            var totalServices = await _serviceService.GetServicesAsync(pagedRequest.Keyword);
+            var totalCount = services?.Count() ?? 0;
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
-                services.Select(s => _mapper.Map<ServiceResponse>(s)),
+                services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
-                pageIndex,
-                pageSize
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize
             );
 
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Success", pagedResponse));
         }
 
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetServiceById(int id)
+        public async Task<IActionResult> GetServiceByIdAync(int id)
         {
             try
             {
-                var service = await _serviceService.GetServiceById(id);
+                var service = await _serviceService.GetServiceByIdAsync(id);
                 if (service == null)
                 {
                     Ok(new ResponseObject<ServiceResponse>($"Service with ID {id} not found.", null));
@@ -59,11 +62,11 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateService(ServiceRequest request)
+        public async Task<IActionResult> CreateServiceAync(ServiceRequest request)
         {
             try
             {
-                await _serviceService.AddService(request);
+                await _serviceService.AddServiceAsync(request);
 
                 var serviceResponse = _mapper.Map<ServiceResponse>(_mapper.Map<Service>(request));
                 return Ok(new ResponseObject<ServiceResponse>("Create Service Success", serviceResponse));
@@ -83,12 +86,12 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("{existingServiceId}")]
-        public async Task<IActionResult> UpdateService(int existingServiceId, [FromBody] ServiceUpdateRequest request)
+        public async Task<IActionResult> UpdateServiceAync(int existingServiceId, [FromBody] ServiceUpdateRequest request)
         {
             try
             {
-                await _serviceService.UpdateService(request, existingServiceId);
-                var service = await _serviceService.GetServiceById(existingServiceId);
+                await _serviceService.UpdateServiceAsync(request, existingServiceId);
+                var service = await _serviceService.GetServiceByIdAsync(existingServiceId);
                 return Ok(new ResponseObject<ServiceResponse>("Update Service Success",
                     _mapper.Map<ServiceResponse>(service)));
             }
@@ -111,11 +114,11 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteService(int id)
+        public async Task<IActionResult> DeleteServiceAync(int id)
         {
             try
             {
-                await _serviceService.DeleteService(id);
+                await _serviceService.DeleteServiceAsync(id);
                 return NoContent();
             }
             catch (Exception ex)

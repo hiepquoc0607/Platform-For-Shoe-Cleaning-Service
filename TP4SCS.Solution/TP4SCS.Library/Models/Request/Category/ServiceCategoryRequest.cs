@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TP4SCS.Library.Models.Request
+namespace TP4SCS.Library.Models.Request.Category
 {
     public class ServiceCategoryRequest
     {

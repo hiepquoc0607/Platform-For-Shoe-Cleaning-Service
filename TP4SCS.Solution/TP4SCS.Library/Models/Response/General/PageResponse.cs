@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Models.Response
+﻿namespace TP4SCS.Library.Models.Response.General
 {
     public class PagedResponse<T>
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Repository.Interfaces;
 
@@ -25,7 +20,8 @@ namespace TP4SCS.Repository.Implements
             await DeleteCategory(id);
         }
 
-        public Task<IEnumerable<ServiceCategory>> GetCategories(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public Task<IEnumerable<ServiceCategory>?> GetCategories(string? keyword = null,
+            int pageIndex = 1, int pageSize = 5, string orderBy = "Id")
         {
             Expression<Func<ServiceCategory, bool>> filter = s =>
                string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);

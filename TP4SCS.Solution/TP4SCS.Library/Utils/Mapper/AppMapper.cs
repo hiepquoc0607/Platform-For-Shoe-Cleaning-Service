@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request;
-using TP4SCS.Library.Models.Response;
+using TP4SCS.Library.Models.Request.Category;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.Category;
+using TP4SCS.Library.Models.Response.Service;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
