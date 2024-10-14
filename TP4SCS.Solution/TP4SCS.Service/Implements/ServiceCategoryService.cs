@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request;
-using TP4SCS.Library.Utils.Mapper;
-using TP4SCS.Repository.Implements;
+﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -20,7 +12,7 @@ namespace TP4SCS.Services.Implements
         {
             _categoryRepository = categoryRepository;
         }
-        public async Task AddServiceCategory(ServiceCategory category)
+        public async Task AddServiceCategoryAsync(ServiceCategory category)
         {
             if (category == null)
             {
@@ -45,7 +37,7 @@ namespace TP4SCS.Services.Implements
             await _categoryRepository.AddCategory(category);
         }
 
-        public async Task DeleteServiceCategory(int id)
+        public async Task DeleteServiceCategoryAsync(int id)
         {
             var category = await _categoryRepository.GetCategoryById(id);
             if (category == null)
@@ -55,7 +47,7 @@ namespace TP4SCS.Services.Implements
             await _categoryRepository.DeleteCategory(id);
         }
 
-        public async Task<IEnumerable<ServiceCategory>> GetServiceCategories(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
         {
             if (pageIndex < 1)
             {
@@ -69,12 +61,12 @@ namespace TP4SCS.Services.Implements
             return await _categoryRepository.GetCategories(keyword, pageIndex, pageSize, orderBy);
         }
 
-        public async Task<ServiceCategory?> GetServiceCategoryById(int id)
+        public async Task<ServiceCategory?> GetServiceCategoryByIdAsync(int id)
         {
             return await _categoryRepository.GetCategoryById(id);
         }
 
-        public async Task UpdateServiceCategory(ServiceCategory category, int existingCategoryId)
+        public async Task UpdateServiceCategoryAsync(ServiceCategory category, int existingCategoryId)
         {
             if (category == null)
             {

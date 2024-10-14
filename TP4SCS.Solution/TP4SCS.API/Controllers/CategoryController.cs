@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request;
-using TP4SCS.Library.Models.Response;
-using TP4SCS.Library.Utils.Mapper;
-using TP4SCS.Services.Implements;
+using TP4SCS.Library.Models.Request.Category;
+using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.Category;
+using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -24,27 +23,28 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategories(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IActionResult> GetCategoriesAync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _categoryService.GetServiceCategories(keyword, pageIndex, pageSize, orderBy);
-            var allServices = await _categoryService.GetServiceCategories(keyword);
-            var totalCount = services.Count();
+            var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword, pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
+            var allServices = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword);
+            var totalCount = services?.Count() ?? 0;
 
             var pagedResponse = new PagedResponse<ServiceCategoryResponse>(
-                services.Select(s => _mapper.Map<ServiceCategoryResponse>(s)),
+                services?.Select(s => _mapper.Map<ServiceCategoryResponse>(s)) ?? Enumerable.Empty<ServiceCategoryResponse>(),
                 totalCount,
-                pageIndex,
-                pageSize
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize
             );
 
             return Ok(new ResponseObject<PagedResponse<ServiceCategoryResponse>>("Fetch Category Success", pagedResponse));
         }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById(int id)
+        public async Task<IActionResult> GetCategoryByIdAync(int id)
         {
             try
             {
-                var category = await _categoryService.GetServiceCategoryById(id);
+                var category = await _categoryService.GetServiceCategoryByIdAsync(id);
                 if (category == null)
                 {
                     Ok(new ResponseObject<ServiceCategoryResponse>($"Category with ID {id} not found.", null));
@@ -58,7 +58,7 @@ namespace TP4SCS.API.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] ServiceCategoryRequest request)
+        public async Task<IActionResult> CreateCategoryAync([FromBody] ServiceCategoryRequest request)
         {
             if (request == null)
             {
@@ -69,8 +69,8 @@ namespace TP4SCS.API.Controllers
             {
                 var category = _mapper.Map<ServiceCategory>(request);
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
-                await _categoryService.AddServiceCategory(category);
-                return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id },
+                await _categoryService.AddServiceCategoryAsync(category);
+                return CreatedAtAction(nameof(GetCategoryByIdAync), new { id = category.Id },
                     new ResponseObject<ServiceCategoryResponse>("Create Category Success", response));
             }
             catch (ArgumentNullException ex)
@@ -88,7 +88,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("{existingCategoryId}")]
-        public async Task<IActionResult> UpdateCategory(int existingCategoryId, [FromBody] ServiceCategoryRequest request)
+        public async Task<IActionResult> UpdateCategoryAync(int existingCategoryId, [FromBody] ServiceCategoryRequest request)
         {
             if (request == null)
             {
@@ -99,9 +99,9 @@ namespace TP4SCS.API.Controllers
             {
                 var categoryToUpdate = _mapper.Map<ServiceCategory>(request);
 
-                await _categoryService.UpdateServiceCategory(categoryToUpdate, existingCategoryId);
+                await _categoryService.UpdateServiceCategoryAsync(categoryToUpdate, existingCategoryId);
 
-                var updatedCategory = await _categoryService.GetServiceCategoryById(existingCategoryId);
+                var updatedCategory = await _categoryService.GetServiceCategoryByIdAsync(existingCategoryId);
                 var response = _mapper.Map<ServiceCategoryResponse>(updatedCategory);
 
                 return Ok(new ResponseObject<ServiceCategoryResponse>("Update Category Success", response));
@@ -124,11 +124,11 @@ namespace TP4SCS.API.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        public async Task<IActionResult> DeleteCategoryAync(int id)
         {
             try
             {
-                await _categoryService.DeleteServiceCategory(id);
+                await _categoryService.DeleteServiceCategoryAsync(id);
 
                 return NoContent();
             }

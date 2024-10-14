@@ -34,7 +34,7 @@ namespace TP4SCS.Library.Utils
             return "None";
         }
 
-        public string UpperCaseString(string input)
+        public static string UpperCaseString(string input)
         {
             return input.ToUpper();
         }

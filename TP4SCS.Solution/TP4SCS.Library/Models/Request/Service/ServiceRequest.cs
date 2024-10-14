@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Models.Request
+﻿namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceRequest
     {
@@ -8,7 +8,7 @@
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         public decimal Price { get; set; }
 

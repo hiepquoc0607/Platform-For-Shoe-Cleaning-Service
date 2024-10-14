@@ -30,7 +30,7 @@ namespace TP4SCS.Repository.Implements
         string? keyword = null,
         int pageIndex = 1,
         int pageSize = 5,
-        string orderBy = "name")
+        string orderBy = "Id")
         {
             Expression<Func<Service, bool>> filter = s =>
                 string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);

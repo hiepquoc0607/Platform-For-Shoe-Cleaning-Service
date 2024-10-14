@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -17,7 +18,7 @@ namespace TP4SCS.Services.Implements
             _mapper = mapper;
         }
 
-        public async Task AddService(ServiceRequest serviceRequest)
+        public async Task AddServiceAsync(ServiceRequest serviceRequest)
         {
             if (serviceRequest == null)
             {
@@ -46,12 +47,13 @@ namespace TP4SCS.Services.Implements
 
             var service = _mapper.Map<Service>(serviceRequest);
             service.CreateTime = DateTime.Now;
+            service.Status = Util.UpperCaseString(service.Status);
 
             await _serviceRepository.AddService(service);
         }
 
 
-        public async Task DeleteService(int id)
+        public async Task DeleteServiceAsync(int id)
         {
             var service = await _serviceRepository.GetServiceById(id);
 
@@ -64,14 +66,14 @@ namespace TP4SCS.Services.Implements
         }
 
 
-        public async Task<Service?> GetServiceById(int id)
+        public async Task<Service?> GetServiceByIdAsync(int id)
         {
             var service = await _serviceRepository.GetServiceById(id);
             return service;
         }
 
 
-        public async Task<IEnumerable<Service>> GetServices(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
         {
             if (pageIndex < 1)
             {
@@ -89,7 +91,7 @@ namespace TP4SCS.Services.Implements
 
 
 
-        public async Task UpdateService(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
+        public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
         {
             if (serviceUpdateRequest == null)
             {

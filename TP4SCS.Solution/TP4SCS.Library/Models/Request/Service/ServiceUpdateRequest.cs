@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Models.Request
+﻿namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceUpdateRequest
     {
