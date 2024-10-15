@@ -37,8 +37,8 @@ namespace TP4SCS.Repository.Implements
 
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy.ToLower() switch
             {
-                "namedesc" => q.OrderByDescending(c => c.Name),
-                _ => q.OrderBy(c => c.Name)
+                "iddesc" => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
             };
             return GetAsync(
                 filter: filter,

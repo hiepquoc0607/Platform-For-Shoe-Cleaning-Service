@@ -61,12 +61,16 @@ builder.Services.AddScoped<Util>();
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartItemService, CartItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 
@@ -116,9 +120,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 }
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
 app.UseCors("AllowSpecificOrigins");
 
