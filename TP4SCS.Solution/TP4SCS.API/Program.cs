@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Implements;
@@ -108,12 +110,24 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("https://localhost")
+            policy.WithOrigins("https://localhost"
+                              , "https://14.225.212.57"
+                              , "https://www.shoecarehub.xyz")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
         });
 });
+
+//Config Rate Limiting
+builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: "BasePolicy", options =>
+{
+    options.PermitLimit = 1;
+
+    options.Window = TimeSpan.FromMinutes(1);
+
+    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+}));
 
 var app = builder.Build();
 
@@ -128,6 +142,8 @@ app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
 app.UseCors("AllowSpecificOrigins");
+
+app.UseRateLimiter();
 
 app.UseHttpsRedirection();
 
