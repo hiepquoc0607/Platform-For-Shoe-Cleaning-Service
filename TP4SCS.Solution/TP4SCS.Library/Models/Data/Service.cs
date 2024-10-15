@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-
-namespace TP4SCS.Library.Models.Data;
+﻿namespace TP4SCS.Library.Models.Data;
 
 public partial class Service
 {
     public int Id { get; set; }
 
-    public int BranchId { get; set; }
     public int CategoryId { get; set; }
+
+    public int BranchId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -24,15 +23,16 @@ public partial class Service
     public int FeedbackedNum { get; set; }
 
     public string Status { get; set; } = null!;
-    [JsonIgnore]
+
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
 
     public virtual BusinessBranch Branch { get; set; } = null!;
-    public virtual ServiceCategory ServiceCategory { get; set; } = null!;
-    [JsonIgnore]
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-    [JsonIgnore]
+
+    public virtual ServiceCategory Category { get; set; } = null!;
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-    [JsonIgnore]
+
     public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
 }

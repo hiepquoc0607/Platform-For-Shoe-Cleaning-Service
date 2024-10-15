@@ -67,7 +67,7 @@ namespace TP4SCS.Services.Implements
                 _ => "CUSTOMER"
             };
 
-            newAccount.Password = _util.HashPassword(createAccountRequest.Password);
+            newAccount.PasswordHash = _util.HashPassword(createAccountRequest.Password);
 
             try
             {
@@ -178,7 +178,7 @@ namespace TP4SCS.Services.Implements
                 return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Not Found!" };
             }
 
-            if (!_util.CompareHashedPassword(loginRequest.Password, account.Password))
+            if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
             {
                 return new Result { IsSuccess = false, StatusCode = 400, Message = "Password Is Incorrect!" };
             }

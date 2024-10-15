@@ -31,7 +31,7 @@ namespace TP4SCS.Repository.Implements
                     {
                         Id = a.Id,
                         Email = a.Email,
-                        Password = a.Password,
+                        Password = a.PasswordHash,
                         FullName = a.FullName,
                         Phone = a.Phone,
                         Gender = a.Gender,
@@ -63,7 +63,7 @@ namespace TP4SCS.Repository.Implements
                     {
                         Id = a.Id,
                         Email = a.Email,
-                        Password = a.Password,
+                        Password = a.PasswordHash,
                         FullName = a.FullName,
                         Phone = a.Phone,
                         Gender = a.Gender,
@@ -91,7 +91,7 @@ namespace TP4SCS.Repository.Implements
                 {
                     Id = a.Id,
                     Email = a.Email,
-                    Password = a.Password,
+                    PasswordHash = a.PasswordHash,
                     Role = a.Role,
                 })
                 .FirstOrDefaultAsync();
@@ -126,7 +126,7 @@ namespace TP4SCS.Repository.Implements
                     {
                         Id = a.Id,
                         Email = a.Email,
-                        Password = a.Password,
+                        Password = a.PasswordHash,
                         FullName = a.FullName,
                         Phone = a.Phone,
                         Gender = a.Gender,

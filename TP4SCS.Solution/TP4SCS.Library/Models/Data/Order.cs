@@ -12,6 +12,8 @@ public partial class Order
 
     public bool IsAutoReject { get; set; }
 
+    public bool IsShipReq { get; set; }
+
     public string? Note { get; set; }
 
     public decimal OrderPrice { get; set; }

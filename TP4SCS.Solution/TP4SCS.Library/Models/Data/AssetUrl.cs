@@ -14,6 +14,8 @@ public partial class AssetUrl
 
     public string Type { get; set; } = null!;
 
+    public bool IsImage { get; set; }
+
     public virtual BusinessProfile? BusinessProfile { get; set; }
 
     public virtual Feedback? Feedback { get; set; }
