@@ -26,14 +26,6 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Category name must be between 3 and 100 characters.");
             }
-            if (!string.IsNullOrEmpty(category.Description) && category.Description.Length > 500)
-            {
-                throw new ArgumentException("Description cannot below exceed 500 characters.");
-            }
-            if (string.IsNullOrEmpty(category.Description) || category.Description.Length < 10)
-            {
-                throw new ArgumentException("Description must be at least 10 characters long.");
-            }
             await _categoryRepository.AddCategory(category);
         }
 
@@ -80,21 +72,12 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Category name must be between 3 and 100 characters.");
             }
-            if (!string.IsNullOrEmpty(category.Description) && category.Description.Length > 500)
-            {
-                throw new ArgumentException("Description cannot exceed 500 characters.");
-            }
-            if (string.IsNullOrEmpty(category.Description) || category.Description.Length < 10)
-            {
-                throw new ArgumentException("Description must be at least 10 characters long.");
-            }
             var existingCategory = await _categoryRepository.GetCategoryById(existingCategoryId);
             if (existingCategory == null)
             {
                 throw new KeyNotFoundException($"Service with ID {existingCategoryId} not found.");
             }
             existingCategory.Name = category.Name;
-            existingCategory.Description = category.Description;
 
             await _categoryRepository.UpdateCategory(existingCategory);
         }

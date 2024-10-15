@@ -6,7 +6,7 @@ public partial class Account
 
     public string Email { get; set; } = null!;
 
-    public string Password { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
 
     public string FullName { get; set; } = null!;
 
@@ -21,6 +21,10 @@ public partial class Account
     public string? ImageUrl { get; set; }
 
     public bool IsGoogle { get; set; }
+
+    public bool IsEmpManager { get; set; }
+
+    public string? RefreshToken { get; set; }
 
     public string? Fcmtoken { get; set; }
 

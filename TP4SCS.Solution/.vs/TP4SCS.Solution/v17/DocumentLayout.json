@@ -1,16 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{8CD8CD5C-EA4F-4728-AE11-AE34188F2C24}|TP4SCS.Library\\TP4SCS.Library.csproj|c:\\users\\lnhqu\\documents\\tp4scs\\source code\\tp4scs.be\\tp4scs.solution\\tp4scs.library\\appsettings22.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{8CD8CD5C-EA4F-4728-AE11-AE34188F2C24}|TP4SCS.Library\\TP4SCS.Library.csproj|solutionrelative:tp4scs.library\\appsettings22.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD098ED5-54C2-4449-BB4C-FFB7181C9C4A}|TP4SCS.API\\TP4SCS.API.csproj|c:\\users\\lnhqu\\documents\\tp4scs\\source code\\tp4scs.be\\tp4scs.solution\\tp4scs.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BD098ED5-54C2-4449-BB4C-FFB7181C9C4A}|TP4SCS.API\\TP4SCS.API.csproj|solutionrelative:tp4scs.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -18,37 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\Program.cs",
-              "RelativeDocumentMoniker": "TP4SCS.API\\Program.cs",
-              "ToolTip": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.API\\Program.cs",
-              "RelativeToolTip": "TP4SCS.API\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIEAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-15T13:06:12.014Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings22.json",
-              "DocumentMoniker": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Library\\appsettings22.json",
-              "RelativeDocumentMoniker": "TP4SCS.Library\\appsettings22.json",
-              "ToolTip": "C:\\Users\\lnhqu\\Documents\\TP4SCS\\Source Code\\TP4SCS.BE\\TP4SCS.Solution\\TP4SCS.Library\\appsettings22.json",
-              "RelativeToolTip": "TP4SCS.Library\\appsettings22.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-10-15T13:05:53.656Z",
-              "EditorCaption": ""
             }
           ]
         }

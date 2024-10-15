@@ -16,13 +16,9 @@ public partial class BusinessBranch
 
     public string City { get; set; } = null!;
 
-    public string? OrderManagerIds { get; set; }
-
     public string? EmployeeManagerIds { get; set; }
 
-    public string? CategoryManagerIds { get; set; }
-
-    public string? ServiceManagerIds { get; set; }
+    public string? EmployeeIds { get; set; }
 
     public string Status { get; set; } = null!;
 
