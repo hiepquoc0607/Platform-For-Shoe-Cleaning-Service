@@ -30,9 +30,9 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Price must be greater than zero.");
             }
 
-            if (serviceRequest.Rating < 0)
+            if (serviceRequest.Rating < 0 && serviceRequest.Rating > 5)
             {
-                throw new ArgumentException("Rating cannot be negative.");
+                throw new ArgumentException("Rating cannot be negative and greater than 5.");
             }
 
             if (serviceRequest.OrderedNum < 0)
