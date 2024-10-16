@@ -38,4 +38,4 @@ jobs:
             docker rm tp4scsapi || true
             docker images --filter=reference='hieu15402/tp4scsapi' --format '{{.ID}} {{.Tag}}' | grep '<none>' | awk '{print $1}' | xargs -I {} docker rmi -f {}
             docker pull hieu15402/tp4scsapi
-            docker run -d -p 8000:80 --name tp4scsapi --restart always hieu15402/tp4scsapi
+            docker run -d -p 8080:80 --name tp4scsapi --restart always hieu15402/tp4scsapi
