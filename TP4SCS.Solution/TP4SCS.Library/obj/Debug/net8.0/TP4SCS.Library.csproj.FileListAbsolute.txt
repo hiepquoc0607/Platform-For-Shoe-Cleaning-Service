@@ -1,0 +1,15 @@
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\bin\Debug\net8.0\TP4SCS.Library.deps.json
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\bin\Debug\net8.0\TP4SCS.Library.runtimeconfig.json
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\bin\Debug\net8.0\TP4SCS.Library.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\bin\Debug\net8.0\TP4SCS.Library.pdb
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.csproj.AssemblyReference.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.GeneratedMSBuildEditorConfig.editorconfig
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.AssemblyInfoInputs.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.AssemblyInfo.cs
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.csproj.CoreCompileInputs.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.sourcelink.json
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\refint\TP4SCS.Library.dll
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.pdb
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\TP4SCS.Library.genruntimeconfig.cache
+D:\CapstoneProject\TP4SCS.BE\TP4SCS.Solution\TP4SCS.Library\obj\Debug\net8.0\ref\TP4SCS.Library.dll

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "KLm9sfBLcj1aq0g4TMHBUaxaPSxnBvqejeyftv7bnAc=",
+  "Source": "TP4SCS.API",
+  "BasePath": "_content/TP4SCS.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
