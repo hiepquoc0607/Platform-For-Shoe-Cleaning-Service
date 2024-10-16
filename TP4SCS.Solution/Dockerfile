@@ -5,11 +5,11 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TP4SCS.API.csproj", "TP4SCS.API/"]
-COPY ["TP4SCS.Services.csproj", "TP4SCS.Service/"]
-COPY ["TP4SCS.Repository.csproj", "TP4SCS.Repositry/"]
-COPY ["TP4SCS.Library.csproj", "TP4SCS.Library/"]
-RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
+COPY ["TP4SCS.Solution/TP4SCS.API.csproj", "TP4SCS.API/"]
+COPY ["TP4SCS.Solution/TP4SCS.Services.csproj", "TP4SCS.Service/"]
+COPY ["TP4SCS.Solution/TP4SCS.Repository.csproj", "TP4SCS.Repositry/"]
+COPY ["TP4SCS.Solution/TP4SCS.Library.csproj", "TP4SCS.Library/"]
+RUN dotnet restore "TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj"
 
 WORKDIR "/src/TP4SCS.API"
 COPY . .
