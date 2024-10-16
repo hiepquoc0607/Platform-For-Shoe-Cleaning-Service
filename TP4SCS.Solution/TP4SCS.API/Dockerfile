@@ -1,25 +1,31 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
-WORKDIR /app
-EXPOSE 80
-
-# This stage is used to build the service project
+# Chọn image base cho SDK
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
-RUN dotnet restore "./TP4SCS.API/TP4SCS.API.csproj"
+
+# Sao chép file csproj của TP4SCS.API và TP4SCS.Services vào container
+COPY ["TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
+COPY ["TP4SCS.Services/TP4SCS.Services.csproj", "TP4SCS.Services/"]
+
+# Khôi phục các gói cho dự án TP4SCS.API
+RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
+
+# Sao chép toàn bộ mã nguồn vào container
 COPY . .
+
+# Thiết lập WORKDIR cho TP4SCS.API
 WORKDIR "/src/TP4SCS.API"
-RUN dotnet build "./TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Xây dựng dự án
+RUN dotnet build "TP4SCS.API.csproj" -c Release -o /app/build
+
+# Stage để publish
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "TP4SCS.API.csproj" -c Release -o /app/publish
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
-FROM base AS final
+# Stage cuối cùng cho image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Đặt entry point cho container
 ENTRYPOINT ["dotnet", "TP4SCS.API.dll"]
