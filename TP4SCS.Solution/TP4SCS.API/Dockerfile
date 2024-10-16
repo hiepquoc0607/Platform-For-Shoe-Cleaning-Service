@@ -1,30 +1,37 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# Stage 1: Base image cho ứng dụng
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-# This stage is used to build the service project
+# Stage 2: Build project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
-RUN dotnet restore "./TP4SCS.API/TP4SCS.API.csproj"
-COPY . .
-WORKDIR "/src/TP4SCS.API"
-RUN dotnet build "./TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Copy file .csproj vào thư mục build
+COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
+RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
+
+# Copy tất cả các file còn lại
+COPY TP4SCS.Solution/TP4SCS.API/. ./TP4SCS.API/
+WORKDIR "/src/TP4SCS.API"
+
+# Build ứng dụng
+RUN dotnet build "TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Stage 3: Publish project
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Stage 4: Tạo image final từ base image
 FROM base AS final
 WORKDIR /app
+
+# Copy các file đã publish từ stage publish
 COPY --from=publish /app/publish .
+
+# Chạy ứng dụng
 ENTRYPOINT ["dotnet", "TP4SCS.API.dll"]
