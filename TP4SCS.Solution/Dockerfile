@@ -9,7 +9,7 @@ COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
 COPY ["TP4SCS.Solution/TP4SCS.Service/TP4SCS.Services.csproj", "TP4SCS.Service/"]
 COPY ["TP4SCS.Solution/TP4SCS.Repositry/TP4SCS.Repository.csproj", "TP4SCS.Repositry/"]
 COPY ["TP4SCS.Solution/TP4SCS.Library/TP4SCS.Library.csproj", "TP4SCS.Library/"]
-RUN dotnet restore "TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj"
+RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
 
 WORKDIR "/src/TP4SCS.API"
 COPY . .
