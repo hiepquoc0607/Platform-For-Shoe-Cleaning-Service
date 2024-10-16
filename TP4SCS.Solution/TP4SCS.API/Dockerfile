@@ -2,9 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Sao chép file csproj của TP4SCS.API và TP4SCS.Services vào container
+# Sao chép file csproj của TP4SCS.API vào container
 COPY ["TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
-COPY ["TP4SCS.Services/TP4SCS.Services.csproj", "TP4SCS.Services/"]
+
+# Sao chép file csproj của TP4SCS.Services vào container
+COPY ["../TP4SCS.Services/TP4SCS.Services.csproj", "TP4SCS.Services/"]
 
 # Khôi phục các gói cho dự án TP4SCS.API
 RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
