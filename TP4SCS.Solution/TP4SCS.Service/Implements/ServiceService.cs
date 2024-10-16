@@ -11,11 +11,13 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
+        private readonly Util _util;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, Util util)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _util = util;
         }
 
         public async Task AddServiceAsync(ServiceRequest serviceRequest)
@@ -47,7 +49,7 @@ namespace TP4SCS.Services.Implements
 
             var service = _mapper.Map<Service>(serviceRequest);
             service.CreateTime = DateTime.Now;
-            service.Status = Util.UpperCaseString(service.Status);
+            service.Status = _util.UpperCaseString(service.Status);
 
             await _serviceRepository.AddService(service);
         }

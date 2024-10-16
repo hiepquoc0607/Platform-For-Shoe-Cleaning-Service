@@ -10,48 +10,57 @@ namespace TP4SCS.Library.Utils
 
         public string CheckPasswordErrorType(string password)
         {
+            bool hasDigit = false;
+            bool hasLower = false;
+            bool hasUpper = false;
+            bool hasSpecial = false;
+
             if (password.Length < 8)
             {
                 return "Length";
             }
-            if (!password.Any(char.IsDigit))
+
+            foreach (char ch in password)
             {
-                return "Number";
+                if (char.IsDigit(ch)) hasDigit = true;
+                else if (char.IsLower(ch)) hasLower = true;
+                else if (char.IsUpper(ch)) hasUpper = true;
+                else if (!char.IsLetterOrDigit(ch)) hasSpecial = true;
+
+                if (hasDigit && hasLower && hasUpper && hasSpecial)
+                {
+                    return "None";
+                }
             }
-            if (!password.Any(char.IsLower))
-            {
-                return "Lower";
-            }
-            if (!password.Any(char.IsUpper))
-            {
-                return "Upper";
-            }
-            if (!password.Any(ch => !char.IsLetterOrDigit(ch)))
-            {
-                return "Special";
-            }
+
+            if (!hasDigit) return "Number";
+            if (!hasLower) return "Lower";
+            if (!hasUpper) return "Upper";
+            if (!hasSpecial) return "Special";
 
             return "None";
         }
 
-        public static string UpperCaseString(string input)
+        public string UpperCaseString(string input)
         {
             return input.ToUpper();
         }
 
+        public string LowerCaseString(string input)
+        {
+            return input.ToLower();
+        }
+
         public bool CheckAccountStatusForAdmin(string status, StatusAdminRequest statusRequest)
         {
-            if (status.Equals("ACTIVE", StringComparison.Ordinal) && statusRequest == StatusAdminRequest.ACTIVE)
+            Dictionary<string, StatusAdminRequest> StatusMap = new()
             {
-                return false;
-            }
+                { "ACTIVE", StatusAdminRequest.ACTIVE },
+                { "INACTIVE", StatusAdminRequest.INACTIVE },
+                { "SUSPENDED", StatusAdminRequest.SUSPENDED }
+            };
 
-            if (status.Equals("INACTIVE", StringComparison.Ordinal) && statusRequest == StatusAdminRequest.INACTIVE)
-            {
-                return false;
-            }
-
-            if (status.Equals("SUSPENDED", StringComparison.Ordinal) && statusRequest == StatusAdminRequest.SUSPENDED)
+            if (StatusMap.TryGetValue(status, out StatusAdminRequest mappedStatus) && mappedStatus == statusRequest)
             {
                 return false;
             }
