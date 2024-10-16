@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
+COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
 RUN dotnet restore "./TP4SCS.API/TP4SCS.API.csproj"
 COPY . .
 WORKDIR "/src/TP4SCS.API"
