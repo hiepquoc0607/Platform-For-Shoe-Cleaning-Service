@@ -11,7 +11,7 @@ COPY ["TP4SCS.Solution/TP4SCS.Repositry/TP4SCS.Repository.csproj", "TP4SCS.Repos
 COPY ["TP4SCS.Solution/TP4SCS.Library/TP4SCS.Library.csproj", "TP4SCS.Library/"]
 RUN dotnet restore "TP4SCS.API/TP4SCS.API.csproj"
 COPY . .
-WORKDIR "/src/TP4SCS.API"
+WORKDIR "/src/src/TP4SCS.API"
 
 RUN dotnet build "./TP4SCS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
