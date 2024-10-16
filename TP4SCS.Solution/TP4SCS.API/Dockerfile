@@ -1,6 +1,7 @@
 # Chọn image base cho SDK
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+EXPOSE 80
 
 COPY ["TP4SCS.Solution/TP4SCS.API/TP4SCS.API.csproj", "TP4SCS.API/"]
 COPY ["TP4SCS.Solution/TP4SCS.Service/TP4SCS.Services.csproj", "TP4SCS.Service/"]
@@ -17,16 +18,14 @@ COPY . .
 WORKDIR "/src/TP4SCS.API"
 
 # Xây dựng dự án
-RUN dotnet build "TP4SCS.API.csproj" -c Release -o /app/build
+RUN dotnet build "./TP4SCS.API.csproj" -c Release -o /app/build
 
 # Stage để publish
 FROM build AS publish
-RUN dotnet publish "TP4SCS.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "./TP4SCS.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage cuối cùng cho image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM build as final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-# Đặt entry point cho container
 ENTRYPOINT ["dotnet", "TP4SCS.API.dll"]
