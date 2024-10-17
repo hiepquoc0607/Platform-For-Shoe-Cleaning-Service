@@ -1,16 +1,17 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 
 namespace TP4SCS.Repository.Interfaces
 {
     public interface IServiceRepository
     {
-        Task<IEnumerable<Service>?> GetServices(string? keyword = null,
+        Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,
         int pageIndex = 1,
         int pageSize = 5,
-        string orderBy = "Id");
-        Task<Service?> GetServiceById(int id);
-        Task AddService(Service service);
-        Task UpdateService(Service service);
-        Task DeleteService(int id);
+        OrderByEnum orderBy = OrderByEnum.IdAsc);
+        Task<Service?> GetServiceByIdAsync(int id);
+        Task AddServiceAsync(List<Service> services);
+        Task UpdateServiceAsync(Service service);
+        Task DeleteServiceAsync(int id);
     }
 }

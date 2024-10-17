@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -10,27 +11,33 @@ namespace TP4SCS.Repository.Implements
         {
         }
 
-        public async Task AddCategory(ServiceCategory category)
+        public async Task AddCategoryAsync(ServiceCategory category)
         {
             await InsertAsync(category);
         }
 
-        public async Task DeleteCategory(int id)
+        public async Task DeleteCategoryAsync(int id)
         {
-            await DeleteCategory(id);
+            await DeleteAsync(id);
         }
 
-        public Task<IEnumerable<ServiceCategory>?> GetCategories(string? keyword = null,
-            int pageIndex = 1, int pageSize = 5, string orderBy = "Id")
+        public Task<IEnumerable<ServiceCategory>?> GetCategoriesAsync(
+            string? keyword = null,
+            int pageIndex = 1,
+            int pageSize = 5,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
+            // Biểu thức lọc
             Expression<Func<ServiceCategory, bool>> filter = s =>
-               string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);
+                string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);
 
-            Func<IQueryable<ServiceCategory>, IOrderedQueryable<ServiceCategory>> orderByExpression = q => orderBy.ToLower() switch
+            Func<IQueryable<ServiceCategory>, IOrderedQueryable<ServiceCategory>> orderByExpression = q => orderBy switch
             {
-                "iddesc" => q.OrderByDescending(c => c.Id),
-                _ => q.OrderBy(c => c.Id)
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), // Sắp xếp giảm dần
+                _ => q.OrderBy(c => c.Id)                             // Mặc định sắp xếp tăng dần
             };
+
+            // Gọi hàm GetAsync với các tham số đã cập nhật
             return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,
@@ -39,14 +46,15 @@ namespace TP4SCS.Repository.Implements
             );
         }
 
-        public async Task<ServiceCategory?> GetCategoryById(int id)
+
+        public async Task<ServiceCategory?> GetCategoryByIdAsync(int id)
         {
-            return await GetCategoryById(id);
+            return await GetByIDAsync(id);
         }
 
-        public async Task UpdateCategory(ServiceCategory category)
+        public async Task UpdateCategoryAsync(ServiceCategory category)
         {
-            await UpdateCategory(category);
+            await UpdateAsync(category);
         }
     }
 }

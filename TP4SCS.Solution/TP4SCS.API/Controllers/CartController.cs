@@ -8,7 +8,6 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
 {
-    [Route("api/carts")]
     [ApiController]
     public class CartController : ControllerBase
     {
@@ -22,37 +21,38 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        [Route("cart/{userId}")]
-        public async Task<IActionResult> GetCartByUserIdAsync(int userId)
+        [Route("api/user/{id}/cart")]
+        public async Task<IActionResult> GetCartByUserIdAsync(int id)
         {
-            var cart = await _cartService.GetCartByUserIdAsync(userId);
+            var cart = await _cartService.GetCartByUserIdAsync(id);
             if (cart == null)
             {
-                return NotFound($"Cart for user ID {userId} not found.");
+                return NotFound($"Cart for user ID {id} not found.");
             }
             return Ok(new ResponseObject<CartResponse>("Fetch success", _mapper.Map<CartResponse>(cart)));
         }
         [HttpGet]
-        [Route("total/{cartId}")]
-        public async Task<IActionResult> GetCartTotal(int cartId)
+        [Route("api/carts/{id}/total")]
+        public async Task<IActionResult> GetCartTotal(int id)
         {
-            var total = await _cartService.GetCartTotalAsync(cartId);
+            var total = await _cartService.GetCartTotalAsync(id);
             return Ok(new { Total = total });
         }
         [HttpPost]
+        [Route("api/carts")]
         public async Task<IActionResult> CreateCart(int userId)
         {
             var cart = await _cartService.CreateCartAsync(userId);
             return CreatedAtAction(nameof(GetCartByUserIdAsync), new { userId = userId }, cart);
         }
         [HttpPut]
-        [Route("{existingCartId}")]
-        public async Task<IActionResult> UpdateCart(int existingCartId, [FromBody] CartUpdateRequest cartUpdateRequest)
+        [Route("api/carts/{id}")]
+        public async Task<IActionResult> UpdateCart(int id, [FromBody] CartUpdateRequest cartUpdateRequest)
         {
             var cart = _mapper.Map<Cart>(cartUpdateRequest);
             try
             {
-                await _cartService.UpdateCartAsync(cart, existingCartId);
+                await _cartService.UpdateCartAsync(cart, id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -69,10 +69,10 @@ namespace TP4SCS.API.Controllers
             }
         }
         [HttpDelete]
-        [Route("clear/{cartId}")]
-        public async Task<IActionResult> ClearCart(int cartId)
+        [Route("api/carts/{id}/clear")]
+        public async Task<IActionResult> ClearCart(int id)
         {
-            await _cartService.ClearCartAsync(cartId);
+            await _cartService.ClearCartAsync(id);
             return Ok();
         }
     }

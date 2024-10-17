@@ -17,6 +17,7 @@ namespace TP4SCS.Library.Utils.Mapper
         {
             CreateMap<Service, ServiceResponse>();
             CreateMap<ServiceRequest, Service>();
+            CreateMap<ServiceCreateRequest, Service>().ForMember(dest => dest.BranchId, opt => opt.Ignore());
 
             // Category Mappings
             CreateMap<ServiceCategory, ServiceCategoryResponse>();

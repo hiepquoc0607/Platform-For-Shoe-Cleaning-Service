@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -11,14 +12,16 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
+        private readonly IServiceCategoryRepository _categoryRepository;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task AddServiceAsync(ServiceRequest serviceRequest)
+        public async Task AddServiceAsync(ServiceCreateRequest serviceRequest)
         {
             if (serviceRequest == null)
             {
@@ -29,51 +32,48 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Price must be greater than zero.");
             }
-
-            if (serviceRequest.Rating < 0 && serviceRequest.Rating > 5)
+            if(await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId) == null)
             {
-                throw new ArgumentException("Rating cannot be negative and greater than 5.");
+                throw new ArgumentException("Invalid category id.");
             }
 
-            if (serviceRequest.OrderedNum < 0)
+            var services = new List<Service>();
+
+            foreach (var branchId in serviceRequest.BranchId)
             {
-                throw new ArgumentException("Ordered number cannot be negative.");
+                var service = _mapper.Map<Service>(serviceRequest);
+                service.BranchId = branchId;
+                service.CreateTime = DateTime.Now;
+                service.Status = Util.UpperCaseString("active");
+
+                services.Add(service);
             }
 
-            if (serviceRequest.FeedbackedNum < 0)
-            {
-                throw new ArgumentException("Feedbacked number cannot be negative.");
-            }
-
-            var service = _mapper.Map<Service>(serviceRequest);
-            service.CreateTime = DateTime.Now;
-            service.Status = Util.UpperCaseString(service.Status);
-
-            await _serviceRepository.AddService(service);
+            await _serviceRepository.AddServiceAsync(services);
         }
 
 
         public async Task DeleteServiceAsync(int id)
         {
-            var service = await _serviceRepository.GetServiceById(id);
+            var service = await _serviceRepository.GetServiceByIdAsync(id);
 
             if (service == null)
             {
                 throw new Exception($"Service with ID {id} not found.");
             }
 
-            await _serviceRepository.DeleteService(id);
+            await _serviceRepository.DeleteServiceAsync(id);
         }
 
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            var service = await _serviceRepository.GetServiceById(id);
+            var service = await _serviceRepository.GetServiceByIdAsync(id);
             return service;
         }
 
 
-        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             if (pageIndex < 1)
             {
@@ -85,7 +85,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Page size must be greater than 0.");
             }
 
-            return await _serviceRepository.GetServices(keyword, pageIndex, pageSize, orderBy);
+            return await _serviceRepository.GetServicesAsync(keyword, pageIndex, pageSize, orderBy);
         }
 
 
@@ -118,7 +118,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Feedbacked number cannot be negative.");
             }
 
-            var existingService = await _serviceRepository.GetServiceById(existingServiceId);
+            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
                 throw new KeyNotFoundException($"Service with ID {existingServiceId} not found.");
@@ -133,7 +133,7 @@ namespace TP4SCS.Services.Implements
             existingService.OrderedNum = serviceUpdateRequest.OrderedNum;
             existingService.FeedbackedNum = serviceUpdateRequest.FeedbackedNum;
 
-            await _serviceRepository.UpdateService(existingService);
+            await _serviceRepository.UpdateServiceAsync(existingService);
         }
 
 

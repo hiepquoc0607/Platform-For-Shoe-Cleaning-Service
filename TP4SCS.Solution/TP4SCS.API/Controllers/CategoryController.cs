@@ -5,6 +5,7 @@ using TP4SCS.Library.Models.Request.Category;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -23,14 +24,18 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategoriesAync([FromQuery] PagedRequest pagedRequest)
+        public async Task<IActionResult> GetCategoriesAsync([FromQuery] PagedRequest pagedRequest)
         {
             var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword, pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
             var allServices = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword);
             var totalCount = services?.Count() ?? 0;
 
             var pagedResponse = new PagedResponse<ServiceCategoryResponse>(
-                services?.Select(s => _mapper.Map<ServiceCategoryResponse>(s)) ?? Enumerable.Empty<ServiceCategoryResponse>(),
+                services?.Select(s => {
+                    var serviceCategoryResponse = _mapper.Map<ServiceCategoryResponse>(s);
+                    serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status);
+                    return serviceCategoryResponse;
+                }) ?? Enumerable.Empty<ServiceCategoryResponse>(),
                 totalCount,
                 pagedRequest.PageIndex,
                 pagedRequest.PageSize
@@ -38,6 +43,7 @@ namespace TP4SCS.API.Controllers
 
             return Ok(new ResponseObject<PagedResponse<ServiceCategoryResponse>>("Fetch Category Success", pagedResponse));
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryByIdAync(int id)
@@ -50,6 +56,7 @@ namespace TP4SCS.API.Controllers
                     Ok(new ResponseObject<ServiceCategoryResponse>($"Category with ID {id} not found.", null));
                 }
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
+                response.Status = Util.TranslateGeneralStatus(response.Status);
                 return Ok(new ResponseObject<ServiceCategoryResponse>("Fetch Category Success", response));
             }
             catch (Exception ex)
@@ -68,7 +75,9 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var category = _mapper.Map<ServiceCategory>(request);
+                category.Status = Util.UpperCaseString("active");
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
+                response.Status = Util.TranslateGeneralStatus("active");
                 await _categoryService.AddServiceCategoryAsync(category);
                 return CreatedAtAction(nameof(GetCategoryByIdAync), new { id = category.Id },
                     new ResponseObject<ServiceCategoryResponse>("Create Category Success", response));

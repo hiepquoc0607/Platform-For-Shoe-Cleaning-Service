@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -11,35 +12,38 @@ namespace TP4SCS.Repository.Implements
 
         }
 
-        public async Task AddService(Service service)
+        public async Task AddServiceAsync(List<Service> services)
         {
-            await InsertAsync(service);
+            await _dbContext.AddRangeAsync(services);
         }
 
-        public async Task DeleteService(int id)
+        public async Task DeleteServiceAsync(int id)
         {
             await DeleteAsync(id);
         }
 
-        public async Task<Service?> GetServiceById(int id)
+        public async Task<Service?> GetServiceByIdAsync(int id)
         {
             return await GetByIDAsync(id);
         }
 
-        public Task<IEnumerable<Service>?> GetServices(
-        string? keyword = null,
-        int pageIndex = 1,
-        int pageSize = 5,
-        string orderBy = "Id")
+        public Task<IEnumerable<Service>?> GetServicesAsync(
+            string? keyword = null,
+            int pageIndex = 1,
+            int pageSize = 5,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
+            // Biểu thức lọc
             Expression<Func<Service, bool>> filter = s =>
                 string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);
 
-            Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy.ToLower() switch
+            Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
             {
-                "iddesc" => q.OrderByDescending(c => c.Id),
-                _ => q.OrderBy(c => c.Id)
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), // Sắp xếp giảm dần
+                _ => q.OrderBy(c => c.Id)                             // Mặc định sắp xếp tăng dần
             };
+
+            // Gọi hàm GetAsync với các tham số đã cập nhật
             return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,
@@ -48,7 +52,8 @@ namespace TP4SCS.Repository.Implements
             );
         }
 
-        public async Task UpdateService(Service service)
+
+        public async Task UpdateServiceAsync(Service service)
         {
             await UpdateAsync(service);
         }

@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public int BranchId { get; set; }
+        public required int[] BranchId { get; set; }
         public int CategoryId { get; set; }
 
         public string Name { get; set; } = null!;
