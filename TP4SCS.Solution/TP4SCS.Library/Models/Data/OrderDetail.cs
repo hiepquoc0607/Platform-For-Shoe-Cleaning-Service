@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class OrderDetail
 {

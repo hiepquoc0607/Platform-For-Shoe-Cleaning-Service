@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class Promotion
 {
@@ -7,6 +10,8 @@ public partial class Promotion
     public int ServiceId { get; set; }
 
     public int SaleOff { get; set; }
+
+    public decimal NewPrice { get; set; }
 
     public int Usage { get; set; }
 

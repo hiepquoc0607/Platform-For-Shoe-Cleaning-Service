@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class BusinessBranch
 {
@@ -16,9 +19,15 @@ public partial class BusinessBranch
 
     public string City { get; set; } = null!;
 
-    public string? EmployeeManagerIds { get; set; }
-
     public string? EmployeeIds { get; set; }
+
+    public int PendingAmt { get; set; }
+
+    public int ProcessingAmt { get; set; }
+
+    public int FinishedAmt { get; set; }
+
+    public int CanceledAmt { get; set; }
 
     public string Status { get; set; } = null!;
 

@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class Order
 {
@@ -11,8 +14,6 @@ public partial class Order
     public DateTime? DeliveredTime { get; set; }
 
     public bool IsAutoReject { get; set; }
-
-    public bool IsShipReq { get; set; }
 
     public string? Note { get; set; }
 

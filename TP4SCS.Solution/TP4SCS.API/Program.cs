@@ -112,7 +112,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("https://localhost"
                               , "http://14.225.212.57"
-                              , "https://www.shoecarehub.xyz")
+                              , "https://www.shoecarehub.xyz"
+                              , "https://shoecarehub.site")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -139,6 +140,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 }
 app.UseSwagger();
+
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
 app.UseCors("AllowSpecificOrigins");

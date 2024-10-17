@@ -25,8 +25,6 @@ namespace TP4SCS.Library.Migrations
                     Dob = table.Column<DateOnly>(type: "date", nullable: false),
                     ExpiredTime = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(NULL)"),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
-                    IsGoogle = table.Column<bool>(type: "bit", nullable: false),
-                    IsEmpManager = table.Column<bool>(type: "bit", nullable: false),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     FCMToken = table.Column<string>(type: "text", nullable: true),
                     Role = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
@@ -34,7 +32,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Account__3214EC075916A47A", x => x.Id);
+                    table.PrimaryKey("PK__Account__3214EC07BCF71952", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,7 +45,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PaymentM__3214EC079A20DFDD", x => x.Id);
+                    table.PrimaryKey("PK__PaymentM__3214EC070F8DFFC2", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -61,7 +59,27 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__ServiceC__3214EC07058FB462", x => x.Id);
+                    table.PrimaryKey("PK__ServiceC__3214EC0709DEE3FD", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statistic",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BusinessProfileId = table.Column<int>(type: "int", nullable: false),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Raise = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
+                    IsHighest = table.Column<bool>(type: "bit", nullable: false),
+                    IsLowest = table.Column<bool>(type: "bit", nullable: false),
+                    Type = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Statisti__3214EC07247A53AF", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,7 +95,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Subscrip__3214EC07B348C5FF", x => x.Id);
+                    table.PrimaryKey("PK__Subscrip__3214EC07FC7516A5", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +109,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__TicketCa__3214EC07306B10E8", x => x.Id);
+                    table.PrimaryKey("PK__TicketCa__3214EC0781F31285", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,17 +119,16 @@ namespace TP4SCS.Library.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Ward = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Province = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsDefault = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AccountA__3214EC07445D256A", x => x.Id);
+                    table.PrimaryKey("PK__AccountA__3214EC07EB1C6989", x => x.Id);
                     table.ForeignKey(
                         name: "FK__AccountAd__Accou__7F2BE32F",
                         column: x => x.AccountId,
@@ -131,13 +148,16 @@ namespace TP4SCS.Library.Migrations
                     Ward = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Province = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    EmployeeManagerIds = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
                     EmployeeIds = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
+                    PendingAmt = table.Column<int>(type: "int", nullable: false),
+                    ProcessingAmt = table.Column<int>(type: "int", nullable: false),
+                    FinishedAmt = table.Column<int>(type: "int", nullable: false),
+                    CanceledAmt = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Business__3214EC072B4FE4A5", x => x.Id);
+                    table.PrimaryKey("PK__Business__3214EC0704E00D2B", x => x.Id);
                     table.ForeignKey(
                         name: "FK__BusinessB__Owner__52593CB8",
                         column: x => x.OwnerId,
@@ -157,13 +177,17 @@ namespace TP4SCS.Library.Migrations
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
                     Rating = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
                     TotalOrder = table.Column<int>(type: "int", nullable: false),
+                    PendingAmt = table.Column<int>(type: "int", nullable: false),
+                    ProcessingAmt = table.Column<int>(type: "int", nullable: false),
+                    FinishedAmt = table.Column<int>(type: "int", nullable: false),
+                    CanceledAmt = table.Column<int>(type: "int", nullable: false),
                     RegisterTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     ExpireTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Business__3214EC07675F3D22", x => x.Id);
+                    table.PrimaryKey("PK__Business__3214EC071A1413A2", x => x.Id);
                     table.ForeignKey(
                         name: "FK__BusinessP__Owner__6A30C649",
                         column: x => x.OwnerId,
@@ -182,7 +206,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Cart__3214EC07916CC011", x => x.Id);
+                    table.PrimaryKey("PK__Cart__3214EC07224D07DF", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Cart__AccountId__60A75C0F",
                         column: x => x.AccountId,
@@ -200,7 +224,6 @@ namespace TP4SCS.Library.Migrations
                     CreateTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     DeliveredTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     IsAutoReject = table.Column<bool>(type: "bit", nullable: false),
-                    IsShipReq = table.Column<bool>(type: "bit", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
                     OrderPrice = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     ShipFee = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
@@ -211,7 +234,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Order__3214EC07955E40AC", x => x.Id);
+                    table.PrimaryKey("PK__Order__3214EC07D7156EE7", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Order__AccountId__6E01572D",
                         column: x => x.AccountId,
@@ -235,7 +258,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Transact__3214EC07AC432CB9", x => x.Id);
+                    table.PrimaryKey("PK__Transact__3214EC074D634F2F", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Transacti__Accou__06CD04F7",
                         column: x => x.AccountId,
@@ -272,7 +295,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Service__3214EC070CD52278", x => x.Id);
+                    table.PrimaryKey("PK__Service__3214EC0785FFAAC9", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Service__BranchI__59FA5E80",
                         column: x => x.BranchId,
@@ -293,12 +316,11 @@ namespace TP4SCS.Library.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     NotificationTime = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                    Content = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__OrderNot__3214EC07C041241E", x => x.Id);
+                    table.PrimaryKey("PK__OrderNot__3214EC07A8A79EDF", x => x.Id);
                     table.ForeignKey(
                         name: "FK__OrderNoti__Order__0B91BA14",
                         column: x => x.OrderId,
@@ -321,7 +343,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__SupportT__3214EC073999EAA5", x => x.Id);
+                    table.PrimaryKey("PK__SupportT__3214EC073CF09B5E", x => x.Id);
                     table.ForeignKey(
                         name: "FK__SupportTi__Accou__123EB7A3",
                         column: x => x.AccountId,
@@ -352,7 +374,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__CartItem__3214EC0798B416C3", x => x.Id);
+                    table.PrimaryKey("PK__CartItem__3214EC079FD99D0D", x => x.Id);
                     table.ForeignKey(
                         name: "FK__CartItem__CartId__6383C8BA",
                         column: x => x.CartId,
@@ -378,7 +400,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__OrderDet__3214EC078738A5E4", x => x.Id);
+                    table.PrimaryKey("PK__OrderDet__3214EC07ADAEDA1B", x => x.Id);
                     table.ForeignKey(
                         name: "FK__OrderDeta__Order__70DDC3D8",
                         column: x => x.OrderId,
@@ -399,6 +421,7 @@ namespace TP4SCS.Library.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ServiceId = table.Column<int>(type: "int", nullable: false),
                     SaleOff = table.Column<int>(type: "int", nullable: false),
+                    NewPrice = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Usage = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -406,7 +429,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Promotio__3214EC07FB530E57", x => x.Id);
+                    table.PrimaryKey("PK__Promotio__3214EC072136E6CE", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Promotion__Servi__5DCAEF64",
                         column: x => x.ServiceId,
@@ -426,7 +449,7 @@ namespace TP4SCS.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Feedback__3214EC071AD2390F", x => x.Id);
+                    table.PrimaryKey("PK__Feedback__3214EC07EB07B337", x => x.Id);
                     table.ForeignKey(
                         name: "FK__Feedback__OrderI__74AE54BC",
                         column: x => x.OrderItemId,
@@ -444,12 +467,12 @@ namespace TP4SCS.Library.Migrations
                     FeedbackId = table.Column<int>(type: "int", nullable: true),
                     ServiceId = table.Column<int>(type: "int", nullable: true),
                     Url = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    IsImage = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsImage = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Type = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AssetURL__3214EC07A6EE73BF", x => x.Id);
+                    table.PrimaryKey("PK__AssetURL__3214EC076C1DB7AE", x => x.Id);
                     table.ForeignKey(
                         name: "FK__AssetURL__Busine__797309D9",
                         column: x => x.BusinessProfileId,
@@ -468,13 +491,13 @@ namespace TP4SCS.Library.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Account__5C7E359E0F1A4E59",
+                name: "UQ__Account__5C7E359EA8D0BF1E",
                 table: "Account",
                 column: "Phone",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Account__A9D10534166C3DD4",
+                name: "UQ__Account__A9D10534BA367440",
                 table: "Account",
                 column: "Email",
                 unique: true);
@@ -510,13 +533,13 @@ namespace TP4SCS.Library.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Business__5C7E359EDA79803F",
+                name: "UQ__Business__5C7E359EF992D50A",
                 table: "BusinessProfile",
                 column: "Phone",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Business__737584F60D25712A",
+                name: "UQ__Business__737584F6E499FE95",
                 table: "BusinessProfile",
                 column: "Name",
                 unique: true);
@@ -624,6 +647,9 @@ namespace TP4SCS.Library.Migrations
 
             migrationBuilder.DropTable(
                 name: "Promotion");
+
+            migrationBuilder.DropTable(
+                name: "Statistic");
 
             migrationBuilder.DropTable(
                 name: "SupportTicket");

@@ -27,20 +27,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, int role)
         {
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email);
-
-            if (isEmailExisted == true)
-            {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Has Already Been Registered!" };
-            }
-
-            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
-
-            if (isPhoneExisted == true)
-            {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Phone Has Already Been Registered!" };
-            }
-
+            var email = _util.LowerCaseString(createAccountRequest.Email);
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
 
             var passwordErrorMessages = new Dictionary<string, string>
@@ -55,6 +42,20 @@ namespace TP4SCS.Services.Implements
             if (passwordErrorMessages.TryGetValue(passwordError, out var message))
             {
                 return new Result { IsSuccess = false, Message = message };
+            }
+
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(email);
+
+            if (isEmailExisted == true)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Has Already Been Registered!" };
+            }
+
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
+
+            if (isPhoneExisted == true)
+            {
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Phone Has Already Been Registered!" };
             }
 
             var newAccount = _mapper.Map<Account>(createAccountRequest);
