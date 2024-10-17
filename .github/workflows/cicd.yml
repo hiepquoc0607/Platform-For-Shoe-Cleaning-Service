@@ -34,10 +34,15 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            if [ "$(docker ps -q -f name=tp4scsapi)" ]; then
-                docker stop tp4scsapi
+            if [ "$(docker ps -aq -f name=tp4scsapi)" ]; then
+                echo "Stopping tp4scsapi..."
+                docker stop tp4scsapi || true # Đảm bảo không có lỗi nếu container đã dừng
+                echo "Removing tp4scsapi..."
                 docker rm tp4scsapi
+            else
+                echo "tp4scsapi does not exist."
             fi
+
 
             docker images --filter=reference='hieu15402/tp4scsapi' --format '{{.ID}} {{.Tag}}' | grep '<none>' | awk '{print $1}' | xargs -I {} docker rmi -f {}
             docker pull hieu15402/tp4scsapi
