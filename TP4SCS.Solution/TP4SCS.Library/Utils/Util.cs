@@ -45,6 +45,10 @@ namespace TP4SCS.Library.Utils
         {
             return input.ToUpper();
         }
+        public static string UpperCaseStringStatic(string input)
+        {
+            return input.ToUpper();
+        }
 
         public string LowerCaseString(string input)
         {

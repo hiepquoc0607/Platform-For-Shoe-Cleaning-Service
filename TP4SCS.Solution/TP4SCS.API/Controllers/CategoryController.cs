@@ -75,7 +75,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var category = _mapper.Map<ServiceCategory>(request);
-                category.Status = Util.UpperCaseString("active");
+                category.Status = Util.UpperCaseStringStatic("active");
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
                 response.Status = Util.TranslateGeneralStatus("active");
                 await _categoryService.AddServiceCategoryAsync(category);

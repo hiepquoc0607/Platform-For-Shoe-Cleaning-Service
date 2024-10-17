@@ -44,7 +44,7 @@ namespace TP4SCS.Services.Implements
                 var service = _mapper.Map<Service>(serviceRequest);
                 service.BranchId = branchId;
                 service.CreateTime = DateTime.Now;
-                service.Status = Util.UpperCaseString("active");
+                service.Status = Util.UpperCaseStringStatic("active");
 
                 services.Add(service);
             }
