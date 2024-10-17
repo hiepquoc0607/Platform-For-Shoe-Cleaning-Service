@@ -89,7 +89,16 @@ namespace TP4SCS.Library.Utils
 
             return result;
         }
+        public static string TranslateGeneralStatus(string status)
+        {
+            string result = status switch
+            {
+                "INACTIVE" => "Ngưng Hoạt Động",
+                _ => "Hoạt Động"
+            };
 
+            return result;
+        }
         public string TranslateAccountRole(string role)
         {
             string result = role switch

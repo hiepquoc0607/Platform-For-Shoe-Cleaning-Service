@@ -12,6 +12,6 @@ namespace TP4SCS.Library.Models.Response.Category
 
         public string Name { get; set; } = null!;
 
-        public string? Description { get; set; }
+        public required string Status { get; set; }
     }
 }

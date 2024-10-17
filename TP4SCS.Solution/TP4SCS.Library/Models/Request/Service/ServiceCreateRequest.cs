@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TP4SCS.Library.Models.Request.Service
 {
-    public class ServiceRequest
+    public class ServiceCreateRequest
     {
-        public int BranchId { get; set; }
+        public int[] BranchId { get; set; } = Array.Empty<int>();
         public int CategoryId { get; set; }
 
         public string Name { get; set; } = null!;

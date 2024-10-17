@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -26,20 +27,20 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Category name must be between 3 and 100 characters.");
             }
-            await _categoryRepository.AddCategory(category);
+            await _categoryRepository.AddCategoryAsync(category);
         }
 
         public async Task DeleteServiceCategoryAsync(int id)
         {
-            var category = await _categoryRepository.GetCategoryById(id);
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 throw new Exception($"Category with ID {id} not found.");
             }
-            await _categoryRepository.DeleteCategory(id);
+            await _categoryRepository.DeleteCategoryAsync(id);
         }
 
-        public async Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, string orderBy = "Name")
+        public async Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             if (pageIndex < 1)
             {
@@ -50,12 +51,12 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Page size must be greater than 0.");
             }
-            return await _categoryRepository.GetCategories(keyword, pageIndex, pageSize, orderBy);
+            return await _categoryRepository.GetCategoriesAsync(keyword, pageIndex, pageSize, orderBy);
         }
 
         public async Task<ServiceCategory?> GetServiceCategoryByIdAsync(int id)
         {
-            return await _categoryRepository.GetCategoryById(id);
+            return await _categoryRepository.GetCategoryByIdAsync(id);
         }
 
         public async Task UpdateServiceCategoryAsync(ServiceCategory category, int existingCategoryId)
@@ -72,14 +73,14 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Category name must be between 3 and 100 characters.");
             }
-            var existingCategory = await _categoryRepository.GetCategoryById(existingCategoryId);
+            var existingCategory = await _categoryRepository.GetCategoryByIdAsync(existingCategoryId);
             if (existingCategory == null)
             {
                 throw new KeyNotFoundException($"Service with ID {existingCategoryId} not found.");
             }
             existingCategory.Name = category.Name;
 
-            await _categoryRepository.UpdateCategory(existingCategory);
+            await _categoryRepository.UpdateCategoryAsync(existingCategory);
         }
     }
 }

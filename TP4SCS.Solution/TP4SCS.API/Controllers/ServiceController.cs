@@ -5,6 +5,7 @@ using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Service;
+using TP4SCS.Library.Utils;
 using TP4SCS.Services.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -32,7 +33,12 @@ namespace TP4SCS.API.Controllers
             var totalCount = services?.Count() ?? 0;
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
-                services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>(),
+                services?.Select(s =>
+                {
+                    var res = _mapper.Map<ServiceResponse>(s);
+                    res.Status = Util.TranslateGeneralStatus(s.Status);
+                    return res;
+                }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
                 pagedRequest.PageIndex,
                 pagedRequest.PageSize
@@ -62,13 +68,15 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateServiceAync(ServiceRequest request)
+        public async Task<IActionResult> CreateServiceAync([FromBody] ServiceCreateRequest request)
         {
             try
             {
                 await _serviceService.AddServiceAsync(request);
 
                 var serviceResponse = _mapper.Map<ServiceResponse>(_mapper.Map<Service>(request));
+                serviceResponse.BranchId = request.BranchId;
+                serviceResponse.Status = Util.TranslateGeneralStatus("active");
                 return Ok(new ResponseObject<ServiceResponse>("Create Service Success", serviceResponse));
             }
             catch (ArgumentNullException ex)

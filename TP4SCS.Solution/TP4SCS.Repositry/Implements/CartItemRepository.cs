@@ -30,7 +30,7 @@ namespace TP4SCS.Repository.Implements
             }
             else
             {
-                var service = await _serviceRepository.GetServiceById(item.ServiceId);
+                var service = await _serviceRepository.GetServiceByIdAsync(item.ServiceId);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Service with ID {item.ServiceId} not found.");
