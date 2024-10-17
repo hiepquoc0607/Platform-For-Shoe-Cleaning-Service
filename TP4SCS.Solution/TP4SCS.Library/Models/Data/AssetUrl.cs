@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class AssetUrl
 {
@@ -12,9 +15,9 @@ public partial class AssetUrl
 
     public string Url { get; set; } = null!;
 
-    public string Type { get; set; } = null!;
-
     public bool IsImage { get; set; }
+
+    public string Type { get; set; } = null!;
 
     public virtual BusinessProfile? BusinessProfile { get; set; }
 

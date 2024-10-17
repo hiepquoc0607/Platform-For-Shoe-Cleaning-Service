@@ -12,7 +12,6 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<CreateAccountRequest, Account>()
                 .ForMember(dest => dest.ExpiredTime, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => string.Empty))
-                .ForMember(dest => dest.IsGoogle, opt => opt.MapFrom(src => false))
                 .ForMember(dest => dest.Fcmtoken, opt => opt.MapFrom(src => string.Empty))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "ACTIVE"));
 

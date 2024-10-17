@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class Account
 {
@@ -19,10 +22,6 @@ public partial class Account
     public DateTime? ExpiredTime { get; set; }
 
     public string? ImageUrl { get; set; }
-
-    public bool IsGoogle { get; set; }
-
-    public bool IsEmpManager { get; set; }
 
     public string? RefreshToken { get; set; }
 

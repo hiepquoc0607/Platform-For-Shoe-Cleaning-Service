@@ -38,7 +38,6 @@ namespace TP4SCS.Repository.Implements
                         Dob = a.Dob,
                         ExpiredTime = a.ExpiredTime,
                         ImageUrl = a.ImageUrl,
-                        IsGoogle = a.IsGoogle,
                         Fcmtoken = a.Fcmtoken,
                         Role = a.Role,
                         Status = a.Status
@@ -70,7 +69,6 @@ namespace TP4SCS.Repository.Implements
                         Dob = a.Dob,
                         ExpiredTime = a.ExpiredTime,
                         ImageUrl = a.ImageUrl,
-                        IsGoogle = a.IsGoogle,
                         Fcmtoken = a.Fcmtoken,
                         Role = _util.TranslateAccountRole(a.Role),
                         Status = _util.TranslateAccountStatus(a.Status)
@@ -133,7 +131,6 @@ namespace TP4SCS.Repository.Implements
                         Dob = a.Dob,
                         ExpiredTime = a.ExpiredTime,
                         ImageUrl = a.ImageUrl,
-                        IsGoogle = a.IsGoogle,
                         Fcmtoken = a.Fcmtoken,
                         Role = a.Role,
                         Status = a.Status

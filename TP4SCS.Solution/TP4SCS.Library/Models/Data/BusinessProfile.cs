@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Data;
+﻿using System;
+using System.Collections.Generic;
+
+namespace TP4SCS.Library.Models.Data;
 
 public partial class BusinessProfile
 {
@@ -15,6 +18,14 @@ public partial class BusinessProfile
     public decimal Rating { get; set; }
 
     public int TotalOrder { get; set; }
+
+    public int PendingAmt { get; set; }
+
+    public int ProcessingAmt { get; set; }
+
+    public int FinishedAmt { get; set; }
+
+    public int CanceledAmt { get; set; }
 
     public DateTime RegisterTime { get; set; }
 
