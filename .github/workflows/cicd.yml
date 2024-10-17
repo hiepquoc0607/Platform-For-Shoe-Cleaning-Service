@@ -34,8 +34,11 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker stop tp4scsapi || true
-            docker rm tp4scsapi || true
+            if [ "$(docker ps -q -f name=tp4scsapi)" ]; then
+                docker stop tp4scsapi
+                docker rm tp4scsapi
+            fi
+
             docker images --filter=reference='hieu15402/tp4scsapi' --format '{{.ID}} {{.Tag}}' | grep '<none>' | awk '{print $1}' | xargs -I {} docker rmi -f {}
             docker pull hieu15402/tp4scsapi
             docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi
