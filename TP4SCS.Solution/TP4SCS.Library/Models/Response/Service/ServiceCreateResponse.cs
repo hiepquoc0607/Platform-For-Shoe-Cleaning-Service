@@ -1,10 +1,10 @@
 ﻿namespace TP4SCS.Library.Models.Response.Service
 {
-    public class ServiceResponse
+    public class ServiceCreateResponse
     {
         public int Id { get; set; }
 
-        public required int BranchId { get; set; }
+        public required int[] BranchId { get; set; }
         public int CategoryId { get; set; }
 
         public string Name { get; set; } = null!;

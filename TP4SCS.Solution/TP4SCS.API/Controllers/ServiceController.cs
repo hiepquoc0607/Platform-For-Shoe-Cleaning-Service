@@ -74,10 +74,10 @@ namespace TP4SCS.API.Controllers
             {
                 await _serviceService.AddServiceAsync(request);
 
-                var serviceResponse = _mapper.Map<ServiceResponse>(_mapper.Map<Service>(request));
+                var serviceResponse = _mapper.Map<ServiceCreateResponse>(_mapper.Map<Service>(request));
                 serviceResponse.BranchId = request.BranchId;
                 serviceResponse.Status = Util.TranslateGeneralStatus("active");
-                return Ok(new ResponseObject<ServiceResponse>("Create Service Success", serviceResponse));
+                return Ok(new ResponseObject<ServiceCreateResponse>("Create Service Success", serviceResponse));
             }
             catch (ArgumentNullException ex)
             {
