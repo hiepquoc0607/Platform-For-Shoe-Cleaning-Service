@@ -2,15 +2,16 @@
 {
     public class UpdateAccountRequest
     {
+        //[EmailAddress]
         public string? Email { get; set; }
 
         public string? Password { get; set; }
 
         public string? FullName { get; set; }
 
+        //[Phone]
+        //[StringLength(10, MinimumLength = 10)]
         public string? Phone { get; set; }
-
-        public string? Gender { get; set; }
 
         public DateOnly? Dob { get; set; }
 
@@ -18,7 +19,7 @@
 
         public string? ImageUrl { get; set; }
 
-        public bool? IsGoogle { get; set; }
+        public string? RefreshToken { get; set; }
 
         public string? Fcmtoken { get; set; }
     }
