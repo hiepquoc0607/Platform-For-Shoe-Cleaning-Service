@@ -15,6 +15,7 @@ namespace TP4SCS.Repository.Implements
         public async Task AddServiceAsync(List<Service> services)
         {
             await _dbContext.AddRangeAsync(services);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteServiceAsync(int id)
