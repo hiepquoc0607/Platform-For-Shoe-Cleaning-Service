@@ -16,7 +16,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(LoginRequest loginRequest)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
         {
             var result = await _accountService.LoginAsync(loginRequest);
 
@@ -29,13 +29,13 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest, [FromQuery] RegisterRoleRequest roleRequest)
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest)
         {
-            var result = await _accountService.CreateAccountAsync(createAccountRequest, (int)roleRequest);
+            var result = await _accountService.CreateAccountAsync(createAccountRequest);
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid Or Missing Input Fields!");
+                return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
             }
 
             if (!result.IsSuccess)
@@ -43,13 +43,10 @@ namespace TP4SCS.API.Controllers
                 return BadRequest(result.Message);
             }
 
-            int newAccId = await _accountService.GetAccountMaxIdAsync();
-            var newAcc = await _accountService.GetAccountByIdAsync(newAccId);
-
-            return Ok("Register Successfully!");
+            return Ok(result.Message);
         }
 
-        [HttpPost("reset-password")]
+        [HttpPut("reset-password")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
         {
             var result = await _accountService.ResetPasswordAsync(resetPasswordRequest);
@@ -59,7 +56,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
-            return Ok("Reset Password Successfully!");
+            return Ok(result.Message);
         }
     }
 }

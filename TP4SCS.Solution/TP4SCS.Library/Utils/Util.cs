@@ -15,11 +15,6 @@ namespace TP4SCS.Library.Utils
             bool hasUpper = false;
             bool hasSpecial = false;
 
-            if (password.Length < 8)
-            {
-                return "Length";
-            }
-
             foreach (char ch in password)
             {
                 if (char.IsDigit(ch)) hasDigit = true;
@@ -41,35 +36,14 @@ namespace TP4SCS.Library.Utils
             return "None";
         }
 
-        public string UpperCaseString(string input)
-        {
-            return input.ToUpper();
-        }
         public static string UpperCaseStringStatic(string input)
         {
             return input.ToUpper();
         }
 
-        public string LowerCaseString(string input)
+        public bool CheckAccountStatusForAdmin(string status, string statusRequest)
         {
-            return input.ToLower();
-        }
-
-        public bool CheckAccountStatusForAdmin(string status, StatusAdminRequest statusRequest)
-        {
-            Dictionary<string, StatusAdminRequest> StatusMap = new()
-            {
-                { "ACTIVE", StatusAdminRequest.ACTIVE },
-                { "INACTIVE", StatusAdminRequest.INACTIVE },
-                { "SUSPENDED", StatusAdminRequest.SUSPENDED }
-            };
-
-            if (StatusMap.TryGetValue(status, out StatusAdminRequest mappedStatus) && mappedStatus == statusRequest)
-            {
-                return false;
-            }
-
-            return true;
+            return !string.Equals(status, statusRequest, StringComparison.OrdinalIgnoreCase);
         }
 
         public string HashPassword(string password)
@@ -112,6 +86,21 @@ namespace TP4SCS.Library.Utils
                 "ADMIN" => "Quản Trị Viên",
                 "MODERATOR" => "Người Điều Hành",
                 _ => "Khách Hàng"
+            };
+
+            return result;
+        }
+
+        public bool CheckAccountRole(string role)
+        {
+            bool result = role.ToUpper() switch
+            {
+                "OWNER" => true,
+                "EMPLOYEE" => true,
+                "ADMIN" => true,
+                "MODERATOR" => true,
+                "CUSTOMER" => true,
+                _ => false
             };
 
             return result;

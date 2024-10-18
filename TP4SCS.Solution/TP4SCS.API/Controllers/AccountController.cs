@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
 {
-    [Route("api/accounts")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -18,39 +17,42 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
+        [Route("api/accounts")]
         public async Task<IActionResult> GetAccountsAsync([FromQuery] GetAccountRequest getAccountRequest)
         {
             var result = await _accountService.GetAccountsAsync(getAccountRequest);
 
             if (result == null)
             {
-                return NotFound("No Accounts Been Found!");
+                return NotFound("Không Có Tài Khoản Nào!");
             }
 
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("api/accounts/{id}", Name = "GetAccountById")]
         public async Task<IActionResult> GetAccountByIdAsync([FromRoute] int id)
         {
             var result = await _accountService.GetAccountByIdAsync(id);
 
             if (result == null)
             {
-                return NotFound("No Accounts Been Found!");
+                return NotFound("Không Tìm Thấy Tài Khoản!");
             }
 
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest, [FromQuery] RoleRequest roleRequest)
+        [Route("api/accounts")]
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest)
         {
-            var result = await _accountService.CreateAccountAsync(createAccountRequest, (int)roleRequest);
+            var result = await _accountService.CreateAccountAsync(createAccountRequest);
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid Or Missing Input Fields!");
+                return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
             }
 
             if (!result.IsSuccess)
@@ -61,10 +63,11 @@ namespace TP4SCS.API.Controllers
             int newAccId = await _accountService.GetAccountMaxIdAsync();
             var newAcc = await _accountService.GetAccountByIdAsync(newAccId);
 
-            return CreatedAtAction(nameof(GetAccountByIdAsync), new { id = newAccId }, newAcc);
+            return CreatedAtAction("GetAccountById", new { id = newAccId }, newAcc);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("api/accounts/{id}")]
         public async Task<IActionResult> UpdateAccountAsync([FromRoute] int id, UpdateAccountRequest updateAccountRequest)
         {
             var result = await _accountService.UpdateAccountAsync(id, updateAccountRequest);
@@ -74,11 +77,12 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
-            return Ok("Account Updated Successfully!");
+            return Ok(result.Message);
         }
 
-        [HttpPut("admin/{id}/status")]
-        public async Task<IActionResult> UpdateAccountStatusForAdminAsync([FromRoute] int id, StatusAdminRequest status)
+        [HttpPut]
+        [Route("api/admin/accounts/{id}/status")]
+        public async Task<IActionResult> UpdateAccountStatusForAdminAsync([FromRoute] int id, [FromBody] string status)
         {
             var result = await _accountService.UpdateAccountStatusForAdminAsync(id, status);
 
@@ -87,10 +91,11 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
-            return Ok("Account Unsuspended Successfully!");
+            return Ok(result.Message);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("api/accounts/{id}")]
         public async Task<IActionResult> DeleteAccountAsync([FromRoute] int id)
         {
             var result = await _accountService.DeleteAccountAsync(id);
@@ -100,7 +105,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
-            return Ok("Account Deleted Successfully!");
+            return Ok(result.Message);
         }
     }
 }

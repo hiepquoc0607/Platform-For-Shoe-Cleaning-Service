@@ -6,7 +6,7 @@
 
         public string Email { get; set; } = null!;
 
-        public string Password { get; set; } = null!;
+        public string PasswordHash { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
 
@@ -20,7 +20,7 @@
 
         public string? ImageUrl { get; set; }
 
-        public bool IsGoogle { get; set; }
+        public string? RefreshToken { get; set; }
 
         public string? Fcmtoken { get; set; }
 

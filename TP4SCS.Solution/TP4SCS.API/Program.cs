@@ -11,6 +11,8 @@ using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
+using Mapster;
+using MapsterMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +80,14 @@ builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Configure Mapster
+var config = TypeAdapterConfig.GlobalSettings;
+config.Scan(AppDomain.CurrentDomain.GetAssemblies());
+
+//Register Mapster Service 
+builder.Services.AddSingleton(config);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
 
 //Config Authentication
 builder.Services.AddAuthentication(options =>

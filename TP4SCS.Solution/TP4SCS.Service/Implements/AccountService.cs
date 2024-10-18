@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Mapster;
+using MapsterMapper;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
@@ -17,26 +18,24 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IAuthService authService, Util util)
+        public AccountService(IAccountRepository accountRepository, IAuthService authService, IMapper mapper, Util util)
         {
             _accountRepository = accountRepository;
-            _mapper = mapper;
             _authService = authService;
+            _mapper = mapper;
             _util = util;
         }
 
-        public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest, int role)
+        public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest)
         {
-            var email = _util.LowerCaseString(createAccountRequest.Email);
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
 
             var passwordErrorMessages = new Dictionary<string, string>
             {
-                { "Length", "Password must be at least 8 characters!" },
-                { "Number", "Password must contain at least 1 number character!" },
-                { "Lower", "Password must contain at least 1 lowercase character!" },
-                { "Upper", "Password must contain at least 1 uppercase character!" },
-                { "Special", "Password must contain at least 1 special character!" },
+                { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
+                { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
+                { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
+                { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
             };
 
             if (passwordErrorMessages.TryGetValue(passwordError, out var message))
@@ -44,29 +43,28 @@ namespace TP4SCS.Services.Implements
                 return new Result { IsSuccess = false, Message = message };
             }
 
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(email);
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.ToLower());
 
             if (isEmailExisted == true)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Has Already Been Registered!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email đã được sử dụng!" };
             }
 
             var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
 
             if (isPhoneExisted == true)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Phone Has Already Been Registered!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Số điện thoại đã được sử dụng!" };
             }
 
-            var newAccount = _mapper.Map<Account>(createAccountRequest);
-
-            newAccount.Role = role switch
+            if (!_util.CheckAccountRole(createAccountRequest.Role))
             {
-                1 => "OWNER",
-                2 => "EMPLOYEE",
-                3 => "MODERATOR",
-                _ => "CUSTOMER"
-            };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Invalid Account Role!" };
+            }
+
+            createAccountRequest.Role = createAccountRequest.Role.ToUpper();
+
+            var newAccount = _mapper.Map<Account>(createAccountRequest);
 
             newAccount.PasswordHash = _util.HashPassword(createAccountRequest.Password);
 
@@ -74,11 +72,11 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.InsertAsync(newAccount);
 
-                return new Result { IsSuccess = true };
+                return new Result { IsSuccess = true, Message = "Tạo Tài Khoản Thành Công!" };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Created Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Tạo Tài Khoản Thất Bại!" };
             }
         }
 
@@ -88,37 +86,39 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
+                return new Result { IsSuccess = false, StatusCode = 404, Message = "Tài Khoản Không Tồn Tại!" };
             }
 
             account.Status = "INACTIVE";
 
-            var newAccount = _mapper.Map<Account>(account);
+            //var newAccount = _mapper.Map<Account>(account);
 
             try
             {
-                await _accountRepository.UpdateAccountAsync(newAccount);
+                await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result { IsSuccess = true };
+                return new Result { IsSuccess = true, Message = "Xoá Tài Khoản Thành Công!" };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Deleted Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Xoá Tài Khoản Thất Bại!" };
             }
 
         }
 
         public async Task<AccountResponse?> GetAccountByIdAsync(int id)
         {
-            var result = await _accountRepository.GetAccountByIdAsync(id);
+            var account = await _accountRepository.GetAccountByIdAsync(id);
 
-            if (result == null)
+            if (account == null)
             {
                 return null;
             }
 
-            result.Role = _util.TranslateAccountRole(result.Role);
-            result.Status = _util.TranslateAccountStatus(result.Status);
+            account.Role = _util.TranslateAccountRole(account.Role);
+            account.Status = _util.TranslateAccountStatus(account.Status);
+
+            var result = _mapper.Map<AccountResponse>(account);
 
             return result;
         }
@@ -130,9 +130,9 @@ namespace TP4SCS.Services.Implements
 
         public async Task<IEnumerable<AccountResponse>?> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
-            var result = await _accountRepository.GetAccountsAsync();
+            var accounts = await _accountRepository.GetAccountsAsync();
 
-            if (result == null)
+            if (accounts == null)
             {
                 return null;
             }
@@ -140,34 +140,34 @@ namespace TP4SCS.Services.Implements
             //Search
             if (!string.IsNullOrEmpty(getAccountRequest.SearchKey))
             {
-                result = result.Where(r => r.FullName.Contains(getAccountRequest.SearchKey) || r.Email.Contains(getAccountRequest.SearchKey));
+                accounts = accounts.Where(r => r.FullName.ToLower().Contains(getAccountRequest.SearchKey.ToLower()) || r.Email.ToLower().Contains(getAccountRequest.SearchKey.ToLower()));
             }
 
             //Sort
-            if (getAccountRequest.IsDecsending == true)
+            if (!string.IsNullOrEmpty(getAccountRequest.SortBy))
             {
-                result = getAccountRequest.SortBy switch
+                accounts = getAccountRequest.SortBy.ToUpper() switch
                 {
-                    SortOption.Email => result.OrderByDescending(r => r.Email),
-                    SortOption.Fullname => result.OrderByDescending(r => r.FullName),
-                    _ => result
-                };
-            }
-
-            if (getAccountRequest.IsDecsending == false)
-            {
-                result = getAccountRequest.SortBy switch
-                {
-                    SortOption.Email => result.OrderBy(r => r.Email),
-                    SortOption.Fullname => result.OrderBy(r => r.FullName),
-                    _ => result
+                    "EMAIL" => getAccountRequest.IsDecsending
+                                ? accounts.OrderByDescending(a => a.Email)
+                                : accounts.OrderBy(a => a.Email),
+                    "FULLNAME" => getAccountRequest.IsDecsending
+                                  ? accounts.OrderByDescending(a => a.FullName)
+                                  : accounts.OrderBy(a => a.FullName),
+                    "STATUS" => getAccountRequest.IsDecsending
+                                  ? accounts.OrderByDescending(a => a.Status)
+                                  : accounts.OrderBy(a => a.Status),
+                    _ => accounts
                 };
             }
 
             //Paging
             int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
+            accounts.Skip(skipNum).Take(getAccountRequest.PageSize).ToList();
 
-            return result.Skip(skipNum).Take(getAccountRequest.PageSize).ToList();
+            var result = accounts.Adapt<IEnumerable<AccountResponse>>();
+
+            return result;
         }
 
         public async Task<Result> LoginAsync(LoginRequest loginRequest)
@@ -176,12 +176,12 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Not Found!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Không Tồn Tại!" };
             }
 
             if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Password Is Incorrect!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Mật Khẩu Không Đúng!" };
             }
 
             var token = _authService.GenerateToken(account);
@@ -195,27 +195,25 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Email Not Found!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Email Không Tồn Tại!" };
             }
 
             if (!resetPasswordRequest.NewPassword.Equals(resetPasswordRequest.ConfirmPassword))
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Password Not Match!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Mật Khẩu Xác Nhận Không Trùng!" };
             }
 
-            account.Password = _util.HashPassword(resetPasswordRequest.NewPassword);
-
-            var newAccount = _mapper.Map<Account>(account);
+            account.PasswordHash = _util.HashPassword(resetPasswordRequest.NewPassword);
 
             try
             {
-                await _accountRepository.UpdateAccountAsync(newAccount);
+                await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result { IsSuccess = true };
+                return new Result { IsSuccess = true, Message = "Đặt Lại Mật Khẩu Thành Công!" };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Password Updated Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Đặt Lại Mật Khẩu Thất Bại!" };
             }
         }
 
@@ -225,58 +223,54 @@ namespace TP4SCS.Services.Implements
 
             if (oldAccount == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
+                return new Result { IsSuccess = false, StatusCode = 404, Message = "Tài Khoản Không Tồn Tại!" };
             }
 
-            var mapAccount = _mapper.Map(updateAccountRequest, oldAccount);
-
-            var newAccount = _mapper.Map<Account>(mapAccount);
+            var newAccount = _mapper.Map(updateAccountRequest, oldAccount);
 
             try
             {
                 await _accountRepository.UpdateAccountAsync(newAccount);
 
-                return new Result { IsSuccess = true };
+                return new Result { IsSuccess = true, Message = "Cập Nhập Tài Khoản Thành Công!" };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Updated Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Cập Nhập Tài Khoản Thất Bại!" };
             }
 
         }
 
-        public async Task<Result> UpdateAccountStatusForAdminAsync(int id, StatusAdminRequest status)
+        public async Task<Result> UpdateAccountStatusForAdminAsync(int id, string status)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
 
             if (account == null)
             {
-                return new Result { IsSuccess = false, StatusCode = 404, Message = "Account Does Not Exist!" };
+                return new Result { IsSuccess = false, StatusCode = 404, Message = "Tài Khoản Không Tồn Tại!!" };
             }
 
             if (!_util.CheckAccountStatusForAdmin(account.Status, status))
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Status Is At This State" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Trạng Thái Tài Khoản Trùng Lập!" };
             }
 
-            account.Status = status switch
+            account.Status = status.ToUpper() switch
             {
-                StatusAdminRequest.INACTIVE => "INACTIVE",
-                StatusAdminRequest.SUSPENDED => "SUSPENDED",
+                "INACTIVE" => "INACTIVE",
+                "SUSPENDED" => "SUSPENDED",
                 _ => "ACTIVE"
             };
 
-            var newAccount = _mapper.Map<Account>(account);
-
             try
             {
-                await _accountRepository.UpdateAccountAsync(newAccount);
+                await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result { IsSuccess = true };
+                return new Result { IsSuccess = true, Message = "Cập Nhập Trạng Thái Tài Khoản Thành Công!" };
             }
             catch (Exception)
             {
-                return new Result { IsSuccess = false, StatusCode = 400, Message = "Account Status Updated Fail!" };
+                return new Result { IsSuccess = false, StatusCode = 400, Message = "Cập Nhập Trạng Thái Tài Khoản Thất Bại!" };
             }
         }
     }

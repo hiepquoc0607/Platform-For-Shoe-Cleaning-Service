@@ -1,16 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Account
 {
     public class ResetPasswordRequest
     {
         [Required]
-        public string Email { get; set; } = null!;
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string NewPassword { get; set; } = null!;
+        [MinLength(8)]
+        [DefaultValue("string")]
+        public string NewPassword { get; set; } = string.Empty;
 
         [Required]
-        public string ConfirmPassword { get; set; } = null!;
+        [MinLength(8)]
+        [DefaultValue("string")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
