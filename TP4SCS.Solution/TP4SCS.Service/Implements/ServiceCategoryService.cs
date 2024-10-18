@@ -13,19 +13,20 @@ namespace TP4SCS.Services.Implements
         {
             _categoryRepository = categoryRepository;
         }
+
         public async Task AddServiceCategoryAsync(ServiceCategory category)
         {
             if (category == null)
             {
-                throw new ArgumentNullException(nameof(category), "Category cannot be null.");
+                throw new ArgumentNullException(nameof(category), "Danh mục không được để trống.");
             }
             if (string.IsNullOrWhiteSpace(category.Name))
             {
-                throw new ArgumentException("Category name is required.");
+                throw new ArgumentException("Tên danh mục là bắt buộc.");
             }
             if (category.Name.Length < 3 || category.Name.Length > 100)
             {
-                throw new ArgumentException("Category name must be between 3 and 100 characters.");
+                throw new ArgumentException("Tên danh mục phải nằm trong khoảng từ 3 đến 100 ký tự.");
             }
             await _categoryRepository.AddCategoryAsync(category);
         }
@@ -35,7 +36,7 @@ namespace TP4SCS.Services.Implements
             var category = await _categoryRepository.GetCategoryByIdAsync(id);
             if (category == null)
             {
-                throw new Exception($"Category with ID {id} not found.");
+                throw new Exception($"Danh mục với ID {id} không tìm thấy.");
             }
             await _categoryRepository.DeleteCategoryAsync(id);
         }
@@ -44,12 +45,12 @@ namespace TP4SCS.Services.Implements
         {
             if (pageIndex < 1)
             {
-                throw new ArgumentException("Page index must be greater than 0.");
+                throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }
 
             if (pageSize < 1)
             {
-                throw new ArgumentException("Page size must be greater than 0.");
+                throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
             }
             return await _categoryRepository.GetCategoriesAsync(keyword, pageIndex, pageSize, orderBy);
         }
@@ -63,20 +64,20 @@ namespace TP4SCS.Services.Implements
         {
             if (category == null)
             {
-                throw new ArgumentNullException(nameof(category), "Category cannot be null.");
+                throw new ArgumentNullException(nameof(category), "Danh mục không được để trống.");
             }
             if (string.IsNullOrWhiteSpace(category.Name))
             {
-                throw new ArgumentException("Category name is required.");
+                throw new ArgumentException("Tên danh mục là bắt buộc.");
             }
             if (category.Name.Length < 3 || category.Name.Length > 100)
             {
-                throw new ArgumentException("Category name must be between 3 and 100 characters.");
+                throw new ArgumentException("Tên danh mục phải nằm trong khoảng từ 3 đến 100 ký tự.");
             }
             var existingCategory = await _categoryRepository.GetCategoryByIdAsync(existingCategoryId);
             if (existingCategory == null)
             {
-                throw new KeyNotFoundException($"Service with ID {existingCategoryId} not found.");
+                throw new KeyNotFoundException($"Danh mục với ID {existingCategoryId} không tìm thấy.");
             }
             existingCategory.Name = category.Name;
 

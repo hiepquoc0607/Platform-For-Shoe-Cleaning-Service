@@ -27,7 +27,7 @@ namespace TP4SCS.API.Controllers
             var cart = await _cartService.GetCartByUserIdAsync(id);
             if (cart == null)
             {
-                return NotFound($"Cart for user ID {id} not found.");
+                return NotFound($"Giỏ hàng cho người dùng ID {id} không tìm thấy.");
             }
             return Ok(new ResponseObject<CartResponse>("Fetch success", _mapper.Map<CartResponse>(cart)));
         }

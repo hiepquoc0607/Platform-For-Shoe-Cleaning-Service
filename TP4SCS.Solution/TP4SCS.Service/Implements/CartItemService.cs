@@ -16,17 +16,17 @@ namespace TP4SCS.Services.Implements
         {
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item), "Cart item cannot be null.");
+                throw new ArgumentNullException(nameof(item), "Mục trong giỏ hàng không được để trống.");
             }
 
             if (item.Quantity <= 0)
             {
-                throw new ArgumentException("Quantity must be greater than zero.", nameof(item.Quantity));
+                throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(item.Quantity));
             }
 
             if (item.Price < 0)
             {
-                throw new ArgumentException("Price cannot be negative.", nameof(item.Price));
+                throw new ArgumentException("Giá không được âm.", nameof(item.Price));
             }
 
             await _cartItemRepository.AddItemToCartAsync(userId, item);
@@ -51,7 +51,7 @@ namespace TP4SCS.Services.Implements
         {
             if (newQuantity <= 0)
             {
-                throw new ArgumentException("Quantity must be greater than zero.", nameof(newQuantity));
+                throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(newQuantity));
             }
             await _cartItemRepository.UpdateCartItemQuantityAsync(cartId, itemId, newQuantity);
         }

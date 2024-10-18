@@ -37,7 +37,7 @@ namespace TP4SCS.API.Controllers
             var item = await _cartItemService.GetCartItemByIdAsync(itemId);
             if (item == null)
             {
-                return Ok(new ResponseObject<CartItemResponse>($"Item with ID {itemId} not found.", null));
+                return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {itemId} không tìm thấy.", null));
             }
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", _mapper.Map<CartItemResponse>(item)));
         }
@@ -90,12 +90,21 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpDelete("cart/{cartId}/item/{itemId}")]
-        public async Task<IActionResult> RemoveItemFromCart(int cartId, int itemId)
+        [HttpDelete("cart/{cartId}/items")]
+        public async Task<IActionResult> RemoveItemsFromCart([FromQuery]int cartId, [FromBody] int[] itemIds)
         {
             try
             {
-                await _cartItemService.RemoveItemFromCartAsync(cartId, itemId);
+                if (itemIds == null || itemIds.Length == 0)
+                {
+                    return BadRequest("Danh sách ID của các mục không được để trống.");
+                }
+
+                foreach (var itemId in itemIds)
+                {
+                    await _cartItemService.RemoveItemFromCartAsync(cartId, itemId);
+                }
+
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -104,9 +113,10 @@ namespace TP4SCS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                return StatusCode(500, "Lỗi máy chủ nội bộ: " + ex.Message);
             }
         }
-        
+
+
     }
 }
