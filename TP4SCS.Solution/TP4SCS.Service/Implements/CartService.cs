@@ -12,6 +12,7 @@ namespace TP4SCS.Services.Implements
         {
             _cartRepository = cartRepository;
         }
+
         public async Task ClearCartAsync(int cartId)
         {
             await _cartRepository.ClearCartAsync(cartId);
@@ -36,16 +37,16 @@ namespace TP4SCS.Services.Implements
         {
             if (cart == null)
             {
-                throw new ArgumentNullException(nameof(cart), "Cart cannot be null.");
+                throw new ArgumentNullException(nameof(cart), "Giỏ hàng không được để trống.");
             }
             if (cart.TotalPrice < 0)
             {
-                throw new ArgumentException("Total Price cannot below 0 VND.");
+                throw new ArgumentException("Tổng giá không được nhỏ hơn 0 VND.");
             }
             var existingCart = await _cartRepository.GetCartByIdAsync(existingCartId);
             if (existingCart == null)
             {
-                throw new KeyNotFoundException($"Cart with ID {existingCartId} not found.");
+                throw new KeyNotFoundException($"Giỏ hàng với ID {existingCartId} không tìm thấy.");
             }
             existingCart.TotalPrice = cart.TotalPrice;
             await _cartRepository.UpdateCartAsync(cart);

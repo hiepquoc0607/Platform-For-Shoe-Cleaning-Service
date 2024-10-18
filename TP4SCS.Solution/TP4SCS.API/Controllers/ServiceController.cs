@@ -56,7 +56,7 @@ namespace TP4SCS.API.Controllers
                 var service = await _serviceService.GetServiceByIdAsync(id);
                 if (service == null)
                 {
-                    Ok(new ResponseObject<ServiceResponse>($"Service with ID {id} not found.", null));
+                    Ok(new ResponseObject<ServiceResponse>($"Dịch vụ với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<ServiceResponse>(service);
                 return Ok(new ResponseObject<ServiceResponse>("Fetch Service Success", response));

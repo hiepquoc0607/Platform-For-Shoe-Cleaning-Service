@@ -25,16 +25,16 @@ namespace TP4SCS.Services.Implements
         {
             if (serviceRequest == null)
             {
-                throw new ArgumentNullException(nameof(serviceRequest), "Service request cannot be null.");
+                throw new ArgumentNullException(nameof(serviceRequest), "Yêu cầu dịch vụ không được để trống.");
             }
 
             if (serviceRequest.Price <= 0)
             {
-                throw new ArgumentException("Price must be greater than zero.");
+                throw new ArgumentException("Giá phải lớn hơn 0.");
             }
-            if(await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId) == null)
+            if (await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId) == null)
             {
-                throw new ArgumentException("Invalid category id.");
+                throw new ArgumentException("ID danh mục không hợp lệ.");
             }
 
             var services = new List<Service>();
@@ -59,7 +59,7 @@ namespace TP4SCS.Services.Implements
 
             if (service == null)
             {
-                throw new Exception($"Service with ID {id} not found.");
+                throw new Exception($"Dịch vụ với ID {id} không tìm thấy.");
             }
 
             await _serviceRepository.DeleteServiceAsync(id);
@@ -77,12 +77,12 @@ namespace TP4SCS.Services.Implements
         {
             if (pageIndex < 1)
             {
-                throw new ArgumentException("Page index must be greater than 0.");
+                throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }
 
             if (pageSize < 1)
             {
-                throw new ArgumentException("Page size must be greater than 0.");
+                throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
             }
 
             return await _serviceRepository.GetServicesAsync(keyword, pageIndex, pageSize, orderBy);
@@ -95,33 +95,33 @@ namespace TP4SCS.Services.Implements
         {
             if (serviceUpdateRequest == null)
             {
-                throw new ArgumentNullException(nameof(serviceUpdateRequest), "Service request cannot be null.");
+                throw new ArgumentNullException(nameof(serviceUpdateRequest), "Yêu cầu dịch vụ không được để trống.");
             }
 
             if (serviceUpdateRequest.Price <= 0)
             {
-                throw new ArgumentException("Price must be greater than zero.");
+                throw new ArgumentException("Giá phải lớn hơn 0.");
             }
 
             if (serviceUpdateRequest.Rating < 0)
             {
-                throw new ArgumentException("Rating cannot be negative.");
+                throw new ArgumentException("Đánh giá không được âm.");
             }
 
             if (serviceUpdateRequest.OrderedNum < 0)
             {
-                throw new ArgumentException("Ordered number cannot be negative.");
+                throw new ArgumentException("Số lượng đã đặt không được âm.");
             }
 
             if (serviceUpdateRequest.FeedbackedNum < 0)
             {
-                throw new ArgumentException("Feedbacked number cannot be negative.");
+                throw new ArgumentException("Số lượng phản hồi không được âm.");
             }
 
             var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
-                throw new KeyNotFoundException($"Service with ID {existingServiceId} not found.");
+                throw new KeyNotFoundException($"Dịch vụ với ID {existingServiceId} không tìm thấy.");
             }
 
             existingService.Name = serviceUpdateRequest.Name;
@@ -135,7 +135,5 @@ namespace TP4SCS.Services.Implements
 
             await _serviceRepository.UpdateServiceAsync(existingService);
         }
-
-
     }
 }
