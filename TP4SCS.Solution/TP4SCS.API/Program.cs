@@ -1,18 +1,18 @@
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.RateLimiting;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
-using Mapster;
-using MapsterMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +69,7 @@ builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
+builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -77,6 +78,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
+builder.Services.AddScoped<IPromotionService, PromotionService>();
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
