@@ -29,6 +29,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.PasswordHash, src => src.Password)
                 .Map(dest => dest.ExpiredTime, opt => DateTime.Now)
                 .Map(dest => dest.ImageUrl, opt => string.Empty)
+                .Map(dest => dest.IsGoogle, opt => false)
                 .Map(dest => dest.RefreshToken, opt => string.Empty)
                 .Map(dest => dest.Fcmtoken, opt => string.Empty)
                 .Map(dest => dest.Status, opt => "ACTIVE");
