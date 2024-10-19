@@ -18,13 +18,13 @@ public partial class BusinessBranch
 
     public string? EmployeeIds { get; set; }
 
-    public int PendingAmt { get; set; }
+    public int PendingAmount { get; set; }
 
-    public int ProcessingAmt { get; set; }
+    public int ProcessingAmount { get; set; }
 
-    public int FinishedAmt { get; set; }
+    public int FinishedAmount { get; set; }
 
-    public int CanceledAmt { get; set; }
+    public int CanceledAmount { get; set; }
 
     public string Status { get; set; } = null!;
 

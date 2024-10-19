@@ -10,8 +10,6 @@ public partial class Promotion
 
     public decimal NewPrice { get; set; }
 
-    public int Usage { get; set; }
-
     public DateTime StartTime { get; set; }
 
     public DateTime EndTime { get; set; }

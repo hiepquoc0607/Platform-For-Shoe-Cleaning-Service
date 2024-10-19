@@ -20,6 +20,8 @@ public partial class Account
 
     public string? ImageUrl { get; set; }
 
+    public bool? IsGoogle { get; set; }
+
     public string? RefreshToken { get; set; }
 
     public string? Fcmtoken { get; set; }
