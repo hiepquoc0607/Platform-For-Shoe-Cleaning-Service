@@ -37,21 +37,30 @@ jobs:
             if [ "$(docker ps -aq -f name=tp4scsapi)" ]; then
                 echo "Stopping tp4scsapi..."
                 docker stop tp4scsapi || true
-                sleep 5  # Cho một khoảng thời gian để container dừng hoàn toàn
-                echo "Removing tp4scsapi..."
-                docker rm tp4scsapi || { echo "Failed to remove tp4scsapi"; exit 1; }
+                sleep 5  # Cho thời gian để container dừng hoàn toàn
+                
+                if [ "$(docker ps -aq -f name=tp4scsapi)" ]; then
+                    echo "Removing tp4scsapi..."
+                    docker rm tp4scsapi || { echo "Failed to remove tp4scsapi"; exit 1; }
+                else
+                    echo "Container tp4scsapi was already removed or doesn't exist."
+                fi
             else
                 echo "tp4scsapi does not exist."
             fi
-            
+
+            # Xóa các image không có tag
             docker images --filter=reference='hieu15402/tp4scsapi' --format '{{.ID}} {{.Tag}}' | grep '<none>' | awk '{print $1}' | xargs -I {} docker rmi -f {}
-            docker pull hieu15402/tp4scsapi
             
-            # Kiểm tra xem cổng 8080 có sẵn hay không trước khi chạy container
+            # Kéo image mới nhất từ Docker Hub
+            docker pull hieu15402/tp4scsapi
+
+            # Kiểm tra xem cổng 8080 có sẵn không trước khi chạy container
             if lsof -i :8080; then
                 echo "Port 8080 is in use, container might not start."
                 exit 1
             fi
-            
+
+            # Chạy container mới
             docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Failed to start tp4scsapi container"; exit 1; }
 
