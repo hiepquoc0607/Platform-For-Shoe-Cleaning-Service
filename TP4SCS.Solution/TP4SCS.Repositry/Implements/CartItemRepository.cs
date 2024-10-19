@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -33,7 +34,11 @@ namespace TP4SCS.Repository.Implements
                 var service = await _serviceRepository.GetServiceByIdAsync(item.ServiceId);
                 if (service == null)
                 {
-                    throw new InvalidOperationException($"Service with ID {item.ServiceId} not found.");
+                    throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");
+                }
+                if (service.Status.ToUpper() == StatusConstants.Inactive)
+                {
+                    throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }
                 item.Price = service.Price;
                 item.CartId = cart.Id;

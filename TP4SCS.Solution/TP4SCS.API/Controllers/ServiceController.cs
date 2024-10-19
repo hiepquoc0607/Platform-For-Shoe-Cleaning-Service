@@ -28,7 +28,9 @@ namespace TP4SCS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword, pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
+            var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword,
+                Util.TranslateGeneralStatus(pagedRequest.Status),
+                pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
             var totalServices = await _serviceService.GetServicesAsync(pagedRequest.Keyword);
             var totalCount = services?.Count() ?? 0;
 
@@ -36,7 +38,7 @@ namespace TP4SCS.API.Controllers
                 services?.Select(s =>
                 {
                     var res = _mapper.Map<ServiceResponse>(s);
-                    res.Status = Util.TranslateGeneralStatus(s.Status);
+                    res.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
@@ -76,7 +78,7 @@ namespace TP4SCS.API.Controllers
 
                 var serviceResponse = _mapper.Map<ServiceCreateResponse>(_mapper.Map<Service>(request));
                 serviceResponse.BranchId = request.BranchId;
-                serviceResponse.Status = Util.TranslateGeneralStatus("active");
+                serviceResponse.Status = Util.TranslateGeneralStatus("active") ?? "Hoạt Động";
                 return Ok(new ResponseObject<ServiceCreateResponse>("Create Service Success", serviceResponse));
             }
             catch (ArgumentNullException ex)

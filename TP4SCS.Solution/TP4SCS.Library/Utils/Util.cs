@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Request.Account;
+﻿using Microsoft.IdentityModel.Tokens;
+using TP4SCS.Library.Models.Request.Account;
 
 namespace TP4SCS.Library.Utils
 {
@@ -67,15 +68,15 @@ namespace TP4SCS.Library.Utils
 
             return result;
         }
-        public static string TranslateGeneralStatus(string status)
+        public static string? TranslateGeneralStatus(string? status)
         {
-            string result = status switch
+            if (string.IsNullOrEmpty(status)) return null;
+
+            return status switch
             {
                 "INACTIVE" => "Ngưng Hoạt Động",
                 _ => "Hoạt Động"
             };
-
-            return result;
         }
         public string TranslateAccountRole(string role)
         {

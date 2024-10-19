@@ -41,7 +41,8 @@ namespace TP4SCS.Services.Implements
             await _categoryRepository.DeleteCategoryAsync(id);
         }
 
-        public async Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
+        public async Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, string? status = null,
+            int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             if (pageIndex < 1)
             {
@@ -52,7 +53,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
             }
-            return await _categoryRepository.GetCategoriesAsync(keyword, pageIndex, pageSize, orderBy);
+            return await _categoryRepository.GetCategoriesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
 
         public async Task<ServiceCategory?> GetServiceCategoryByIdAsync(int id)

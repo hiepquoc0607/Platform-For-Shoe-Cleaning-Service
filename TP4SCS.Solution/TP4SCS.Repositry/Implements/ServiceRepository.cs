@@ -30,21 +30,21 @@ namespace TP4SCS.Repository.Implements
 
         public Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
+            string? status = null,
             int pageIndex = 1,
             int pageSize = 5,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            // Biểu thức lọc
             Expression<Func<Service, bool>> filter = s =>
-                string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), // Sắp xếp giảm dần
-                _ => q.OrderBy(c => c.Id)                             // Mặc định sắp xếp tăng dần
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), 
+                _ => q.OrderBy(c => c.Id)                             
             };
 
-            // Gọi hàm GetAsync với các tham số đã cập nhật
             return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,

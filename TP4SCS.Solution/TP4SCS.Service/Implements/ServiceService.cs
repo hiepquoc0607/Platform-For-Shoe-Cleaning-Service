@@ -32,10 +32,17 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Giá phải lớn hơn 0.");
             }
-            if (await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId) == null)
+            var category = await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId);
+
+            if (category == null)
             {
                 throw new ArgumentException("ID danh mục không hợp lệ.");
             }
+            if (category.Status.ToUpper() == StatusConstants.Inactive)
+            {
+                throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
+            }
+
 
             var services = new List<Service>();
 
@@ -73,7 +80,8 @@ namespace TP4SCS.Services.Implements
         }
 
 
-        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
+        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,
+            string? status = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             if (pageIndex < 1)
             {
@@ -85,7 +93,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
             }
 
-            return await _serviceRepository.GetServicesAsync(keyword, pageIndex, pageSize, orderBy);
+            return await _serviceRepository.GetServicesAsync(keyword,status, pageIndex, pageSize, orderBy);
         }
 
 
@@ -117,7 +125,16 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Số lượng phản hồi không được âm.");
             }
+            var category = await _categoryRepository.GetCategoryByIdAsync(serviceUpdateRequest.CategoryId);
 
+            if (category == null)
+            {
+                throw new ArgumentException("ID danh mục không hợp lệ.");
+            }
+            if (category.Status.ToUpper() == "INACTIVE")
+            {
+                throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
+            }
             var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
