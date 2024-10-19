@@ -1,5 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
