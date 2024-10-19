@@ -26,14 +26,16 @@ namespace TP4SCS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCategoriesAsync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword, pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
+            var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword,
+                Util.TranslateGeneralStatus(pagedRequest.Status),
+                pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
             var allServices = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword);
             var totalCount = services?.Count() ?? 0;
 
             var pagedResponse = new PagedResponse<ServiceCategoryResponse>(
                 services?.Select(s => {
                     var serviceCategoryResponse = _mapper.Map<ServiceCategoryResponse>(s);
-                    serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status);
+                    serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
                     return serviceCategoryResponse;
                 }) ?? Enumerable.Empty<ServiceCategoryResponse>(),
                 totalCount,
@@ -56,7 +58,7 @@ namespace TP4SCS.API.Controllers
                     Ok(new ResponseObject<ServiceCategoryResponse>($"Category with ID {id} not found.", null));
                 }
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
-                response.Status = Util.TranslateGeneralStatus(response.Status);
+                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng Thái Null";
                 return Ok(new ResponseObject<ServiceCategoryResponse>("Fetch Category Success", response));
             }
             catch (Exception ex)
@@ -77,7 +79,7 @@ namespace TP4SCS.API.Controllers
                 var category = _mapper.Map<ServiceCategory>(request);
                 category.Status = Util.UpperCaseStringStatic("active");
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
-                response.Status = Util.TranslateGeneralStatus("active");
+                response.Status = Util.TranslateGeneralStatus("active") ?? "Hoạt Động";
                 await _categoryService.AddServiceCategoryAsync(category);
                 return CreatedAtAction(nameof(GetCategoryByIdAync), new { id = category.Id },
                     new ResponseObject<ServiceCategoryResponse>("Create Category Success", response));

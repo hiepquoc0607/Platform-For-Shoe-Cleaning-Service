@@ -5,7 +5,7 @@ namespace TP4SCS.Repository.Interfaces
 {
     public interface IServiceRepository
     {
-        Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,
+        Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,string? status = null,
         int pageIndex = 1,
         int pageSize = 5,
         OrderByEnum orderBy = OrderByEnum.IdAsc);

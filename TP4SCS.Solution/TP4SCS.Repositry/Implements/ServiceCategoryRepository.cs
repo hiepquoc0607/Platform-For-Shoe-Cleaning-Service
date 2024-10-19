@@ -23,21 +23,21 @@ namespace TP4SCS.Repository.Implements
 
         public Task<IEnumerable<ServiceCategory>?> GetCategoriesAsync(
             string? keyword = null,
+            string? status = null,
             int pageIndex = 1,
             int pageSize = 5,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            // Biểu thức lọc
+            // Biểu thức lọc với cả keyword và status
             Expression<Func<ServiceCategory, bool>> filter = s =>
-                string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword);
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
             Func<IQueryable<ServiceCategory>, IOrderedQueryable<ServiceCategory>> orderByExpression = q => orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), // Sắp xếp giảm dần
-                _ => q.OrderBy(c => c.Id)                             // Mặc định sắp xếp tăng dần
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), 
+                _ => q.OrderBy(c => c.Id)                            
             };
-
-            // Gọi hàm GetAsync với các tham số đã cập nhật
             return GetAsync(
                 filter: filter,
                 orderBy: orderByExpression,
@@ -45,6 +45,8 @@ namespace TP4SCS.Repository.Implements
                 pageSize: pageSize
             );
         }
+
+
 
 
         public async Task<ServiceCategory?> GetCategoryByIdAsync(int id)
