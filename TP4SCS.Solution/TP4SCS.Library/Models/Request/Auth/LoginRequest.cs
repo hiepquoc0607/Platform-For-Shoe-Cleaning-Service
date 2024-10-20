@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TP4SCS.Library.Models.Request.Account
+namespace TP4SCS.Library.Models.Request.Auth
 {
     public class LoginRequest
     {

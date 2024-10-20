@@ -20,7 +20,9 @@ public partial class Account
 
     public string? ImageUrl { get; set; }
 
-    public bool? IsGoogle { get; set; }
+    public bool IsGoogle { get; set; }
+
+    public bool IsVerified { get; set; }
 
     public string? RefreshToken { get; set; }
 
@@ -34,9 +36,9 @@ public partial class Account
 
     public virtual ICollection<BusinessBranch> BusinessBranches { get; set; } = new List<BusinessBranch>();
 
-    public virtual ICollection<BusinessProfile> BusinessProfiles { get; set; } = new List<BusinessProfile>();
+    public virtual BusinessProfile? BusinessProfile { get; set; }
 
-    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
+    public virtual Cart? Cart { get; set; }
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 

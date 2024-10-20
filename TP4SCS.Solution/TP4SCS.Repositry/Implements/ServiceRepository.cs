@@ -9,7 +9,6 @@ namespace TP4SCS.Repository.Implements
     {
         public ServiceRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
-
         }
 
         public async Task AddServiceAsync(List<Service> services)
@@ -41,8 +40,8 @@ namespace TP4SCS.Repository.Implements
 
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), 
-                _ => q.OrderBy(c => c.Id)                             
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
             };
 
             return GetAsync(

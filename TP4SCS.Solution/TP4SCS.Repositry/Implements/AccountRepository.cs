@@ -6,11 +6,8 @@ namespace TP4SCS.Repository.Implements
 {
     public class AccountRepository : GenericRepoistory<Account>, IAccountRepository
     {
-        private readonly Tp4scsDevDatabaseContext _dbConext;
-
         public AccountRepository(Tp4scsDevDatabaseContext dbConext) : base(dbConext)
         {
-            _dbConext = dbConext;
         }
 
         public async Task CreateAccountAsync(Account account)
@@ -22,7 +19,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbConext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -34,7 +31,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbConext.Accounts.ToListAsync();
+                return await _dbContext.Accounts.ToListAsync();
             }
             catch (Exception)
             {
@@ -46,7 +43,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbConext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -56,7 +53,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsEmailExistedAsync(string email)
         {
-            return await _dbConext.Accounts.AsNoTracking().AnyAsync(a => a.Email.Equals(email));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Email.Equals(email));
         }
 
         public async Task UpdateAccountAsync(Account account)
@@ -66,19 +63,19 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsPhoneExistedAsync(string phone)
         {
-            return await _dbConext.Accounts.AsNoTracking().AnyAsync(a => a.Phone.Equals(phone));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Phone.Equals(phone));
         }
 
         public async Task<int> GetAccountMaxIdAsync()
         {
-            return await _dbConext.Accounts.AsNoTracking().MaxAsync(a => a.Id);
+            return await _dbContext.Accounts.AsNoTracking().MaxAsync(a => a.Id);
         }
 
         public async Task<Account?> GetAccountByEmailAsync(string email)
         {
             try
             {
-                return await _dbConext.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
