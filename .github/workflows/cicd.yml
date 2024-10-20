@@ -34,8 +34,16 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker rm -f tp4scsapi || echo "tp4scsapi does not exist."
-            docker images --filter "dangling=true" -q | xargs -r docker rmi -f
-            docker pull hieu15402/tp4scsapi
-            lsof -i :8080 && { echo "Port 8080 is in use, container might not start."; exit 1; }
-            docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Failed to start tp4scsapi container"; exit 1; }
+            docker rm -f tp4scsapi || echo "tp4scsapi không tồn tại."
+            sleep 5
+            RETRIES=5
+            until ! lsof -i :8080; do
+              if [ $RETRIES -eq 0 ]; then
+                echo "Cổng 8080 vẫn đang được sử dụng, container có thể không khởi động được."
+                exit 1
+              fi
+              echo "Cổng 8080 đang được sử dụng, thử lại..."
+              RETRIES=$((RETRIES-1))
+              sleep 2
+            done
+            docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Không thể khởi động container tp4scsapi"; exit 1; }
