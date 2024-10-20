@@ -1,16 +1,18 @@
-﻿namespace TP4SCS.Library.Models.Request.Account
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TP4SCS.Library.Models.Request.Account
 {
     public class UpdateAccountRequest
     {
-        //[EmailAddress]
+        [EmailAddress]
         public string? Email { get; set; }
 
         public string? Password { get; set; }
 
         public string? FullName { get; set; }
 
-        //[Phone]
-        //[StringLength(10, MinimumLength = 10)]
+        [Phone]
+        [StringLength(10, MinimumLength = 10)]
         public string? Phone { get; set; }
 
         public DateOnly? Dob { get; set; }

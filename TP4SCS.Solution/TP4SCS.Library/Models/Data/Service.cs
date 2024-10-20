@@ -34,5 +34,5 @@ public partial class Service
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
+    public virtual Promotion? Promotion { get; set; }
 }

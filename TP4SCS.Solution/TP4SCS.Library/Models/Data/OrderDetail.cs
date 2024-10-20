@@ -12,7 +12,7 @@ public partial class OrderDetail
 
     public decimal Price { get; set; }
 
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+    public virtual Feedback? Feedback { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 
