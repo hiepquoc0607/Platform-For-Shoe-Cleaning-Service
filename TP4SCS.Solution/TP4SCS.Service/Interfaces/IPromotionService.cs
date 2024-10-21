@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Data;
+﻿using System.Threading.Tasks;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 
 namespace TP4SCS.Services.Interfaces
@@ -13,8 +14,10 @@ namespace TP4SCS.Services.Interfaces
             int pageSize = 5,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task AddPromotionAsync(Promotion promotion);
+        Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null);
         Task UpdatePromotionAsync(Promotion promotion, int existingPromotionId);
         Task DeletePromotionAsync(int id);
+        Task<bool> IsPromotionActiveAsync(int promotionId);
     }
 
 }

@@ -2,8 +2,6 @@
 {
     public class PromotionUpdateRequest
     {
-        public int ServiceId { get; set; }
-
         public int SaleOff { get; set; }
 
         public DateTime StartTime { get; set; }

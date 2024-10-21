@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.Service
+﻿using TP4SCS.Library.Models.Response.Promotion;
+
+namespace TP4SCS.Library.Models.Response.Service
 {
     public class ServiceResponse
     {
@@ -22,5 +24,7 @@
         public int FeedbackedNum { get; set; }
 
         public string Status { get; set; } = null!;
+
+        public PromotionResponse? Promotion { get; set; }
     }
 }

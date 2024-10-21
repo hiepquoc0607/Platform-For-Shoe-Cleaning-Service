@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils;
 using TP4SCS.Services.Interfaces;
@@ -31,14 +32,18 @@ namespace TP4SCS.API.Controllers
             var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword,
                 Util.TranslateGeneralStatus(pagedRequest.Status),
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
-            var totalServices = await _serviceService.GetServicesAsync(pagedRequest.Keyword);
-            var totalCount = services?.Count() ?? 0;
+            var totalCount = await _serviceService.GetTotalServiceCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
                 services?.Select(s =>
                 {
                     var res = _mapper.Map<ServiceResponse>(s);
                     res.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
+                    if (s.Promotion != null)
+                    {
+                        var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
+                        res.Promotion = promotionRes;
+                    }
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
@@ -61,11 +66,33 @@ namespace TP4SCS.API.Controllers
                     Ok(new ResponseObject<ServiceResponse>($"Dịch vụ với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<ServiceResponse>(service);
+                response.Promotion = _mapper.Map<PromotionResponse>(response.Promotion);
+                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng Thái Null";
                 return Ok(new ResponseObject<ServiceResponse>("Fetch Service Success", response));
             }
             catch (Exception ex)
             {
                 return NotFound(new ResponseObject<string>(ex.Message));
+            }
+        }
+
+        [HttpGet("discounted")]
+        public async Task<IActionResult> GetDiscountedServicesAsync()
+        {
+            try
+            {
+                var discountedServices = await _serviceService.GetDiscountedServicesAsync();
+                if (discountedServices == null || !discountedServices.Any())
+                {
+                    return NotFound(new ResponseObject<IEnumerable<ServiceResponse>>("Không tìm thấy dịch vụ nào đang giảm giá."));
+                }
+
+                var response = discountedServices.Select(s => _mapper.Map<ServiceResponse>(s));
+                return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Lấy dịch vụ giảm giá thành công.", response));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>("Đã xảy ra lỗi khi lấy dịch vụ.", ex.Message));
             }
         }
 
