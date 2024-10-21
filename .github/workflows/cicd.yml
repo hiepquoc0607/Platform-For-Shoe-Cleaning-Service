@@ -26,7 +26,7 @@ jobs:
 
       - name: Push the Docker image to Docker Hub
         run: docker push hieu15402/tp4scsapi:latest
-      - name: SSH to server and deploy
+
       - name: SSH to server and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -35,7 +35,12 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
+            # Dừng và xóa container nếu nó tồn tại
             docker stop tp4scsapi || echo "tp4scsapi không tồn tại hoặc đã dừng."
             docker rm -f tp4scsapi || echo "tp4scsapi không tồn tại."
+
+            # Chạy container mới
             docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Không thể khởi động container tp4scsapi"; exit 1; }
+
+            # Xóa image cũ không có tag latest
             docker rmi hieu15402/tp4scsapi || echo "Không thể xóa image hieu15402/tp4scsapi, có thể không tồn tại hoặc đang được sử dụng."
