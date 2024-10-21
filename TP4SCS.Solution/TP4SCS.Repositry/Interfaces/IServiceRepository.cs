@@ -13,5 +13,7 @@ namespace TP4SCS.Repository.Interfaces
         Task AddServiceAsync(List<Service> services);
         Task UpdateServiceAsync(Service service);
         Task DeleteServiceAsync(int id);
+        Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
+        Task<IEnumerable<Service>> GetAllServicesAsync(string? keyword = null, string? status = null);
     }
 }

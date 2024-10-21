@@ -30,15 +30,16 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Giảm giá phải nằm trong khoảng từ 0 đến 100%.");
             }
 
-            if (promotion.StartTime < DateTime.Now.AddDays(1))
+            if (promotion.StartTime.Date < DateTime.Now.Date)
             {
-                throw new ArgumentException("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hôm sau.");
+                throw new ArgumentException("Ngày bắt đầu phải sau hoặc bằng hôm nay.");
             }
 
-            if (promotion.EndTime <= promotion.StartTime)
+            if (promotion.EndTime.Date <= promotion.StartTime.Date)
             {
-                throw new ArgumentException("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                throw new ArgumentException("Ngày kết thúc phải sau ngày bắt đầu.");
             }
+
 
             var service = await _serviceRepository.GetServiceByIdAsync(promotion.ServiceId);
             if (service == null)
@@ -49,13 +50,19 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }
-
-            promotion.Status = Util.UpperCaseStringStatic(promotion.Status);
+            if (service.Promotion != null)
+            {
+                throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
+            }
+            promotion.Status = StatusConstants.Available.ToUpper();
             promotion.NewPrice = service.Price * (1 - promotion.SaleOff / 100);
 
             await _promotionRepository.AddPromotionAsync(promotion);
         }
-
+        public async Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null)
+        {
+            return await _promotionRepository.GetTotalPromotionsCountAsync(keyword, status);
+        }
         public async Task DeletePromotionAsync(int id)
         {
             var promotion = await _promotionRepository.GetPromotionByIdAsync(id);
@@ -130,6 +137,21 @@ namespace TP4SCS.Services.Implements
             existingPromotion.Status = Util.UpperCaseStringStatic(promotion.Status);
 
             await _promotionRepository.UpdatePromotionAsync(existingPromotion);
+        }
+
+        public async Task<bool> IsPromotionActiveAsync(int promotionId)
+        {
+            var promotion = await _promotionRepository.GetPromotionByIdAsync(promotionId);
+
+            if (promotion == null)
+            {
+                throw new KeyNotFoundException($"Khuyến mãi với ID {promotionId} không tìm thấy.");
+            }
+
+            bool isWithinDateRange = promotion.StartTime.Date <= DateTime.Now.Date && promotion.EndTime.Date >= DateTime.Now.Date;
+            bool isActiveStatus = promotion.Status.Equals(StatusConstants.Available, StringComparison.OrdinalIgnoreCase);
+
+            return isWithinDateRange && isActiveStatus;
         }
     }
 }

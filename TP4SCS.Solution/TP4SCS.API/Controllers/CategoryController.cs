@@ -29,8 +29,7 @@ namespace TP4SCS.API.Controllers
             var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword,
                 Util.TranslateGeneralStatus(pagedRequest.Status),
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
-            var allServices = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword);
-            var totalCount = services?.Count() ?? 0;
+            var totalCount = await _categoryService.GetTotalServiceCategoriesCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<ServiceCategoryResponse>(
                 services?.Select(s => {

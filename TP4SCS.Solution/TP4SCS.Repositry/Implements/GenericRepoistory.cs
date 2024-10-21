@@ -8,7 +8,7 @@ namespace TP4SCS.Repository.Implements
     public class GenericRepoistory<T> : IGenericRepository<T> where T : class
     {
         protected readonly Tp4scsDevDatabaseContext _dbContext;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
 
         public GenericRepoistory(Tp4scsDevDatabaseContext dbContext)
         {

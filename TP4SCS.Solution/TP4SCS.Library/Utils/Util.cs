@@ -72,12 +72,29 @@ namespace TP4SCS.Library.Utils
         {
             if (string.IsNullOrEmpty(status)) return null;
 
-            return status switch
+            var lowerStatus = status.ToLower();
+
+            return lowerStatus switch
             {
-                "INACTIVE" => "Ngưng Hoạt Động",
+                "inactive" => "Ngưng Hoạt Động",
                 _ => "Hoạt Động"
             };
         }
+
+        public static string? TranslatePromotionStatus(string? status)
+        {
+            if (string.IsNullOrEmpty(status)) return null;
+
+            var lowerStatus = status.ToLower();
+
+            return lowerStatus switch
+            {
+                "expired" => "Hết hạn",
+                "available" => "Còn hiệu lực",
+                _ => "Trạng thái Null"
+            };
+        }
+
         public string TranslateAccountRole(string role)
         {
             string result = role switch

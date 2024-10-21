@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -152,6 +154,27 @@ namespace TP4SCS.Services.Implements
             existingService.FeedbackedNum = serviceUpdateRequest.FeedbackedNum;
 
             await _serviceRepository.UpdateServiceAsync(existingService);
+        }
+
+        public async Task<IEnumerable<Service>?> GetDiscountedServicesAsync()
+        {
+            // Lấy tất cả dịch vụ từ repository
+            var services = await _serviceRepository.GetAllServicesAsync();
+
+            // Lọc ra các dịch vụ có khuyến mãi còn hiệu lực
+            var discountedServices = services?.Where(service =>
+                service.Promotion != null &&
+                service.Promotion.StartTime.Date <= DateTime.Now.Date &&
+                service.Promotion.EndTime.Date >= DateTime.Now.Date && 
+                service.Promotion.Status.ToUpper() == StatusConstants.Available.ToUpper()
+            );
+
+            return discountedServices;
+        }
+
+        public Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null)
+        {
+            return _serviceRepository.GetTotalServiceCountAsync(keyword, status);
         }
     }
 }

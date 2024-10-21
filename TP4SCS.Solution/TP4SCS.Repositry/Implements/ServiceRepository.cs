@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
@@ -13,7 +14,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddServiceAsync(List<Service> services)
         {
-            await _dbContext.AddRangeAsync(services);
+            await _dbSet.AddRangeAsync(services);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -24,8 +25,11 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            return await GetByIDAsync(id);
+            return await _dbContext.Services
+                .Include(s => s.Promotion)
+                .SingleOrDefaultAsync(s => s.Id == id);
         }
+
 
         public Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
@@ -46,12 +50,32 @@ namespace TP4SCS.Repository.Implements
 
             return GetAsync(
                 filter: filter,
+                includeProperties: "Promotion",
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
                 pageSize: pageSize
             );
         }
+        public async Task<IEnumerable<Service>> GetAllServicesAsync(string? keyword = null, string? status = null)
+        {
+            Expression<Func<Service, bool>> filter = s =>
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
+            return await _dbContext.Services
+                .Include(s => s.Promotion)
+                .Where(filter)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null)
+        {
+            Expression<Func<Service, bool>> filter = s =>
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
+
+            return await _dbContext.Services.CountAsync(filter);
+        }
 
         public async Task UpdateServiceAsync(Service service)
         {

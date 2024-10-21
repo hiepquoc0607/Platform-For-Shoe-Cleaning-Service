@@ -5,6 +5,7 @@ using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Promotion;
+using TP4SCS.Library.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -32,13 +33,12 @@ namespace TP4SCS.API.Controllers
                 pagedRequest.PageSize,
                 pagedRequest.OrderBy
             );
-
-            var totalPromotions = await _promotionService.GetPromotionsAsync(pagedRequest.Keyword);
-            var totalCount = promotions?.Count() ?? 0;
+            var totalCount = await _promotionService.GetTotalPromotionsCountAsync(pagedRequest.Keyword,pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<PromotionResponse>(promotions?.Select(p =>
             {
                 var response = _mapper.Map<PromotionResponse>(p);
+                response.Status = Util.TranslatePromotionStatus(response.Status) ?? "Hết hạn";
                 return response;
             }) ?? Enumerable.Empty<PromotionResponse>(), totalCount, pagedRequest.PageIndex, pagedRequest.PageSize);
 
@@ -56,6 +56,7 @@ namespace TP4SCS.API.Controllers
                     return NotFound(new ResponseObject<PromotionResponse>($"Khuyến mãi với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<PromotionResponse>(promotion);
+                promotion.Status = Util.TranslatePromotionStatus(promotion.Status) ?? "Hết hạn";
                 return Ok(new ResponseObject<PromotionResponse>("Fetch Promotion Success", response));
             }
             catch (Exception ex)

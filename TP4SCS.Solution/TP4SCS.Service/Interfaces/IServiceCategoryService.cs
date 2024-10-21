@@ -9,6 +9,7 @@ namespace TP4SCS.Services.Interfaces
         Task<IEnumerable<ServiceCategory>?> GetServiceCategoriesAsync(string? keyword = null, string? status = null,
             int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task AddServiceCategoryAsync(ServiceCategory category);
+        Task<int> GetTotalServiceCategoriesCountAsync(string? keyword = null, string? status = null);
         Task UpdateServiceCategoryAsync(ServiceCategory category, int existingCategoryId);
         Task DeleteServiceCategoryAsync(int id);
     }

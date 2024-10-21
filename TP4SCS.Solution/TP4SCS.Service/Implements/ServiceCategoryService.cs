@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -30,7 +31,10 @@ namespace TP4SCS.Services.Implements
             }
             await _categoryRepository.AddCategoryAsync(category);
         }
-
+        public async Task<int> GetTotalServiceCategoriesCountAsync(string? keyword = null, string? status = null)
+        {
+            return await _categoryRepository.GetTotalCategoriesCountAsync(keyword, status);
+        }
         public async Task DeleteServiceCategoryAsync(int id)
         {
             var category = await _categoryRepository.GetCategoryByIdAsync(id);

@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
@@ -20,7 +21,14 @@ namespace TP4SCS.Repository.Implements
         {
             await DeleteAsync(id);
         }
+        public async Task<int> GetTotalCategoriesCountAsync(string? keyword = null, string? status = null)
+        {
+            Expression<Func<ServiceCategory, bool>> filter = s =>
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
+            return await _dbContext.ServiceCategories.CountAsync(filter);
+        }
         public Task<IEnumerable<ServiceCategory>?> GetCategoriesAsync(
             string? keyword = null,
             string? status = null,
