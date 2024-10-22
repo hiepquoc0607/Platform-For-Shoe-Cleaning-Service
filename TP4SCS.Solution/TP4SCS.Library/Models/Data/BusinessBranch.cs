@@ -4,7 +4,7 @@ public partial class BusinessBranch
 {
     public int Id { get; set; }
 
-    public int OwnerId { get; set; }
+    public int BusinessId { get; set; }
 
     public string BranchName { get; set; } = null!;
 
@@ -28,7 +28,7 @@ public partial class BusinessBranch
 
     public string Status { get; set; } = null!;
 
-    public virtual Account Owner { get; set; } = null!;
+    public virtual BusinessProfile Business { get; set; } = null!;
 
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
 }

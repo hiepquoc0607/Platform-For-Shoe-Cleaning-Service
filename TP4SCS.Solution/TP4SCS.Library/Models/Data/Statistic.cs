@@ -4,7 +4,7 @@ public partial class Statistic
 {
     public int Id { get; set; }
 
-    public int BusinessProfileId { get; set; }
+    public int? BusinessProfileId { get; set; }
 
     public int Month { get; set; }
 
@@ -19,4 +19,6 @@ public partial class Statistic
     public bool IsLowest { get; set; }
 
     public string Type { get; set; } = null!;
+
+    public virtual BusinessProfile? BusinessProfile { get; set; }
 }
