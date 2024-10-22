@@ -36,8 +36,8 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
 
-            docker stop tp4scsapi || echo "tp4scsapi không tồn tại hoặc đã dừng."
-            docker rm -f tp4scsapi || echo "tp4scsapi không tồn tại."
+            docker stop tp4scsapi || true
+            docker rm tp4scsapi || true
             
             docker pull hieu15402/tp4scsapi:latest
             docker rmi hieu15402/tp4scsapi || echo "Không thể xóa image hieu15402/tp4scsapi, có thể không tồn tại hoặc đang được sử dụng."
