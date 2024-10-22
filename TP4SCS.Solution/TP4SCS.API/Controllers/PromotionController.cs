@@ -56,7 +56,7 @@ namespace TP4SCS.API.Controllers
                     return NotFound(new ResponseObject<PromotionResponse>($"Khuyến mãi với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<PromotionResponse>(promotion);
-                promotion.Status = Util.TranslatePromotionStatus(promotion.Status) ?? "Hết hạn";
+                response.Status = Util.TranslatePromotionStatus(promotion.Status) ?? "Hết hạn";
                 return Ok(new ResponseObject<PromotionResponse>("Fetch Promotion Success", response));
             }
             catch (Exception ex)
