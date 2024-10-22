@@ -16,8 +16,6 @@ public partial class Account
 
     public DateOnly Dob { get; set; }
 
-    public DateTime? ExpiredTime { get; set; }
-
     public string? ImageUrl { get; set; }
 
     public bool IsGoogle { get; set; }

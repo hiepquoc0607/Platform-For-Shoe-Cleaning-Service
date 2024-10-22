@@ -27,7 +27,6 @@ namespace TP4SCS.Library.Utils.Mapper
         {
             config.NewConfig<CreateAccountRequest, Account>()
                 .Map(dest => dest.PasswordHash, src => src.Password)
-                .Map(dest => dest.ExpiredTime, opt => DateTime.Now)
                 .Map(dest => dest.ImageUrl, opt => string.Empty)
                 .Map(dest => dest.IsVerified, opt => true)
                 .Map(dest => dest.IsGoogle, opt => false)

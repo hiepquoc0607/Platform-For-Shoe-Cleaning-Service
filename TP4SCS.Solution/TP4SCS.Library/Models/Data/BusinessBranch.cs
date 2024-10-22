@@ -6,7 +6,7 @@ public partial class BusinessBranch
 
     public int BusinessId { get; set; }
 
-    public string BranchName { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public string Address { get; set; } = null!;
 

@@ -4,7 +4,7 @@ public partial class AssetUrl
 {
     public int Id { get; set; }
 
-    public int? BusinessProfileId { get; set; }
+    public int? BusinessId { get; set; }
 
     public int? FeedbackId { get; set; }
 
@@ -16,7 +16,7 @@ public partial class AssetUrl
 
     public string Type { get; set; } = null!;
 
-    public virtual BusinessProfile? BusinessProfile { get; set; }
+    public virtual BusinessProfile? Business { get; set; }
 
     public virtual Feedback? Feedback { get; set; }
 

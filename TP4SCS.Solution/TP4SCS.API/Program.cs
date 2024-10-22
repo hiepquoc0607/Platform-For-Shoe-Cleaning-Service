@@ -17,7 +17,7 @@ using TP4SCS.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 //Add services to the container.
- 
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -114,6 +114,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Moderator", policy => policy.RequireRole("Admin, Moderator"));
+    options.AddPolicy("Customer", policy => policy.RequireRole("Admin, Customer, Owner"));
+    options.AddPolicy("Owner", policy => policy.RequireRole("Admin, Owner"));
+    options.AddPolicy("Employee", policy => policy.RequireRole("Admin, Owner, Employee"));
 });
 
 //Config CORS
