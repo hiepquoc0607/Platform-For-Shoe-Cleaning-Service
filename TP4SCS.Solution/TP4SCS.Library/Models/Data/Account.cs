@@ -34,8 +34,6 @@ public partial class Account
 
     public virtual ICollection<AccountAddress> AccountAddresses { get; set; } = new List<AccountAddress>();
 
-    public virtual ICollection<BusinessBranch> BusinessBranches { get; set; } = new List<BusinessBranch>();
-
     public virtual BusinessProfile? BusinessProfile { get; set; }
 
     public virtual Cart? Cart { get; set; }
