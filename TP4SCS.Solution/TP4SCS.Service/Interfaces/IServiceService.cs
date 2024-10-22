@@ -14,5 +14,6 @@ namespace TP4SCS.Services.Interfaces
         Task UpdateServiceAsync(ServiceUpdateRequest service, int existingServiceId);
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
+        Task<decimal> GetServiceFinalPriceAsync(int serviceId);
     }
 }

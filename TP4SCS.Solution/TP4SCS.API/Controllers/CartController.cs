@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -12,11 +13,13 @@ namespace TP4SCS.API.Controllers
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;
+        private readonly IServiceService _serviceService;
         private readonly IMapper _mapper;
 
-        public CartController(ICartService cartService, IMapper mapper)
+        public CartController(ICartService cartService, IServiceService serviceService, IMapper mapper)
         {
             _cartService = cartService;
+            _serviceService = serviceService;
             _mapper = mapper;
         }
 
@@ -29,7 +32,15 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound($"Giỏ hàng cho người dùng ID {id} không tìm thấy.");
             }
-            return Ok(new ResponseObject<CartResponse>("Fetch success", _mapper.Map<CartResponse>(cart)));
+            var cartResponse = _mapper.Map<CartResponse>(cart);
+            if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
+            {
+                foreach (var cartItem in cartResponse.CartItems)
+                {
+                    cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
+                }
+            }
+            return Ok(new ResponseObject<CartResponse>("Fetch success",cartResponse));
         }
         [HttpGet]
         [Route("api/carts/{id}/total")]
