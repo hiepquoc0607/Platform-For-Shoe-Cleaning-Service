@@ -55,7 +55,7 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
             }
             promotion.Status = StatusConstants.Available.ToUpper();
-            promotion.NewPrice = service.Price * (1 - promotion.SaleOff / 100);
+            promotion.NewPrice = service.Price * (1 - (decimal)promotion.SaleOff / 100);
 
             await _promotionRepository.AddPromotionAsync(promotion);
         }
@@ -118,20 +118,20 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
             }
 
-            var service = await _serviceRepository.GetServiceByIdAsync(promotion.ServiceId);
-            if (service == null)
-            {
-                throw new ArgumentException("ID dịch vụ không hợp lệ.");
-            }
+            
 
             var existingPromotion = await _promotionRepository.GetPromotionByIdAsync(existingPromotionId);
             if (existingPromotion == null)
             {
                 throw new KeyNotFoundException($"Khuyến mãi với ID {existingPromotionId} không tìm thấy.");
             }
-
+            var service = await _serviceRepository.GetServiceByIdAsync(existingPromotion.ServiceId);
+            if (service == null)
+            {
+                throw new ArgumentException("ID dịch vụ không hợp lệ.");
+            }
             existingPromotion.SaleOff = promotion.SaleOff;
-            existingPromotion.NewPrice = service.Price * (1 - promotion.SaleOff / 100);
+            existingPromotion.NewPrice = service.Price * (1 - (decimal)promotion.SaleOff / 100);
             existingPromotion.StartTime = promotion.StartTime;
             existingPromotion.EndTime = promotion.EndTime;
             existingPromotion.Status = Util.UpperCaseStringStatic(promotion.Status);
