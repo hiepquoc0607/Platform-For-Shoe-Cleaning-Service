@@ -16,12 +16,15 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
         private readonly IServiceCategoryRepository _categoryRepository;
+        private readonly IPromotionService _promotionService;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository
+            ,IPromotionService promotionService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _categoryRepository = categoryRepository;
+            _promotionService = promotionService;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest)
@@ -176,5 +179,30 @@ namespace TP4SCS.Services.Implements
         {
             return _serviceRepository.GetTotalServiceCountAsync(keyword, status);
         }
+
+        public async Task<decimal> GetServiceFinalPriceAsync(int serviceId)
+        {
+            var service = await _serviceRepository.GetServiceByIdAsync(serviceId);
+            if (service == null)
+            {
+                throw new KeyNotFoundException($"Dịch vụ với ID {serviceId} không tìm thấy.");
+            }
+
+            if (service.Promotion == null)
+            {
+                return service.Price;
+            }
+
+            var isPromotionActive = await _promotionService.IsPromotionActiveAsync(service.Promotion.Id);
+            if (!isPromotionActive)
+            {
+                return service.Price;
+            }
+
+            decimal finalPrice = service.Price * (1 - (decimal)service.Promotion.SaleOff / 100);
+
+            return finalPrice;
+        }
+
     }
 }
