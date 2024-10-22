@@ -24,9 +24,9 @@ public partial class BusinessProfile
 
     public int CanceledAmount { get; set; }
 
-    public DateTime RegisterTime { get; set; }
+    public DateTime RegisteredTime { get; set; }
 
-    public DateTime ExpireTime { get; set; }
+    public DateTime ExpiredTime { get; set; }
 
     public string Status { get; set; } = null!;
 

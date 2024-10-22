@@ -4,7 +4,7 @@ public partial class Statistic
 {
     public int Id { get; set; }
 
-    public int? BusinessProfileId { get; set; }
+    public int? BusinessId { get; set; }
 
     public int Month { get; set; }
 
@@ -20,5 +20,5 @@ public partial class Statistic
 
     public string Type { get; set; } = null!;
 
-    public virtual BusinessProfile? BusinessProfile { get; set; }
+    public virtual BusinessProfile? Business { get; set; }
 }
