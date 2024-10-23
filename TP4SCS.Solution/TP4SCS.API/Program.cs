@@ -15,6 +15,8 @@ using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 //Add services to the container.
@@ -124,23 +126,36 @@ builder.Services.AddAuthorization(options =>
 });
 
 //Config CORS
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigins",
+//        policy =>
+//        {
+//            policy.WithOrigins("https://localhost:",
+//                            "http://localhost:",
+//                            "http://localhost:3000",
+//                            "http://14.225.212.57",
+//                            "https://14.225.212.57",
+//                            "https://www.shoecarehub.xyz",
+//                            "https://shoecarehub.site")
+//                  .AllowAnyHeader()
+//                  .AllowAnyMethod();
+//                  //.AllowCredentials();
+
+//        });
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins",
-        policy =>
-        {
-            policy.WithOrigins("https://localhost",
-                            "http://localhost",
-                            "http://localhost:3000",
-                            "http://14.225.212.57",
-                            "https://14.225.212.57",
-                            "https://www.shoecarehub.xyz",
-                            "https://shoecarehub.site")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-                  //.AllowCredentials();
-
-        });
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "http://14.225.212.57",
+                                              "https://14.225.212.57",
+                                              "https://shoecarehub.site")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                      });
 });
 
 //Config Rate Limiting
@@ -166,7 +181,9 @@ app.UseSwagger();
 
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
-app.UseCors("AllowSpecificOrigins");
+//app.UseCors("AllowSpecificOrigins");
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseRateLimiter();
 
