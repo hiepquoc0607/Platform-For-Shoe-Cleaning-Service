@@ -131,6 +131,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost",
                             "https://localhost",
+                            "http://localhost:3000",
                             "http://14.225.212.57",
                             "https://14.225.212.57",
                             "https://www.shoecarehub.xyz",
