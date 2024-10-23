@@ -32,6 +32,35 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
+        public async Task<AccountAddress?> GetAddressesByIdAsync(int id)
+        {
+            try
+            {
+                return await _dbContext.AccountAddresses.Where(a => a.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<int> GetAddressMaxIdAsync()
+        {
+            return await _dbContext.AccountAddresses.AsNoTracking().MaxAsync(a => a.Id);
+        }
+
+        public async Task<AccountAddress?> GetDefaultAddressesByAccountIdAsync(int id)
+        {
+            try
+            {
+                return await _dbContext.AccountAddresses.Where(a => a.AccountId == id && a.IsDefault == true).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task UpdateAddressAsync(AccountAddress address)
         {
             await UpdateAsync(address);
