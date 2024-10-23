@@ -1,26 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TP4SCS.Library.Models.Request.Address
+﻿namespace TP4SCS.Library.Models.Response.Address
 {
-    public class CreateAddressRequest
+    public class AddressResponse
     {
-        [Required]
+        public int Id { get; set; }
+
         public int AccountId { get; set; }
 
-        [Required]
         public string Address { get; set; } = string.Empty;
 
-        [Required]
         public string Ward { get; set; } = string.Empty;
 
-        [Required]
         public string Province { get; set; } = string.Empty;
 
-        [Required]
         public string City { get; set; } = string.Empty;
 
-        [Required]
-        [DeniedValues(false)]
         public bool IsDefault { get; set; }
+
+        public string Status { get; set; } = string.Empty;
     }
 }

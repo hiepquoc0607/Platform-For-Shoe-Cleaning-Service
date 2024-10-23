@@ -7,22 +7,6 @@ namespace TP4SCS.Library.Utils.Mapper
 {
     public class AccountMapper : IRegister
     {
-        //public AccountMapper()
-        //{
-        //    CreateMap<CreateAccountRequest, Account>()
-        //        .ForMember(dest => dest.ExpiredTime, opt => opt.MapFrom(src => DateTime.UtcNow))
-        //        .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => string.Empty))
-        //        .ForMember(dest => dest.Fcmtoken, opt => opt.MapFrom(src => string.Empty))
-        //        .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "ACTIVE"));
-
-        //    CreateMap<UpdateAccountRequest, Account>();
-
-        //    CreateMap<Account, AccountResponse>();
-
-        //    CreateMap<AccountResponse, Account>();
-
-        //    CreateMap<UpdateAccountRequest, AccountResponse>();
-        //}
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreateAccountRequest, Account>()

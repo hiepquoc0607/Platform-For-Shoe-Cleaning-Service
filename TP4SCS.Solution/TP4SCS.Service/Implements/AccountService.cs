@@ -27,6 +27,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
+        //Create Account
         public async Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest)
         {
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
@@ -81,6 +82,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Delete Account
         public async Task<Result> DeleteAccountAsync(int id)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
@@ -91,8 +93,6 @@ namespace TP4SCS.Services.Implements
             }
 
             account.Status = "INACTIVE";
-
-            //var newAccount = _mapper.Map<Account>(account);
 
             try
             {
@@ -107,6 +107,8 @@ namespace TP4SCS.Services.Implements
 
         }
 
+
+        //Get Account By Id
         public async Task<AccountResponse?> GetAccountByIdAsync(int id)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
@@ -124,11 +126,13 @@ namespace TP4SCS.Services.Implements
             return result;
         }
 
+        //Get Account Max Id
         public async Task<int> GetAccountMaxIdAsync()
         {
             return await _accountRepository.GetAccountMaxIdAsync();
         }
 
+        //Get Accounts
         public async Task<IEnumerable<AccountResponse>?> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
             var accounts = await _accountRepository.GetAccountsAsync();
@@ -171,6 +175,7 @@ namespace TP4SCS.Services.Implements
             return result;
         }
 
+        //Login
         public async Task<Result> LoginAsync(LoginRequest loginRequest)
         {
             var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email);
@@ -190,6 +195,7 @@ namespace TP4SCS.Services.Implements
             return new Result { IsSuccess = true, Token = token };
         }
 
+        //Reset Password
         public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
         {
             var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email);
@@ -218,6 +224,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Update Account
         public async Task<Result> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest)
         {
             var oldAccount = await _accountRepository.GetAccountByIdAsync(id);
@@ -242,6 +249,7 @@ namespace TP4SCS.Services.Implements
 
         }
 
+        //Update Account Status For Admin
         public async Task<Result> UpdateAccountStatusForAdminAsync(int id, string status)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
