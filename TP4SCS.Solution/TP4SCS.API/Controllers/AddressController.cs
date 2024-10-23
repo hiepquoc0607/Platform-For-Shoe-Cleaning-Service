@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Address;
@@ -8,6 +9,7 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;

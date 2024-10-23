@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Category;
@@ -12,6 +13,7 @@ namespace TP4SCS.API.Controllers
 {
     [Route("api/categories")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class CategoryController : ControllerBase
     {
         private IServiceCategoryService _categoryService;

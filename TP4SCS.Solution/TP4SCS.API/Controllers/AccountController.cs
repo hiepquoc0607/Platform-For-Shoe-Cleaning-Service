@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
@@ -7,6 +8,7 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;

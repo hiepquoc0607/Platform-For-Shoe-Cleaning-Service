@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
@@ -10,6 +11,7 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;

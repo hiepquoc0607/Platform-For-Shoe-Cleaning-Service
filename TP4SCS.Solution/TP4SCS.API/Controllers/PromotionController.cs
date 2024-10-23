@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
@@ -12,6 +13,7 @@ namespace TP4SCS.API.Controllers
 {
     [ApiController]
     [Route("api/promotions")]
+    [EnableCors("AllowSpecificOrigin")]
     public class PromotionController : ControllerBase
     {
         private readonly IMapper _mapper;

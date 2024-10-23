@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
@@ -14,6 +15,7 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [Route("api/services")]
+    [EnableCors("AllowSpecificOrigin")]
     [ApiController]
     public class ServiceController : ControllerBase
     {
