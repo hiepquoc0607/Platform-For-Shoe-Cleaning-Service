@@ -35,12 +35,51 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-
-            docker stop tp4scsapi || true
-            sleep 15
-            docker rm -f tp4scsapi || true
+            MAX_RETRIES=5
+            
+            RETRY_COUNT=0
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                docker stop tp4scsapi || true
+                sleep 5
+            
+                if [ "$(docker ps -q -f name=tp4scsapi)" ]; then
+                    echo "Container tp4scsapi vẫn đang chạy, thử lại lần $((RETRY_COUNT + 1))..."
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                else
+                    echo "Container tp4scsapi đã dừng thành công."
+                    break
+                fi
+            done
+            
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "Không thể dừng container tp4scsapi sau $MAX_RETRIES lần thử. Đã thoát với lỗi."
+                exit 1
+            fi
+            
+            RETRY_COUNT=0
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                docker rm -f tp4scsapi || true
+            
+                if [ "$(docker ps -aq -f name=tp4scsapi)" ]; then
+                    echo "Container tp4scsapi vẫn còn tồn tại, thử lại lần $((RETRY_COUNT + 1))..."
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                    sleep 5
+                else
+                    echo "Container tp4scsapi đã được xóa thành công."
+                    break
+                fi
+            done
+            
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "Không thể xóa container tp4scsapi sau $MAX_RETRIES lần thử. Đã thoát với lỗi."
+                exit 1
+            fi
             
             docker pull hieu15402/tp4scsapi:latest
             docker rmi hieu15402/tp4scsapi || echo "Không thể xóa image hieu15402/tp4scsapi, có thể không tồn tại hoặc đang được sử dụng."
-
+            
+            docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Không thể khởi động container tp4scsapi"; exit 1; }
+            
+            docker rmi hieu15402/tp4scsapi || echo "Không thể xóa image hieu15402/tp4scsapi, có thể không tồn tại hoặc đang được sử dụng."
+            
             docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Không thể khởi động container tp4scsapi"; exit 1; }
