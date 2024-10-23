@@ -135,6 +135,7 @@ builder.Services.AddCors(options =>
                             "https://14.225.212.57",
                             "https://www.shoecarehub.xyz",
                             "https://shoecarehub.site")
+                  .AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
