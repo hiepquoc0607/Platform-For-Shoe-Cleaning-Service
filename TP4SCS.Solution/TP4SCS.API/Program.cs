@@ -129,17 +129,17 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost",
-                            "https://localhost",
-                            "http://localhost:3000",
-                            "http://14.225.212.57",
-                            "https://14.225.212.57",
-                            "https://www.shoecarehub.xyz",
-                            "https://shoecarehub.site")
-                  .AllowAnyOrigin()
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
+                  .AllowAnyMethod();
+                  //.AllowCredentials();
+            //WithOrigins("http://localhost",
+            //                "https://localhost",
+            //                "http://localhost:3000",
+            //                "http://14.225.212.57",
+            //                "https://14.225.212.57",
+            //                "https://www.shoecarehub.xyz",
+            //                "https://shoecarehub.site")
         });
 });
 
