@@ -1,6 +1,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -70,6 +71,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
 builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -79,6 +81,7 @@ builder.Services.AddScoped<ICartItemService, CartItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -126,8 +129,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("https://localhost"
-                              , "http://14.225.212.57"
+            policy.WithOrigins("http://localhost:3000"
+                              , "https://14.225.212.57"
+                              , "https://14.225.212.57"
                               , "https://www.shoecarehub.xyz"
                               , "https://shoecarehub.site")
                   .AllowAnyHeader()
@@ -139,7 +143,7 @@ builder.Services.AddCors(options =>
 //Config Rate Limiting
 builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: "BasePolicy", options =>
 {
-    options.PermitLimit = 1;
+    options.PermitLimit = 10;
 
     options.Window = TimeSpan.FromMinutes(1);
 
