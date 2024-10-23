@@ -1,6 +1,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -128,8 +129,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("https://localhost"
-                              , "http://14.225.212.57"
+            policy.WithOrigins("http://localhost:3000"
+                              , "https://14.225.212.57"
+                              , "https://14.225.212.57"
                               , "https://www.shoecarehub.xyz"
                               , "https://shoecarehub.site")
                   .AllowAnyHeader()
