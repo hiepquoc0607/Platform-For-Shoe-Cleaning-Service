@@ -14,6 +14,8 @@ public partial class BusinessProfile
 
     public decimal Rating { get; set; }
 
+    public int Rank { get; set; }
+
     public int TotalOrder { get; set; }
 
     public int PendingAmount { get; set; }
@@ -35,6 +37,4 @@ public partial class BusinessProfile
     public virtual ICollection<BusinessBranch> BusinessBranches { get; set; } = new List<BusinessBranch>();
 
     public virtual Account Owner { get; set; } = null!;
-
-    public virtual ICollection<Statistic> Statistics { get; set; } = new List<Statistic>();
 }

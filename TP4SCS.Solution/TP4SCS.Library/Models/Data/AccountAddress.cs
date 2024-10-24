@@ -19,4 +19,6 @@ public partial class AccountAddress
     public string Status { get; set; } = null!;
 
     public virtual Account Account { get; set; } = null!;
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }
