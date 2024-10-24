@@ -8,11 +8,17 @@ public partial class OrderDetail
 
     public int ServiceId { get; set; }
 
+    public int? MaterialId { get; set; }
+
     public int Quantity { get; set; }
 
     public decimal Price { get; set; }
 
-    public virtual Feedback? Feedback { get; set; }
+    public string Status { get; set; } = null!;
+
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+    public virtual Material? Material { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

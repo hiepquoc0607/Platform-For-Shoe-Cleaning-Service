@@ -6,6 +6,8 @@ public partial class Order
 
     public int AccountId { get; set; }
 
+    public int? AddressId { get; set; }
+
     public DateTime CreateTime { get; set; }
 
     public DateTime? DeliveredTime { get; set; }
@@ -16,7 +18,7 @@ public partial class Order
 
     public decimal OrderPrice { get; set; }
 
-    public decimal ShipFee { get; set; }
+    public decimal DeliveredFee { get; set; }
 
     public decimal TotalPrice { get; set; }
 
@@ -27,6 +29,8 @@ public partial class Order
     public string Status { get; set; } = null!;
 
     public virtual Account Account { get; set; } = null!;
+
+    public virtual AccountAddress? Address { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

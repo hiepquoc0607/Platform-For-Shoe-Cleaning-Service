@@ -26,6 +26,8 @@ public partial class BusinessBranch
 
     public int CanceledAmount { get; set; }
 
+    public bool IsDeliverySupport { get; set; }
+
     public string Status { get; set; } = null!;
 
     public virtual BusinessProfile Business { get; set; } = null!;
