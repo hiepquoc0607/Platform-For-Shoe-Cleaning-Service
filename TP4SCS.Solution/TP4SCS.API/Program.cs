@@ -14,7 +14,7 @@ using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+//var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -145,7 +145,7 @@ builder.Services.AddAuthorization(options =>
 //});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(name: "MyAllowSpecificOrigins",
                       policy =>
                       {
                           //policy.WithOrigins("http://localhost:3000",
@@ -183,7 +183,7 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
 //app.UseCors("AllowSpecificOrigins");
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors("MyAllowSpecificOrigins");
 
 app.UseRateLimiter();
 
