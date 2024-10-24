@@ -13,7 +13,6 @@ namespace TP4SCS.API.Controllers
 {
     [Route("api/categories")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class CategoryController : ControllerBase
     {
         private IServiceCategoryService _categoryService;

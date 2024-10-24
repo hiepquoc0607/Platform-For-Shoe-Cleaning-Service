@@ -15,7 +15,6 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [Route("api/services")]
-    [EnableCors("AllowSpecificOrigin")]
     [ApiController]
     public class ServiceController : ControllerBase
     {

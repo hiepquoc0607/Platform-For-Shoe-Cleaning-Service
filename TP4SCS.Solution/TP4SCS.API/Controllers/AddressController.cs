@@ -9,7 +9,6 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;

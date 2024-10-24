@@ -11,7 +11,6 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;

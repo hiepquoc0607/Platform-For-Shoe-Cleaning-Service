@@ -13,7 +13,6 @@ namespace TP4SCS.API.Controllers
 {
     [ApiController]
     [Route("api/promotions")]
-    [EnableCors("AllowSpecificOrigin")]
     public class PromotionController : ControllerBase
     {
         private readonly IMapper _mapper;

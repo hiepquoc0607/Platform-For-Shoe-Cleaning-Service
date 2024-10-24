@@ -8,7 +8,6 @@ namespace TP4SCS.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class AuthController : ControllerBase
     {
         private readonly IAccountService _accountService;

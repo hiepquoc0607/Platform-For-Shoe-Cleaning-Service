@@ -11,7 +11,6 @@ namespace TP4SCS.API.Controllers
 {
     [Route("api/cartitems")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class CartItemController : ControllerBase
     {
         private readonly ICartItemService _cartItemService;

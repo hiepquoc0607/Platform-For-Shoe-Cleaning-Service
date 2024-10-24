@@ -8,7 +8,6 @@ using TP4SCS.Services.Interfaces;
 namespace TP4SCS.API.Controllers
 {
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
