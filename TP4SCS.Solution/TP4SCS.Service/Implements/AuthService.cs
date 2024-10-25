@@ -64,7 +64,7 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result<AuthResponse>("error", 400, "Email Không Tồn Tại!");
+                return new Result<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
             if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
@@ -79,12 +79,19 @@ namespace TP4SCS.Services.Implements
             {
                 Id = account.Id,
                 Email = account.Email,
+                Fullname = account.FullName,
+                Phone = account.Phone,
+                Gender = account.Gender,
+                Dob = account.Dob,
+                ImageUrl = account.ImageUrl,
+                RefreshToken = account.RefreshToken,
+                Fcmtoken = account.Fcmtoken,
                 Role = account.Role,
                 Token = token,
                 ExpiresIn = expiredIn
             };
 
-            return new Result<AuthResponse>("success", "Login successful", data);
+            return new Result<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
         }
 
         //Reset Password
@@ -94,7 +101,7 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result<AuthResponse>("error", 400, "Email Không Tồn Tại!");
+                return new Result<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
             if (!resetPasswordRequest.NewPassword.Equals(resetPasswordRequest.ConfirmPassword))

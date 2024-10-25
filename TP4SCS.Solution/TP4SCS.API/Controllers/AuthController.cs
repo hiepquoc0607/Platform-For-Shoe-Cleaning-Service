@@ -24,7 +24,7 @@ namespace TP4SCS.API.Controllers
 
             if (!result.Status.Equals("success"))
             {
-                return BadRequest(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
@@ -55,7 +55,7 @@ namespace TP4SCS.API.Controllers
 
             if (!result.Status.Equals("success"))
             {
-                return BadRequest(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);

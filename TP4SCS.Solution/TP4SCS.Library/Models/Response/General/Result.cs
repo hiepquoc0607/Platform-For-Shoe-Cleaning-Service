@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace TP4SCS.Library.Models.Response.General
 {
@@ -41,7 +42,8 @@ namespace TP4SCS.Library.Models.Response.General
         public string Status { get; set; } = string.Empty;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int StatusCode { get; set; } = 200;
+        [DefaultValue(200)]
+        public int StatusCode { get; set; }
 
         public string Message { get; set; } = string.Empty;
 
