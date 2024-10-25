@@ -6,6 +6,20 @@
 
         public string Email { get; set; } = string.Empty;
 
+        public string Fullname { get; set; } = string.Empty;
+
+        public string Phone { get; set; } = string.Empty;
+
+        public string Gender { get; set; } = string.Empty;
+
+        public DateOnly Dob { get; set; }
+
+        public string? ImageUrl { get; set; } = string.Empty;
+
+        public string? RefreshToken { get; set; }
+
+        public string? Fcmtoken { get; set; }
+
         public string Role { get; set; } = string.Empty;
 
         public int ExpiresIn { get; set; }

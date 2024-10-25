@@ -60,7 +60,7 @@ namespace TP4SCS.Services.Implements
 
             if (!_util.CheckAccountRole(createAccountRequest.Role))
             {
-                return new Result<AccountResponse>("error", 400, "Invalid Account Role!");
+                return new Result<AccountResponse>("error", 400, "Role Không Phù Hợp!");
             }
 
             createAccountRequest.Role = createAccountRequest.Role.ToUpper();
@@ -127,7 +127,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new Result<AccountResponse?>("success", "Resource retrieved successfully", data);
+            return new Result<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
         }
 
         //Get Account Max Id
@@ -176,7 +176,7 @@ namespace TP4SCS.Services.Implements
 
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
-            return new Result<IEnumerable<AccountResponse>?>("success", "Resource retrieved successfully", data);
+            return new Result<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data);
         }
 
         //Update Account
@@ -211,7 +211,7 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new Result<AccountResponse>("error", 400, "Tài Khoản Không Tồn Tại!!");
+                return new Result<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
             if (!_util.CheckAccountStatusForAdmin(account.Status, status))
