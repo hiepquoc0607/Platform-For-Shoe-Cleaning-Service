@@ -25,7 +25,7 @@ namespace TP4SCS.API.Controllers
 
             if (result == null)
             {
-                return NotFound("Không Có Tài Khoản Nào!");
+                return NotFound(result);
             }
 
             return Ok(result);
@@ -39,7 +39,7 @@ namespace TP4SCS.API.Controllers
 
             if (result == null)
             {
-                return NotFound("Không Tìm Thấy Tài Khoản!");
+                return NotFound(result);
             }
 
             return Ok(result);
@@ -56,15 +56,14 @@ namespace TP4SCS.API.Controllers
                 return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
             }
 
-            if (!result.IsSuccess)
+            if (!result.Status.Equals("error"))
             {
-                return BadRequest(result.Message);
+                return BadRequest(result);
             }
 
             int newAccId = await _accountService.GetAccountMaxIdAsync();
-            var newAcc = await _accountService.GetAccountByIdAsync(newAccId);
 
-            return CreatedAtAction("GetAccountById", new { id = newAccId }, newAcc);
+            return CreatedAtAction("GetAccountById", new { id = newAccId }, result.Data);
         }
 
         [HttpPut]
@@ -73,12 +72,12 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.UpdateAccountAsync(id, updateAccountRequest);
 
-            if (!result.IsSuccess)
+            if (!result.Status.Equals("error"))
             {
-                return StatusCode(result.StatusCode, result.Message);
+                return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result.Message);
+            return Ok(result);
         }
 
         [HttpPut]
@@ -87,12 +86,12 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.UpdateAccountStatusForAdminAsync(id, status);
 
-            if (!result.IsSuccess)
+            if (!result.Status.Equals("error"))
             {
-                return StatusCode(result.StatusCode, result.Message);
+                return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result.Message);
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -101,12 +100,12 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.DeleteAccountAsync(id);
 
-            if (!result.IsSuccess)
+            if (!result.Status.Equals("error"))
             {
-                return StatusCode(result.StatusCode, result.Message);
+                return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result.Message);
+            return Ok(result);
         }
     }
 }

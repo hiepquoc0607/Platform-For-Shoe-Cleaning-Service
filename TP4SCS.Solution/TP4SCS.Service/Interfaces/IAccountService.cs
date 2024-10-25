@@ -8,22 +8,19 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IAccountService
     {
-        Task<IEnumerable<AccountResponse>?> GetAccountsAsync(GetAccountRequest getAccountRequest);
+        Task<Result<IEnumerable<AccountResponse>?>> GetAccountsAsync(GetAccountRequest getAccountRequest);
 
-        Task<AccountResponse?> GetAccountByIdAsync(int id);
+        Task<Result<AccountResponse?>> GetAccountByIdAsync(int id);
 
         Task<int> GetAccountMaxIdAsync();
 
-        Task<Result> CreateAccountAsync(CreateAccountRequest createAccountRequest);
+        Task<Result<AccountResponse>> CreateAccountAsync(CreateAccountRequest createAccountRequest);
 
-        Task<Result> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
+        Task<Result<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
 
-        Task<Result> UpdateAccountStatusForAdminAsync(int id, string status);
+        Task<Result<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, string status);
 
-        Task<Result> DeleteAccountAsync(int id);
+        Task<Result<AccountResponse>> DeleteAccountAsync(int id);
 
-        Task<Result> LoginAsync(LoginRequest loginRequest);
-
-        Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     }
 }
