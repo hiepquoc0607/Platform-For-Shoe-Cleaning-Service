@@ -27,12 +27,12 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
-        public int CaculateSeccond(DateTime dateTime)
+        private int CaculateSeccond(DateTime dateTime)
         {
             return (int)(dateTime - DateTime.Now).TotalSeconds;
         }
 
-        public string GenerateToken(Account account)
+        private string GenerateToken(Account account)
         {
             List<Claim> claims = new List<Claim>
             {

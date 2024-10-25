@@ -48,9 +48,9 @@ namespace TP4SCS.Library.Models.Response.General
         public string Message { get; set; } = string.Empty;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public T? Data { get; set; }
+        public Pagination? Pagination { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Pagination? Pagination { get; set; }
+        public T? Data { get; set; }
     }
 }

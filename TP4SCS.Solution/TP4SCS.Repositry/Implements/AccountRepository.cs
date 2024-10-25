@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -27,11 +28,41 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
-        public async Task<IEnumerable<Account>?> GetAccountsAsync()
+        public async Task<IEnumerable<Account>?> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
             try
             {
-                return await _dbContext.Accounts.ToListAsync();
+                var accounts = _dbContext.Accounts.AsQueryable();
+
+                //Search
+                if (!string.IsNullOrEmpty(getAccountRequest.SearchKey))
+                {
+                    string searchKey = getAccountRequest.SearchKey.ToLower();
+                    accounts = accounts.Where(r => r.FullName.ToLower().Contains(searchKey) || r.Email.ToLower().Contains(searchKey));
+                }
+
+                //Sort
+                if (!string.IsNullOrEmpty(getAccountRequest.SortBy))
+                {
+                    accounts = getAccountRequest.SortBy.ToUpper() switch
+                    {
+                        "EMAIL" => getAccountRequest.IsDecsending
+                                    ? accounts.OrderByDescending(a => a.Email)
+                                    : accounts.OrderBy(a => a.Email),
+                        "FULLNAME" => getAccountRequest.IsDecsending
+                                      ? accounts.OrderByDescending(a => a.FullName)
+                                      : accounts.OrderBy(a => a.FullName),
+                        "STATUS" => getAccountRequest.IsDecsending
+                                      ? accounts.OrderByDescending(a => a.Status)
+                                      : accounts.OrderBy(a => a.Status),
+                        _ => accounts
+                    };
+                }
+
+                //Paging
+                int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
+
+                return await accounts.Skip(skipNum).Take(getAccountRequest.PageSize).ToListAsync();
             }
             catch (Exception)
             {
@@ -81,6 +112,11 @@ namespace TP4SCS.Repository.Implements
             {
                 return null;
             }
+        }
+
+        public async Task<int> CountAccountDataAsync()
+        {
+            return await _dbContext.Accounts.AsNoTracking().CountAsync();
         }
     }
 }
