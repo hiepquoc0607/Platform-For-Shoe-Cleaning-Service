@@ -139,44 +139,22 @@ namespace TP4SCS.Services.Implements
         //Get Accounts
         public async Task<Result<IEnumerable<AccountResponse>?>> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
-            var accounts = await _accountRepository.GetAccountsAsync();
+            var accounts = await _accountRepository.GetAccountsAsync(getAccountRequest);
 
             if (accounts == null)
             {
                 return new Result<IEnumerable<AccountResponse>?>("error", 404, "Tài Khoản Trống!");
             }
 
-            //Search
-            if (!string.IsNullOrEmpty(getAccountRequest.SearchKey))
-            {
-                accounts = accounts.Where(r => r.FullName.ToLower().Contains(getAccountRequest.SearchKey.ToLower()) || r.Email.ToLower().Contains(getAccountRequest.SearchKey.ToLower()));
-            }
+            //Paging caculate
+            int totalData = await _accountRepository.CountAccountDataAsync();
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getAccountRequest.PageSize);
 
-            //Sort
-            if (!string.IsNullOrEmpty(getAccountRequest.SortBy))
-            {
-                accounts = getAccountRequest.SortBy.ToUpper() switch
-                {
-                    "EMAIL" => getAccountRequest.IsDecsending
-                                ? accounts.OrderByDescending(a => a.Email)
-                                : accounts.OrderBy(a => a.Email),
-                    "FULLNAME" => getAccountRequest.IsDecsending
-                                  ? accounts.OrderByDescending(a => a.FullName)
-                                  : accounts.OrderBy(a => a.FullName),
-                    "STATUS" => getAccountRequest.IsDecsending
-                                  ? accounts.OrderByDescending(a => a.Status)
-                                  : accounts.OrderBy(a => a.Status),
-                    _ => accounts
-                };
-            }
-
-            //Paging
-            int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
-            accounts.Skip(skipNum).Take(getAccountRequest.PageSize).ToList();
+            var paging = new Pagination(totalData, getAccountRequest.PageSize, getAccountRequest.PageNum, totalPage);
 
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
-            return new Result<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data);
+            return new Result<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, paging);
         }
 
         //Update Account

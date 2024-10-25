@@ -1,182 +1,193 @@
-﻿//using Mapster;
-//using MapsterMapper;
-//using TP4SCS.Library.Models.Data;
-//using TP4SCS.Library.Models.Request.Address;
-//using TP4SCS.Library.Models.Response.Address;
-//using TP4SCS.Library.Models.Response.General;
-//using TP4SCS.Library.Utils;
-//using TP4SCS.Repository.Interfaces;
-//using TP4SCS.Services.Interfaces;
+﻿using Mapster;
+using MapsterMapper;
+using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Address;
+using TP4SCS.Library.Models.Response.Address;
+using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils;
+using TP4SCS.Repository.Interfaces;
+using TP4SCS.Services.Interfaces;
 
-//namespace TP4SCS.Services.Implements
-//{
-//    public class AddressService : IAddressService
-//    {
-//        private readonly IAddressRepository _addressRepository;
-//        private readonly IMapper _mapper;
-//        private readonly Util _util;
+namespace TP4SCS.Services.Implements
+{
+    public class AddressService : IAddressService
+    {
+        private readonly IAddressRepository _addressRepository;
+        private readonly IMapper _mapper;
+        private readonly Util _util;
 
-//        public AddressService(IAddressRepository addressRepository, IMapper mapper, Util util)
-//        {
-//            _addressRepository = addressRepository;
-//            _mapper = mapper;
-//            _util = util;
-//        }
+        public AddressService(IAddressRepository addressRepository, IMapper mapper, Util util)
+        {
+            _addressRepository = addressRepository;
+            _mapper = mapper;
+            _util = util;
+        }
 
-//        public async Task<Result> CreateAddressAsync(CreateAddressRequest createAddressRequest)
-//        {
-//            while (createAddressRequest.IsDefault == true)
-//            {
-//                var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(createAddressRequest.AccountId);
+        public async Task<Result<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
+        {
+            while (createAddressRequest.IsDefault == true)
+            {
+                var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(createAddressRequest.AccountId);
 
-//                if (oldDefault != null)
-//                {
-//                    oldDefault.IsDefault = false;
+                if (oldDefault != null)
+                {
+                    oldDefault.IsDefault = false;
 
-//                    try
-//                    {
-//                        await _addressRepository.UpdateAddressAsync(oldDefault);
-//                    }
-//                    catch (Exception)
-//                    {
-//                        return new Result { IsSuccess = false, StatusCode = 400, Message = "Tạo địa chỉ thất bại!" };
-//                    }
-//                }
-//            }
+                    try
+                    {
+                        await _addressRepository.UpdateAddressAsync(oldDefault);
+                    }
+                    catch (Exception)
+                    {
+                        return new Result<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
+                    }
+                }
+            }
 
-//            var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
+            var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
 
-//            try
-//            {
-//                await _addressRepository.CreateAddressAsync(newAddress);
+            try
+            {
+                await _addressRepository.CreateAddressAsync(newAddress);
 
-//                return new Result { IsSuccess = true, Message = "Tạo địa chỉ thành công!" };
-//            }
-//            catch (Exception)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Tạo địa chỉ thất bại!" };
-//            }
-//        }
+                var newId = await GetAddressMaxIdAsync();
 
-//        public async Task<Result> DeleteAddressAsync(int id)
-//        {
-//            try
-//            {
-//                await _addressRepository.DeletAddressAsync(id);
+                var newAddr = await GetAddressesByIdAsync(newId);
 
-//                return new Result { IsSuccess = true, Message = "Xoá địa chỉ thành công!" };
-//            }
-//            catch (Exception)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Xoá địa chỉ thất bại!" };
-//            }
-//        }
+                return new Result<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data);
+            }
+            catch (Exception)
+            {
+                return new Result<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
+            }
+        }
 
-//        public async Task<IEnumerable<AddressResponse>?> GetAddressesByAccountIdAsync(int id)
-//        {
-//            var address = await _addressRepository.GetAddressesByAccountIdAsync(id);
+        public async Task<Result<AddressResponse>> DeleteAddressAsync(int id)
+        {
+            var address = await _addressRepository.GetAddressesByIdAsync(id);
 
-//            if (address == null)
-//            {
-//                return null;
-//            }
+            if (address == null)
+            {
+                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+            }
 
-//            var result = address.Adapt<IEnumerable<AddressResponse>>();
+            try
+            {
+                await _addressRepository.DeletAddressAsync(id);
 
-//            return result;
-//        }
+                return new Result<AddressResponse>("success", "Xoá Địa Chỉ Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new Result<AddressResponse>("success", 400, "Xoá Địa Chỉ Thất Bại!");
+            }
+        }
 
-//        public async Task<AddressResponse?> GetAddressesByIdAsync(int id)
-//        {
-//            var address = await _addressRepository.GetAddressesByIdAsync(id);
+        public async Task<Result<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id)
+        {
+            var address = await _addressRepository.GetAddressesByAccountIdAsync(id);
 
-//            if (address == null)
-//            {
-//                return null;
-//            }
+            if (address == null)
+            {
+                return new Result<IEnumerable<AddressResponse>?>("error", 404, "Tài Khoản Không Có Địa Chỉ!");
+            }
 
-//            var result = _mapper.Map<AddressResponse>(address);
+            var data = address.Adapt<IEnumerable<AddressResponse>>();
 
-//            return result;
-//        }
+            return new Result<IEnumerable<AddressResponse>?>("success", "Lấy Địa Chỉ Thành Công!", data);
+        }
 
-//        public async Task<int> GetAddressMaxIdAsync()
-//        {
-//            return await _addressRepository.GetAddressMaxIdAsync();
-//        }
+        public async Task<Result<AddressResponse?>> GetAddressesByIdAsync(int id)
+        {
+            var address = await _addressRepository.GetAddressesByIdAsync(id);
 
-//        public Task<IEnumerable<LocationResponse>> GetCityAsync()
-//        {
-//            throw new NotImplementedException();
-//        }
+            if (address == null)
+            {
+                return new Result<AddressResponse?>("error", 404, "Địa Chỉ Không Tồn Tại!");
+            }
 
-//        public Task<IEnumerable<LocationResponse>> GetProvinceByCityAsync(string city)
-//        {
-//            throw new NotImplementedException();
-//        }
+            var data = _mapper.Map<AddressResponse>(address);
 
-//        public Task<IEnumerable<LocationResponse>> GetWardByProvinceAsync(string ward)
-//        {
-//            throw new NotImplementedException();
-//        }
+            return new Result<AddressResponse?>("success", "Lấy Địa Chỉ Thành Công!", data);
+        }
 
-//        public async Task<Result> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
-//        {
-//            var oldAddress = await _addressRepository.GetAddressesByIdAsync(id);
+        public async Task<int> GetAddressMaxIdAsync()
+        {
+            return await _addressRepository.GetAddressMaxIdAsync();
+        }
 
-//            if (oldAddress == null)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Địa chỉ không tồn tại!" };
-//            }
+        public Task<Result<IEnumerable<LocationResponse>>> GetCityAsync()
+        {
+            throw new NotImplementedException();
+        }
 
-//            var newAddress = _mapper.Map(updateAddressRequest, oldAddress);
+        public Task<Result<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city)
+        {
+            throw new NotImplementedException();
+        }
 
-//            try
-//            {
-//                await _addressRepository.UpdateAddressAsync(newAddress);
+        public Task<Result<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward)
+        {
+            throw new NotImplementedException();
+        }
 
-//                return new Result { IsSuccess = true, Message = "Cập nhập địa chỉ thành công!" };
-//            }
-//            catch (Exception)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Cập nhập địa chỉ thát bại!" };
-//            }
-//        }
+        public async Task<Result<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
+        {
+            var oldAddress = await _addressRepository.GetAddressesByIdAsync(id);
 
-//        public async Task<Result> UpdateAddressDefaultAsync(int id)
-//        {
-//            var address = await _addressRepository.GetAddressesByIdAsync(id);
+            if (oldAddress == null)
+            {
+                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+            }
 
-//            if (address == null)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Địa chỉ không tồn tại!" };
-//            }
+            var newAddress = _mapper.Map(updateAddressRequest, oldAddress);
 
-//            var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(address.AccountId);
+            try
+            {
+                await _addressRepository.UpdateAddressAsync(newAddress);
 
-//            if (oldDefault != null)
-//            {
-//                address.IsDefault = true;
-//                oldDefault.IsDefault = false;
-//            }
+                return new Result<AddressResponse>("success", "Cập Nhập Địa Chỉ Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new Result<AddressResponse>("error", 400, "Cập Nhập Địa Chỉ Thất Bại!");
+            }
+        }
 
-//            address.IsDefault = true;
+        public async Task<Result<AddressResponse>> UpdateAddressDefaultAsync(int id)
+        {
+            var address = await _addressRepository.GetAddressesByIdAsync(id);
 
-//            try
-//            {
-//                await _addressRepository.UpdateAddressAsync(address);
+            if (address == null)
+            {
+                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+            }
 
-//                if (oldDefault != null)
-//                {
-//                    await _addressRepository.UpdateAddressAsync(oldDefault);
-//                }
+            var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(address.AccountId);
 
-//                return new Result { IsSuccess = true, Message = "Đổi địa chỉ mặc định thành công!" };
-//            }
-//            catch (Exception)
-//            {
-//                return new Result { IsSuccess = false, StatusCode = 400, Message = "Đổi địa chỉ mặc định thành công!" };
-//            }
-//        }
-//    }
-//}
+            if (oldDefault != null)
+            {
+                address.IsDefault = true;
+                oldDefault.IsDefault = false;
+            }
+
+            address.IsDefault = true;
+
+            try
+            {
+                await _addressRepository.UpdateAddressAsync(address);
+
+                if (oldDefault != null)
+                {
+                    await _addressRepository.UpdateAddressAsync(oldDefault);
+                }
+
+                return new Result<AddressResponse>("success", " Đổi Địa Chỉ Mặc Định Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new Result<AddressResponse>("error", 400, " Đổi Địa Chỉ Mặc Định Thất Bại!"); ;
+            }
+        }
+    }
+}
