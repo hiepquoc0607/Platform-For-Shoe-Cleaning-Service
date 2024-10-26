@@ -6,24 +6,24 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IAddressService
     {
-        Task<Result<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id);
+        Task<ApiResponse<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id);
 
-        Task<Result<AddressResponse?>> GetAddressesByIdAsync(int id);
+        Task<ApiResponse<AddressResponse?>> GetAddressesByIdAsync(int id);
 
         Task<int> GetAddressMaxIdAsync();
 
-        Task<Result<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest);
+        Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest);
 
-        Task<Result<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest);
+        Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest);
 
-        Task<Result<AddressResponse>> UpdateAddressDefaultAsync(int id);
+        Task<ApiResponse<AddressResponse>> UpdateAddressDefaultAsync(int id);
 
-        Task<Result<AddressResponse>> DeleteAddressAsync(int id);
+        Task<ApiResponse<AddressResponse>> DeleteAddressAsync(int id);
 
-        Task<Result<IEnumerable<LocationResponse>>> GetCityAsync();
+        Task<ApiResponse<IEnumerable<LocationResponse>>> GetCityAsync();
 
-        Task<Result<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city);
+        Task<ApiResponse<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city);
 
-        Task<Result<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward);
+        Task<ApiResponse<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward);
     }
 }

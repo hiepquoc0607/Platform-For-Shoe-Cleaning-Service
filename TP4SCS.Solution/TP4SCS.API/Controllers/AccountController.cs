@@ -23,9 +23,9 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.GetAccountsAsync(getAccountRequest);
 
-            if (result == null)
+            if (result.StatusCode!=200)
             {
-                return NotFound(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
@@ -37,9 +37,9 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.GetAccountByIdAsync(id);
 
-            if (result == null)
+            if (result.StatusCode != 200)
             {
-                return NotFound(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
@@ -56,9 +56,9 @@ namespace TP4SCS.API.Controllers
                 return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
             }
 
-            if (!result.Status.Equals("error"))
+            if (result.StatusCode != 200)
             {
-                return BadRequest(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             int newAccId = await _accountService.GetAccountMaxIdAsync();
@@ -72,7 +72,7 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.UpdateAccountAsync(id, updateAccountRequest);
 
-            if (!result.Status.Equals("error"))
+            if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }
@@ -86,7 +86,7 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.UpdateAccountStatusForAdminAsync(id, status);
 
-            if (!result.Status.Equals("error"))
+            if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }
@@ -100,7 +100,7 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.DeleteAccountAsync(id);
 
-            if (!result.Status.Equals("error"))
+            if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }

@@ -22,9 +22,9 @@ namespace TP4SCS.Library.Models.Response.General
         public int TotalPages { get; set; }
     }
 
-    public class Result<T>
+    public class ApiResponse<T>
     {
-        public Result(string status, string message, T? data, Pagination? pagination = null)
+        public ApiResponse(string status, string message, T? data, Pagination? pagination = null)
         {
             Status = status;
             Message = message;
@@ -32,7 +32,7 @@ namespace TP4SCS.Library.Models.Response.General
             Pagination = pagination;
         }
 
-        public Result(string status, int statusCode, string message)
+        public ApiResponse(string status, int statusCode, string message)
         {
             Status = status;
             StatusCode = statusCode;
@@ -43,7 +43,7 @@ namespace TP4SCS.Library.Models.Response.General
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [DefaultValue(200)]
-        public int StatusCode { get; set; }
+        public int StatusCode { get; set; } = 200;
 
         public string Message { get; set; } = string.Empty;
 

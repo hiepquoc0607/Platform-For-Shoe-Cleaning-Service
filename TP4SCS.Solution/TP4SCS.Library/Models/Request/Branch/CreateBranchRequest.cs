@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Branch
 {
@@ -21,5 +22,9 @@ namespace TP4SCS.Library.Models.Request.Branch
 
         [Required]
         public string City { get; set; } = string.Empty;
+
+        [Required]
+        [DefaultValue(true)]
+        public bool IsDeliverySupport { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<AuthResponse>> LoginAsync(LoginRequest loginRequest);
+        Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
-        Task<Result<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
+        Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     }
 }

@@ -2,6 +2,7 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Response.Account;
+using TP4SCS.Library.Models.Response.Auth;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
@@ -22,6 +23,8 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.Password, src => src.PasswordHash);
 
             config.NewConfig<Account, AccountResponse>();
+
+            config.NewConfig<AuthResponse, Account>();
         }
     }
 }
