@@ -57,7 +57,6 @@ namespace TP4SCS.Services.Implements
                 var service = _mapper.Map<Service>(serviceRequest);
                 service.BranchId = branchId;
                 service.CreateTime = DateTime.Now;
-                service.Status = Util.UpperCaseStringStatic("active");
 
                 services.Add(service);
             }
@@ -149,7 +148,7 @@ namespace TP4SCS.Services.Implements
 
             existingService.Name = serviceUpdateRequest.Name;
             existingService.CategoryId = serviceUpdateRequest.CategoryId;
-            existingService.Description = serviceUpdateRequest.Description;
+            existingService.Description = serviceUpdateRequest.Description ?? "";
             existingService.Price = serviceUpdateRequest.Price;
             existingService.Rating = serviceUpdateRequest.Rating;
             existingService.Status = serviceUpdateRequest.Status;

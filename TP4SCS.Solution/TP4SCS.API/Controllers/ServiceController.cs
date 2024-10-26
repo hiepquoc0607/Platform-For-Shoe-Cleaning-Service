@@ -102,11 +102,15 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.Status))
+                {
+                    throw new ArgumentException("Status không được bỏ trống.", nameof(request.Status));
+                }
+                request.Status = request.Status.ToUpper();
                 await _serviceService.AddServiceAsync(request);
 
                 var serviceResponse = _mapper.Map<ServiceCreateResponse>(_mapper.Map<Service>(request));
                 serviceResponse.BranchId = request.BranchId;
-                serviceResponse.Status = Util.TranslateGeneralStatus("active") ?? "Hoạt Động";
                 return Ok(new ResponseObject<ServiceCreateResponse>("Create Service Success", serviceResponse));
             }
             catch (ArgumentNullException ex)
@@ -128,6 +132,11 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.Status))
+                {
+                    throw new ArgumentException("Status không được bỏ trống.", nameof(request.Status));
+                }
+                request.Status = request.Status.ToUpper();
                 await _serviceService.UpdateServiceAsync(request, existingServiceId);
                 var service = await _serviceService.GetServiceByIdAsync(existingServiceId);
                 return Ok(new ResponseObject<ServiceResponse>("Update Service Success",
