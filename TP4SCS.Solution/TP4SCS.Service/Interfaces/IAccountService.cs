@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Request.Account;
-using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;

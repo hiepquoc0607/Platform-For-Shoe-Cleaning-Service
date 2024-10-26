@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.Account
+﻿using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Response.Account
 {
     public class AccountResponse
     {
@@ -6,7 +8,8 @@
 
         public string Email { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? PasswordHash { get; set; } = null;
 
         public string FullName { get; set; } = null!;
 
@@ -16,13 +19,13 @@
 
         public DateOnly Dob { get; set; }
 
-        public DateTime? ExpiredTime { get; set; }
-
         public string? ImageUrl { get; set; }
 
-        public string? RefreshToken { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? RefreshToken { get; set; } = null;
 
-        public string? Fcmtoken { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Fcmtoken { get; set; } = null;
 
         public string Role { get; set; } = null!;
 

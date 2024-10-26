@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Request.Account;
+﻿using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Services.Interfaces;
 
