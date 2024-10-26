@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MapsterMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,13 +18,15 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IConfiguration _configuration;
         private readonly IAccountRepository _accountRepository;
+        private readonly IMapper _mapper;
         private readonly Util _util;
         private static readonly DateTime _time = DateTime.Now.AddDays(1);
 
-        public AuthService(IConfiguration configuration, IAccountRepository accountRepository, Util util)
+        public AuthService(IConfiguration configuration, IAccountRepository accountRepository, IMapper mapper, Util util)
         {
             _configuration = configuration;
             _accountRepository = accountRepository;
+            _mapper = mapper;
             _util = util;
         }
 
@@ -64,32 +67,20 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+                return new ApiResponse<AuthResponse>("error", 401, "Xác thực thất bại");
             }
 
             if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
             {
-                return new ApiResponse<AuthResponse>("error", 400, "Mật Khẩu Không Đúng!");
+                return new ApiResponse<AuthResponse>("error", 401, "Mật Khẩu Không Đúng!");
             }
 
             var token = GenerateToken(account);
             var expiredIn = CaculateSeccond(_time);
 
-            var data = new AuthResponse
-            {
-                Id = account.Id,
-                Email = account.Email,
-                Fullname = account.FullName,
-                Phone = account.Phone,
-                Gender = account.Gender,
-                Dob = account.Dob,
-                ImageUrl = account.ImageUrl,
-                RefreshToken = account.RefreshToken,
-                Fcmtoken = account.Fcmtoken,
-                Role = account.Role,
-                Token = token,
-                ExpiresIn = expiredIn
-            };
+            var data = _mapper.Map<AuthResponse>(account);
+            data.Token = token;
+            data.ExpiresIn = expiredIn;
 
             return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
         }

@@ -43,7 +43,7 @@ namespace TP4SCS.Library.Models.Response.General
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [DefaultValue(200)]
-        public int StatusCode { get; set; }
+        public int StatusCode { get; set; } = 200;
 
         public string Message { get; set; } = string.Empty;
 

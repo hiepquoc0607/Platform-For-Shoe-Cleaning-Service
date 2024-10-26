@@ -22,7 +22,7 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _authService.LoginAsync(loginRequest);
 
-            if (!result.Status.Equals("success"))
+            if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }
@@ -53,7 +53,7 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _authService.ResetPasswordAsync(resetPasswordRequest);
 
-            if (!result.Status.Equals("success"))
+            if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }

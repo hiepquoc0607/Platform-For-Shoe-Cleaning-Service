@@ -26,7 +26,7 @@ namespace TP4SCS.API.Controllers
 
             if (result.StatusCode != 200)
             {
-                return NotFound(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
@@ -40,7 +40,7 @@ namespace TP4SCS.API.Controllers
 
             if (result.StatusCode != 200)
             {
-                return NotFound(result);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
@@ -107,7 +107,7 @@ namespace TP4SCS.API.Controllers
             var result = await _addressService.DeleteAddressAsync(id);
             if (result.StatusCode != 200)
             {
-                return StatusCode(result.StatusCode, result.Message);
+                return StatusCode(result.StatusCode, result);
             }
 
             return Ok(result);
