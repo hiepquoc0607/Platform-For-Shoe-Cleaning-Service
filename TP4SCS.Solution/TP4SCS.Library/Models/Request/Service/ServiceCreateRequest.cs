@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TP4SCS.Library.Models.Request.Service
+﻿namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceCreateRequest
     {
@@ -16,5 +10,6 @@ namespace TP4SCS.Library.Models.Request.Service
         public string? Description { get; set; }
 
         public decimal Price { get; set; }
+        public string Status { get; set; } = "Active";
     }
 }
