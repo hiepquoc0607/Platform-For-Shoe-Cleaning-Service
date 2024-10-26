@@ -58,18 +58,18 @@ namespace TP4SCS.Services.Implements
         }
 
         //Login
-        public async Task<Result<AuthResponse>> LoginAsync(LoginRequest loginRequest)
+        public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest)
         {
             var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email);
 
             if (account == null)
             {
-                return new Result<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
             if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
             {
-                return new Result<AuthResponse>("error", 400, "Mật Khẩu Không Đúng!");
+                return new ApiResponse<AuthResponse>("error", 400, "Mật Khẩu Không Đúng!");
             }
 
             var token = GenerateToken(account);
@@ -91,22 +91,22 @@ namespace TP4SCS.Services.Implements
                 ExpiresIn = expiredIn
             };
 
-            return new Result<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
         }
 
         //Reset Password
-        public async Task<Result<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+        public async Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
         {
             var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email);
 
             if (account == null)
             {
-                return new Result<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
             if (!resetPasswordRequest.NewPassword.Equals(resetPasswordRequest.ConfirmPassword))
             {
-                return new Result<AuthResponse>("error", 400, "Mật Khẩu Xác Nhận Không Trùng!");
+                return new ApiResponse<AuthResponse>("error", 400, "Mật Khẩu Xác Nhận Không Trùng!");
             }
 
             account.PasswordHash = _util.HashPassword(resetPasswordRequest.NewPassword);
@@ -115,11 +115,11 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result<AuthResponse>("success", "Đặt Lại Mật Khẩu Thành Công!", null);
+                return new ApiResponse<AuthResponse>("success", "Đặt Lại Mật Khẩu Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AuthResponse>("error", 400, "Đặt Lại Mật Khẩu Thất Bại!");
+                return new ApiResponse<AuthResponse>("error", 400, "Đặt Lại Mật Khẩu Thất Bại!");
             }
         }
     }

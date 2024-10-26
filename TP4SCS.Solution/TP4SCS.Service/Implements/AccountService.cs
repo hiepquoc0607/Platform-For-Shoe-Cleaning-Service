@@ -27,7 +27,7 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Account
-        public async Task<Result<AccountResponse>> CreateAccountAsync(CreateAccountRequest createAccountRequest)
+        public async Task<ApiResponse<AccountResponse>> CreateAccountAsync(CreateAccountRequest createAccountRequest)
         {
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
 
@@ -41,26 +41,26 @@ namespace TP4SCS.Services.Implements
 
             if (passwordErrorMessages.TryGetValue(passwordError, out var message))
             {
-                return new Result<AccountResponse>("error", 400, message);
+                return new ApiResponse<AccountResponse>("error", 400, message);
             }
 
             var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.ToLower());
 
             if (isEmailExisted == true)
             {
-                return new Result<AccountResponse>("error", 400, "Email đã được sử dụng!");
+                return new ApiResponse<AccountResponse>("error", 400, "Email đã được sử dụng!");
             }
 
             var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
 
             if (isPhoneExisted == true)
             {
-                return new Result<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
+                return new ApiResponse<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
             }
 
             if (!_util.CheckAccountRole(createAccountRequest.Role))
             {
-                return new Result<AccountResponse>("error", 400, "Role Không Phù Hợp!");
+                return new ApiResponse<AccountResponse>("error", 400, "Role Không Phù Hợp!");
             }
 
             createAccountRequest.Role = createAccountRequest.Role.ToUpper();
@@ -77,23 +77,23 @@ namespace TP4SCS.Services.Implements
 
                 var newAcc = await GetAccountByIdAsync(maxId);
 
-                return new Result<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data);
+                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data);
             }
             catch (Exception)
             {
-                return new Result<AccountResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+                return new ApiResponse<AccountResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
             }
         }
 
 
         //Delete Account
-        public async Task<Result<AccountResponse>> DeleteAccountAsync(int id)
+        public async Task<ApiResponse<AccountResponse>> DeleteAccountAsync(int id)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
 
             if (account == null)
             {
-                return new Result<AccountResponse>("error", 400, "Tài Khoản Không Tồn Tại!");
+                return new ApiResponse<AccountResponse>("error", 400, "Tài Khoản Không Tồn Tại!");
             }
 
             account.Status = "INACTIVE";
@@ -102,24 +102,24 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result<AccountResponse>("success", "Xoá Tài Khoản Thành Công!", null);
+                return new ApiResponse<AccountResponse>("success", "Xoá Tài Khoản Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AccountResponse>("error", 400, "Xoá Tài Khoản Thất Bại!");
+                return new ApiResponse<AccountResponse>("error", 400, "Xoá Tài Khoản Thất Bại!");
             }
 
         }
 
 
         //Get Account By Id
-        public async Task<Result<AccountResponse?>> GetAccountByIdAsync(int id)
+        public async Task<ApiResponse<AccountResponse?>> GetAccountByIdAsync(int id)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
 
             if (account == null)
             {
-                return new Result<AccountResponse?>("error", 404, "Tài Khoản Không Tồn Tại!");
+                return new ApiResponse<AccountResponse?>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
             account.Role = _util.TranslateAccountRole(account.Role);
@@ -127,7 +127,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new Result<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
         }
 
         //Get Account Max Id
@@ -137,13 +137,13 @@ namespace TP4SCS.Services.Implements
         }
 
         //Get Accounts
-        public async Task<Result<IEnumerable<AccountResponse>?>> GetAccountsAsync(GetAccountRequest getAccountRequest)
+        public async Task<ApiResponse<IEnumerable<AccountResponse>?>> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
             var accounts = await _accountRepository.GetAccountsAsync(getAccountRequest);
 
             if (accounts == null)
             {
-                return new Result<IEnumerable<AccountResponse>?>("error", 404, "Tài Khoản Trống!");
+                return new ApiResponse<IEnumerable<AccountResponse>?>("error", 404, "Tài Khoản Trống!");
             }
 
             //Paging caculate
@@ -154,17 +154,17 @@ namespace TP4SCS.Services.Implements
 
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
-            return new Result<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, paging);
+            return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, paging);
         }
 
         //Update Account
-        public async Task<Result<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest)
+        public async Task<ApiResponse<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest)
         {
             var oldAccount = await _accountRepository.GetAccountByIdAsync(id);
 
             if (oldAccount == null)
             {
-                return new Result<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
+                return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
             var newAccount = _mapper.Map(updateAccountRequest, oldAccount);
@@ -173,28 +173,28 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.UpdateAccountAsync(newAccount);
 
-                return new Result<AccountResponse>("success", "Cập Nhập Tài Khoản Thành Công!", null);
+                return new ApiResponse<AccountResponse>("success", "Cập Nhập Tài Khoản Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thất Bại!");
+                return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thất Bại!");
             }
 
         }
 
         //Update Account Status For Admin
-        public async Task<Result<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, string status)
+        public async Task<ApiResponse<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, string status)
         {
             var account = await _accountRepository.GetAccountByIdAsync(id);
 
             if (account == null)
             {
-                return new Result<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
+                return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
             if (!_util.CheckAccountStatusForAdmin(account.Status, status))
             {
-                return new Result<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
+                return new ApiResponse<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
             }
 
             account.Status = status.ToUpper() switch
@@ -208,11 +208,11 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.UpdateAccountAsync(account);
 
-                return new Result<AccountResponse>("success", "Cập Nhập Trạng Thái Tài Khoản Thành Công!", null);
+                return new ApiResponse<AccountResponse>("success", "Cập Nhập Trạng Thái Tài Khoản Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AccountResponse>("error", 400, "Cập Nhập Trạng Thái Tài Khoản Thất Bại!");
+                return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Trạng Thái Tài Khoản Thất Bại!");
             }
         }
     }

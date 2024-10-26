@@ -23,7 +23,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
-        public async Task<Result<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
+        public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
         {
             while (createAddressRequest.IsDefault == true)
             {
@@ -39,7 +39,7 @@ namespace TP4SCS.Services.Implements
                     }
                     catch (Exception)
                     {
-                        return new Result<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
+                        return new ApiResponse<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
                     }
                 }
             }
@@ -54,61 +54,61 @@ namespace TP4SCS.Services.Implements
 
                 var newAddr = await GetAddressesByIdAsync(newId);
 
-                return new Result<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data);
+                return new ApiResponse<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data);
             }
             catch (Exception)
             {
-                return new Result<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
+                return new ApiResponse<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
             }
         }
 
-        public async Task<Result<AddressResponse>> DeleteAddressAsync(int id)
+        public async Task<ApiResponse<AddressResponse>> DeleteAddressAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);
 
             if (address == null)
             {
-                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+                return new ApiResponse<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
             }
 
             try
             {
                 await _addressRepository.DeletAddressAsync(id);
 
-                return new Result<AddressResponse>("success", "Xoá Địa Chỉ Thành Công!", null);
+                return new ApiResponse<AddressResponse>("success", "Xoá Địa Chỉ Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AddressResponse>("success", 400, "Xoá Địa Chỉ Thất Bại!");
+                return new ApiResponse<AddressResponse>("success", 400, "Xoá Địa Chỉ Thất Bại!");
             }
         }
 
-        public async Task<Result<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id)
+        public async Task<ApiResponse<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByAccountIdAsync(id);
 
             if (address == null)
             {
-                return new Result<IEnumerable<AddressResponse>?>("error", 404, "Tài Khoản Không Có Địa Chỉ!");
+                return new ApiResponse<IEnumerable<AddressResponse>?>("error", 404, "Tài Khoản Không Có Địa Chỉ!");
             }
 
             var data = address.Adapt<IEnumerable<AddressResponse>>();
 
-            return new Result<IEnumerable<AddressResponse>?>("success", "Lấy Địa Chỉ Thành Công!", data);
+            return new ApiResponse<IEnumerable<AddressResponse>?>("success", "Lấy Địa Chỉ Thành Công!", data);
         }
 
-        public async Task<Result<AddressResponse?>> GetAddressesByIdAsync(int id)
+        public async Task<ApiResponse<AddressResponse?>> GetAddressesByIdAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);
 
             if (address == null)
             {
-                return new Result<AddressResponse?>("error", 404, "Địa Chỉ Không Tồn Tại!");
+                return new ApiResponse<AddressResponse?>("error", 404, "Địa Chỉ Không Tồn Tại!");
             }
 
             var data = _mapper.Map<AddressResponse>(address);
 
-            return new Result<AddressResponse?>("success", "Lấy Địa Chỉ Thành Công!", data);
+            return new ApiResponse<AddressResponse?>("success", "Lấy Địa Chỉ Thành Công!", data);
         }
 
         public async Task<int> GetAddressMaxIdAsync()
@@ -116,28 +116,28 @@ namespace TP4SCS.Services.Implements
             return await _addressRepository.GetAddressMaxIdAsync();
         }
 
-        public Task<Result<IEnumerable<LocationResponse>>> GetCityAsync()
+        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetCityAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Result<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city)
+        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Result<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward)
+        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
+        public async Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
         {
             var oldAddress = await _addressRepository.GetAddressesByIdAsync(id);
 
             if (oldAddress == null)
             {
-                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+                return new ApiResponse<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
             }
 
             var newAddress = _mapper.Map(updateAddressRequest, oldAddress);
@@ -146,21 +146,21 @@ namespace TP4SCS.Services.Implements
             {
                 await _addressRepository.UpdateAddressAsync(newAddress);
 
-                return new Result<AddressResponse>("success", "Cập Nhập Địa Chỉ Thành Công!", null);
+                return new ApiResponse<AddressResponse>("success", "Cập Nhập Địa Chỉ Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AddressResponse>("error", 400, "Cập Nhập Địa Chỉ Thất Bại!");
+                return new ApiResponse<AddressResponse>("error", 400, "Cập Nhập Địa Chỉ Thất Bại!");
             }
         }
 
-        public async Task<Result<AddressResponse>> UpdateAddressDefaultAsync(int id)
+        public async Task<ApiResponse<AddressResponse>> UpdateAddressDefaultAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);
 
             if (address == null)
             {
-                return new Result<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
+                return new ApiResponse<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
             }
 
             var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(address.AccountId);
@@ -182,11 +182,11 @@ namespace TP4SCS.Services.Implements
                     await _addressRepository.UpdateAddressAsync(oldDefault);
                 }
 
-                return new Result<AddressResponse>("success", " Đổi Địa Chỉ Mặc Định Thành Công!", null);
+                return new ApiResponse<AddressResponse>("success", " Đổi Địa Chỉ Mặc Định Thành Công!", null);
             }
             catch (Exception)
             {
-                return new Result<AddressResponse>("error", 400, " Đổi Địa Chỉ Mặc Định Thất Bại!"); ;
+                return new ApiResponse<AddressResponse>("error", 400, " Đổi Địa Chỉ Mặc Định Thất Bại!"); ;
             }
         }
     }
