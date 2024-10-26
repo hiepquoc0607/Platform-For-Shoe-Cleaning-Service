@@ -37,11 +37,13 @@ namespace TP4SCS.Repository.Implements
                 //Search
                 if (!string.IsNullOrEmpty(getAccountRequest.SearchKey))
                 {
-                    string searchKey = getAccountRequest.SearchKey.ToLower();
-                    accounts = accounts.Where(r => r.FullName.ToLower().Contains(searchKey) || r.Email.ToLower().Contains(searchKey));
+                    var searchKey = getAccountRequest.SearchKey.ToLower();
+                    accounts = accounts.Where(r =>
+                        EF.Functions.Like(r.FullName.ToLower(), $"%{searchKey}%") ||
+                        EF.Functions.Like(r.Email.ToLower(), $"%{searchKey}%"));
                 }
 
-                //Sort
+                //Order Sort
                 if (!string.IsNullOrEmpty(getAccountRequest.SortBy))
                 {
                     accounts = getAccountRequest.SortBy.ToUpper() switch
@@ -60,15 +62,32 @@ namespace TP4SCS.Repository.Implements
                 }
 
                 //Paging
-                int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
+                if (getAccountRequest.PageNum > 0 && getAccountRequest.PageSize > 0)
+                {
+                    int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
+                    accounts = accounts.Skip(skipNum).Take(getAccountRequest.PageSize);
+                }
 
-                return await accounts.Skip(skipNum).Take(getAccountRequest.PageSize).ToListAsync();
+                return await accounts.Select(a => new Account
+                {
+                    Id = a.Id,
+                    Email = a.Email,
+                    FullName = a.FullName,
+                    Phone = a.Phone,
+                    Gender = a.Gender,
+                    Dob = a.Dob,
+                    ImageUrl = a.ImageUrl,
+                    Role = a.Role,
+                    Status = a.Status,
+                })
+                    .ToListAsync();
             }
             catch (Exception)
             {
                 return null;
             }
         }
+
 
         public async Task<Account?> GetAccountLoginByEmailAsync(string email)
         {

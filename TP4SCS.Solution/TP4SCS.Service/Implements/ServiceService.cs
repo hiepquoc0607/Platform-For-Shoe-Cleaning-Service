@@ -166,8 +166,8 @@ namespace TP4SCS.Services.Implements
             // Lọc ra các dịch vụ có khuyến mãi còn hiệu lực
             var discountedServices = services?.Where(service =>
                 service.Promotion != null &&
-                service.Promotion.StartTime.Date <= DateTime.Now.Date &&
-                service.Promotion.EndTime.Date >= DateTime.Now.Date && 
+                //service.Promotion.StartTime.Date <= DateTime.Now.Date &&
+                //service.Promotion.EndTime.Date >= DateTime.Now.Date && 
                 service.Promotion.Status.ToUpper() == StatusConstants.Available.ToUpper()
             );
 
