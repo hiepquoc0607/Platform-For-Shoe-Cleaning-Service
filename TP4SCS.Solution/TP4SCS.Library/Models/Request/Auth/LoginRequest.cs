@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Auth
 {
@@ -10,6 +11,7 @@ namespace TP4SCS.Library.Models.Request.Auth
 
         [Required]
         [MinLength(8)]
+        [DefaultValue("password")]
         public string Password { get; set; } = null!;
     }
 }

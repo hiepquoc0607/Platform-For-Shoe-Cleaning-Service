@@ -9,6 +9,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Account?> GetAccountByIdAsync(int id);
 
+        Task<Account?> GetAccountByIdForAdminAsync(int id);
+
         Task<Account?> GetAccountLoginByEmailAsync(string email);
 
         Task<Account?> GetAccountByEmailAsync(string email);

@@ -118,11 +118,11 @@ builder.Services.AddAuthentication(options =>
 //Config Authorization
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("Moderator", policy => policy.RequireRole("Admin, Moderator"));
-    options.AddPolicy("Customer", policy => policy.RequireRole("Admin, Customer, Owner"));
-    options.AddPolicy("Owner", policy => policy.RequireRole("Admin, Owner"));
-    options.AddPolicy("Employee", policy => policy.RequireRole("Admin, Owner, Employee"));
+    options.AddPolicy("Admin", policy => policy.RequireRole("ADMIN"));
+    options.AddPolicy("Moderator", policy => policy.RequireRole("ADMIN, MODERATOR"));
+    options.AddPolicy("Customer", policy => policy.RequireRole("ADMIN, CUSTOMER, OWNER"));
+    options.AddPolicy("Owner", policy => policy.RequireRole("ADMIN, OWNER"));
+    options.AddPolicy("Employee", policy => policy.RequireRole("ADMIN, OWNER, EMPLOYEE"));
 });
 
 //Config CORS
