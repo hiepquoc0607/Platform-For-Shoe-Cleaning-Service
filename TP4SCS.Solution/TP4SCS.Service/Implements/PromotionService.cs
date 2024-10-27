@@ -25,21 +25,10 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentNullException(nameof(promotion), "Yêu cầu khuyến mãi không được để trống.");
             }
 
-            if (promotion.SaleOff < 0 || promotion.SaleOff > 100)
+            if (promotion.NewPrice <= 0)
             {
-                throw new ArgumentException("Giảm giá phải nằm trong khoảng từ 0 đến 100%.");
+                throw new ArgumentException("Giá mới phải lớn hơn 0.");
             }
-
-            //if (promotion.StartTime.Date < DateTime.Now.Date)
-            //{
-            //    throw new ArgumentException("Ngày bắt đầu phải sau hoặc bằng hôm nay.");
-            //}
-
-            //if (promotion.EndTime.Date <= promotion.StartTime.Date)
-            //{
-            //    throw new ArgumentException("Ngày kết thúc phải sau ngày bắt đầu.");
-            //}
-
 
             var service = await _serviceRepository.GetServiceByIdAsync(promotion.ServiceId);
             if (service == null)
@@ -55,8 +44,7 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
             }
             promotion.Status = StatusConstants.Available.ToUpper();
-            promotion.NewPrice = service.Price * (1 - (decimal)promotion.SaleOff / 100);
-
+            promotion.SaleOff = promotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
             await _promotionRepository.AddPromotionAsync(promotion);
         }
         public async Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null)
@@ -106,19 +94,7 @@ namespace TP4SCS.Services.Implements
             if (promotion.SaleOff < 0 || promotion.SaleOff > 100)
             {
                 throw new ArgumentException("Giảm giá phải nằm trong khoảng từ 0 đến 100%.");
-            }
-
-            //if (promotion.StartTime < DateTime.Now.AddDays(1))
-            //{
-            //    throw new ArgumentException("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hôm sau.");
-            //}
-
-            //if (promotion.EndTime <= promotion.StartTime)
-            //{
-            //    throw new ArgumentException("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-            //}
-
-            
+            }            
 
             var existingPromotion = await _promotionRepository.GetPromotionByIdAsync(existingPromotionId);
             if (existingPromotion == null)
@@ -130,10 +106,8 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("ID dịch vụ không hợp lệ.");
             }
-            existingPromotion.SaleOff = promotion.SaleOff;
-            existingPromotion.NewPrice = service.Price * (1 - (decimal)promotion.SaleOff / 100);
-            //existingPromotion.StartTime = promotion.StartTime;
-            //existingPromotion.EndTime = promotion.EndTime;
+            existingPromotion.NewPrice = promotion.NewPrice;
+            existingPromotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
             existingPromotion.Status = Util.UpperCaseStringStatic(promotion.Status);
 
             await _promotionRepository.UpdatePromotionAsync(existingPromotion);
@@ -148,10 +122,8 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Khuyến mãi với ID {promotionId} không tìm thấy.");
             }
 
-            //bool isWithinDateRange = promotion.StartTime.Date <= DateTime.Now.Date && promotion.EndTime.Date >= DateTime.Now.Date;
             bool isActiveStatus = promotion.Status.Equals(StatusConstants.Available, StringComparison.OrdinalIgnoreCase);
 
-            //return isWithinDateRange && isActiveStatus;
             return isActiveStatus;
         }
     }

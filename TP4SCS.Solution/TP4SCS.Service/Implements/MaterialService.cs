@@ -65,7 +65,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<IEnumerable<Material>> GetAllMaterialsAsync(string? keyword = null, string? status = null)
         {
-            return await _materialRepository.GetAllMaterialsAsync(keyword, status);
+            return await _materialRepository.GetMaterialsAsync(keyword, status);
         }
 
         public async Task<int> GetTotalMaterialCountAsync(string? keyword = null, string? status = null)

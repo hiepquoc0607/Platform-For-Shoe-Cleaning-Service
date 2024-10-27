@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Request.Service
+﻿using TP4SCS.Library.Models.Request.Promotion;
+
+namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceUpdateRequest
     {
@@ -16,5 +18,6 @@
         public int OrderedNum { get; set; }
 
         public int FeedbackedNum { get; set; }
+        public PromotionUpdateRequest? PromotionUpdateRequest { get; set; }
     }
 }

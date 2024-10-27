@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
@@ -34,7 +33,7 @@ namespace TP4SCS.API.Controllers
                 pagedRequest.PageSize,
                 pagedRequest.OrderBy
             );
-            var totalCount = await _promotionService.GetTotalPromotionsCountAsync(pagedRequest.Keyword,pagedRequest.Status);
+            var totalCount = await _promotionService.GetTotalPromotionsCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<PromotionResponse>(promotions?.Select(p =>
             {

@@ -4,10 +4,6 @@
     {
         public int ServiceId { get; set; }
 
-        public int SaleOff { get; set; }
-
-        public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
+        public decimal NewPrice { get; set; }
     }
 }

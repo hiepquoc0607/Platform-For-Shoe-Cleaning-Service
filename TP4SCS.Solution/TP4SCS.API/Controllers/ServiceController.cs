@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
@@ -20,6 +19,7 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
+ 
 
         public ServiceController(IMapper mapper, IServiceService serviceService)
         {
@@ -33,7 +33,8 @@ namespace TP4SCS.API.Controllers
             var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword,
                 Util.TranslateGeneralStatus(pagedRequest.Status),
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
-            var totalCount = await _serviceService.GetTotalServiceCountAsync(pagedRequest.Keyword, pagedRequest.Status);
+            var totalCount = await _serviceService.GetTotalServiceCountAsync(pagedRequest.Keyword,
+                Util.TranslateGeneralStatus(pagedRequest.Status));
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
                 services?.Select(s =>
@@ -111,19 +112,20 @@ namespace TP4SCS.API.Controllers
 
                 var serviceResponse = _mapper.Map<ServiceCreateResponse>(_mapper.Map<Service>(request));
                 serviceResponse.BranchId = request.BranchId;
+                serviceResponse.NewPrice = request.NewPrice;
                 return Ok(new ResponseObject<ServiceCreateResponse>("Create Service Success", serviceResponse));
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<ServiceResponse>($"Error: {ex.Message}", null));
+                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Error: {ex.Message}", null));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<ServiceResponse>($"Validation Error: {ex.Message}", null));
+                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Validation Error: {ex.Message}", null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<ServiceResponse>($"An unexpected error occurred: {ex.Message}", null));
+                return StatusCode(500, new ResponseObject<ServiceCreateResponse>($"An unexpected error occurred: {ex.Message}", null));
             }
         }
 

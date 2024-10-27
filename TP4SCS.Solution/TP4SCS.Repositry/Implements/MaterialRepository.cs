@@ -80,13 +80,13 @@ namespace TP4SCS.Repository.Implements
             );
         }
 
-        public async Task<IEnumerable<Material>> GetAllMaterialsAsync(string? keyword = null, string? status = null)
+        public async Task<IEnumerable<Material>> GetMaterialsAsync(string? keyword = null, string? status = null)
         {
             Expression<Func<Material, bool>> filter = m =>
                 (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || m.Status.ToLower() == status.ToLower());
 
-            return await _dbContext.Materials
+            return await _dbContext.Materials.AsNoTracking()
                 .Where(filter)
                 .ToListAsync();
         }
@@ -97,7 +97,7 @@ namespace TP4SCS.Repository.Implements
                 (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || m.Status.ToLower() == status.ToLower());
 
-            return await _dbContext.Materials.CountAsync(filter);
+            return await _dbContext.Materials.AsNoTracking().CountAsync(filter);
         }
 
         public async Task UpdateMaterialAsync(Material material)

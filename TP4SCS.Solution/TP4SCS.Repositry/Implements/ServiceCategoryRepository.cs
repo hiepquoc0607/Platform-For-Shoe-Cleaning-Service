@@ -27,7 +27,7 @@ namespace TP4SCS.Repository.Implements
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
-            return await _dbContext.ServiceCategories.CountAsync(filter);
+            return await _dbContext.ServiceCategories.AsNoTracking().CountAsync(filter);
         }
         public Task<IEnumerable<ServiceCategory>?> GetCategoriesAsync(
             string? keyword = null,

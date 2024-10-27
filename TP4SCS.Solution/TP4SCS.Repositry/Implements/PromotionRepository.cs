@@ -32,7 +32,7 @@ namespace TP4SCS.Repository.Implements
                 (string.IsNullOrEmpty(keyword) || s.Service.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
-            return await _dbContext.Promotions.CountAsync(filter);
+            return await _dbContext.Promotions.AsNoTracking().CountAsync(filter);
         }
         public Task<IEnumerable<Promotion>?> GetPromotionsAsync(
             string? keyword = null,
