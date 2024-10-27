@@ -56,13 +56,16 @@ namespace TP4SCS.Repository.Implements
                 pageSize: pageSize
             );
         }
-        public async Task<IEnumerable<Service>> GetAllServicesAsync(string? keyword = null, string? status = null)
+
+
+        public async Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null)
         {
             Expression<Func<Service, bool>> filter = s =>
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
             return await _dbContext.Services
+                .AsNoTracking()
                 .Include(s => s.Promotion)
                 .Where(filter)
                 .ToListAsync();
@@ -74,7 +77,7 @@ namespace TP4SCS.Repository.Implements
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
-            return await _dbContext.Services.CountAsync(filter);
+            return await _dbContext.Services.AsNoTracking().CountAsync(filter);
         }
 
         public async Task UpdateServiceAsync(Service service)

@@ -18,7 +18,7 @@ namespace TP4SCS.Repository.Interfaces
             int pageSize = 5,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
 
-        Task<IEnumerable<Material>> GetAllMaterialsAsync(string? keyword = null, string? status = null);
+        Task<IEnumerable<Material>> GetMaterialsAsync(string? keyword = null, string? status = null);
 
         Task<int> GetTotalMaterialCountAsync(string? keyword = null, string? status = null);
 
