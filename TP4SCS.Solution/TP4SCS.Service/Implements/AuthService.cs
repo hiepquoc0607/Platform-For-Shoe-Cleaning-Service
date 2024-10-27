@@ -5,7 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Auth;
+using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils;
@@ -63,11 +65,16 @@ namespace TP4SCS.Services.Implements
         //Login
         public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email);
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email.ToLower().Trim());
 
             if (account == null)
             {
-                return new ApiResponse<AuthResponse>("error", 401, "Xác thực thất bại");
+                return new ApiResponse<AuthResponse>("error", 401, "Xác thực thất bại!");
+            }
+
+            if (account.Status.Equals("SUSPENDED"))
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Tài Khoản Đã Bị Khoá!");
             }
 
             if (!_util.CompareHashedPassword(loginRequest.Password, account.PasswordHash))
@@ -88,7 +95,22 @@ namespace TP4SCS.Services.Implements
         //Reset Password
         public async Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
         {
-            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email);
+            var passwordError = _util.CheckPasswordErrorType(resetPasswordRequest.NewPassword);
+
+            var passwordErrorMessages = new Dictionary<string, string>
+            {
+                { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
+                { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
+                { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
+                { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
+            };
+
+            if (passwordErrorMessages.TryGetValue(passwordError, out var message))
+            {
+                return new ApiResponse<AuthResponse>("error", 400, message);
+            }
+
+            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email.ToLower().Trim());
 
             if (account == null)
             {

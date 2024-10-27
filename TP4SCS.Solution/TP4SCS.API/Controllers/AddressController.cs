@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Request.Account;
+﻿using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Address;
-using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers

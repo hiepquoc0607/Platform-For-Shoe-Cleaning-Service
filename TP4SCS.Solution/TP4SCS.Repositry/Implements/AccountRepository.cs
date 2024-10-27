@@ -20,7 +20,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id && !a.Status.Equals("INACTIVE")).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -93,7 +93,9 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email) && !a.Status.Equals("INACTIVE"))
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -125,7 +127,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -136,6 +138,18 @@ namespace TP4SCS.Repository.Implements
         public async Task<int> CountAccountDataAsync()
         {
             return await _dbContext.Accounts.AsNoTracking().CountAsync();
+        }
+
+        public async Task<Account?> GetAccountByIdForAdminAsync(int id)
+        {
+            try
+            {
+                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

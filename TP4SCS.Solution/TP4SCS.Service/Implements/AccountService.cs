@@ -111,7 +111,6 @@ namespace TP4SCS.Services.Implements
 
         }
 
-
         //Get Account By Id
         public async Task<ApiResponse<AccountResponse?>> GetAccountByIdAsync(int id)
         {
@@ -168,6 +167,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map(updateAccountRequest, oldAccount);
+            newAccount.PasswordHash = _util.HashPassword(newAccount.PasswordHash);
 
             try
             {
@@ -183,21 +183,21 @@ namespace TP4SCS.Services.Implements
         }
 
         //Update Account Status For Admin
-        public async Task<ApiResponse<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, string status)
+        public async Task<ApiResponse<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, UpdateStatusRequest updateStatusRequest)
         {
-            var account = await _accountRepository.GetAccountByIdAsync(id);
+            var account = await _accountRepository.GetAccountByIdForAdminAsync(id);
 
             if (account == null)
             {
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
-            if (!_util.CheckAccountStatusForAdmin(account.Status, status))
+            if (!_util.CheckAccountStatusForAdmin(account.Status, updateStatusRequest.Status))
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
             }
 
-            account.Status = status.ToUpper() switch
+            account.Status = updateStatusRequest.Status.ToUpper().Trim() switch
             {
                 "INACTIVE" => "INACTIVE",
                 "SUSPENDED" => "SUSPENDED",

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Account
 {
@@ -20,9 +21,5 @@ namespace TP4SCS.Library.Models.Request.Account
         public DateTime? ExpiredTime { get; set; }
 
         public string? ImageUrl { get; set; }
-
-        public string? RefreshToken { get; set; }
-
-        public string? Fcmtoken { get; set; }
     }
 }
