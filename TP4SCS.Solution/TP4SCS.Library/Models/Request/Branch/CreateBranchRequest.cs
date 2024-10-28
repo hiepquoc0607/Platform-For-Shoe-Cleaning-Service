@@ -5,22 +5,29 @@ namespace TP4SCS.Library.Models.Request.Branch
 {
     public class CreateBranchRequest
     {
+        private string _name = string.Empty;
         [Required]
-        public int BusinessId { get; set; }
+        [DefaultValue("BranchName")]
+        public string Name
+        {
+            get => _name;
+            set => _name = value.Trim();
+        }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
-
-        [Required]
+        [DefaultValue("Address")]
         public string Address { get; set; } = string.Empty;
 
         [Required]
+        [DefaultValue("Ward")]
         public string Ward { get; set; } = string.Empty;
 
         [Required]
+        [DefaultValue("Province")]
         public string Province { get; set; } = string.Empty;
 
         [Required]
+        [DefaultValue("City")]
         public string City { get; set; } = string.Empty;
 
         [Required]

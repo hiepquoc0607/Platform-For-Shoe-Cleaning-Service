@@ -23,6 +23,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
+        //Create Address
         public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
         {
             while (createAddressRequest.IsDefault == true)
@@ -62,6 +63,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Delete Address
         public async Task<ApiResponse<AddressResponse>> DeleteAddressAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);
@@ -83,6 +85,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Get Address By Account Id
         public async Task<ApiResponse<IEnumerable<AddressResponse>?>> GetAddressesByAccountIdAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByAccountIdAsync(id);
@@ -97,6 +100,7 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<AddressResponse>?>("success", "Lấy Địa Chỉ Thành Công!", data);
         }
 
+        //Get Address By Id
         public async Task<ApiResponse<AddressResponse?>> GetAddressesByIdAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);
@@ -111,26 +115,31 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<AddressResponse?>("success", "Lấy Địa Chỉ Thành Công!", data);
         }
 
+        //Get Address Max Id
         public async Task<int> GetAddressMaxIdAsync()
         {
             return await _addressRepository.GetAddressMaxIdAsync();
         }
 
+        //Get City
         public Task<ApiResponse<IEnumerable<LocationResponse>>> GetCityAsync()
         {
             throw new NotImplementedException();
         }
 
+        //Get Province By City
         public Task<ApiResponse<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city)
         {
             throw new NotImplementedException();
         }
 
+        //Get Ward By Province
         public Task<ApiResponse<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward)
         {
             throw new NotImplementedException();
         }
 
+        //Update Address
         public async Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
         {
             var oldAddress = await _addressRepository.GetAddressesByIdAsync(id);
@@ -154,6 +163,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Update Address To Default
         public async Task<ApiResponse<AddressResponse>> UpdateAddressDefaultAsync(int id)
         {
             var address = await _addressRepository.GetAddressesByIdAsync(id);

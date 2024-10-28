@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Threading.RateLimiting;
+using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Implements;
@@ -71,6 +72,8 @@ builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository
 builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -82,6 +85,8 @@ builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
 
 //Register Firebase
 
@@ -158,7 +163,7 @@ app.UseSwagger();
 
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
-//app.UseCors("AllowSpecificOrigins");
+app.UseMiddleware<ResponseMiddleware>();
 
 app.UseCors("MyAllowSpecificOrigins");
 

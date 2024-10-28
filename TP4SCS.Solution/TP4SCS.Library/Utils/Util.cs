@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using TP4SCS.Library.Models.Request.Account;
+﻿using System.Text.RegularExpressions;
 
 namespace TP4SCS.Library.Utils
 {
@@ -42,7 +41,7 @@ namespace TP4SCS.Library.Utils
             return input.ToUpper();
         }
 
-        public bool CheckAccountStatusForAdmin(string status, string statusRequest)
+        public bool CheckStatusForAdmin(string status, string statusRequest)
         {
             return !string.Equals(status, statusRequest, StringComparison.OrdinalIgnoreCase);
         }
@@ -122,6 +121,61 @@ namespace TP4SCS.Library.Utils
             };
 
             return result;
+        }
+
+        public bool CheckBranchStatus(string status)
+        {
+            bool result = status.ToUpper() switch
+            {
+                "ACTIVE" => true,
+                "INACTIVE" => true,
+                "SUSPENDED" => true,
+                _ => false
+            };
+
+            return result;
+        }
+
+        public string CheckDeleteEmployeesErrorType(string? old, string input)
+        {
+            if (string.IsNullOrEmpty(old)) return "Empty";
+            if (!input.Trim().Trim().Split(", ").All(item => old.Trim().Split(", ").Contains(item)))
+            {
+                return "Exist";
+            }
+            if (!Regex.IsMatch(input, @"^[0-9, ]*$")) return "Invalid";
+
+            return "None";
+        }
+
+        public string CheckAddEmployeesErrorType(string? old, string input)
+        {
+            if (input.Split(',').Length > 5) return "Full";
+            if (!string.IsNullOrEmpty(old) && input.Trim().Trim().Split(", ").All(item => old.Trim().Split(", ").Contains(item)))
+            {
+                return "Exist";
+            }
+            if (!Regex.IsMatch(input, @"^[0-9, ]*$")) return "Invalid";
+
+            return "None";
+        }
+
+        public string DeleteEmployeesId(string? old, string input)
+        {
+            var oldArray = old?.Split(",").Select(item => item.Trim()).ToArray();
+            var inputArray = input.Split(",").Select(item => item.Trim()).ToArray();
+
+            var resultArray = oldArray?.Except(inputArray) ?? Array.Empty<string>();
+
+            return string.Join(", ", resultArray);
+        }
+
+        public string AddEmployeeId(string? old, string input)
+        {
+            var oldString = old?.Split(',').Select(x => x.Trim()) ?? Array.Empty<string>();
+            var inputString = input.Split(',').Select(x => x.Trim());
+
+            return string.Join(", ", oldString.Concat(inputString));
         }
     }
 }

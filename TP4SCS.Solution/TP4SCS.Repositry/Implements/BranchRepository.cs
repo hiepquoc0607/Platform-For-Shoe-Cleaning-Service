@@ -30,6 +30,16 @@ namespace TP4SCS.Repository.Implements
             return await _dbContext.BusinessBranches.Where(b => b.BusinessId == id).ToListAsync();
         }
 
+        public async Task<int[]?> GetBranchesIdByOwnerIdAsync(int id)
+        {
+            return await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .Where(p => p.OwnerId == id)
+                .SelectMany(p => p.BusinessBranches)
+                .Select(b => b.Id)
+                .ToArrayAsync();
+        }
+
         public async Task<int> GetBranchMaxIdAsync()
         {
             return await _dbContext.BusinessBranches.AsNoTracking().MaxAsync(b => b.Id);

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
@@ -75,7 +73,7 @@ namespace TP4SCS.API.Controllers
         [Route("api/accounts/{id}")]
         public async Task<IActionResult> UpdateAccountAsync([FromRoute] int id, UpdateAccountRequest updateAccountRequest)
         {
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userIdClaim == null || !userIdClaim.Equals(id.ToString()))
             {
