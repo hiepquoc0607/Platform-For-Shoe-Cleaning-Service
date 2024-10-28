@@ -6,8 +6,6 @@ public partial class Cart
 
     public int AccountId { get; set; }
 
-    public decimal TotalPrice { get; set; }
-
     public virtual Account Account { get; set; } = null!;
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

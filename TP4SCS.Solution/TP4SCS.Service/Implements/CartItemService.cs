@@ -7,10 +7,12 @@ namespace TP4SCS.Services.Implements
     public class CartItemService : ICartItemService
     {
         private readonly ICartItemRepository _cartItemRepository;
+        private readonly IServiceService _serviceService;
 
-        public CartItemService(ICartItemRepository cartItemRepository)
+        public CartItemService(ICartItemRepository cartItemRepository, IServiceService serviceService)
         {
             _cartItemRepository = cartItemRepository;
+            _serviceService = serviceService;
         }
         public async Task AddItemToCartAsync(int userId, CartItem item)
         {
@@ -22,11 +24,6 @@ namespace TP4SCS.Services.Implements
             if (item.Quantity <= 0)
             {
                 throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(item.Quantity));
-            }
-
-            if (item.Price < 0)
-            {
-                throw new ArgumentException("Giá không được âm.", nameof(item.Price));
             }
 
             await _cartItemRepository.AddItemToCartAsync(userId, item);
@@ -46,7 +43,7 @@ namespace TP4SCS.Services.Implements
         {
             await _cartItemRepository.RemoveItemFromCartAsync(cartId, itemId);
         }
-
+        
         public async Task UpdateCartItemQuantityAsync(int cartId, int itemId, int newQuantity)
         {
             if (newQuantity <= 0)
@@ -55,5 +52,35 @@ namespace TP4SCS.Services.Implements
             }
             await _cartItemRepository.UpdateCartItemQuantityAsync(cartId, itemId, newQuantity);
         }
+
+        public async Task<decimal> CalculateCartItemsTotal(List<int> cartItemIds)
+        {
+            decimal totalPrice = 0;
+            var cartItems = new List<CartItem>();
+            foreach (var id in cartItemIds)
+            {
+                CartItem? cartItem = await _cartItemRepository.GetCartItemByIdAsync(id);
+                if (cartItem == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy mặt hàng giỏ hàng với ID {id}.");
+                }
+                cartItems.Add(cartItem);
+            }
+
+            foreach (var cartItem in cartItems)
+            {
+                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
+
+                if (servicePrice < 0)
+                {
+                    throw new InvalidOperationException($"Giá dịch vụ không hợp lệ cho serviceId {cartItem.ServiceId}.");
+                }
+
+                totalPrice += servicePrice * cartItem.Quantity;
+            }
+
+            return totalPrice;
+        }
+
     }
 }

@@ -9,6 +9,5 @@ namespace TP4SCS.Repository.Interfaces
         Task<Cart> CreateCartAsync(int userId);
         Task UpdateCartAsync(Cart cart);
         Task ClearCartAsync(int cartId);
-        Task<decimal> GetCartTotalAsync(int cartId);
     }
 }

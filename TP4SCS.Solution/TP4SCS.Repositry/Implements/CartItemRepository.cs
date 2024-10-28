@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
@@ -23,7 +24,6 @@ namespace TP4SCS.Repository.Implements
             {
                 cart = await _cartRepository.CreateCartAsync(userId);
             }
-            // Kiểm tra xem item đã tồn tại trong giỏ hàng chưa
             var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId);
             if (existingItem != null)
             {
@@ -40,11 +40,9 @@ namespace TP4SCS.Repository.Implements
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }
-                item.Price = service.Price;
                 item.CartId = cart.Id;
                 cart.CartItems.Add(item);
             }
-            cart.TotalPrice = await _cartRepository.GetCartTotalAsync(cart.Id);
             await _cartRepository.UpdateCartAsync(cart);
         }
 
@@ -60,22 +58,12 @@ namespace TP4SCS.Repository.Implements
 
         public async Task RemoveItemFromCartAsync(int cartId, int itemId)
         {
-            var itemToRemove = await GetAsync(filter: item => item.CartId == cartId && item.Id == itemId);
+            var itemToRemove = await _dbContext.CartItems
+                .SingleOrDefaultAsync(item => item.CartId == cartId && item.Id == itemId);
 
-            if (itemToRemove != null && itemToRemove.Any())
+            if (itemToRemove != null)
             {
-                foreach (var item in itemToRemove)
-                {
-                    await DeleteAsync(item);
-                    var cart = await _cartRepository.GetCartByIdAsync(cartId);
-
-                    if (cart == null)
-                    {
-                        throw new KeyNotFoundException($"Cart with cartId {cartId} not found.");
-                    }
-                    cart.TotalPrice = await _cartRepository.GetCartTotalAsync(cartId);
-                    await _cartRepository.UpdateCartAsync(cart);
-                }
+                await DeleteAsync(itemToRemove);
             }
             else
             {
@@ -85,26 +73,13 @@ namespace TP4SCS.Repository.Implements
 
         public async Task UpdateCartItemQuantityAsync(int cartId, int itemId, int newQuantity)
         {
-            var cartItem = await GetAsync(filter: item => item.CartId == cartId && item.Id == itemId);
+            var itemToUpdate = await _dbContext.CartItems
+                .SingleOrDefaultAsync(item => item.CartId == cartId && item.Id == itemId);
 
-            if (cartItem != null && cartItem.Any())
+            if (itemToUpdate != null )
             {
-                var itemToUpdate = cartItem.FirstOrDefault();
-
-                if (itemToUpdate != null)
-                {
-                    itemToUpdate.Quantity = newQuantity;
-                    await UpdateAsync(itemToUpdate);
-                    var cart = await _cartRepository.GetCartByIdAsync(cartId);
-
-                    if (cart == null)
-                    {
-                        throw new KeyNotFoundException($"Cart with cartId {cartId} not found.");
-                    }
-                    cart.TotalPrice = await _cartRepository.GetCartTotalAsync(cartId);
-                    await _cartRepository.UpdateCartAsync(cart);
-
-                }
+                itemToUpdate.Quantity = newQuantity;
+                await UpdateAsync(itemToUpdate);
             }
             else
             {
