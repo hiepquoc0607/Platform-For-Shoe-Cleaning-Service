@@ -44,6 +44,7 @@ namespace TP4SCS.API.Controllers
                     if (s.Promotion != null)
                     {
                         var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
+                        promotionRes.Status = Util.TranslatePromotionStatus(promotionRes.Status) ?? "Trạng Thái Null";
                         res.Promotion = promotionRes;
                     }
                     return res;
@@ -134,11 +135,7 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Status))
-                {
-                    throw new ArgumentException("Status không được bỏ trống.", nameof(request.Status));
-                }
-                request.Status = request.Status.ToUpper();
+
                 await _serviceService.UpdateServiceAsync(request, existingServiceId);
                 var service = await _serviceService.GetServiceByIdAsync(existingServiceId);
                 return Ok(new ResponseObject<ServiceResponse>("Update Service Success",

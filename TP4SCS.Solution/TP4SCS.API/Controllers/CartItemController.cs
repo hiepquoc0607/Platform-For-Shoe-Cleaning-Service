@@ -42,6 +42,29 @@ namespace TP4SCS.API.Controllers
             }
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", _mapper.Map<CartItemResponse>(item)));
         }
+        [HttpGet]
+        [Route("total")]
+        public async Task<IActionResult> CalculateCartItemsTotal([FromQuery] List<int> itemIds)
+        {
+            try
+            {
+                decimal? total = await _cartItemService.CalculateCartItemsTotal(itemIds);
+
+                return Ok(new ResponseObject<decimal?>("Tính toán thành công", total));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> AddItemToCart(int userId, [FromBody] CartItemCreateRequest request)
         {

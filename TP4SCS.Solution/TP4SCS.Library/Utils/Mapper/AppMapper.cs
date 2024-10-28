@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.Category;
 using TP4SCS.Library.Models.Request.Material;
@@ -28,7 +27,6 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<ServiceCategory, ServiceCategoryResponse>();
             CreateMap<ServiceCategoryRequest, ServiceCategory>();
             //Cart Mappings
-            CreateMap<CartUpdateRequest, Cart>();
             CreateMap<Cart, CartResponse>();
             //Cart Item Mappings
             CreateMap<CartItemCreateRequest, CartItem>();

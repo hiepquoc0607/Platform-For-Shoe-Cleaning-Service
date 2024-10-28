@@ -143,7 +143,7 @@ namespace TP4SCS.Services.Implements
             }
             if (string.IsNullOrEmpty(serviceUpdateRequest.Status))
             {
-                throw new ArgumentException("Status không được rỗng.");
+                throw new ArgumentException("Status của Service không được để trống.");
             }
             if (serviceUpdateRequest.FeedbackedNum < 0)
             {
@@ -170,16 +170,17 @@ namespace TP4SCS.Services.Implements
             existingService.Description = serviceUpdateRequest.Description ?? "";
             existingService.Price = serviceUpdateRequest.Price;
             existingService.Rating = serviceUpdateRequest.Rating;
-            existingService.Status = serviceUpdateRequest.Status;
+            existingService.Status = serviceUpdateRequest.Status.ToUpper();
             existingService.OrderedNum = serviceUpdateRequest.OrderedNum;
             existingService.FeedbackedNum = serviceUpdateRequest.FeedbackedNum;
-            if (serviceUpdateRequest.PromotionUpdateRequest != null &&
-                serviceUpdateRequest.PromotionUpdateRequest.NewPrice < serviceUpdateRequest.Price)
+            if (serviceUpdateRequest.NewPrice.HasValue &&
+                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
+                !string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
             {
                 if (existingService.Promotion != null)
                 {
-                    existingService.Promotion.NewPrice = serviceUpdateRequest.PromotionUpdateRequest.NewPrice;
-                    existingService.Promotion.Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionUpdateRequest.Status);
+                    existingService.Promotion.NewPrice = serviceUpdateRequest.NewPrice.Value;
+                    existingService.Promotion.Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus);
 
                     await _promotionService.UpdatePromotionAsync(existingService.Promotion, existingService.Promotion.Id);
                 }
@@ -188,16 +189,20 @@ namespace TP4SCS.Services.Implements
                     var newPromotion = new Promotion
                     {
                         ServiceId = existingServiceId,
-                        NewPrice = serviceUpdateRequest.PromotionUpdateRequest.NewPrice,
-                        Status = Util.UpperCaseStringStatic(serviceUpdateRequest.Status)
+                        NewPrice = serviceUpdateRequest.NewPrice.Value,
+                        Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus)
                     };
                     await _promotionService.AddPromotionAsync(newPromotion);
                 }
             }
-            else if (existingService.Promotion != null)
+            else if(!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
             {
-                await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
-                existingService.Promotion = null;
+                if (existingService.Promotion != null)
+                {
+                    await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
+                    existingService.Promotion = null;
+                }
+                
             }
 
             await _serviceRepository.UpdateServiceAsync(existingService);
@@ -233,13 +238,13 @@ namespace TP4SCS.Services.Implements
                 return service.Price;
             }
 
-            var isPromotionActive = await _promotionService.IsPromotionActiveAsync(service.Promotion.Id);
+            var isPromotionActive = service.Promotion.Status.Equals(StatusConstants.Available, StringComparison.OrdinalIgnoreCase);
             if (!isPromotionActive)
             {
                 return service.Price;
             }
 
-            decimal finalPrice = service.Price * (1 - (decimal)service.Promotion.SaleOff / 100);
+            decimal finalPrice = service.Promotion.NewPrice;
 
             return finalPrice;
         }

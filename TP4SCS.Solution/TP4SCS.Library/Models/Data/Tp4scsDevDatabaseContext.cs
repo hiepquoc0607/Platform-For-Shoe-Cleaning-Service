@@ -210,8 +210,6 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
             entity.HasIndex(e => e.AccountId, "UQ__Cart__349DA5A7E55EE33F").IsUnique();
 
-            entity.Property(e => e.TotalPrice).HasColumnType("decimal(10, 2)");
-
             entity.HasOne(d => d.Account).WithOne(p => p.Cart)
                 .HasForeignKey<Cart>(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -223,8 +221,6 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__CartItem__3214EC07791337C2");
 
             entity.ToTable("CartItem");
-
-            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)

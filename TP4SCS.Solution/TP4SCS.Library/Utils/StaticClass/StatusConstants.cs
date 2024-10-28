@@ -5,6 +5,6 @@
         public const string Active = "Active";
         public const string Inactive = "Inactive";
         public const string Available = "Available";
-        public const string Exiped = "Exiped";
+        public const string Expired = "Expired";
     }
 }

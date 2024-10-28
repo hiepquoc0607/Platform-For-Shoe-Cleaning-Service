@@ -10,7 +10,7 @@
         public string? Description { get; set; }
 
         public decimal Price { get; set; }
-        public decimal? NewPrice { get; set; }
         public string Status { get; set; } = "Active";
+        public decimal? NewPrice { get; set; }
     }
 }
