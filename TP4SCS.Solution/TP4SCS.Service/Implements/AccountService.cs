@@ -192,7 +192,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
-            if (!_util.CheckAccountStatusForAdmin(account.Status, updateStatusRequest.Status))
+            if (!_util.CheckStatusForAdmin(account.Status, updateStatusRequest.Status))
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
             }

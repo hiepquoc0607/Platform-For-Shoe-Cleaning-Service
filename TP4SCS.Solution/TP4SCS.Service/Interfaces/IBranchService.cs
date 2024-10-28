@@ -10,12 +10,18 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<BranchResponse?>> GetBranchByIdAsync(int id);
 
-        Task<ApiResponse<BranchResponse?>> CreateBranchAsync(CreateBranchRequest createBranchRequest);
+        Task<int> GetBranchMaxIdAsync();
 
-        Task<ApiResponse<BranchResponse?>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest);
-        
-        Task<ApiResponse<BranchResponse?>> UpdateBranchEmployeeAsync(string employeeIds);
+        Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest);
 
-        Task<ApiResponse<BranchResponse?>> UpdateBranchStatusAsync(string status);
+        Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest);
+
+        Task<ApiResponse<BranchResponse>> UpdateBranchEmployeeAsync(int id, UpdateBranchEmployeeRequest updateBranchEmployeeRequest);
+
+        Task<ApiResponse<BranchResponse>> UpdateBranchStatisticAsync(int id, UpdateBranchStatisticRequest updateBranchStatisticRequest);
+
+        Task<ApiResponse<BranchResponse>> UpdateBranchStatusForAdminAsync(int id, UpdateBranchStatusRequest updateBranchStatus);
+
+        Task<bool> CheckOwnerOfBranch(int OwnerId, int BranchId);
     }
 }

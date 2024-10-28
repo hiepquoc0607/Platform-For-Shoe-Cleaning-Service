@@ -1,7 +1,10 @@
-﻿using MapsterMapper;
+﻿using Mapster;
+using MapsterMapper;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -9,43 +12,216 @@ namespace TP4SCS.Services.Implements
 {
     public class BranchService : IBranchService
     {
+        private readonly IBusinessRepository _businessRepository;
         private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;
+        private readonly Util _util;
 
-        public BranchService(IBranchRepository branchRepository, IMapper mapper)
+        public BranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
         {
+            _businessRepository = businessRepository;
             _branchRepository = branchRepository;
             _mapper = mapper;
+            _util = util;
         }
 
-        public Task<ApiResponse<BranchResponse?>> CreateBranchAsync(CreateBranchRequest createBranchRequest)
+        public async Task<bool> CheckOwnerOfBranch(int ownerId, int branchId)
+        {
+            var idArray = await _branchRepository.GetBranchesIdByOwnerIdAsync(ownerId) ?? Array.Empty<int>();
+
+            return Array.Exists(idArray, id => id == branchId);
+        }
+
+        //Create Branch
+        public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest)
+        {
+            var businessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
+
+            if (businessId == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Tài Khoản Không Sở Hữu Doanh Nghiệp!");
+            }
+
+            var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
+            newBranch.Id = (int)businessId;
+
+            try
+            {
+                await _branchRepository.CreateBranchAsync(newBranch);
+
+                var newId = await GetBranchMaxIdAsync();
+
+                var newBr = await GetBranchByIdAsync(newId);
+
+                return new ApiResponse<BranchResponse>("success", "Tạo Chi Nhánh Thành Công!", newBr.Data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Tạo Chi Nhánh Thất Bại!");
+            }
+        }
+
+        //Get Branch By Id
+        public async Task<ApiResponse<BranchResponse?>> GetBranchByIdAsync(int id)
+        {
+            var branch = await _branchRepository.GetBranchByIdAsync(id);
+
+            if (branch == null)
+            {
+                return new ApiResponse<BranchResponse?>("error", 404, "Không Tìm Thấy Chi Nhánh!");
+            }
+
+            var data = _mapper.Map<BranchResponse>(branch);
+
+            return new ApiResponse<BranchResponse?>("success", "Lấy Chi Nhánh Thành Công!", data);
+        }
+
+        //Get Barnch By Business Id
+        public async Task<ApiResponse<IEnumerable<BranchResponse>?>> GetBranchesByBusinessIdAsync(int id)
+        {
+            var branches = await _branchRepository.GetBranchesByBusinessIdAsync(id);
+
+            if (branches == null)
+            {
+                return new ApiResponse<IEnumerable<BranchResponse>?>("error", 404, "Không Tìm Thấy Chi Nhánh!");
+            }
+
+            var data = branches.Adapt<IEnumerable<BranchResponse>>();
+
+            return new ApiResponse<IEnumerable<BranchResponse>?>("success", "Lấy Chi Nhánh Thành Công!", data);
+        }
+
+        //Get Branch Max Id
+        public async Task<int> GetBranchMaxIdAsync()
+        {
+            return await _branchRepository.GetBranchMaxIdAsync();
+        }
+
+        //Update Branch
+        public async Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest)
+        {
+            if (!_util.CheckBranchStatus(updateBranchRequest.Status))
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Không Tồn Tại!");
+            }
+
+            var oldBranch = await _branchRepository.GetBranchByIdAsync(id);
+
+            if (oldBranch == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
+            }
+
+            var newBranch = _mapper.Map(updateBranchRequest, oldBranch);
+
+            try
+            {
+                await _branchRepository.UpdateBranchAsync(newBranch);
+
+                return new ApiResponse<BranchResponse>("success", "Cập Nhập Chi Nhánh Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Cập Nhập Chi Nhánh Thất Bại!");
+            }
+        }
+
+        //Update Branch Employee
+        public async Task<ApiResponse<BranchResponse>> UpdateBranchEmployeeAsync(int id, UpdateBranchEmployeeRequest updateBranchEmployeeRequest)
+        {
+            var oldBranch = await _branchRepository.GetByIDAsync(id);
+
+            if (oldBranch == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
+            }
+
+            while (updateBranchEmployeeRequest.IsDeleted)
+            {
+                var deleteError = _util.CheckDeleteEmployeesErrorType(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+
+                var deleteErrorMessage = new Dictionary<string, string>
+                {
+                    { "Empty", "Chi Nhánh Chưa Có Nhân Viên Nào!" },
+                    { "Exist", "Nhân Viên Không Thuộc Chi Nhánh!" },
+                    { "Invalid", "Trường Nhập Không Khả Dụng!" },
+                };
+
+                if (deleteErrorMessage.TryGetValue(deleteError, out var errorMessage))
+                {
+                    return new ApiResponse<BranchResponse>("error", 400, errorMessage);
+                }
+
+                oldBranch.EmployeeIds = _util.DeleteEmployeesId(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+            }
+
+            var addError = _util.CheckAddEmployeesErrorType(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+
+            var addErrorMessage = new Dictionary<string, string>
+                {
+                    { "Full", "Chi Nhánh Đã Đạt Tối Đa 5 Nhân Viên!" },
+                    { "Exist", "Nhân Viên Đã Thuộc Chi Nhánh!" },
+                    { "Invalid", "Trường Nhập Không Khả Dụng!" },
+                };
+
+            if (addErrorMessage.TryGetValue(addError, out var message))
+            {
+                return new ApiResponse<BranchResponse>("error", 400, message);
+            }
+
+            oldBranch.EmployeeIds = _util.AddEmployeeId(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+
+            try
+            {
+                await _branchRepository.UpdateBranchAsync(oldBranch);
+
+                return new ApiResponse<BranchResponse>("success", "Cập Nhập Nhân Viên Chi Nhánh Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Cập Nhập Nhân Viên Chi Nhánh Thất Bại!");
+            }
+        }
+
+        //Update Branch Statistic
+        public Task<ApiResponse<BranchResponse>> UpdateBranchStatisticAsync(int id, UpdateBranchStatisticRequest updateBranchStatisticRequest)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ApiResponse<BranchResponse?>> GetBranchByIdAsync(int id)
+        //Update Branch Status
+        public async Task<ApiResponse<BranchResponse>> UpdateBranchStatusForAdminAsync(int id, UpdateBranchStatusRequest updateBranchStatusRequest)
         {
-            throw new NotImplementedException();
-        }
+            if (!_util.CheckBranchStatus(updateBranchStatusRequest.Status))
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Không Tồn Tại!");
+            }
 
-        public Task<ApiResponse<IEnumerable<BranchResponse>?>> GetBranchesByBusinessIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+            var oldBranch = await _branchRepository.GetBranchByIdAsync(id);
 
-        public Task<ApiResponse<BranchResponse?>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest)
-        {
-            throw new NotImplementedException();
-        }
+            if (oldBranch == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
+            }
 
-        public Task<ApiResponse<BranchResponse?>> UpdateBranchEmployeeAsync(string employeeIds)
-        {
-            throw new NotImplementedException();
-        }
+            if (!_util.CheckStatusForAdmin(oldBranch.Status, updateBranchStatusRequest.Status))
+            {
 
-        public Task<ApiResponse<BranchResponse?>> UpdateBranchStatusAsync(string status)
-        {
-            throw new NotImplementedException();
+                return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Chi Nhánh Trùng Lập!");
+            }
+
+            oldBranch.Status = updateBranchStatusRequest.Status;
+
+            try
+            {
+                await _branchRepository.UpdateBranchAsync(oldBranch);
+
+                return new ApiResponse<BranchResponse>("success", "Cập Nhập Chi Nhánh Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Cập Nhập Chi Nhánh Thất Bại!");
+            }
         }
     }
 }

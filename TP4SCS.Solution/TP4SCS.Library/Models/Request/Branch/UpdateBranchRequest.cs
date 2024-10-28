@@ -12,15 +12,7 @@
 
         public string City { get; set; } = string.Empty;
 
-        public string? EmployeeIds { get; set; }
-
-        public int PendingAmount { get; set; }
-
-        public int ProcessingAmount { get; set; }
-
-        public int FinishedAmount { get; set; }
-
-        public int CanceledAmount { get; set; }
+        public bool IsDeliverySupport { get; set; }
 
         public string Status { get; set; } = string.Empty;
     }
