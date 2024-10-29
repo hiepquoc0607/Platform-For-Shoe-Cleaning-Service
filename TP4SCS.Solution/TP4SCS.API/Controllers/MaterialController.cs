@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
+using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.MaterialResponse;
 using TP4SCS.Library.Utils;
@@ -74,9 +75,9 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                if (string.IsNullOrWhiteSpace(material.Status))
+                if (string.IsNullOrEmpty(material.Status) || !Util.IsValidGeneralStatus(material.Status))
                 {
-                    throw new ArgumentException("Status không được bỏ trống.", nameof(material.Status));
+                    throw new ArgumentException("Status của Service không hợp lệ.", nameof(material.Status));
                 }
                 material.Status = material.Status.ToUpper();
                 await _materialService.AddMaterialAsync(serviceId, material);

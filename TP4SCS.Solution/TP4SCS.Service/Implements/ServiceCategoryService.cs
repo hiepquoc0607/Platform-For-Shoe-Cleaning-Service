@@ -1,6 +1,7 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
-using TP4SCS.Repository.Implements;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -78,6 +79,10 @@ namespace TP4SCS.Services.Implements
             if (category.Name.Length < 3 || category.Name.Length > 100)
             {
                 throw new ArgumentException("Tên danh mục phải nằm trong khoảng từ 3 đến 100 ký tự.");
+            }
+            if (string.IsNullOrEmpty(category.Status) || !Util.IsValidGeneralStatus(category.Status))
+            {
+                throw new ArgumentException("Status của Category không hợp lệ.");
             }
             var existingCategory = await _categoryRepository.GetCategoryByIdAsync(existingCategoryId);
             if (existingCategory == null)

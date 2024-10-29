@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors;
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
@@ -14,21 +13,25 @@ namespace TP4SCS.API.Controllers
     public class CartItemController : ControllerBase
     {
         private readonly ICartItemService _cartItemService;
-        private readonly IMapper _mapper;
+        private readonly IServiceService _serviceService;
 
-        public CartItemController(ICartItemService cartItemService, IMapper mapper)
+        public CartItemController(ICartItemService cartItemService, IServiceService serviceService)
         {
             _cartItemService = cartItemService;
-            _mapper = mapper;
+            _serviceService = serviceService;
         }
 
         [HttpGet("cart/{cartId}")]
         public async Task<IActionResult> GetCartItems(int cartId)
         {
             var items = await _cartItemService.GetCartItemsAsync(cartId);
-
+            var itemsReponse = items.Adapt<List<CartItemResponse>>();
+            foreach (var item in itemsReponse)
+            {
+                item.Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+            }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully",
-                _mapper.Map<List<CartItemResponse>>(items)));
+                itemsReponse));
         }
 
 
@@ -40,7 +43,9 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {itemId} không tìm thấy.", null));
             }
-            return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", _mapper.Map<CartItemResponse>(item)));
+            var itemResponse = item.Adapt<CartItemResponse>();
+            itemResponse.Price = await _serviceService.GetServiceFinalPriceAsync(itemResponse.ServiceId);
+            return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
         [HttpGet]
         [Route("total")]
@@ -68,7 +73,7 @@ namespace TP4SCS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddItemToCart(int userId, [FromBody] CartItemCreateRequest request)
         {
-            var item = _mapper.Map<CartItem>(request);
+            var item = request.Adapt<CartItem>();
             try
             {
                 await _cartItemService.AddItemToCartAsync(userId, item);
@@ -92,12 +97,12 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
-        [HttpPut("cart/{cartId}/item/{itemId}")]
-        public async Task<IActionResult> UpdateCartItemQuantity(int cartId, int itemId, [FromBody] int newQuantity)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCartItemQuantity(int id, [FromBody] int newQuantity)
         {
             try
             {
-                await _cartItemService.UpdateCartItemQuantityAsync(cartId, itemId, newQuantity);
+                await _cartItemService.UpdateCartItemQuantityAsync(id, newQuantity);
                 return NoContent();
             }
             catch (ArgumentException ex)
@@ -115,7 +120,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpDelete("cart/{cartId}/items")]
-        public async Task<IActionResult> RemoveItemsFromCart([FromQuery]int cartId, [FromBody] int[] itemIds)
+        public async Task<IActionResult> RemoveItemsFromCart([FromQuery] int cartId, [FromBody] int[] itemIds)
         {
             try
             {

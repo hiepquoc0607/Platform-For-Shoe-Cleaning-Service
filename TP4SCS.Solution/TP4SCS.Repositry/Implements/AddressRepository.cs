@@ -4,7 +4,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class AddressRepository : GenericRepoistory<AccountAddress>, IAddressRepository
+    public class AddressRepository : GenericRepository<AccountAddress>, IAddressRepository
     {
         public AddressRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

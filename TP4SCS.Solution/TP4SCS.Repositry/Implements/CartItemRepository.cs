@@ -5,7 +5,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class CartItemRepository : GenericRepoistory<CartItem>, ICartItemRepository
+    public class CartItemRepository : GenericRepository<CartItem>, ICartItemRepository
     {
         private readonly ICartRepository _cartRepository;
         private readonly IServiceRepository _serviceRepository;
@@ -71,10 +71,10 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
-        public async Task UpdateCartItemQuantityAsync(int cartId, int itemId, int newQuantity)
+        public async Task UpdateCartItemQuantityAsync(int itemId, int newQuantity)
         {
             var itemToUpdate = await _dbContext.CartItems
-                .SingleOrDefaultAsync(item => item.CartId == cartId && item.Id == itemId);
+                .SingleOrDefaultAsync(item => item.Id == itemId);
 
             if (itemToUpdate != null )
             {
@@ -83,7 +83,7 @@ namespace TP4SCS.Repository.Implements
             }
             else
             {
-                throw new KeyNotFoundException($"CartItem with itemId {itemId} not found in cartId {cartId}.");
+                throw new KeyNotFoundException($"CartItem with itemId {itemId} not found.");
             }
         }
     }

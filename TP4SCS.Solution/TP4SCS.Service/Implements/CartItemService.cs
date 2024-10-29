@@ -44,13 +44,13 @@ namespace TP4SCS.Services.Implements
             await _cartItemRepository.RemoveItemFromCartAsync(cartId, itemId);
         }
         
-        public async Task UpdateCartItemQuantityAsync(int cartId, int itemId, int newQuantity)
+        public async Task UpdateCartItemQuantityAsync(int itemId, int newQuantity)
         {
             if (newQuantity <= 0)
             {
                 throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(newQuantity));
             }
-            await _cartItemRepository.UpdateCartItemQuantityAsync(cartId, itemId, newQuantity);
+            await _cartItemRepository.UpdateCartItemQuantityAsync(itemId, newQuantity);
         }
 
         public async Task<decimal> CalculateCartItemsTotal(List<int> cartItemIds)

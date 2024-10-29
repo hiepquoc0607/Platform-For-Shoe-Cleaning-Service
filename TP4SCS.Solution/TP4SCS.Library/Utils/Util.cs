@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
+using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils
 {
@@ -78,6 +80,22 @@ namespace TP4SCS.Library.Utils
                 "inactive" => "Ngưng Hoạt Động",
                 _ => "Hoạt Động"
             };
+        }
+        public static bool IsValidGeneralStatus(string status)
+        {
+            var validStatuses = new[] { StatusConstants.Active, StatusConstants.Inactive };
+            return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public static bool IsValidPromotionStatus(string status)
+        {
+            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Expired };
+            return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public static bool IsEqual(string s1, string s2)
+        {
+            return string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);
         }
 
         public static string? TranslatePromotionStatus(string? status)

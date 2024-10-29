@@ -5,7 +5,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class AccountRepository : GenericRepoistory<Account>, IAccountRepository
+    public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         public AccountRepository(Tp4scsDevDatabaseContext dbConext) : base(dbConext)
         {

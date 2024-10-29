@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
@@ -12,13 +12,11 @@ namespace TP4SCS.API.Controllers
     {
         private readonly ICartService _cartService;
         private readonly IServiceService _serviceService;
-        private readonly IMapper _mapper;
 
-        public CartController(ICartService cartService, IServiceService serviceService, IMapper mapper)
+        public CartController(ICartService cartService, IServiceService serviceService)
         {
             _cartService = cartService;
             _serviceService = serviceService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -33,7 +31,8 @@ namespace TP4SCS.API.Controllers
                     return NotFound($"Giỏ hàng cho người dùng ID {id} không tìm thấy.");
                 }
 
-                var cartResponse = _mapper.Map<CartResponse>(cart);
+                //var cartResponse = _mapper.Map<CartResponse>(cart);
+                var cartResponse = cart.Adapt<CartResponse>();
                 cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart.Id);
 
                 if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
