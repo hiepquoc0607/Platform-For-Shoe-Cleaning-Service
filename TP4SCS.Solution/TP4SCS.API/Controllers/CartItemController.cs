@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
@@ -115,7 +114,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpDelete("cart/{cartId}/items")]
-        public async Task<IActionResult> RemoveItemsFromCart([FromQuery]int cartId, [FromBody] int[] itemIds)
+        public async Task<IActionResult> RemoveItemsFromCart([FromQuery] int cartId, [FromBody] int[] itemIds)
         {
             try
             {

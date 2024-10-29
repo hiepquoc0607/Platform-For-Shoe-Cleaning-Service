@@ -4,7 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 

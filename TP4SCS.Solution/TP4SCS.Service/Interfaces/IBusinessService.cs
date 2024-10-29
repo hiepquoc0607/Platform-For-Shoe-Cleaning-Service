@@ -1,6 +1,29 @@
-﻿namespace TP4SCS.Services.Interfaces
+﻿using TP4SCS.Library.Models.Request.Branch;
+using TP4SCS.Library.Models.Request.Business;
+using TP4SCS.Library.Models.Request.BusinessProfile;
+using TP4SCS.Library.Models.Response.BusinessProfile;
+using TP4SCS.Library.Models.Response.General;
+
+namespace TP4SCS.Services.Interfaces
 {
     public interface IBusinessService
     {
+        Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest);
+
+        Task<ApiResponse<BusinessResponse?>> GetBusinessProfileByIdAsync(int id);
+
+        Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId);
+
+        Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, CreateBusinessRequest createBusinessRequest);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessRankAsync(int id, UpdateBusinessRankRequest updateBusinessRankRequest);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessStatisticAsync(int id, UpdateBusinessStatisticRequest updateBusinessStatisticRequest);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessSubscriptionAsync(int id, UpdateBusinessSubcriptionRequest updateBusinessSubcriptionRequest);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest);
     }
 }

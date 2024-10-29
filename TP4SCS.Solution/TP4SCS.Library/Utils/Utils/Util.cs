@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace TP4SCS.Library.Utils
+namespace TP4SCS.Library.Utils.Utils
 {
     public class Util
     {

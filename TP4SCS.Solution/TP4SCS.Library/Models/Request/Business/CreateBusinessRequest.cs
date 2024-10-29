@@ -1,10 +1,14 @@
-﻿namespace TP4SCS.Library.Models.Request.BusinessProfile
+﻿using System.ComponentModel.DataAnnotations;
+using TP4SCS.Library.Models.Request.Branch;
+
+namespace TP4SCS.Library.Models.Request.BusinessProfile
 {
     public class CreateBusinessRequest
     {
+        [Required]
+        public CreateBusinessObject BusinessObject { get; set; } = new CreateBusinessObject();
 
-        public int OwnerId { get; set; }
-
-        public string Name { get; set; } = string.Empty;
+        [Required]
+        public CreateBranchRequest CreateBranch { get; set; } = new CreateBranchRequest();
     }
 }

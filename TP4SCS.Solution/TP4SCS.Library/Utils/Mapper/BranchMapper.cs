@@ -18,6 +18,14 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.FinishedAmount, opt => 0)
                 .Map(dest => dest.CanceledAmount, opt => 0)
                 .Map(dest => dest.Status, opt => "ACTIVE");
+
+            config.NewConfig<BusinessBranch, UpdateBranchRequest>();
+
+            config.NewConfig<BusinessBranch, UpdateBranchEmployeeRequest>();
+
+            config.NewConfig<BusinessBranch, UpdateBranchStatisticRequest>();
+
+            config.NewConfig<BusinessBranch, UpdateBranchStatusRequest>();
         }
     }
 }

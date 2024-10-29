@@ -2,8 +2,8 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
-using TP4SCS.Library.Utils;
 using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
