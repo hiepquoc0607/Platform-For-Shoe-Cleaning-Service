@@ -1,6 +1,4 @@
-﻿using TP4SCS.Library.Models.Response.Promotion;
-
-namespace TP4SCS.Library.Models.Response.Service
+﻿namespace TP4SCS.Library.Models.Response.Service
 {
     public class ServiceCreateResponse
     {

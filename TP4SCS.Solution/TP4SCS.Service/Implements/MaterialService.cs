@@ -1,5 +1,7 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -95,9 +97,9 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
             }
 
-            if (string.IsNullOrWhiteSpace(material.Status))
+            if (string.IsNullOrEmpty(material.Status) || !Util.IsValidGeneralStatus(material.Status))
             {
-                throw new ArgumentException("Status không được bỏ trống.", nameof(material.Status));
+                throw new ArgumentException("Status của Material không hợp lệ.");
             }
 
             var existingMaterial = await _materialRepository.GetMaterialByIdAsync(id);

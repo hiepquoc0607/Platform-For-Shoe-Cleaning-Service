@@ -6,7 +6,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class ServiceRepository : GenericRepoistory<Service>, IServiceRepository
+    public class ServiceRepository : GenericRepository<Service>, IServiceRepository
     {
         public ServiceRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

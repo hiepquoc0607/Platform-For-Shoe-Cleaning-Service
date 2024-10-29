@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Category;
@@ -33,7 +32,8 @@ namespace TP4SCS.API.Controllers
             var totalCount = await _categoryService.GetTotalServiceCategoriesCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<ServiceCategoryResponse>(
-                services?.Select(s => {
+                services?.Select(s =>
+                {
                     var serviceCategoryResponse = _mapper.Map<ServiceCategoryResponse>(s);
                     serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
                     return serviceCategoryResponse;
