@@ -6,7 +6,7 @@ using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.MaterialResponse;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers

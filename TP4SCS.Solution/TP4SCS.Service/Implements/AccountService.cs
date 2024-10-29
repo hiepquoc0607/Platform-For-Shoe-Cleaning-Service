@@ -5,7 +5,7 @@ using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -149,11 +149,11 @@ namespace TP4SCS.Services.Implements
             int totalData = await _accountRepository.CountAccountDataAsync();
             int totalPage = (int)Math.Ceiling((decimal)totalData / getAccountRequest.PageSize);
 
-            var paging = new Pagination(totalData, getAccountRequest.PageSize, getAccountRequest.PageNum, totalPage);
+            var pagination = new Pagination(totalData, getAccountRequest.PageSize, getAccountRequest.PageNum, totalPage);
 
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
-            return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, paging);
+            return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, pagination);
         }
 
         //Update Account

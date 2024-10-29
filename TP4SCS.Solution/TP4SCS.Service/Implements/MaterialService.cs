@@ -1,7 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
-using TP4SCS.Library.Models.Request.Service;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -37,13 +36,13 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
             }
-            await _materialRepository.AddMaterialAsync(serviceId,material);
+            await _materialRepository.AddMaterialAsync(serviceId, material);
         }
 
         public async Task DeleteMaterialAsync(int id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);
-            if(material == null)
+            if (material == null)
             {
                 throw new Exception($"Vật liệu với ID {id} không tìm thấy.");
             }

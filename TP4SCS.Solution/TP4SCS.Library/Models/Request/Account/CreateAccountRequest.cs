@@ -11,7 +11,7 @@ namespace TP4SCS.Library.Models.Request.Account
 
         [Required]
         [MinLength(8)]
-        [DefaultValue("string")]
+        [DefaultValue("Password")]
         public string Password { get; set; } = string.Empty;
 
         [Required]
@@ -20,7 +20,7 @@ namespace TP4SCS.Library.Models.Request.Account
         [Required]
         [Phone]
         [StringLength(10, MinimumLength = 10)]
-        [DefaultValue("string")]
+        [DefaultValue("Phone")]
         public string Phone { get; set; } = string.Empty;
 
         [Required]

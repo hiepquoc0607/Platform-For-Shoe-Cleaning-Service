@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using TP4SCS.Library.Utils.StaticClass;
 
-namespace TP4SCS.Library.Utils
+namespace TP4SCS.Library.Utils.Utils
 {
     public class Util
     {

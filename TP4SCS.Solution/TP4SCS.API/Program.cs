@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.RateLimiting;
 using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Implements;
@@ -62,6 +62,7 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 
 //Inject Util
 builder.Services.AddScoped<Util>();
+builder.Services.AddScoped<BusinessUtil>();
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();

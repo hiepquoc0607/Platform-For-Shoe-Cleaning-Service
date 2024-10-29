@@ -6,7 +6,7 @@ using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
-using TP4SCS.Library.Utils;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,7 +19,7 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
- 
+
 
         public ServiceController(IMapper mapper, IServiceService serviceService)
         {

@@ -37,10 +37,10 @@ namespace TP4SCS.Repository.Implements
                 //Search
                 if (!string.IsNullOrEmpty(getAccountRequest.SearchKey))
                 {
-                    var searchKey = getAccountRequest.SearchKey.ToLower();
-                    accounts = accounts.Where(r =>
-                        EF.Functions.Like(r.FullName.ToLower(), $"%{searchKey}%") ||
-                        EF.Functions.Like(r.Email.ToLower(), $"%{searchKey}%"));
+                    string searchKey = getAccountRequest.SearchKey;
+                    accounts = accounts.Where(a =>
+                        EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                        EF.Functions.Like(a.Email, $"%{searchKey}%"));
                 }
 
                 //Order Sort
