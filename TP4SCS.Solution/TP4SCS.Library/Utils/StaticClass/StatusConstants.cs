@@ -2,9 +2,12 @@
 {
     public static class StatusConstants
     {
-        public const string Active = "Active";
-        public const string Inactive = "Inactive";
-        public const string Available = "Available";
-        public const string Expired = "Expired";
+        //GENERAL STATUS
+        public const string Active = "ACTIVE";
+        public const string Inactive = "INACTIVE";
+        //PROMOTION STATUS
+        public const string Available = "AVAILABLE";
+        public const string Expired = "EXPIRED";
+        //ORDER STATUS
     }
 }

@@ -7,7 +7,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class MaterialRepository : GenericRepoistory<Material>, IMaterialRepository
+    public class MaterialRepository : GenericRepository<Material>, IMaterialRepository
     {
         public MaterialRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

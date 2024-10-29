@@ -4,7 +4,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class BranchRepository : GenericRepoistory<BusinessBranch>, IBranchRepository
+    public class BranchRepository : GenericRepository<BusinessBranch>, IBranchRepository
     {
         public BranchRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

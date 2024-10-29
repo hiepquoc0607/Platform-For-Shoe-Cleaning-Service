@@ -6,7 +6,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class BusinessRepository : GenericRepoistory<BusinessProfile>, IBusinessRepository
+    public class BusinessRepository : GenericRepository<BusinessProfile>, IBusinessRepository
     {
         public BusinessRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

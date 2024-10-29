@@ -35,22 +35,27 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("ID dịch vụ không hợp lệ.");
             }
-            if (service.Status.ToUpper() == StatusConstants.Inactive)
+
+            if (Util.IsEqual(service.Status, StatusConstants.Inactive))
             {
                 throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }
+
             if (service.Promotion != null)
             {
                 throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
             }
+
             promotion.Status = StatusConstants.Available.ToUpper();
-            promotion.SaleOff = promotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
+            promotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
             await _promotionRepository.AddPromotionAsync(promotion);
         }
+
         public async Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null)
         {
             return await _promotionRepository.GetTotalPromotionsCountAsync(keyword, status);
         }
+
         public async Task DeletePromotionAsync(int id)
         {
             var promotion = await _promotionRepository.GetPromotionByIdAsync(id);
@@ -65,8 +70,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<Promotion?> GetPromotionByIdAsync(int id)
         {
-            var promotion = await _promotionRepository.GetPromotionByIdAsync(id);
-            return promotion;
+            return await _promotionRepository.GetPromotionByIdAsync(id);
         }
 
         public async Task<IEnumerable<Promotion>?> GetPromotionsAsync(string? keyword = null, string? status = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
@@ -94,17 +98,22 @@ namespace TP4SCS.Services.Implements
             if (promotion.SaleOff < 0 || promotion.SaleOff > 100)
             {
                 throw new ArgumentException("Giảm giá phải nằm trong khoảng từ 0 đến 100%.");
-            }            
+            }
 
             var existingPromotion = await _promotionRepository.GetPromotionByIdAsync(existingPromotionId);
             if (existingPromotion == null)
             {
                 throw new KeyNotFoundException($"Khuyến mãi với ID {existingPromotionId} không tìm thấy.");
             }
+
             var service = await _serviceRepository.GetServiceByIdAsync(existingPromotion.ServiceId);
             if (service == null)
             {
                 throw new ArgumentException("ID dịch vụ không hợp lệ.");
+            }
+            if (Util.IsEqual(service.Status, StatusConstants.Inactive))
+            {
+                throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }
             existingPromotion.NewPrice = promotion.NewPrice;
             existingPromotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
@@ -122,9 +131,8 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Khuyến mãi với ID {promotionId} không tìm thấy.");
             }
 
-            bool isActiveStatus = promotion.Status.Equals(StatusConstants.Available, StringComparison.OrdinalIgnoreCase);
-
-            return isActiveStatus;
+            // Sử dụng Util.IsEqual để kiểm tra trạng thái
+            return Util.IsEqual(promotion.Status, StatusConstants.Available);
         }
     }
 }

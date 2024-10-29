@@ -16,8 +16,7 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceCategoryRepository _categoryRepository;
         private readonly IPromotionService _promotionService;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository
-            , IPromotionService promotionService)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository, IPromotionService promotionService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
@@ -37,14 +36,26 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Giá phải lớn hơn 0.");
             }
 
-            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice <= 0 && serviceRequest.NewPrice.HasValue)
+            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice <= 0)
             {
                 throw new ArgumentException("Giá giảm phải lớn hơn 0.");
             }
 
-            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice >= serviceRequest.Price && serviceRequest.NewPrice.HasValue)
+            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice >= serviceRequest.Price)
             {
                 throw new ArgumentException("Giá giảm phải bé hơn giá gốc.");
+            }
+
+            var category = await _categoryRepository.GetCategoryByIdAsync(serviceRequest.CategoryId);
+
+            if (category == null)
+            {
+                throw new ArgumentException("ID danh mục không hợp lệ.");
+            }
+
+            if (Util.IsEqual(category.Status, StatusConstants.Inactive))
+            {
+                throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
 
             var services = new List<Service>();
@@ -60,10 +71,14 @@ namespace TP4SCS.Services.Implements
                     service.Promotion = new Promotion
                     {
                         NewPrice = serviceRequest.NewPrice.Value,
-                        SaleOff = 100 - (int)Math.Round((serviceRequest.NewPrice.Value / serviceRequest.Price * 100),
-                        MidpointRounding.AwayFromZero),
+                        SaleOff = 100 - (int)Math.Round((serviceRequest.NewPrice.Value / serviceRequest.Price * 100), MidpointRounding.AwayFromZero),
                         Status = StatusConstants.Available.ToUpper()
                     };
+
+                    if (string.IsNullOrEmpty(service.Promotion.Status) || !Util.IsValidPromotionStatus(service.Promotion.Status))
+                    {
+                        throw new ArgumentException("Status của Service không hợp lệ.");
+                    }
                 }
                 else
                 {
@@ -75,8 +90,6 @@ namespace TP4SCS.Services.Implements
 
             await _serviceRepository.AddServiceAsync(services);
         }
-
-
 
         public async Task DeleteServiceAsync(int id)
         {
@@ -95,13 +108,11 @@ namespace TP4SCS.Services.Implements
             await _serviceRepository.DeleteServiceAsync(id);
         }
 
-
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
             return service;
         }
-
 
         public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,
             string? status = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
@@ -118,7 +129,6 @@ namespace TP4SCS.Services.Implements
 
             return await _serviceRepository.GetServicesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
-
 
         public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
         {
@@ -141,24 +151,29 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Số lượng đã đặt không được âm.");
             }
-            if (string.IsNullOrEmpty(serviceUpdateRequest.Status))
+
+            if (string.IsNullOrEmpty(serviceUpdateRequest.Status) || !Util.IsValidGeneralStatus(serviceUpdateRequest.Status))
             {
-                throw new ArgumentException("Status của Service không được để trống.");
+                throw new ArgumentException("Status của Service không hợp lệ.");
             }
+
             if (serviceUpdateRequest.FeedbackedNum < 0)
             {
                 throw new ArgumentException("Số lượng phản hồi không được âm.");
             }
+
             var category = await _categoryRepository.GetCategoryByIdAsync(serviceUpdateRequest.CategoryId);
 
             if (category == null)
             {
                 throw new ArgumentException("ID danh mục không hợp lệ.");
             }
-            if (category.Status.ToUpper() == "INACTIVE")
+
+            if (Util.IsEqual(category.Status, StatusConstants.Inactive))
             {
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
+
             var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
@@ -173,6 +188,7 @@ namespace TP4SCS.Services.Implements
             existingService.Status = serviceUpdateRequest.Status.ToUpper();
             existingService.OrderedNum = serviceUpdateRequest.OrderedNum;
             existingService.FeedbackedNum = serviceUpdateRequest.FeedbackedNum;
+
             if (serviceUpdateRequest.NewPrice.HasValue &&
                 serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
                 !string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
@@ -195,14 +211,13 @@ namespace TP4SCS.Services.Implements
                     await _promotionService.AddPromotionAsync(newPromotion);
                 }
             }
-            else if(!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
+            else if (!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
             {
                 if (existingService.Promotion != null)
                 {
                     await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
                     existingService.Promotion = null;
                 }
-                
             }
 
             await _serviceRepository.UpdateServiceAsync(existingService);
@@ -214,7 +229,7 @@ namespace TP4SCS.Services.Implements
 
             var discountedServices = services?.Where(service =>
                 service.Promotion != null &&
-                service.Promotion.Status.ToUpper() == StatusConstants.Available.ToUpper()
+                Util.IsEqual(service.Promotion.Status, StatusConstants.Available)
             );
 
             return discountedServices;
@@ -238,7 +253,7 @@ namespace TP4SCS.Services.Implements
                 return service.Price;
             }
 
-            var isPromotionActive = service.Promotion.Status.Equals(StatusConstants.Available, StringComparison.OrdinalIgnoreCase);
+            var isPromotionActive = Util.IsEqual(service.Promotion.Status, StatusConstants.Available);
             if (!isPromotionActive)
             {
                 return service.Price;
@@ -248,6 +263,5 @@ namespace TP4SCS.Services.Implements
 
             return finalPrice;
         }
-
     }
 }

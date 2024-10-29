@@ -6,7 +6,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class PromotionRepository : GenericRepoistory<Promotion>, IPromotionRepository
+    public class PromotionRepository : GenericRepository<Promotion>, IPromotionRepository
     {
         public PromotionRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

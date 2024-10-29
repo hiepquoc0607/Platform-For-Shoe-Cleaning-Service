@@ -4,7 +4,7 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class CartRepository : GenericRepoistory<Cart>, ICartRepository
+    public class CartRepository : GenericRepository<Cart>, ICartRepository
     {
         public CartRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {

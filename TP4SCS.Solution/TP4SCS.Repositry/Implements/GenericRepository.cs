@@ -5,12 +5,12 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class GenericRepoistory<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly Tp4scsDevDatabaseContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepoistory(Tp4scsDevDatabaseContext dbContext)
+        public GenericRepository(Tp4scsDevDatabaseContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = dbContext.Set<T>();

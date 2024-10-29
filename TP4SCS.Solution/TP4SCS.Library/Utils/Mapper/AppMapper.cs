@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mapster;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.Category;
@@ -9,12 +10,13 @@ using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.MaterialResponse;
+using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
-    public class AppMapper : Profile
+    public class AppMapper : Profile, IRegister
     {
         public AppMapper()
         {
@@ -39,6 +41,13 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<MaterialCreateRequest, Material>();
             CreateMap<MaterialUpdateRequest, Material>();
             CreateMap<Material, MaterialResponse>();
+        }
+
+        public void Register(TypeAdapterConfig config)
+        {
+            TypeAdapterConfig<OrderDetail, OrderDetailResponse>
+                .NewConfig()
+                .Map(dest => dest.Status, src => Util.TranslateGeneralStatus(src.Status) ?? "Trạng Thái null");
         }
     }
 }

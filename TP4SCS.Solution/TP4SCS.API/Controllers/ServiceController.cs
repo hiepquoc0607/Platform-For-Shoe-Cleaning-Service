@@ -104,9 +104,9 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Status))
+                if (string.IsNullOrEmpty(request.Status) || !Util.IsValidGeneralStatus(request.Status))
                 {
-                    throw new ArgumentException("Status không được bỏ trống.", nameof(request.Status));
+                    throw new ArgumentException("Status của Service không hợp lệ.", nameof(request.Status));
                 }
                 request.Status = request.Status.ToUpper();
                 await _serviceService.AddServiceAsync(request);
