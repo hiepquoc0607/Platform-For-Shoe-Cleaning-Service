@@ -1,4 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Cart;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -8,11 +10,19 @@ namespace TP4SCS.Services.Implements
     {
         private readonly ICartRepository _cartRepository;
         private readonly IServiceService _serviceService;
+        private readonly ICartItemRepository _cartItemRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository;
 
-        public CartService(ICartRepository cartRepository, IServiceService serviceService)
+        public CartService(ICartRepository cartRepository, IServiceService serviceService
+            , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
+            IOrderDetailRepository orderDetailRepository)
         {
             _cartRepository = cartRepository;
             _serviceService = serviceService;
+            _cartItemRepository = cartItemRepository;
+            _orderRepository = orderRepository;
+            _orderDetailRepository = orderDetailRepository;
         }
 
         public async Task ClearCartAsync(int cartId)
@@ -49,6 +59,61 @@ namespace TP4SCS.Services.Implements
 
             return totalPrice;
         }
+        public async Task CheckoutAsync(CheckoutRequest request)
+        {
+            var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
+            var groupedItems = cartItems
+                .GroupBy(item => item.Service.BranchId)
+                .Select(group => new
+                {
+                    BranchId = group.Key,
+                    Items = group.ToList()
+                });
+
+            var orders = new List<Order>();
+
+            foreach (var group in groupedItems)
+            {
+                var order = new Order
+                {
+                    AccountId = request.AccountId,
+                    AddressId = request.AddressId,
+                    CreateTime = DateTime.UtcNow,
+                    IsAutoReject = request.IsAutoReject,
+                    Note = request.Note,
+                    Status = StatusConstants.PENDING,
+                    ShippingUnit = request.ShippingUnit,
+                    ShippingCode = request.ShippingCode,
+                    DeliveredFee = request.DeliveredFee,
+                    OrderDetails = new List<OrderDetail>()
+                };
+
+                decimal orderPrice = 0;
+
+                foreach (var item in group.Items)
+                {
+                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+
+                    order.OrderDetails.Add(new OrderDetail
+                    {
+                        ServiceId = item.ServiceId,
+                        Quantity = item.Quantity,
+                        Price = finalPrice,
+                        Status = StatusConstants.PENDING
+                    });
+
+                    orderPrice += finalPrice * item.Quantity;
+                }
+
+                order.OrderPrice = orderPrice;
+                order.TotalPrice = orderPrice + request.DeliveredFee;
+                orders.Add(order);
+            }
+
+            await _orderRepository.AddOrdersAsync(orders);
+            await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
+        }
+
 
 
         //public async Task UpdateCartAsync(Cart cart, int existingCartId)

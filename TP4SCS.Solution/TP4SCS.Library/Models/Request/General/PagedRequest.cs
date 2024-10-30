@@ -19,4 +19,19 @@ namespace TP4SCS.Library.Models.Request.General
         [EnumMember(Value = "Id Descending")]
         IdDesc
     }
+
+    public enum OrderedOrderByEnum
+    {
+        [EnumMember(Value = "Id Ascending")]
+        IdAsc,
+
+        [EnumMember(Value = "Id Descending")]
+        IdDesc,
+
+        [EnumMember(Value = "Create Date Ascending")]
+        CreateDateAsc,
+
+        [EnumMember(Value = "Create Date Descending")]
+        CreateDateDes
+    }
 }

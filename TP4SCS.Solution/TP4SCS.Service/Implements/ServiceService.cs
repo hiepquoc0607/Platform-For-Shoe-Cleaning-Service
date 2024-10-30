@@ -142,24 +142,9 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Giá phải lớn hơn 0.");
             }
 
-            if (serviceUpdateRequest.Rating.HasValue && serviceUpdateRequest.Rating < 0)
-            {
-                throw new ArgumentException("Đánh giá không được âm.");
-            }
-
-            if (serviceUpdateRequest.OrderedNum.HasValue && serviceUpdateRequest.OrderedNum < 0)
-            {
-                throw new ArgumentException("Số lượng đã đặt không được âm.");
-            }
-
             if (string.IsNullOrEmpty(serviceUpdateRequest.Status) || !Util.IsValidGeneralStatus(serviceUpdateRequest.Status))
             {
                 throw new ArgumentException("Status của Service không hợp lệ.");
-            }
-
-            if (serviceUpdateRequest.FeedbackedNum.HasValue && serviceUpdateRequest.FeedbackedNum < 0)
-            {
-                throw new ArgumentException("Số lượng phản hồi không được âm.");
             }
 
             var category = await _categoryRepository.GetCategoryByIdAsync(serviceUpdateRequest.CategoryId);
@@ -183,10 +168,7 @@ namespace TP4SCS.Services.Implements
             existingService.CategoryId = serviceUpdateRequest.CategoryId;
             existingService.Description = serviceUpdateRequest.Description ?? "";
             existingService.Price = serviceUpdateRequest.Price;
-            existingService.Rating = serviceUpdateRequest.Rating ?? existingService.Rating; // Giữ giá trị cũ nếu không có Rating mới
             existingService.Status = serviceUpdateRequest.Status.ToUpper();
-            existingService.OrderedNum = serviceUpdateRequest.OrderedNum ?? existingService.OrderedNum;
-            existingService.FeedbackedNum = serviceUpdateRequest.FeedbackedNum ?? existingService.FeedbackedNum;
 
             if (serviceUpdateRequest.NewPrice.HasValue &&
                 serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&

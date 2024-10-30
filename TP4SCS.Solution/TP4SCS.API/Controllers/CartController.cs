@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
@@ -28,30 +29,24 @@ namespace TP4SCS.API.Controllers
                 var cart = await _cartService.GetCartByUserIdAsync(id);
                 if (cart == null)
                 {
-                    return NotFound($"Giỏ hàng cho người dùng ID {id} không tìm thấy.");
+                    await _cartService.CreateCartAsync(id);
+                    cart = await _cartService.GetCartByUserIdAsync(id);
                 }
-
-                //var cartResponse = _mapper.Map<CartResponse>(cart);
                 var cartResponse = cart.Adapt<CartResponse>();
-                cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart.Id);
+                cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
 
                 if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
                 {
-                    // Lấy giá cuối cùng cho từng dịch vụ trong giỏ hàng
                     foreach (var cartItem in cartResponse.CartItems)
                     {
                         cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
                     }
-
-                    // Lấy BranchId cho từng cartItem trước khi group
                     var itemsWithBranchId = new List<(CartItemResponse Item, int? BranchId)>();
                     foreach (var cartItem in cartResponse.CartItems)
                     {
                         var service = await _serviceService.GetServiceByIdAsync(cartItem.ServiceId);
                         itemsWithBranchId.Add((cartItem, service?.BranchId));
                     }
-
-                    // Group theo BranchId đã lấy
                     var groupedCartItems = itemsWithBranchId
                         .GroupBy(x => x.BranchId)
                         .Select(group => new
@@ -84,13 +79,34 @@ namespace TP4SCS.API.Controllers
             var total = await _cartService.GetCartTotalAsync(id);
             return Ok(new { Total = total });
         }
-        [HttpPost]
-        [Route("api/carts")]
-        public async Task<IActionResult> CreateCart(int userId)
+        [HttpPost("api/carts/cart/checkout")]
+        public async Task<IActionResult> CheckoutAsync([FromBody] CheckoutRequest request)
         {
-            var cart = await _cartService.CreateCartAsync(userId);
-            return CreatedAtAction(nameof(GetCartByUserIdAsync), new { userId = userId }, cart);
+            if (request == null || request.CartItemIds == null || request.CartItemIds.Length == 0)
+            {
+                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp ID sản phẩm trong giỏ hàng và ID tài khoản hợp lệ.");
+            }
+
+            try
+            {
+                await _cartService.CheckoutAsync(request);
+                return Ok("Thanh toán thành công.");
+            }
+            catch (Exception ex)
+            {
+                // Bạn có thể ghi log lỗi ở đây
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+            }
         }
+
+
+        //[HttpPost]
+        //[Route("api/carts")]
+        //public async Task<IActionResult> CreateCart(int userId)
+        //{
+        //    var cart = await _cartService.CreateCartAsync(userId);
+        //    return CreatedAtAction(nameof(GetCartByUserIdAsync), new { userId = userId }, cart);
+        //}
         //[HttpPut]
         //[Route("api/carts/{id}")]
         //public async Task<IActionResult> UpdateCart(int id, [FromBody] CartUpdateRequest cartUpdateRequest)

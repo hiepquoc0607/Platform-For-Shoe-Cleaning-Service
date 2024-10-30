@@ -12,9 +12,10 @@ namespace TP4SCS.Repository.Implements
         {
         }
 
-        public async Task AddOrderAsync(Order order)
+        public async Task AddOrdersAsync(List<Order> orders)
         {
-            await InsertAsync(order);
+            await _dbContext.AddRangeAsync(orders);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteOrderAsync(int id)
@@ -29,21 +30,21 @@ namespace TP4SCS.Repository.Implements
 
         public Task<IEnumerable<Order>?> GetOrdersAsync(
             string? status = null,
-            int? accountId = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc)
+            OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc)
         {
             // Filter by status and accountId
             Expression<Func<Order, bool>> filter = o =>
-                (string.IsNullOrEmpty(status) || Util.IsEqual(o.Status, status)) &&
-                (!accountId.HasValue || o.AccountId == accountId);
+                (string.IsNullOrEmpty(status) || Util.IsEqual(o.Status, status));
 
             // Sort based on OrderByEnum
             Func<IQueryable<Order>, IOrderedQueryable<Order>> orderByExpression = q => orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(o => o.Id),
-                _ => q.OrderBy(o => o.Id)
+                OrderedOrderByEnum.IdDesc => q.OrderByDescending(o => o.Id),
+                OrderedOrderByEnum.IdAsc => q.OrderBy(o => o.Id),
+                OrderedOrderByEnum.CreateDateDes => q.OrderByDescending(o => o.CreateTime),
+                _ => q.OrderBy(o => o.CreateTime)
             };
 
             // Check if both pageIndex and pageSize are provided
