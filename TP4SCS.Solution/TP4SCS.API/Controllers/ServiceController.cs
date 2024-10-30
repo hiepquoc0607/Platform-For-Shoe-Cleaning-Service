@@ -130,14 +130,14 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpPut("{existingServiceId}")]
-        public async Task<IActionResult> UpdateServiceAync(int existingServiceId, [FromBody] ServiceUpdateRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateServiceAync(int id, [FromBody] ServiceUpdateRequest request)
         {
             try
             {
 
-                await _serviceService.UpdateServiceAsync(request, existingServiceId);
-                var service = await _serviceService.GetServiceByIdAsync(existingServiceId);
+                await _serviceService.UpdateServiceAsync(request, id);
+                var service = await _serviceService.GetServiceByIdAsync(id);
                 return Ok(new ResponseObject<ServiceResponse>("Update Service Success",
                     _mapper.Map<ServiceResponse>(service)));
             }

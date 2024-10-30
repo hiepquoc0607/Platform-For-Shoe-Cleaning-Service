@@ -8,7 +8,6 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
 {
-    [Route("api/cartitems")]
     [ApiController]
     public class CartItemController : ControllerBase
     {
@@ -21,10 +20,11 @@ namespace TP4SCS.API.Controllers
             _serviceService = serviceService;
         }
 
-        [HttpGet("cart/{cartId}")]
-        public async Task<IActionResult> GetCartItems(int cartId)
+        [HttpGet]
+        [Route("api/cart/{id}/cartitems")]
+        public async Task<IActionResult> GetCartItems(int id)
         {
-            var items = await _cartItemService.GetCartItemsAsync(cartId);
+            var items = await _cartItemService.GetCartItemsAsync(id);
             var itemsReponse = items.Adapt<List<CartItemResponse>>();
             foreach (var item in itemsReponse)
             {
@@ -35,42 +35,44 @@ namespace TP4SCS.API.Controllers
         }
 
 
-        [HttpGet("{itemId}")]
-        public async Task<IActionResult> GetCartItemById(int itemId)
+        [HttpGet]
+        [Route("api/cartitems/{id}")]
+        public async Task<IActionResult> GetCartItemById(int id)
         {
-            var item = await _cartItemService.GetCartItemByIdAsync(itemId);
+            var item = await _cartItemService.GetCartItemByIdAsync(id);
             if (item == null)
             {
-                return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {itemId} không tìm thấy.", null));
+                return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {id} không tìm thấy.", null));
             }
             var itemResponse = item.Adapt<CartItemResponse>();
             itemResponse.Price = await _serviceService.GetServiceFinalPriceAsync(itemResponse.ServiceId);
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
-        [HttpGet]
-        [Route("total")]
-        public async Task<IActionResult> CalculateCartItemsTotal([FromQuery] List<int> itemIds)
-        {
-            try
-            {
-                decimal? total = await _cartItemService.CalculateCartItemsTotal(itemIds);
+        //[HttpGet]
+        //[Route("api/cartitems/total")]
+        //public async Task<IActionResult> CalculateCartItemsTotal([FromQuery] List<int> itemIds)
+        //{
+        //    try
+        //    {
+        //        decimal? total = await _cartItemService.CalculateCartItemsTotal(itemIds);
 
-                return Ok(new ResponseObject<decimal?>("Tính toán thành công", total));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
+        //        return Ok(new ResponseObject<decimal?>("Tính toán thành công", total));
+        //    }
+        //    catch (KeyNotFoundException ex)
+        //    {
+        //        return NotFound(ex.Message);
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+        //    }
+        //}
         [HttpPost]
+        [Route("api/cartitems")]
         public async Task<IActionResult> AddItemToCart(int userId, [FromBody] CartItemCreateRequest request)
         {
             var item = request.Adapt<CartItem>();
@@ -97,7 +99,8 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("api/cartitems/{id}")]
         public async Task<IActionResult> UpdateCartItemQuantity(int id, [FromBody] int newQuantity)
         {
             try
@@ -119,8 +122,9 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpDelete("cart/{cartId}/items")]
-        public async Task<IActionResult> RemoveItemsFromCart([FromQuery] int cartId, [FromBody] int[] itemIds)
+        [HttpDelete]
+        [Route("api/cartitems")]
+        public async Task<IActionResult> RemoveItemsFromCart([FromBody] int[] itemIds)
         {
             try
             {
@@ -129,10 +133,7 @@ namespace TP4SCS.API.Controllers
                     return BadRequest("Danh sách ID của các mục không được để trống.");
                 }
 
-                foreach (var itemId in itemIds)
-                {
-                    await _cartItemService.RemoveItemFromCartAsync(cartId, itemId);
-                }
+                await _cartItemService.RemoveItemsFromCartAsync(itemIds);
 
                 return NoContent();
             }

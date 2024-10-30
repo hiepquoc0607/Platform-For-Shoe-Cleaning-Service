@@ -12,11 +12,11 @@
 
         public decimal Price { get; set; }
         public string? Status { get; set; }
-        public decimal Rating { get; set; }
+        public decimal? Rating { get; set; }
 
-        public int OrderedNum { get; set; }
+        public int? OrderedNum { get; set; }
 
-        public int FeedbackedNum { get; set; }
+        public int? FeedbackedNum { get; set; }
         public decimal? NewPrice { get; set; }
         public string? PromotionStatus { get; set; }
     }

@@ -89,7 +89,7 @@ namespace TP4SCS.Library.Utils.Utils
 
         public static bool IsValidPromotionStatus(string status)
         {
-            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Expired };
+            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unvailable };
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -106,7 +106,7 @@ namespace TP4SCS.Library.Utils.Utils
 
             return lowerStatus switch
             {
-                "expired" => "Hết hạn",
+                "unavailable" => "Hết hiệu lực",
                 "available" => "Còn hiệu lực",
                 _ => "Trạng thái Null"
             };

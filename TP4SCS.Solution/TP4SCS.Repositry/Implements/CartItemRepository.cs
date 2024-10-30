@@ -56,18 +56,22 @@ namespace TP4SCS.Repository.Implements
             return await GetAsync(filter: item => item.CartId == cartId);
         }
 
-        public async Task RemoveItemFromCartAsync(int cartId, int itemId)
+        public async Task RemoveItemsFromCartAsync(int[] itemIds)
         {
-            var itemToRemove = await _dbContext.CartItems
-                .SingleOrDefaultAsync(item => item.CartId == cartId && item.Id == itemId);
+            // Tìm tất cả các mục có Id nằm trong mảng itemIds
+            var itemsToRemove = await _dbContext.CartItems
+                .Where(item => itemIds.Contains(item.Id))
+                .ToListAsync();
 
-            if (itemToRemove != null)
+            if (itemsToRemove.Any())
             {
-                await DeleteAsync(itemToRemove);
+                // Xóa các mục đã tìm thấy
+                _dbContext.RemoveRange(itemsToRemove);
+                await _dbContext.SaveChangesAsync();
             }
             else
             {
-                throw new KeyNotFoundException($"CartItem with itemId {itemId} not found in cartId {cartId}.");
+                throw new KeyNotFoundException("No CartItems found with the specified itemIds.");
             }
         }
 
