@@ -45,7 +45,13 @@ namespace TP4SCS.Repository.Implements
             }
             await _cartRepository.UpdateCartAsync(cart);
         }
-
+        public async Task<IEnumerable<CartItem>> GetCartItemsByIdsAsync(int[] cartItemIds)
+        {
+            return await _dbContext.CartItems
+                .Where(item => cartItemIds.Contains(item.Id))
+                .Include(item => item.Service)
+                .ToListAsync();
+        }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)
         {
             return await GetByIDAsync(itemId);

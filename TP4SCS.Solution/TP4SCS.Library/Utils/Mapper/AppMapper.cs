@@ -10,6 +10,7 @@ using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.MaterialResponse;
+using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
@@ -49,6 +50,8 @@ namespace TP4SCS.Library.Utils.Mapper
             TypeAdapterConfig<OrderDetail, OrderDetailResponse>
                 .NewConfig()
                 .Map(dest => dest.Status, src => Util.TranslateGeneralStatus(src.Status) ?? "Trạng Thái null");
+            TypeAdapterConfig<Order, OrderResponse>.NewConfig()
+            .Map(dest => dest.OrderDetails, src => src.OrderDetails.Adapt<List<OrderDetailResponse>>());
         }
     }
 }

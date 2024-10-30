@@ -93,6 +93,24 @@ namespace TP4SCS.Library.Utils.Utils
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
 
+        public static bool IsValidOrderStatus(string status)
+        {
+            var validStatuses = new[]
+            {
+                StatusConstants.CANCELED,
+                StatusConstants.PENDING,
+                StatusConstants.APPROVED,
+                StatusConstants.PROCESSING,
+                StatusConstants.STORAGE,
+                StatusConstants.SHIPPING,
+                StatusConstants.FINISHED,
+                StatusConstants.ABANDONED
+            };
+
+            return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
+        }
+
+
         public static bool IsEqual(string s1, string s2)
         {
             return string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);

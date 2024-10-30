@@ -5,13 +5,18 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>?> GetOrdersAsync(
-            string? keyword = null,
+        Task<IEnumerable<Order>?> GetOrdersByBranchIdAsync(
+            int branchId,
             string? status = null,
-            int? branchId = null,
-            int? accountId = null,
+            OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
+        Task<IEnumerable<Order>?> GetOrdersByAccountIdAsync(
+            int accountId,
+            string? status = null,
+            OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
+        Task<IEnumerable<Order>?> GetOrdersAsync(
+            string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc);
+            OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
     }
 }
