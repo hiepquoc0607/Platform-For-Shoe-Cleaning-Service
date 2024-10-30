@@ -1,5 +1,4 @@
-﻿using TP4SCS.Library.Models.Request.Branch;
-using TP4SCS.Library.Models.Request.Business;
+﻿using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;

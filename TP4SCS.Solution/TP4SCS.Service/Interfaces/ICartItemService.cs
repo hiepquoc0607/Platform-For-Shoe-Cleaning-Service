@@ -7,7 +7,7 @@ namespace TP4SCS.Services.Interfaces
         Task AddItemToCartAsync(int userId, CartItem item);
         Task<CartItem?> GetCartItemByIdAsync(int itemId);
         Task<IEnumerable<CartItem>?> GetCartItemsAsync(int cartId);
-        Task RemoveItemFromCartAsync(int cartId, int itemId);
+        Task RemoveItemsFromCartAsync(int[] itemIds);
         Task UpdateCartItemQuantityAsync(int itemId, int newQuantity);
         Task<decimal> CalculateCartItemsTotal(List<int> cartItemIds);
     }

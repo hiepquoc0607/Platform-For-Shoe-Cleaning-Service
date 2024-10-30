@@ -6,7 +6,7 @@ namespace TP4SCS.Repository.Interfaces
     {
         Task AddItemToCartAsync(int cartId, CartItem item);
         Task UpdateCartItemQuantityAsync(int itemId, int newQuantity);
-        Task RemoveItemFromCartAsync(int cartId, int itemId);
+        Task RemoveItemsFromCartAsync(int[] itemIds);
         Task<IEnumerable<CartItem>?> GetCartItemsAsync(int cartId);
         Task<CartItem?> GetCartItemByIdAsync(int itemId);
     }

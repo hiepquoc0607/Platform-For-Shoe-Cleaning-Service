@@ -39,9 +39,9 @@ namespace TP4SCS.Services.Implements
             return await _cartItemRepository.GetCartItemsAsync(cartId);
         }
 
-        public async Task RemoveItemFromCartAsync(int cartId, int itemId)
+        public async Task RemoveItemsFromCartAsync(int[] itemIds)
         {
-            await _cartItemRepository.RemoveItemFromCartAsync(cartId, itemId);
+            await _cartItemRepository.RemoveItemsFromCartAsync(itemIds);
         }
         
         public async Task UpdateCartItemQuantityAsync(int itemId, int newQuantity)
