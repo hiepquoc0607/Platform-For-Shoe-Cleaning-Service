@@ -1,6 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -25,12 +25,14 @@ namespace TP4SCS.Services.Implements
             foreach (var orderDetail in orderDetails)
             {
                 // Kiểm tra MaterialId và ServiceId
-                if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
+                //if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
+                if (!orderDetail.MaterialId.HasValue)
                 {
                     throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
                 }
 
-                if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
+                //if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
+                if (orderDetail.MaterialId.HasValue)
                 {
                     throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
                 }
@@ -45,14 +47,15 @@ namespace TP4SCS.Services.Implements
                     }
                 }
                 // Kiểm tra Service
-                else if (orderDetail.ServiceId.HasValue)
+                //else if (orderDetail.ServiceId.HasValue)
+                //{
+                //var service = await _serviceRepository.GetServiceByIdAsync(orderDetail.ServiceId.Value);
+                var service = await _serviceRepository.GetServiceByIdAsync((int)orderDetail.ServiceId);
+                if (service == null || service.Status != StatusConstants.Active)
                 {
-                    var service = await _serviceRepository.GetServiceByIdAsync(orderDetail.ServiceId.Value);
-                    if (service == null || service.Status != StatusConstants.Active)
-                    {
-                        throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
-                    }
+                    throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
                 }
+                //}
 
                 // Kiểm tra quantity
                 if (orderDetail.Quantity <= 0)

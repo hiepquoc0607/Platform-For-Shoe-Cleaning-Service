@@ -69,7 +69,7 @@ namespace TP4SCS.Services.Implements
 
             foreach (var cartItem in cartItems)
             {
-                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
+                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync((int)cartItem.ServiceId);
 
                 if (servicePrice < 0)
                 {

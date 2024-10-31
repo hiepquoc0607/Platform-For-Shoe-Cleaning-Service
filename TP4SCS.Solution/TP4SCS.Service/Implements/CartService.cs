@@ -52,7 +52,7 @@ namespace TP4SCS.Services.Implements
 
             foreach (var item in cart.CartItems)
             {
-                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync((int)item.ServiceId);
 
                 totalPrice += servicePrice * item.Quantity;
             }
@@ -92,7 +92,7 @@ namespace TP4SCS.Services.Implements
 
                 foreach (var item in group.Items)
                 {
-                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync((int)item.ServiceId);
 
                     order.OrderDetails.Add(new OrderDetail
                     {
