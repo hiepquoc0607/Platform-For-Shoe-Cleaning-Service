@@ -130,6 +130,12 @@ namespace TP4SCS.Services.Implements
             return await _serviceRepository.GetServicesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
 
+        public async Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId)
+        {
+            var services = await _serviceRepository.GetServicesAsync(null, null);
+            return services.Where(s => s.BranchId == branchId);
+        }
+
         public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
         {
             if (serviceUpdateRequest == null)
