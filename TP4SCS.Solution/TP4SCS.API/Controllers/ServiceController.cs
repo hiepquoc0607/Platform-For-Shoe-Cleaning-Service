@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
@@ -56,7 +57,13 @@ namespace TP4SCS.API.Controllers
 
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Success", pagedResponse));
         }
-
+        [HttpGet("branches/{id}")]
+        public async Task<IActionResult> GetServicesByBranchIdAync([FromRoute] int id)
+        {
+            var services = await _serviceService.GetServicesByBranchIdAsync(id);
+            return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Fetch Service By Branch Id Success",
+                services.Adapt<IEnumerable<ServiceResponse>>()));
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceByIdAync(int id)

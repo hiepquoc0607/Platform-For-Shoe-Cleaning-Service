@@ -15,5 +15,6 @@ namespace TP4SCS.Services.Interfaces
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);
+        Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId);
     }
 }
