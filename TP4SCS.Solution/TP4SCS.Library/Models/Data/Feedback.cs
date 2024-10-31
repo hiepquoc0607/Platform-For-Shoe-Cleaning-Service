@@ -10,6 +10,14 @@ public partial class Feedback
 
     public string? Content { get; set; }
 
+    public DateTime CreatedTime { get; set; }
+
+    public bool IsValidContent { get; set; }
+
+    public bool? IsValidAsset { get; set; }
+
+    public string Status { get; set; } = null!;
+
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
 
     public virtual OrderDetail OrderItem { get; set; } = null!;

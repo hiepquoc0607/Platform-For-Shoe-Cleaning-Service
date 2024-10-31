@@ -26,6 +26,10 @@ public partial class BusinessProfile
 
     public int CanceledAmount { get; set; }
 
+    public int ToTalServiceNum { get; set; }
+
+    public DateOnly CreatedDate { get; set; }
+
     public DateTime RegisteredTime { get; set; }
 
     public DateTime ExpiredTime { get; set; }

@@ -14,7 +14,7 @@ public partial class OrderDetail
 
     public decimal Price { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
@@ -22,5 +22,5 @@ public partial class OrderDetail
 
     public virtual Order Order { get; set; } = null!;
 
-    public virtual Service Service { get; set; } = null!;
+    public virtual Service? Service { get; set; }
 }

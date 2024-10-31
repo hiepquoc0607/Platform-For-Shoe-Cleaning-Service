@@ -38,7 +38,9 @@ public partial class Account
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<SupportTicket> SupportTickets { get; set; } = new List<SupportTicket>();
+    public virtual ICollection<SupportTicket> SupportTicketModerators { get; set; } = new List<SupportTicket>();
+
+    public virtual ICollection<SupportTicket> SupportTicketUsers { get; set; } = new List<SupportTicket>();
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

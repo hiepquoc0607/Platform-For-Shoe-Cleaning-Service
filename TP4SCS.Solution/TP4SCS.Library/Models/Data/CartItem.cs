@@ -6,9 +6,11 @@ public partial class CartItem
 
     public int CartId { get; set; }
 
-    public int ServiceId { get; set; }
+    public int? ServiceId { get; set; }
 
     public int? MaterialId { get; set; }
+
+    public decimal Price { get; set; }
 
     public int Quantity { get; set; }
 
@@ -16,5 +18,5 @@ public partial class CartItem
 
     public virtual Material? Material { get; set; }
 
-    public virtual Service Service { get; set; } = null!;
+    public virtual Service? Service { get; set; }
 }
