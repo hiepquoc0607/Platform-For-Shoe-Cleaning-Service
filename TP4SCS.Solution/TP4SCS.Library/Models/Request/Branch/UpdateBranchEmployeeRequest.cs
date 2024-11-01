@@ -6,7 +6,6 @@ namespace TP4SCS.Library.Models.Request.Branch
     public class UpdateBranchEmployeeRequest
     {
         [Required]
-        [DefaultValue("string")]
         public string EmployeeIds { get; set; } = string.Empty;
 
         [Required]

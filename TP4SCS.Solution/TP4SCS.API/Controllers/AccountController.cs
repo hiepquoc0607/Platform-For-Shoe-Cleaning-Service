@@ -85,6 +85,28 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("api/accounts/{id}/password")]
+        public async Task<IActionResult> UpdateAccountPasswordAsync([FromRoute] int id, UpdateAccountPasswordRequest updateAccountPasswordRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null || !userIdClaim.Equals(id.ToString()))
+            {
+                return Forbid();
+            }
+
+            var result = await _accountService.UpdateAccountPasswordAsync(id, updateAccountPasswordRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
         [Authorize(Policy = "Admin")]
         [HttpPut]
         [Route("api/admin/accounts/{id}/status")]

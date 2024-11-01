@@ -8,7 +8,6 @@ namespace TP4SCS.Library.Models.Request.Account
         [EmailAddress]
         public string? Email { get; set; }
 
-        [DefaultValue("string")]
         public string? FullName { get; set; }
 
         [Phone]
@@ -18,7 +17,6 @@ namespace TP4SCS.Library.Models.Request.Account
 
         public DateOnly? Dob { get; set; }
 
-        [DefaultValue("string")]
         public string? ImageUrl { get; set; }
     }
 }

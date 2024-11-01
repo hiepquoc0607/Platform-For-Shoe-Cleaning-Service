@@ -15,7 +15,6 @@ namespace TP4SCS.Library.Models.Request.Account
         public string Password { get; set; } = string.Empty;
 
         [Required]
-        [DefaultValue("string")]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
@@ -25,14 +24,12 @@ namespace TP4SCS.Library.Models.Request.Account
         public string Phone { get; set; } = string.Empty;
 
         [Required]
-        [DefaultValue("string")]
         public string Gender { get; set; } = string.Empty;
 
         [Required]
         public DateOnly Dob { get; set; }
 
         [Required]
-        [DefaultValue("string")]
         public string Role { get; set; } = string.Empty;
     }
 }

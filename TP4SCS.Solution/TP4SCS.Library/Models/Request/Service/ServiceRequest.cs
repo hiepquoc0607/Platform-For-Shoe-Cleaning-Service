@@ -9,10 +9,8 @@ namespace TP4SCS.Library.Models.Request.Service
 
         public int CategoryId { get; set; }
 
-        [DefaultValue("string")]
         public string Name { get; set; } = string.Empty;
 
-        [DefaultValue("string")]
         public string? Description { get; set; }
 
         public decimal Price { get; set; }

@@ -122,5 +122,20 @@ namespace TP4SCS.Repository.Implements
         {
             await UpdateAsync(businessProfile);
         }
+
+        public async Task<int> CountBusinessServiceByIdAsync(int id)
+        {
+            return await _dbContext.Services
+                .AsNoTracking()
+                .GroupBy(s => new { s.Branch.BusinessId, s.Name })
+                .Select(s => new { s.Key.BusinessId, ServiceName = s.Key.Name })
+                .GroupBy(s => s.BusinessId)
+                .Select(s => new
+                {
+                    BusinessId = s.Key,
+                    DistinctService = s.ToList()
+                })
+                .CountAsync();
+        }
     }
 }

@@ -13,15 +13,12 @@ namespace TP4SCS.Library.Models.Request.Cart
         [DefaultValue(false)]
         public bool IsAutoReject { get; set; }
 
-        [DefaultValue("string")]
         public string? Note { get; set; }
 
         public decimal DeliveredFee { get; set; }
 
-        [DefaultValue("string")]
         public string? ShippingUnit { get; set; }
 
-        [DefaultValue("string")]
         public string? ShippingCode { get; set; }
     }
 }

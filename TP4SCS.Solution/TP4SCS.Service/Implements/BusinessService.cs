@@ -27,6 +27,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
+        //Check Business Owner
         public async Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId)
         {
             var id = await _businessRepository.GetBusinessIdByOwnerIdAsync(ownerId);
@@ -39,6 +40,7 @@ namespace TP4SCS.Services.Implements
             return true;
         }
 
+        //Create Business
         public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, CreateBusinessRequest createBusinessRequest)
         {
             var businessData = createBusinessRequest.BusinessObject;
@@ -84,6 +86,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Get Businesses
         public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest)
         {
             var (businesses, pagination) = await _businessRepository.GetBusinessesProfilesAsync(getBusinessRequest);
@@ -98,6 +101,7 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, pagination);
         }
 
+        //Get Business By Id
         public async Task<ApiResponse<BusinessResponse?>> GetBusinessProfileByIdAsync(int id)
         {
             var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
@@ -112,6 +116,7 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<BusinessResponse?>("success", "Lấy Dữ Liệu Thành Công!", data);
         }
 
+        //Update Business
         public async Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest)
         {
             if (!_util.CheckStatus(updateBusinessRequest.Status))
@@ -140,6 +145,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Update Business Rank
         public async Task<ApiResponse<BusinessResponse>> UpdateBusinessRankAsync(int id, UpdateBusinessRankRequest updateBusinessRankRequest)
         {
             var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);

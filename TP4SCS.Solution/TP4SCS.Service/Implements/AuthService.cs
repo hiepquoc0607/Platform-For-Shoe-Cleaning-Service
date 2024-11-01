@@ -63,7 +63,9 @@ namespace TP4SCS.Services.Implements
         //Login
         public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(loginRequest.Email.ToLower().Trim());
+            var email = loginRequest.Email.Trim().ToLower();
+
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
 
             if (account == null)
             {
@@ -108,7 +110,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, message);
             }
 
-            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email.ToLower().Trim());
+            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email.Trim());
 
             if (account == null)
             {

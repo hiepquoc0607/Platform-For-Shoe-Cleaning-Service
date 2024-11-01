@@ -5,7 +5,6 @@ namespace TP4SCS.Library.Models.Request.Business
 {
     public class UpdateBusinessRequest
     {
-        [DefaultValue("string")]
         public string Name { get; set; } = string.Empty;
 
         [Phone]
@@ -13,10 +12,8 @@ namespace TP4SCS.Library.Models.Request.Business
         [DefaultValue("string")]
         public string Phone { get; set; } = string.Empty;
 
-        [DefaultValue("string")]
         public string ImageUrl { get; set; } = string.Empty;
 
-        [DefaultValue("string")]
         public string Status { get; set; } = string.Empty;
     }
 }

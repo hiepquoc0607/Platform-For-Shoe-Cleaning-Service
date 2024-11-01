@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace TP4SCS.Library.Models.Request.Service
+﻿namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceCreateRequest
     {
@@ -8,15 +6,12 @@ namespace TP4SCS.Library.Models.Request.Service
 
         public int CategoryId { get; set; }
 
-        [DefaultValue("string")]
         public string Name { get; set; } = null!;
 
-        [DefaultValue("string")]
         public string? Description { get; set; }
 
         public decimal Price { get; set; }
 
-        [DefaultValue("string")]
         public string Status { get; set; } = string.Empty;
 
         public decimal? NewPrice { get; set; }

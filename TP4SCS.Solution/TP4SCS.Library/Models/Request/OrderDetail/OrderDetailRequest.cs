@@ -14,7 +14,6 @@ namespace TP4SCS.Library.Models.Request.OrderDetail
 
         public decimal Price { get; set; }
 
-        [DefaultValue("string")]
         public string Status { get; set; } = string.Empty;
     }
 }

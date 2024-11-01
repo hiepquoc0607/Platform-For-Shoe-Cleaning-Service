@@ -17,6 +17,8 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
 
+        Task<ApiResponse<AccountResponse>> UpdateAccountPasswordAsync(int id, UpdateAccountPasswordRequest updateAccountPasswordRequest);
+
         Task<ApiResponse<AccountResponse>> UpdateAccountStatusForAdminAsync(int id, UpdateStatusRequest updateStatusRequest);
 
         Task<ApiResponse<AccountResponse>> DeleteAccountAsync(int id);

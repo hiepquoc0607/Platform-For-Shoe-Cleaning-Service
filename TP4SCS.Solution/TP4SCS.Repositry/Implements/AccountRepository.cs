@@ -21,7 +21,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -94,10 +94,8 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email) &&
-                                                    !string.Equals(a.Status, StatusConstants.Suspended, StringComparison.OrdinalIgnoreCase))
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync();
+
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).AsNoTracking().SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -107,7 +105,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsEmailExistedAsync(string email)
         {
-            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => string.Equals(a.Email, email, StringComparison.OrdinalIgnoreCase));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Email.Equals(email));
         }
 
         public async Task UpdateAccountAsync(Account account)
@@ -117,7 +115,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsPhoneExistedAsync(string phone)
         {
-            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => string.Equals(a.Phone, phone, StringComparison.OrdinalIgnoreCase));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Phone.Equals(phone));
         }
 
         public async Task<int> GetAccountMaxIdAsync()
@@ -129,7 +127,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => string.Equals(a.Email, email, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Equals(email)).SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -146,7 +144,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
             }
             catch (Exception)
             {

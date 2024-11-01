@@ -21,6 +21,8 @@ namespace TP4SCS.Library.Utils.Mapper
 
             config.NewConfig<Account, UpdateAccountRequest>();
 
+            config.NewConfig<Account, UpdateAccountPasswordRequest>();
+
             config.NewConfig<Account, AccountResponse>();
 
             config.NewConfig<AuthResponse, Account>();

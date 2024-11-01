@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils.Utils
