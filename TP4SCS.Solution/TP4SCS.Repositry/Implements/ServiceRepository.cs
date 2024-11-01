@@ -34,28 +34,42 @@ namespace TP4SCS.Repository.Implements
         public Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
             string? status = null,
-            int pageIndex = 1,
-            int pageSize = 5,
+            int? pageIndex = null,
+            int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             Expression<Func<Service, bool>> filter = s =>
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
+                (string.IsNullOrEmpty(status) || s.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
 
+            // Sort based on OrderByEnum
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
             {
                 OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
                 _ => q.OrderBy(c => c.Id)
             };
 
+            // Check for pagination
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                // Fetch paginated services
+                return GetAsync(
+                    filter: filter,
+                    includeProperties: "Promotion",
+                    orderBy: orderByExpression,
+                    pageIndex: pageIndex.Value,
+                    pageSize: pageSize.Value
+                );
+            }
+
+            // Fetch all services without pagination
             return GetAsync(
                 filter: filter,
                 includeProperties: "Promotion",
-                orderBy: orderByExpression,
-                pageIndex: pageIndex,
-                pageSize: pageSize
+                orderBy: orderByExpression
             );
         }
+
 
 
         public async Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null)
@@ -68,6 +82,14 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .Include(s => s.Promotion)
                 .Where(filter)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Service>> GetServicesIncludeBranchAsync()
+        {
+            return await _dbContext.Services
+                .OrderBy(s => s.Id)
+                .Include(s => s.Branch)
                 .ToListAsync();
         }
 

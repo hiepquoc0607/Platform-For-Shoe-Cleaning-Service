@@ -113,7 +113,7 @@ namespace TP4SCS.Library.Utils.Utils
 
         public static bool IsEqual(string s1, string s2)
         {
-            return string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(s1.Trim(), s2.Trim(), StringComparison.OrdinalIgnoreCase);
         }
 
         public static string? TranslatePromotionStatus(string? status)

@@ -105,7 +105,64 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>("Đã xảy ra lỗi khi lấy dịch vụ.", ex.Message));
             }
         }
+        [HttpGet("grouped")]
+        public async Task<IActionResult> GetServicesGroupByNameAsync(
+            [FromQuery] int? pageIndex = null,
+            [FromQuery] int? pageSize = null)
+        {
+            if (pageIndex.HasValue && pageIndex.Value < 1)
+            {
+                return BadRequest(new ResponseObject<string>("Chỉ số trang phải lớn hơn 0."));
+            }
+            if (pageSize.HasValue && pageSize.Value < 1)
+            {
+                return BadRequest(new ResponseObject<string>("Kích thước trang phải lớn hơn 0."));
+            }
 
+            var (services, totalCount) = await _serviceService.GetServicesGroupByNameAsync(pageIndex, pageSize, OrderByEnum.IdAsc);
+
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                var pageResponse = new PagedResponse<ServiceResponse>(
+                        services.Select(s => _mapper.Map<ServiceResponse>(s)),
+                        totalCount,
+                        pageIndex.Value,
+                        pageSize.Value);
+
+                return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Grouped Success", pageResponse));
+            }
+
+            return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Fetch Service Grouped Success",
+                    services.Select(s => _mapper.Map<ServiceResponse>(s))));
+        }
+
+
+
+        [HttpGet("by-name-and-branch")]
+        public async Task<IActionResult> GetServiceByNameAndBranchIdAsync(
+            [FromQuery] string name, [FromQuery] int branchId)
+        {
+            try
+            {
+                var service = await _serviceService.GetServicesByNameAndBranchIdAsync(name, branchId);
+
+                if (service == null)
+                {
+                    return NotFound(new ResponseObject<ServiceResponse>($"Không tìm thấy dịch vụ với tên '{name}' và branchId '{branchId}'", null));
+                }
+
+                var response = _mapper.Map<ServiceResponse>(service);
+                return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new ResponseObject<string>(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>("Đã xảy ra lỗi khi lấy dịch vụ", ex.Message));
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateServiceAync([FromBody] ServiceCreateRequest request)
         {
@@ -138,25 +195,22 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateServiceAync(int id, [FromBody] ServiceUpdateRequest request)
+        public async Task<IActionResult> UpdateServiceStatusAync(int id, [FromBody] string status)
         {
             try
             {
 
-                await _serviceService.UpdateServiceAsync(request, id);
+                await _serviceService.UpdateServiceStatusAsync(status, id);
                 var service = await _serviceService.GetServiceByIdAsync(id);
-                return Ok(new ResponseObject<ServiceResponse>("Update Service Success",
+                return Ok(new ResponseObject<ServiceResponse>("Update Status Service with Id: {id} Success",
                     _mapper.Map<ServiceResponse>(service)));
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ResponseObject<ServiceResponse>(ex.Message));
-            }
-            catch (ArgumentNullException ex)
+
+            catch (ArgumentException ex)
             {
                 return BadRequest(new ResponseObject<ServiceResponse>(ex.Message));
             }
-            catch (ArgumentException ex)
+            catch (KeyNotFoundException ex)
             {
                 return BadRequest(new ResponseObject<ServiceResponse>(ex.Message));
             }
