@@ -19,11 +19,5 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<AddressResponse>> UpdateAddressDefaultAsync(int id);
 
         Task<ApiResponse<AddressResponse>> DeleteAddressAsync(int id);
-
-        Task<ApiResponse<IEnumerable<LocationResponse>>> GetCityAsync();
-
-        Task<ApiResponse<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city);
-
-        Task<ApiResponse<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward);
     }
 }

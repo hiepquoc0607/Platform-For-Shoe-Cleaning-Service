@@ -121,24 +121,6 @@ namespace TP4SCS.Services.Implements
             return await _addressRepository.GetAddressMaxIdAsync();
         }
 
-        //Get City
-        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetCityAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        //Get Province By City
-        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetProvinceByCityAsync(string city)
-        {
-            throw new NotImplementedException();
-        }
-
-        //Get Ward By Province
-        public Task<ApiResponse<IEnumerable<LocationResponse>>> GetWardByProvinceAsync(string ward)
-        {
-            throw new NotImplementedException();
-        }
-
         //Update Address
         public async Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
         {
