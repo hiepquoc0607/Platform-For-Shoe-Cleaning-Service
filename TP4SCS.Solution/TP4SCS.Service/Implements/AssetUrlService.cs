@@ -16,7 +16,7 @@ namespace TP4SCS.Services.Implements
         private IAssetUrlRepository _assetUrlRepository;
         public AssetUrlService(IAssetUrlRepository assetUrlRepository)
         {
-            var credentialPath = @"..\..\firebase.json"; // Đường dẫn tương đối
+            var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase.json");
             GoogleCredential credential = GoogleCredential.FromFile(credentialPath);
             _storageClient = StorageClient.Create(credential);
 
