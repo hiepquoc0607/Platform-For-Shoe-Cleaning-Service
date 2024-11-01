@@ -2,12 +2,12 @@
 {
     public class MaterialUpdateRequest
     {
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = string.Empty;
 
         public decimal Price { get; set; }
 
         public int Storage { get; set; }
 
-        public string Status { get; set; } = "Hoạt động";
+        public string Status { get; set; } = string.Empty;
     }
 }

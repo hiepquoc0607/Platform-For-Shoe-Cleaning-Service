@@ -53,11 +53,6 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.CreateAccountAsync(createAccountRequest);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
-            }
-
             if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
@@ -81,6 +76,28 @@ namespace TP4SCS.API.Controllers
             }
 
             var result = await _accountService.UpdateAccountAsync(id, updateAccountRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("api/accounts/{id}/password")]
+        public async Task<IActionResult> UpdateAccountPasswordAsync([FromRoute] int id, UpdateAccountPasswordRequest updateAccountPasswordRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null || !userIdClaim.Equals(id.ToString()))
+            {
+                return Forbid();
+            }
+
+            var result = await _accountService.UpdateAccountPasswordAsync(id, updateAccountPasswordRequest);
 
             if (result.StatusCode != 200)
             {

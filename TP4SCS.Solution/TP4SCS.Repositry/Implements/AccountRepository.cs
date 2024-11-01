@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -20,7 +21,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id && !a.Status.Equals("INACTIVE")).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -93,9 +94,8 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email) && !a.Status.Equals("INACTIVE"))
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync();
+
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).AsNoTracking().SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -127,7 +127,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Equals(email)).SingleOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -144,7 +144,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
             }
             catch (Exception)
             {

@@ -2,12 +2,12 @@
 {
     public class MaterialCreateRequest
     {
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = string.Empty;
 
         public decimal Price { get; set; }
 
         public int Storage { get; set; }
 
-        public string Status { get; set; } = "Active";
+        public string Status { get; set; } = string.Empty;
     }
 }

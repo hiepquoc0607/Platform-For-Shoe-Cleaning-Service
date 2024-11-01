@@ -5,9 +5,12 @@
         //GENERAL STATUS
         public const string Active = "ACTIVE";
         public const string Inactive = "INACTIVE";
+        public const string Suspended = "SUSPENDED";
+
         //PROMOTION STATUS
         public const string Available = "AVAILABLE";
         public const string Unvailable = "UNAVAILABLE";
+
         //ORDER STATUS
         public const string CANCELED = "CANCELED";
         public const string PENDING = "PENDING";

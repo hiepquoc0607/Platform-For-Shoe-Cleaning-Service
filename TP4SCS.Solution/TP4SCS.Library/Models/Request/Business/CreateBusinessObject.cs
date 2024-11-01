@@ -15,7 +15,7 @@ namespace TP4SCS.Library.Models.Request.BusinessProfile
         [Required]
         [Phone]
         [StringLength(10, MinimumLength = 10)]
-        [DefaultValue("Phone")]
+        [DefaultValue("string")]
         public string Phone { get; set; } = string.Empty;
     }
 }

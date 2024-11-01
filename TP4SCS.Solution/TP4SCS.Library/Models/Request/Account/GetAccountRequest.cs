@@ -1,20 +1,27 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.General
 {
     public class GetAccountRequest
     {
-        public string? SearchKey { get; set; } = string.Empty;
+        public string? SearchKey { get; set; }
 
-        public string? SortBy { get; set; } = string.Empty;
+        public string? SortBy { get; set; }
 
+        [Required]
         [DefaultValue(false)]
         public bool IsDecsending { get; set; }
 
+        [Required]
         [DefaultValue(10)]
-        public int PageSize { get; set; }
+        [Range(1, int.MaxValue)]
+        public int PageSize { get; set; } = 10;
 
+
+        [Required]
         [DefaultValue(1)]
+        [Range(1, int.MaxValue)]
         public int PageNum { get; set; }
     }
 }

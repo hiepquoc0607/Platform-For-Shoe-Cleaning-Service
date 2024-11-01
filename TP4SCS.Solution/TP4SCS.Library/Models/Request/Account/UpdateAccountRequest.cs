@@ -8,17 +8,14 @@ namespace TP4SCS.Library.Models.Request.Account
         [EmailAddress]
         public string? Email { get; set; }
 
-        public string? Password { get; set; }
-
         public string? FullName { get; set; }
 
         [Phone]
         [StringLength(10, MinimumLength = 10)]
+        [DefaultValue("string")]
         public string? Phone { get; set; }
 
         public DateOnly? Dob { get; set; }
-
-        public DateTime? ExpiredTime { get; set; }
 
         public string? ImageUrl { get; set; }
     }

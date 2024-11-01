@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Request.Address
+﻿using System.ComponentModel;
+
+namespace TP4SCS.Library.Models.Request.Address
 {
     public class UpdateAddressRequest
     {

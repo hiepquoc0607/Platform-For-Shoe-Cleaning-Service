@@ -16,6 +16,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<int> GetBusinessProfileMaxIdAsync();
 
+        Task<int> CountBusinessServiceByIdAsync(int id);
+
         Task<bool> IsNameExistedAsync(string name);
 
         Task<bool> IsPhoneExistedAsync(string phone);

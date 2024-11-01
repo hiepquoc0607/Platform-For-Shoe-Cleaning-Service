@@ -19,8 +19,9 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.Fcmtoken, opt => string.Empty)
                 .Map(dest => dest.Status, opt => "ACTIVE");
 
-            config.NewConfig<Account, UpdateAccountRequest>()
-                .Map(dest => dest.Password, src => src.PasswordHash);
+            config.NewConfig<Account, UpdateAccountRequest>();
+
+            config.NewConfig<Account, UpdateAccountPasswordRequest>();
 
             config.NewConfig<Account, AccountResponse>();
 

@@ -7,11 +7,11 @@ namespace TP4SCS.Library.Models.Request.Auth
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = null!;
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [MinLength(8)]
-        [DefaultValue("password")]
-        public string Password { get; set; } = null!;
+        [DefaultValue("string")]
+        public string Password { get; set; } = string.Empty;
     }
 }

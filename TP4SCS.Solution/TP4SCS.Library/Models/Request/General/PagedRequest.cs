@@ -1,13 +1,20 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace TP4SCS.Library.Models.Request.General
 {
     public class PagedRequest
     {
-        public string? Keyword { get; set; } = null;
-        public string? Status { get; set; } = null;
-        public int PageIndex { get; set; } = 1;
-        public int PageSize { get; set; } = 5;
+        public string? Keyword { get; set; } = string.Empty;
+
+        public string? Status { get; set; } = string.Empty;
+
+        [DefaultValue(1)]
+        public int PageIndex { get; set; }
+
+        [DefaultValue(10)]
+        public int PageSize { get; set; }
+
         public OrderByEnum OrderBy { get; set; } = OrderByEnum.IdAsc;
     }
 

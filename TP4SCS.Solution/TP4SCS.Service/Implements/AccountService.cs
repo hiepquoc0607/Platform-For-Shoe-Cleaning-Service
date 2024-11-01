@@ -44,21 +44,21 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 400, message);
             }
 
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.Trim().ToLower());
 
             if (isEmailExisted == true)
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Email đã được sử dụng!");
             }
 
-            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone);
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone.Trim());
 
             if (isPhoneExisted == true)
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
             }
 
-            if (!_util.CheckAccountRole(createAccountRequest.Role))
+            if (!_util.CheckAccountRole(createAccountRequest.Role.Trim()))
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Role Không Phù Hợp!");
             }
@@ -178,6 +178,44 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thất Bại!");
+            }
+
+        }
+
+        //Update Account Password
+        public async Task<ApiResponse<AccountResponse>> UpdateAccountPasswordAsync(int id, UpdateAccountPasswordRequest updateAccountPasswordRequest)
+        {
+            if (!updateAccountPasswordRequest.NewPassword.Equals(updateAccountPasswordRequest.ConfirmPassword))
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Mật Khẩu Không Trùng!");
+            }
+
+            var oldAccount = await _accountRepository.GetAccountByIdAsync(id);
+
+            if (oldAccount == null)
+            {
+                return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
+            }
+
+            var oldPass = _util.HashPassword(updateAccountPasswordRequest.OldPassword);
+
+            if (!_util.CompareHashedPassword(oldPass, oldAccount.PasswordHash))
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Mật Khẩu Không Đúng!");
+            }
+
+            var newPass = _util.HashPassword(updateAccountPasswordRequest.NewPassword);
+            oldAccount.PasswordHash = newPass;
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(oldAccount);
+
+                return new ApiResponse<AccountResponse>("success", "Đổi Mật Khẩu Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Đổi Mật Khẩu Thất Bại!");
             }
 
         }
