@@ -69,25 +69,20 @@ namespace TP4SCS.Library.Utils.Utils
 
             return result;
         }
-        public static string? TranslateGeneralStatus(string? status)
+        public static string TranslateGeneralStatus(string? status)
         {
-            if (string.IsNullOrEmpty(status)) return null;
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
 
             var lowerStatus = status.ToLower();
 
             return lowerStatus switch
             {
-                "inactive" => "Ngưng Hoạt Động",
-                _ => "Hoạt Động"
+                "unavailable" => "Ngưng Hoạt Động",
+                "available" => "Hoạt Động" ,
+                _ => "Trạng Thái Null"
             };
         }
         public static bool IsValidGeneralStatus(string status)
-        {
-            var validStatuses = new[] { StatusConstants.Active, StatusConstants.Inactive };
-            return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public static bool IsValidPromotionStatus(string status)
         {
             var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unvailable };
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
@@ -114,20 +109,6 @@ namespace TP4SCS.Library.Utils.Utils
         public static bool IsEqual(string s1, string s2)
         {
             return string.Equals(s1.Trim(), s2.Trim(), StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static string? TranslatePromotionStatus(string? status)
-        {
-            if (string.IsNullOrEmpty(status)) return null;
-
-            var lowerStatus = status.ToLower();
-
-            return lowerStatus switch
-            {
-                "unavailable" => "Hết hiệu lực",
-                "available" => "Còn hiệu lực",
-                _ => "Trạng thái Null"
-            };
         }
 
         public string TranslateAccountRole(string role)

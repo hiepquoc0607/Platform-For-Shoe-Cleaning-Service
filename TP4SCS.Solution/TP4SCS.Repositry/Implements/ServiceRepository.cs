@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -27,6 +28,7 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.Services
                 .Include(s => s.Promotion)
+                .Include(s => s.AssetUrls)
                 .SingleOrDefaultAsync(s => s.Id == id);
         }
 
@@ -40,7 +42,7 @@ namespace TP4SCS.Repository.Implements
         {
             Expression<Func<Service, bool>> filter = s =>
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || s.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+                (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
             // Sort based on OrderByEnum
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
@@ -55,7 +57,7 @@ namespace TP4SCS.Repository.Implements
                 // Fetch paginated services
                 return GetAsync(
                     filter: filter,
-                    includeProperties: "Promotion",
+                    includeProperties: "Promotion,AssetUrls",
                     orderBy: orderByExpression,
                     pageIndex: pageIndex.Value,
                     pageSize: pageSize.Value
@@ -65,7 +67,7 @@ namespace TP4SCS.Repository.Implements
             // Fetch all services without pagination
             return GetAsync(
                 filter: filter,
-                includeProperties: "Promotion",
+                includeProperties: "Promotion,AssetUrls",
                 orderBy: orderByExpression
             );
         }

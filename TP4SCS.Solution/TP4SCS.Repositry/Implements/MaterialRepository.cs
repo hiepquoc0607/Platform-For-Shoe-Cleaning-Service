@@ -63,8 +63,8 @@ namespace TP4SCS.Repository.Implements
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             Expression<Func<Material, bool>> filter = m =>
-                (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || m.Status.ToLower() == status.ToLower());
+                (string.IsNullOrEmpty(keyword) || m.Name.ToLower().Trim().Contains(keyword.ToLower().Trim())) &&
+                (string.IsNullOrEmpty(status) || m.Status.ToLower().Trim() == status.ToLower().Trim());
 
             Func<IQueryable<Material>, IOrderedQueryable<Material>> orderByExpression = q => orderBy switch
             {

@@ -29,8 +29,8 @@ namespace TP4SCS.Repository.Implements
         public async Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null)
         {
             Expression<Func<Promotion, bool>> filter = s =>
-                (string.IsNullOrEmpty(keyword) || s.Service.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
+                (string.IsNullOrEmpty(keyword) || s.Service.Name.ToLower().Trim().Contains(keyword.ToLower().Trim())) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
             return await _dbContext.Promotions.AsNoTracking().CountAsync(filter);
         }

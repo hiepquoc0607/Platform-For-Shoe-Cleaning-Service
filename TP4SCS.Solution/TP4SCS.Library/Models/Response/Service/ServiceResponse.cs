@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Response.Promotion;
+﻿using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Promotion;
 
 namespace TP4SCS.Library.Models.Response.Service
 {
@@ -26,5 +27,7 @@ namespace TP4SCS.Library.Models.Response.Service
         public string Status { get; set; } = null!;
 
         public PromotionResponse? Promotion { get; set; }
+
+        public List<AssetUrlResponse>? AssetUrl { get; set; }
     }
 }

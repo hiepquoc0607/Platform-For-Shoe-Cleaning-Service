@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.Category;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
@@ -43,6 +44,8 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<MaterialCreateRequest, Material>();
             CreateMap<MaterialUpdateRequest, Material>();
             CreateMap<Material, MaterialResponse>();
+            //AssetUrl Mapping
+            CreateMap<AssetUrl, AssetUrlResponse>();
         }
 
         public void Register(TypeAdapterConfig config)

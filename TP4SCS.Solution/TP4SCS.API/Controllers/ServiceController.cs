@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
@@ -32,21 +33,26 @@ namespace TP4SCS.API.Controllers
         public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
             var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword,
-                Util.TranslateGeneralStatus(pagedRequest.Status),
+                pagedRequest.Status,
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
             var totalCount = await _serviceService.GetTotalServiceCountAsync(pagedRequest.Keyword,
-                Util.TranslateGeneralStatus(pagedRequest.Status));
+                pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
                 services?.Select(s =>
                 {
                     var res = _mapper.Map<ServiceResponse>(s);
-                    res.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
+                    res.Status = Util.TranslateGeneralStatus(s.Status);
                     if (s.Promotion != null)
                     {
                         var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
-                        promotionRes.Status = Util.TranslatePromotionStatus(promotionRes.Status) ?? "Trạng Thái Null";
+                        promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
                         res.Promotion = promotionRes;
+                    }
+                    if (s.AssetUrls != null && s.AssetUrls.Any())
+                    {
+                        var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
+                        res.AssetUrl = assetRes;
                     }
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
@@ -164,7 +170,7 @@ namespace TP4SCS.API.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> CreateServiceAync([FromBody] ServiceCreateRequest request)
+        public async Task<IActionResult> CreateServiceAync([FromForm] ServiceCreateRequest request)
         {
             try
             {
@@ -217,6 +223,39 @@ namespace TP4SCS.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseObject<ServiceResponse>($"An error occurred: {ex.Message}"));
+            }
+        }
+        [HttpPut("bulk-update")]
+        public async Task<IActionResult> BulkUpdateServiceAsync(
+            [FromBody] ServiceUpdateRequest serviceUpdateRequest,
+            [FromQuery] ExistingServiceRequest existingServiceRequest)
+        {
+            if (serviceUpdateRequest == null)
+            {
+                return BadRequest("Yêu cầu cập nhật dịch vụ không được để trống.");
+            }
+
+            try
+            {
+                await _serviceService.UpdateServiceAsync(serviceUpdateRequest, existingServiceRequest);
+                return Ok("Các dịch vụ đã được cập nhật thành công.");
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi nếu cần
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
             }
         }
 
