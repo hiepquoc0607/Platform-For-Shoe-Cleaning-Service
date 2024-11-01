@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -20,7 +21,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id && !a.Status.Equals("INACTIVE")).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -93,7 +94,8 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email) && !a.Status.Equals("INACTIVE"))
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email) &&
+                                                    !string.Equals(a.Status, StatusConstants.Suspended, StringComparison.OrdinalIgnoreCase))
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
             }
@@ -105,7 +107,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsEmailExistedAsync(string email)
         {
-            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Email.Equals(email));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => string.Equals(a.Email, email, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task UpdateAccountAsync(Account account)
@@ -115,7 +117,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsPhoneExistedAsync(string phone)
         {
-            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => a.Phone.Equals(phone));
+            return await _dbContext.Accounts.AsNoTracking().AnyAsync(a => string.Equals(a.Phone, phone, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<int> GetAccountMaxIdAsync()
@@ -127,7 +129,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => string.Equals(a.Email, email, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
             }
             catch (Exception)
             {

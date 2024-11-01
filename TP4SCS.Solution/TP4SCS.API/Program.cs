@@ -1,11 +1,13 @@
-using Mapster;
+﻿using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
@@ -144,6 +146,36 @@ builder.Services.AddCors(options =>
                           policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                       });
 });
+
+//Config Model State Error Response
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(apiBehaviorOptions =>
+    {
+        apiBehaviorOptions.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            var response = new
+            {
+                status = "error",
+                statusCode = "400",
+                message = "Đã xảy ra lỗi xác thực!",
+                errors = errors
+            };
+
+            var result = new ContentResult
+            {
+                StatusCode = StatusCodes.Status400BadRequest,
+                ContentType = "application/json",
+                Content = JsonSerializer.Serialize(response)
+            };
+
+            return result;
+        };
+    });
 
 //Config Rate Limiting
 builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: "BasePolicy", options =>

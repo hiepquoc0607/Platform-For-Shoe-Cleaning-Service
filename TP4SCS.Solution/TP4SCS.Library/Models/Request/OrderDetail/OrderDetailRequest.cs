@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Request.OrderDetail
+﻿using System.ComponentModel;
+
+namespace TP4SCS.Library.Models.Request.OrderDetail
 {
     public class OrderDetailRequest
     {
@@ -12,6 +14,7 @@
 
         public decimal Price { get; set; }
 
-        public string Status { get; set; } = null!;
+        [DefaultValue("string")]
+        public string Status { get; set; } = string.Empty;
     }
 }

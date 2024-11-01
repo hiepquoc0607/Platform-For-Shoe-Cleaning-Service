@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Request.Branch
+﻿using System.ComponentModel;
+
+namespace TP4SCS.Library.Models.Request.Branch
 {
     public class UpdateBranchStatisticRequest
     {

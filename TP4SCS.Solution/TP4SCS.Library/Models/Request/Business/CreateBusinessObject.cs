@@ -10,12 +10,13 @@ namespace TP4SCS.Library.Models.Request.BusinessProfile
         public int OwnerId { get; set; }
 
         [Required]
+        [DefaultValue("string")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
         [Phone]
         [StringLength(10, MinimumLength = 10)]
-        [DefaultValue("Phone")]
+        [DefaultValue("string")]
         public string Phone { get; set; } = string.Empty;
     }
 }

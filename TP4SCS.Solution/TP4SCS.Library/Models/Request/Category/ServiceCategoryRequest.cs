@@ -1,7 +1,12 @@
-﻿namespace TP4SCS.Library.Models.Request.Category
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace TP4SCS.Library.Models.Request.Category
 {
     public class ServiceCategoryRequest
     {
-        public string Name { get; set; } = null!;
+        [Required]
+        [DefaultValue("string")]
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -53,11 +53,6 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _accountService.CreateAccountAsync(createAccountRequest);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
-            }
-
             if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);

@@ -11,25 +11,28 @@ namespace TP4SCS.Library.Models.Request.Account
 
         [Required]
         [MinLength(8)]
-        [DefaultValue("Password")]
+        [DefaultValue("string")]
         public string Password { get; set; } = string.Empty;
 
         [Required]
+        [DefaultValue("string")]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
         [Phone]
         [StringLength(10, MinimumLength = 10)]
-        [DefaultValue("Phone")]
+        [DefaultValue("string")]
         public string Phone { get; set; } = string.Empty;
 
         [Required]
+        [DefaultValue("string")]
         public string Gender { get; set; } = string.Empty;
 
         [Required]
         public DateOnly Dob { get; set; }
 
         [Required]
+        [DefaultValue("string")]
         public string Role { get; set; } = string.Empty;
     }
 }
