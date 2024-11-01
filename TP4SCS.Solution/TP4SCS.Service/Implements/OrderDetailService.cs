@@ -26,13 +26,13 @@ namespace TP4SCS.Services.Implements
             {
                 // Kiểm tra MaterialId và ServiceId
                 //if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
-                if (!orderDetail.MaterialId.HasValue)
+                if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
                 {
                     throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
                 }
 
                 //if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
-                if (orderDetail.MaterialId.HasValue)
+                if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
                 {
                     throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
                 }
@@ -47,16 +47,14 @@ namespace TP4SCS.Services.Implements
                     }
                 }
                 // Kiểm tra Service
-                //else if (orderDetail.ServiceId.HasValue)
-                //{
-                //var service = await _serviceRepository.GetServiceByIdAsync(orderDetail.ServiceId.Value);
-                var service = await _serviceRepository.GetServiceByIdAsync((int)orderDetail.ServiceId);
-                if (service == null || service.Status != StatusConstants.Active)
+                else if (orderDetail.ServiceId.HasValue)
                 {
-                    throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+                    var service = await _serviceRepository.GetServiceByIdAsync(orderDetail.ServiceId.Value);
+                    if (service == null || service.Status != StatusConstants.Active)
+                    {
+                        throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+                    }
                 }
-                //}
-
                 // Kiểm tra quantity
                 if (orderDetail.Quantity <= 0)
                 {
@@ -70,7 +68,7 @@ namespace TP4SCS.Services.Implements
                 }
 
                 // Kiểm tra status
-                if (!Util.IsValidGeneralStatus(orderDetail.Status))
+                if (String.IsNullOrEmpty(orderDetail.Status) || !Util.IsValidGeneralStatus(orderDetail.Status))
                 {
                     throw new InvalidOperationException("Trạng thái không hợp lệ.");
                 }
@@ -122,7 +120,7 @@ namespace TP4SCS.Services.Implements
             }
 
             // Kiểm tra status
-            if (!Util.IsValidGeneralStatus(orderDetail.Status))
+            if (String.IsNullOrEmpty(orderDetail.Status) || !Util.IsValidGeneralStatus(orderDetail.Status))
             {
                 throw new InvalidOperationException("Trạng thái không hợp lệ.");
             }

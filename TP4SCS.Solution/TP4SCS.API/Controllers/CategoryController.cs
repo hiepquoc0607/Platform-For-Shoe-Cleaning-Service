@@ -27,7 +27,7 @@ namespace TP4SCS.API.Controllers
         public async Task<IActionResult> GetCategoriesAsync([FromQuery] PagedRequest pagedRequest)
         {
             var services = await _categoryService.GetServiceCategoriesAsync(pagedRequest.Keyword,
-                Util.TranslateGeneralStatus(pagedRequest.Status),
+                pagedRequest.Status,
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
             var totalCount = await _categoryService.GetTotalServiceCategoriesCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
@@ -35,7 +35,7 @@ namespace TP4SCS.API.Controllers
                 services?.Select(s =>
                 {
                     var serviceCategoryResponse = _mapper.Map<ServiceCategoryResponse>(s);
-                    serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status) ?? "Trạng Thái Null";
+                    serviceCategoryResponse.Status = Util.TranslateGeneralStatus(s.Status);
                     return serviceCategoryResponse;
                 }) ?? Enumerable.Empty<ServiceCategoryResponse>(),
                 totalCount,
@@ -58,7 +58,7 @@ namespace TP4SCS.API.Controllers
                     Ok(new ResponseObject<ServiceCategoryResponse>($"Category with ID {id} not found.", null));
                 }
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
-                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng Thái Null";
+                response.Status = Util.TranslateGeneralStatus(response.Status);
                 return Ok(new ResponseObject<ServiceCategoryResponse>("Fetch Category Success", response));
             }
             catch (Exception ex)

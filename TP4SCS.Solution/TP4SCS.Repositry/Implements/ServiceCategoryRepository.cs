@@ -24,8 +24,8 @@ namespace TP4SCS.Repository.Implements
         public async Task<int> GetTotalCategoriesCountAsync(string? keyword = null, string? status = null)
         {
             Expression<Func<ServiceCategory, bool>> filter = s =>
-                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
+                (string.IsNullOrEmpty(keyword) || s.Name.ToLower().Contains(keyword.ToLower().Trim())) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
             return await _dbContext.ServiceCategories.AsNoTracking().CountAsync(filter);
         }

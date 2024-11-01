@@ -2,6 +2,7 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -15,19 +16,19 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly IServiceCategoryRepository _categoryRepository;
         private readonly IPromotionService _promotionService;
-        private readonly IBranchRepository _branchRepository;
+        private readonly IAssetUrlService _assetUrlService;
 
         public ServiceService(IServiceRepository serviceRepository,
             IMapper mapper,
             IServiceCategoryRepository categoryRepository,
             IPromotionService promotionService,
-            IBranchRepository branchRepository)
+            IAssetUrlService assetUrlService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _categoryRepository = categoryRepository;
             _promotionService = promotionService;
-            _branchRepository = branchRepository;
+            _assetUrlService = assetUrlService;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest)
@@ -66,11 +67,23 @@ namespace TP4SCS.Services.Implements
 
             var services = new List<Service>();
 
+            List<FileResponse> fileResponses = new List<FileResponse>();
+            List<AssetUrl> assetUrls = new List<AssetUrl>();
+            if (serviceRequest.Files != null && serviceRequest.Files.Count > 0)
+            {
+                fileResponses = await _assetUrlService.UploadFilesAsync(serviceRequest.Files);
+            }
+
             foreach (var branchId in serviceRequest.BranchId)
             {
                 var service = _mapper.Map<Service>(serviceRequest);
                 service.BranchId = branchId;
                 service.CreateTime = DateTime.Now;
+                assetUrls = await _assetUrlService.AddAssestUrlsAsync(fileResponses);
+                foreach (var assetUrl in assetUrls)
+                {
+                    service.AssetUrls.Add(assetUrl);
+                }
 
                 if (serviceRequest.NewPrice.HasValue)
                 {
@@ -81,7 +94,7 @@ namespace TP4SCS.Services.Implements
                         Status = StatusConstants.Available.ToUpper()
                     };
 
-                    if (string.IsNullOrEmpty(service.Promotion.Status) || !Util.IsValidPromotionStatus(service.Promotion.Status))
+                    if (string.IsNullOrEmpty(service.Promotion.Status) || !Util.IsValidGeneralStatus(service.Promotion.Status))
                     {
                         throw new ArgumentException("Status của Service không hợp lệ.");
                     }
@@ -94,8 +107,21 @@ namespace TP4SCS.Services.Implements
                 services.Add(service);
             }
 
+
             await _serviceRepository.AddServiceAsync(services);
+
+
+            foreach (var service in services)
+            {
+                foreach (var assetUrl in service.AssetUrls)
+                {
+                    assetUrl.ServiceId = service.Id;
+                }
+            }
+
+            await _assetUrlService.UpdateAssetUrlsAsync(services.SelectMany(s => s.AssetUrls).ToList());
         }
+
 
         public async Task DeleteServiceAsync(int id)
         {
@@ -109,6 +135,14 @@ namespace TP4SCS.Services.Implements
             if (service.Promotion != null)
             {
                 await _promotionService.DeletePromotionAsync(service.Promotion.Id);
+            }
+            if(service.AssetUrls != null)
+            {
+                var assetUrlsToDelete = service.AssetUrls.ToList();
+                foreach (var assetUrl in assetUrlsToDelete)
+                {
+                    await _assetUrlService.DeleteAssetUrlAsync(assetUrl.Id);
+                }
             }
 
             await _serviceRepository.DeleteServiceAsync(id);
@@ -171,10 +205,10 @@ namespace TP4SCS.Services.Implements
                     .Take(pageSize.Value)
                     .ToList();
 
-                return (pagedServices, totalCount); 
+                return (pagedServices, totalCount);
             }
 
-            return (servicesGroupByName, totalCount); 
+            return (servicesGroupByName, totalCount);
         }
 
         public async Task<IEnumerable<Service>?> GetServicesByBusinessIdAndNameAsync(int businessId, string name)
@@ -182,7 +216,7 @@ namespace TP4SCS.Services.Implements
 
             var services = await _serviceRepository.GetServicesIncludeBranchAsync();
             if (services == null) return null;
-            
+
             return services
                     .Where(s => Util.IsEqual(s.Name, name) && s.Branch.BusinessId == businessId)
                     .ToList();
@@ -211,7 +245,7 @@ namespace TP4SCS.Services.Implements
             return services.Where(s => s.BranchId == branchId);
         }
 
-        public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
+        public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, ExistingServiceRequest existingServiceRequest)
         {
             if (serviceUpdateRequest == null)
             {
@@ -234,49 +268,54 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
 
-            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
-            if (existingService == null)
+            var existingServices = await GetServicesByBusinessIdAndNameAsync(existingServiceRequest.BusinessId,
+                existingServiceRequest.Name);
+            if (existingServices == null || !existingServices.Any())
             {
-                throw new KeyNotFoundException($"Dịch vụ với ID {existingServiceId} không tìm thấy.");
+                throw new KeyNotFoundException($"Không tìm thấy dịch vụ nào.");
             }
 
-            existingService.Name = serviceUpdateRequest.Name;
-            existingService.CategoryId = serviceUpdateRequest.CategoryId;
-            existingService.Description = serviceUpdateRequest.Description ?? "";
-            existingService.Price = serviceUpdateRequest.Price;
-
-            if (serviceUpdateRequest.NewPrice.HasValue &&
-                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
-                !string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
+            foreach (var existingService in existingServices)
             {
-                if (existingService.Promotion != null)
-                {
-                    existingService.Promotion.NewPrice = serviceUpdateRequest.NewPrice.Value;
-                    existingService.Promotion.Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus);
+                existingService.Name = serviceUpdateRequest.Name;
+                existingService.CategoryId = serviceUpdateRequest.CategoryId;
+                existingService.Description = serviceUpdateRequest.Description ?? "";
+                existingService.Price = serviceUpdateRequest.Price;
 
-                    await _promotionService.UpdatePromotionAsync(existingService.Promotion, existingService.Promotion.Id);
-                }
-                else
+                if (serviceUpdateRequest.NewPrice.HasValue &&
+                    serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
+                    !string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
                 {
-                    var newPromotion = new Promotion
+                    if (existingService.Promotion != null)
                     {
-                        ServiceId = existingServiceId,
-                        NewPrice = serviceUpdateRequest.NewPrice.Value,
-                        Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus)
-                    };
-                    await _promotionService.AddPromotionAsync(newPromotion);
+                        existingService.Promotion.NewPrice = serviceUpdateRequest.NewPrice.Value;
+                        existingService.Promotion.Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus);
+
+                        await _promotionService.UpdatePromotionAsync(existingService.Promotion, existingService.Promotion.Id);
+                    }
+                    else
+                    {
+                        var newPromotion = new Promotion
+                        {
+                            ServiceId = existingService.Id,
+                            NewPrice = serviceUpdateRequest.NewPrice.Value,
+                            Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus)
+                        };
+                        await _promotionService.AddPromotionAsync(newPromotion);
+                    }
                 }
-            }
-            else if (!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
-            {
-                if (existingService.Promotion != null)
+                else if (!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
                 {
-                    await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
-                    existingService.Promotion = null;
+                    if (existingService.Promotion != null)
+                    {
+                        await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
+                        existingService.Promotion = null;
+                    }
                 }
+
+                await _serviceRepository.UpdateServiceAsync(existingService);
             }
 
-            await _serviceRepository.UpdateServiceAsync(existingService);
         }
 
         public async Task UpdateServiceStatusAsync(string status, int existingServiceId)

@@ -38,7 +38,7 @@ namespace TP4SCS.API.Controllers
             var pagedResponse = new PagedResponse<PromotionResponse>(promotions?.Select(p =>
             {
                 var response = _mapper.Map<PromotionResponse>(p);
-                response.Status = Util.TranslatePromotionStatus(response.Status) ?? "Hết hạn";
+                response.Status = Util.TranslateGeneralStatus(response.Status);
                 return response;
             }) ?? Enumerable.Empty<PromotionResponse>(), totalCount, pagedRequest.PageIndex, pagedRequest.PageSize);
 
@@ -56,7 +56,7 @@ namespace TP4SCS.API.Controllers
                     return NotFound(new ResponseObject<PromotionResponse>($"Khuyến mãi với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<PromotionResponse>(promotion);
-                response.Status = Util.TranslatePromotionStatus(promotion.Status) ?? "Hết hạn";
+                response.Status = Util.TranslateGeneralStatus(promotion.Status);
                 return Ok(new ResponseObject<PromotionResponse>("Fetch Promotion Success", response));
             }
             catch (Exception ex)

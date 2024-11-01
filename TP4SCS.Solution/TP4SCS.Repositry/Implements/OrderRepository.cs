@@ -36,7 +36,7 @@ namespace TP4SCS.Repository.Implements
         {
             // Filter by status and accountId
             Expression<Func<Order, bool>> filter = o =>
-                (string.IsNullOrEmpty(status) || Util.IsEqual(o.Status, status));
+                (string.IsNullOrEmpty(status) || o.Status.ToLower().Trim()==status.ToLower().Trim());
 
             // Sort based on OrderByEnum
             Func<IQueryable<Order>, IOrderedQueryable<Order>> orderByExpression = q => orderBy switch

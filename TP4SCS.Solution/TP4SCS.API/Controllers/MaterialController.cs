@@ -25,28 +25,23 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMaterials(
-            [FromQuery] string? keyword = null,
-            [FromQuery] string? status = null,
-            [FromQuery] int pageIndex = 1,
-            [FromQuery] int pageSize = 5,
-            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdAsc)
+        public async Task<IActionResult> GetMaterials([FromBody]PagedRequest pagedRequest)
         {
-            var materials = await _materialService.GetMaterialsAsync(keyword, Util.TranslateGeneralStatus(status),
-                pageIndex, pageSize, orderBy);
+            var materials = await _materialService.GetMaterialsAsync(pagedRequest.Keyword, pagedRequest.Status,
+                pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
 
-            var totalCount = await _materialService.GetTotalMaterialCountAsync(keyword, status);
+            var totalCount = await _materialService.GetTotalMaterialCountAsync(pagedRequest.Keyword, pagedRequest.Status);
 
             var pagedResponse = new PagedResponse<MaterialResponse>(
                 materials?.Select(m =>
                 {
                     var res = _mapper.Map<MaterialResponse>(m);
-                    res.Status = Util.TranslateGeneralStatus(m.Status) ?? "Trạng Thái Null";
+                    res.Status = Util.TranslateGeneralStatus(m.Status);
                     return res;
                 }) ?? Enumerable.Empty<MaterialResponse>(),
                 totalCount,
-                pageIndex,
-                pageSize
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize
             );
 
             return Ok(new ResponseObject<PagedResponse<MaterialResponse>>("Fetch Material Success", pagedResponse));
@@ -60,7 +55,9 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<MaterialResponse>("Material not found.", null));
             }
-            return Ok(new ResponseObject<MaterialResponse>("Fetch Material Success", _mapper.Map<MaterialResponse>(material)));
+            var res = _mapper.Map<MaterialResponse>(material);
+            res.Status = Util.TranslateGeneralStatus(res.Status);
+            return Ok(new ResponseObject<MaterialResponse>("Fetch Material Success", res));
         }
 
         [HttpPost]

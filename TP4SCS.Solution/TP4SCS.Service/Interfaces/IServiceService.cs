@@ -15,7 +15,6 @@ namespace TP4SCS.Services.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<IEnumerable<Service>?> GetDiscountedServicesAsync();
         Task AddServiceAsync(ServiceCreateRequest service);
-        Task UpdateServiceAsync(ServiceUpdateRequest service, int existingServiceId);
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);
@@ -26,5 +25,6 @@ namespace TP4SCS.Services.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId);
         Task UpdateServiceStatusAsync(String status, int existingServiceId);
+        Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, ExistingServiceRequest existingServiceRequest);
     }
 }
