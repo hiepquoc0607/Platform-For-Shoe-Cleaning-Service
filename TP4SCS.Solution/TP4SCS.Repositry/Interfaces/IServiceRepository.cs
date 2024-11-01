@@ -6,8 +6,8 @@ namespace TP4SCS.Repository.Interfaces
     public interface IServiceRepository
     {
         Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,string? status = null,
-        int pageIndex = 1,
-        int pageSize = 5,
+        int? pageIndex = null,
+        int? pageSize = null,
         OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<Service?> GetServiceByIdAsync(int id);
         Task AddServiceAsync(List<Service> services);
@@ -15,5 +15,6 @@ namespace TP4SCS.Repository.Interfaces
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null);
+        Task<IEnumerable<Service>> GetServicesIncludeBranchAsync();
     }
 }

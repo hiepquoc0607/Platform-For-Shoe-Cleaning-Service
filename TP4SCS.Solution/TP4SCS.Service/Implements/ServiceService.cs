@@ -15,13 +15,19 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly IServiceCategoryRepository _categoryRepository;
         private readonly IPromotionService _promotionService;
+        private readonly IBranchRepository _branchRepository;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository categoryRepository, IPromotionService promotionService)
+        public ServiceService(IServiceRepository serviceRepository,
+            IMapper mapper,
+            IServiceCategoryRepository categoryRepository,
+            IPromotionService promotionService,
+            IBranchRepository branchRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _categoryRepository = categoryRepository;
             _promotionService = promotionService;
+            _branchRepository = branchRepository;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest)
@@ -114,8 +120,12 @@ namespace TP4SCS.Services.Implements
             return service;
         }
 
-        public async Task<IEnumerable<Service>?> GetServicesAsync(string? keyword = null,
-            string? status = null, int pageIndex = 1, int pageSize = 5, OrderByEnum orderBy = OrderByEnum.IdAsc)
+        public async Task<IEnumerable<Service>?> GetServicesAsync(
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
             if (pageIndex < 1)
             {
@@ -129,7 +139,72 @@ namespace TP4SCS.Services.Implements
 
             return await _serviceRepository.GetServicesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
+        public async Task<(IEnumerable<Service> Services, int TotalCount)> GetServicesGroupByNameAsync(
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
+        {
+            if (pageIndex.HasValue && pageIndex.Value < 1)
+            {
+                throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
+            }
+            if (pageSize.HasValue && pageSize.Value < 1)
+            {
+                throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
+            }
 
+            var services = await _serviceRepository.GetServicesIncludeBranchAsync();
+
+            if (services == null) return (Enumerable.Empty<Service>(), 0);
+
+            var servicesGroupByName = services
+                .GroupBy(s => new { s.Name, s.Branch.BusinessId })
+                .Select(g => g.First())
+                .ToList();
+
+            int totalCount = servicesGroupByName.Count;
+
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                var pagedServices = servicesGroupByName
+                    .Skip((pageIndex.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+
+                return (pagedServices, totalCount); 
+            }
+
+            return (servicesGroupByName, totalCount); 
+        }
+
+        public async Task<IEnumerable<Service>?> GetServicesByBusinessIdAndNameAsync(int businessId, string name)
+        {
+
+            var services = await _serviceRepository.GetServicesIncludeBranchAsync();
+            if (services == null) return null;
+            
+            return services
+                    .Where(s => Util.IsEqual(s.Name, name) && s.Branch.BusinessId == businessId)
+                    .ToList();
+        }
+
+        public async Task<Service?> GetServicesByNameAndBranchIdAsync(string name, int branchId)
+        {
+            var services = await _serviceRepository.GetServicesAsync(null, null, null, null, OrderByEnum.IdAsc);
+
+            var filteredServices = services?.Where(s => Util.IsEqual(s.Name, name) && s.BranchId == branchId).ToList();
+
+            if (filteredServices == null || !filteredServices.Any())
+            {
+                return null;
+            }
+            if (filteredServices.Count > 1)
+            {
+                throw new InvalidOperationException("Có nhiều hơn một dịch vụ khớp với tên và branchId được cung cấp.");
+            }
+
+            return filteredServices.Single();
+        }
         public async Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId)
         {
             var services = await _serviceRepository.GetServicesAsync(null, null);
@@ -146,11 +221,6 @@ namespace TP4SCS.Services.Implements
             if (serviceUpdateRequest.Price <= 0)
             {
                 throw new ArgumentException("Giá phải lớn hơn 0.");
-            }
-
-            if (string.IsNullOrEmpty(serviceUpdateRequest.Status) || !Util.IsValidGeneralStatus(serviceUpdateRequest.Status))
-            {
-                throw new ArgumentException("Status của Service không hợp lệ.");
             }
 
             var category = await _categoryRepository.GetCategoryByIdAsync(serviceUpdateRequest.CategoryId);
@@ -174,7 +244,6 @@ namespace TP4SCS.Services.Implements
             existingService.CategoryId = serviceUpdateRequest.CategoryId;
             existingService.Description = serviceUpdateRequest.Description ?? "";
             existingService.Price = serviceUpdateRequest.Price;
-            existingService.Status = serviceUpdateRequest.Status.ToUpper();
 
             if (serviceUpdateRequest.NewPrice.HasValue &&
                 serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
@@ -210,7 +279,20 @@ namespace TP4SCS.Services.Implements
             await _serviceRepository.UpdateServiceAsync(existingService);
         }
 
-
+        public async Task UpdateServiceStatusAsync(string status, int existingServiceId)
+        {
+            if (string.IsNullOrEmpty(status) || !Util.IsValidGeneralStatus(status))
+            {
+                throw new ArgumentException("Status của Service không hợp lệ.");
+            }
+            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
+            if (existingService == null)
+            {
+                throw new KeyNotFoundException($"Dịch vụ với ID {existingServiceId} không tìm thấy.");
+            }
+            existingService.Status = status;
+            await _serviceRepository.UpdateServiceAsync(existingService);
+        }
         public async Task<IEnumerable<Service>?> GetDiscountedServicesAsync()
         {
             var services = await _serviceRepository.GetServicesAsync(null, null);
@@ -251,5 +333,7 @@ namespace TP4SCS.Services.Implements
 
             return finalPrice;
         }
+
+
     }
 }
