@@ -1,4 +1,6 @@
 ﻿using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Promotion;
 
 namespace TP4SCS.Library.Models.Response.Service
@@ -29,5 +31,6 @@ namespace TP4SCS.Library.Models.Response.Service
         public PromotionResponse? Promotion { get; set; }
 
         public List<AssetUrlResponse>? AssetUrl { get; set; }
+        public List<BranchServiceResponse> BranchServices { get; set; } = new List<BranchServiceResponse>();
     }
 }

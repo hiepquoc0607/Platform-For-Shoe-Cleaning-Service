@@ -1,9 +1,7 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Storage.V1;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Net;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Request.AssetUrl;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -11,14 +9,14 @@ namespace TP4SCS.Services.Implements
 {
     public class AssetUrlService : IAssetUrlService
     {
-        private readonly string _bucketName = "whalehome-project.appspot.com"; // Thay thế bằng tên bucket của bạn
-        private readonly StorageClient _storageClient;
+        //private readonly string _bucketName = "whalehome-project.appspot.com";
+        //private readonly StorageClient _storageClient;
         private IAssetUrlRepository _assetUrlRepository;
         public AssetUrlService(IAssetUrlRepository assetUrlRepository)
         {
-            var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase.json");
-            GoogleCredential credential = GoogleCredential.FromFile(credentialPath);
-            _storageClient = StorageClient.Create(credential);
+            //var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase.json");
+            //GoogleCredential credential = GoogleCredential.FromFile(credentialPath);
+            //_storageClient = StorageClient.Create(credential);
 
 
             _assetUrlRepository = assetUrlRepository;
@@ -30,13 +28,13 @@ namespace TP4SCS.Services.Implements
         }
 
         public async Task<List<AssetUrl>> AddAssestUrlsAsync(
-            List<FileResponse> files,
+            List<AssetUrlRequest> assetUrlRequests,
             int? businessId = null,
             int? feedbackId = null,
             int? serviceId = null)
         {
-            var assetUrls = new List<AssetUrl>();
-            foreach (var file in files)
+            List<AssetUrl> assetUrls = new List<AssetUrl>();
+            foreach (var assetUrlRequest in assetUrlRequests)
             {
 
                 var assetUrl = new AssetUrl
@@ -44,9 +42,9 @@ namespace TP4SCS.Services.Implements
                     BusinessId = businessId,
                     FeedbackId = feedbackId,
                     ServiceId = serviceId,
-                    Url = file.Url,
-                    IsImage = file.IsImage,
-                    Type = file.Type
+                    Url = assetUrlRequest.Url,
+                    IsImage = assetUrlRequest.IsImage,
+                    Type = assetUrlRequest.Type
                 };
 
                 assetUrls.Add(assetUrl);
@@ -54,19 +52,13 @@ namespace TP4SCS.Services.Implements
             await _assetUrlRepository.AddAssetUrlsAsync(assetUrls);
             return assetUrls;
         }
-
-        public async Task<List<FileResponse>> UploadFilesAsync(List<IFormFile> files)
+        public async Task DeleteAssetUrlsAsync(int id)
         {
-            List<FileResponse> fileResponses = new List<FileResponse>();
-            foreach (var file in files)
-            {
-                fileResponses.Add(await UploadFileAsync(file));
-            }
-            return fileResponses;
+            await _assetUrlRepository.DeleteAssetUrlAsync(id);
         }
         public async Task UpdateAssetUrlsAsync(List<AssetUrl> assetUrls)
         {
-           await _assetUrlRepository.UpdateAssetUrlsAsync(assetUrls);
+            await _assetUrlRepository.UpdateAssetUrlsAsync(assetUrls);
         }
         public async Task DeleteAssetUrlAsync(int assetUrlId)
         {
@@ -75,8 +67,6 @@ namespace TP4SCS.Services.Implements
             {
                 throw new Exception("Không tìm thấy AssetUrl.");
             }
-
-            await DeleteImageAsync(assetUrl.Url);
             await _assetUrlRepository.DeleteAssetUrlAsync(assetUrlId);
         }
 
@@ -84,46 +74,46 @@ namespace TP4SCS.Services.Implements
 
 
         // Phương thức upload ảnh
-        public async Task<FileResponse> UploadFileAsync(IFormFile file)
-        {
-            try
-            {
-                string fileName = GenerateFileName(file.FileName);
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
+        //public async Task<FileResponse> UploadFileAsync(IFormFile file)
+        //{
+        //    try
+        //    {
+        //        string fileName = GenerateFileName(file.FileName);
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            memoryStream.Position = 0;
 
-                    var storageObject = await _storageClient.UploadObjectAsync(
-                        bucket: _bucketName,
-                        objectName: fileName,
-                        contentType: file.ContentType,
-                        source: memoryStream);
-                    var fileResponse = new FileResponse()
-                    {
-                        IsImage = IsImage(file),
-                        Type = file.ContentType,
-                        Url = $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{WebUtility.UrlEncode(fileName)}?alt=media"
-                };
-                    return fileResponse;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Lỗi upload hình ảnh: {ex.Message}");
-            }
-        }
-        public async Task DeleteImageAsync(string fileUrl)
-        {
-            var exist = await CheckImageExistsAsync(fileUrl);
-            if (!exist) return;
-            var fileName = ExtractFileNameFromUrl(fileUrl);
-            if (string.IsNullOrEmpty(fileName))
-            {
-                throw new Exception("URL không hợp lệ.");
-            }
-            await _storageClient.DeleteObjectAsync(_bucketName, fileName);
-        }
+        //            var storageObject = await _storageClient.UploadObjectAsync(
+        //                bucket: _bucketName,
+        //                objectName: fileName,
+        //                contentType: file.ContentType,
+        //                source: memoryStream);
+        //            var fileResponse = new FileResponse()
+        //            {
+        //                IsImage = IsImage(file),
+        //                Type = file.ContentType,
+        //                Url = $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{WebUtility.UrlEncode(fileName)}?alt=media"
+        //        };
+        //            return fileResponse;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Lỗi upload hình ảnh: {ex.Message}");
+        //    }
+        //}
+        //public async Task DeleteImageAsync(string fileUrl)
+        //{
+        //    var exist = await CheckImageExistsAsync(fileUrl);
+        //    if (!exist) return;
+        //    var fileName = ExtractFileNameFromUrl(fileUrl);
+        //    if (string.IsNullOrEmpty(fileName))
+        //    {
+        //        throw new Exception("URL không hợp lệ.");
+        //    }
+        //    await _storageClient.DeleteObjectAsync(_bucketName, fileName);
+        //}
 
         private async Task<bool> CheckImageExistsAsync(string imageUrl)
         {

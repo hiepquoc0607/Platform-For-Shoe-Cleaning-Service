@@ -23,7 +23,7 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new KeyNotFoundException($"Service với ID {serviceId} không tìm thấy.");
             }
-            if(service.Status.ToLower() == StatusConstants.Inactive.ToLower())
+            if(service.Status.ToLower() == StatusConstants.Unavailable.ToLower())
             {
                 throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }

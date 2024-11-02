@@ -18,13 +18,13 @@ namespace TP4SCS.Services.Interfaces
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);
-        Task<Service?> GetServicesByNameAndBranchIdAsync(string name, int branchId);
-        Task<(IEnumerable<Service> Services, int TotalCount)> GetServicesGroupByNameAsync(
-            int? pageIndex = null,
-            int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc);
-        Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId);
-        Task UpdateServiceStatusAsync(String status, int existingServiceId);
-        Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, ExistingServiceRequest existingServiceRequest);
+        //Task<Service?> GetServicesByNameAndBranchIdAsync(string name, int branchId);
+        //Task<(IEnumerable<Service> Services, int TotalCount)> GetServicesGroupByNameAsync(
+        //    int? pageIndex = null,
+        //    int? pageSize = null,
+        //    OrderByEnum orderBy = OrderByEnum.IdAsc);
+        //Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId);
+        //Task UpdateServiceStatusAsync(String status, int existingServiceId);
+        Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId);
     }
 }
