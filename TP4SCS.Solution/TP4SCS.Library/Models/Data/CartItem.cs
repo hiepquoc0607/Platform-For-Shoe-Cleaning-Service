@@ -6,6 +6,8 @@ public partial class CartItem
 
     public int CartId { get; set; }
 
+    public int BranchId { get; set; }
+
     public int? ServiceId { get; set; }
 
     public int? MaterialId { get; set; }
@@ -13,6 +15,8 @@ public partial class CartItem
     public decimal Price { get; set; }
 
     public int Quantity { get; set; }
+
+    public virtual BusinessBranch Branch { get; set; } = null!;
 
     public virtual Cart Cart { get; set; } = null!;
 

@@ -10,6 +10,8 @@ public partial class AssetUrl
 
     public int? ServiceId { get; set; }
 
+    public int? MaterialId { get; set; }
+
     public string Url { get; set; } = null!;
 
     public bool IsImage { get; set; }
@@ -19,6 +21,8 @@ public partial class AssetUrl
     public virtual BusinessProfile? Business { get; set; }
 
     public virtual Feedback? Feedback { get; set; }
+
+    public virtual Material? Material { get; set; }
 
     public virtual Service? Service { get; set; }
 }

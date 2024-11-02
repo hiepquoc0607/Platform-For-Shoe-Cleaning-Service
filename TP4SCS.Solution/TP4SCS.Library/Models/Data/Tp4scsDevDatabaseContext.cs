@@ -20,6 +20,10 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
     public virtual DbSet<AssetUrl> AssetUrls { get; set; }
 
+    public virtual DbSet<BranchMaterial> BranchMaterials { get; set; }
+
+    public virtual DbSet<BranchService> BranchServices { get; set; }
+
     public virtual DbSet<BusinessBranch> BusinessBranches { get; set; }
 
     public virtual DbSet<BusinessProfile> BusinessProfiles { get; set; }
@@ -71,13 +75,13 @@ public partial class Tp4scsDevDatabaseContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07357E4740");
+            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07F72DB05F");
 
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.Phone, "UQ__Account__5C7E359EDC65A5CD").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Account__5C7E359ED9DE0D5A").IsUnique();
 
-            entity.HasIndex(e => e.Email, "UQ__Account__A9D1053420FAB0E5").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Account__A9D10534077B595C").IsUnique();
 
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
@@ -108,7 +112,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<AccountAddress>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__AccountA__3214EC07E1569FF3");
+            entity.HasKey(e => e.Id).HasName("PK__AccountA__3214EC07BA5791F9");
 
             entity.ToTable("AccountAddress");
 
@@ -128,7 +132,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<AssetUrl>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__AssetURL__3214EC0741B1990A");
+            entity.HasKey(e => e.Id).HasName("PK__AssetURL__3214EC0797F7F3B9");
 
             entity.ToTable("AssetURL");
 
@@ -140,20 +144,66 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
             entity.HasOne(d => d.Business).WithMany(p => p.AssetUrls)
                 .HasForeignKey(d => d.BusinessId)
-                .HasConstraintName("FK__AssetURL__Busine__7B5B524B");
+                .HasConstraintName("FK__AssetURL__Busine__05D8E0BE");
 
             entity.HasOne(d => d.Feedback).WithMany(p => p.AssetUrls)
                 .HasForeignKey(d => d.FeedbackId)
-                .HasConstraintName("FK__AssetURL__Feedba__7C4F7684");
+                .HasConstraintName("FK__AssetURL__Feedba__06CD04F7");
+
+            entity.HasOne(d => d.Material).WithMany(p => p.AssetUrls)
+                .HasForeignKey(d => d.MaterialId)
+                .HasConstraintName("FK__AssetURL__Materi__08B54D69");
 
             entity.HasOne(d => d.Service).WithMany(p => p.AssetUrls)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__AssetURL__Servic__7D439ABD");
+                .HasConstraintName("FK__AssetURL__Servic__07C12930");
+        });
+
+        modelBuilder.Entity<BranchMaterial>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__BranchMa__3214EC07A71C0171");
+
+            entity.ToTable("BranchMaterial");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Branch).WithMany(p => p.BranchMaterials)
+                .HasForeignKey(d => d.BranchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BranchMat__Branc__6383C8BA");
+
+            entity.HasOne(d => d.Material).WithMany(p => p.BranchMaterials)
+                .HasForeignKey(d => d.MaterialId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BranchMat__Mater__628FA481");
+        });
+
+        modelBuilder.Entity<BranchService>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__BranchSe__3214EC07D52527C2");
+
+            entity.ToTable("BranchService");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Branch).WithMany(p => p.BranchServices)
+                .HasForeignKey(d => d.BranchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BranchSer__Branc__5EBF139D");
+
+            entity.HasOne(d => d.Service).WithMany(p => p.BranchServices)
+                .HasForeignKey(d => d.ServiceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BranchSer__Servi__5DCAEF64");
         });
 
         modelBuilder.Entity<BusinessBranch>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07F208C6EB");
+            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07EB0B5464");
 
             entity.ToTable("BusinessBranch");
 
@@ -177,15 +227,15 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<BusinessProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07EB9B4AEA");
+            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07FDAF3EC6");
 
             entity.ToTable("BusinessProfile");
 
-            entity.HasIndex(e => e.Phone, "UQ__Business__5C7E359E5949A9FF").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Business__5C7E359E7C66A85E").IsUnique();
 
-            entity.HasIndex(e => e.Name, "UQ__Business__737584F6354FFDD7").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Business__737584F6ECBA59F3").IsUnique();
 
-            entity.HasIndex(e => e.OwnerId, "UQ__Business__819385B998B9EAE4").IsUnique();
+            entity.HasIndex(e => e.OwnerId, "UQ__Business__819385B971C5D346").IsUnique();
 
             entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
             entity.Property(e => e.ImageUrl).HasColumnType("text");
@@ -207,45 +257,50 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Cart__3214EC0776E7108F");
+            entity.HasKey(e => e.Id).HasName("PK__Cart__3214EC07CC49C03B");
 
             entity.ToTable("Cart");
 
-            entity.HasIndex(e => e.AccountId, "UQ__Cart__349DA5A7A2092673").IsUnique();
+            entity.HasIndex(e => e.AccountId, "UQ__Cart__349DA5A77102BFF4").IsUnique();
 
             entity.Property(e => e.TotalPrice).HasColumnType("decimal(10, 2)");
 
             entity.HasOne(d => d.Account).WithOne(p => p.Cart)
                 .HasForeignKey<Cart>(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Cart__AccountId__6383C8BA");
+                .HasConstraintName("FK__Cart__AccountId__6C190EBB");
         });
 
         modelBuilder.Entity<CartItem>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__CartItem__3214EC079DBD0F73");
+            entity.HasKey(e => e.Id).HasName("PK__CartItem__3214EC0794857BCB");
 
             entity.ToTable("CartItem");
 
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
 
+            entity.HasOne(d => d.Branch).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.BranchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CartItem__Branch__6FE99F9F");
+
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CartItem__CartId__66603565");
+                .HasConstraintName("FK__CartItem__CartId__6EF57B66");
 
             entity.HasOne(d => d.Material).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.MaterialId)
-                .HasConstraintName("FK__CartItem__Materi__68487DD7");
+                .HasConstraintName("FK__CartItem__Materi__71D1E811");
 
             entity.HasOne(d => d.Service).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__CartItem__Servic__6754599E");
+                .HasConstraintName("FK__CartItem__Servic__70DDC3D8");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Feedback__3214EC078DF2FA1C");
+            entity.HasKey(e => e.Id).HasName("PK__Feedback__3214EC07C53BAA28");
 
             entity.ToTable("Feedback");
 
@@ -258,12 +313,12 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.HasOne(d => d.OrderItem).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.OrderItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Feedback__OrderI__76969D2E");
+                .HasConstraintName("FK__Feedback__OrderI__01142BA1");
         });
 
         modelBuilder.Entity<Location>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Location__3214EC075240B00D");
+            entity.HasKey(e => e.Id).HasName("PK__Location__3214EC075D6D7306");
 
             entity.ToTable("Location");
 
@@ -274,7 +329,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Material>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Material__3214EC0713DD21F1");
+            entity.HasKey(e => e.Id).HasName("PK__Material__3214EC07D114F6C5");
 
             entity.ToTable("Material");
 
@@ -287,7 +342,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07FCAD7DB9");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07FFED8833");
 
             entity.ToTable("Order");
 
@@ -305,16 +360,16 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.HasOne(d => d.Account).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Order__AccountId__6C190EBB");
+                .HasConstraintName("FK__Order__AccountId__75A278F5");
 
             entity.HasOne(d => d.Address).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.AddressId)
-                .HasConstraintName("FK__Order__AddressId__6D0D32F4");
+                .HasConstraintName("FK__Order__AddressId__76969D2E");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC075E5C27DF");
+            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC0771EC889E");
 
             entity.ToTable("OrderDetail");
 
@@ -323,52 +378,58 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
+            entity.HasOne(d => d.Branch).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.BranchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OrderDeta__Branc__7B5B524B");
+
             entity.HasOne(d => d.Material).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.MaterialId)
-                .HasConstraintName("FK__OrderDeta__Mater__72C60C4A");
+                .HasConstraintName("FK__OrderDeta__Mater__7D439ABD");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderDeta__Order__70DDC3D8");
+                .HasConstraintName("FK__OrderDeta__Order__7A672E12");
 
             entity.HasOne(d => d.Service).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__OrderDeta__Servi__71D1E811");
+                .HasConstraintName("FK__OrderDeta__Servi__7C4F7684");
         });
 
         modelBuilder.Entity<OrderNotification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OrderNot__3214EC0747CAFDB7");
+            entity.HasKey(e => e.Id).HasName("PK__OrderNot__3214EC07597A770E");
 
             entity.ToTable("OrderNotification");
 
             entity.Property(e => e.NotificationTime).HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(100);
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderNotifications)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderNoti__Order__0B91BA14");
+                .HasConstraintName("FK__OrderNoti__Order__17036CC0");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PaymentM__3214EC07F31E0723");
+            entity.HasKey(e => e.Id).HasName("PK__PaymentM__3214EC073A5FD6E3");
 
             entity.ToTable("PaymentMethod");
 
-            entity.HasIndex(e => e.Name, "UQ__PaymentM__737584F67EB39B3D").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__PaymentM__737584F65E89147B").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(100);
         });
 
         modelBuilder.Entity<Promotion>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Promotio__3214EC07FCD1E9BE");
+            entity.HasKey(e => e.Id).HasName("PK__Promotio__3214EC073841B9F1");
 
             entity.ToTable("Promotion");
 
-            entity.HasIndex(e => e.ServiceId, "UQ__Promotio__C51BB00B36DE195E").IsUnique();
+            entity.HasIndex(e => e.ServiceId, "UQ__Promotio__C51BB00BA7D6BCEF").IsUnique();
 
             entity.Property(e => e.NewPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Status)
@@ -378,12 +439,12 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.HasOne(d => d.Service).WithOne(p => p.Promotion)
                 .HasForeignKey<Promotion>(d => d.ServiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Servi__5FB337D6");
+                .HasConstraintName("FK__Promotion__Servi__68487DD7");
         });
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Service__3214EC07AE51A6D7");
+            entity.HasKey(e => e.Id).HasName("PK__Service__3214EC070CE7F153");
 
             entity.ToTable("Service");
 
@@ -395,11 +456,6 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.Branch).WithMany(p => p.Services)
-                .HasForeignKey(d => d.BranchId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Service__BranchI__5441852A");
-
             entity.HasOne(d => d.Category).WithMany(p => p.Services)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -408,11 +464,11 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<ServiceCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ServiceC__3214EC07C1A80AAB");
+            entity.HasKey(e => e.Id).HasName("PK__ServiceC__3214EC0757B3E4A9");
 
             entity.ToTable("ServiceCategory");
 
-            entity.HasIndex(e => e.Name, "UQ__ServiceC__737584F69019FF67").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__ServiceC__737584F6E41E2027").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Status)
@@ -422,27 +478,27 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<ServiceMaterial>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ServiceM__3214EC077FF79FD5");
+            entity.HasKey(e => e.Id).HasName("PK__ServiceM__3214EC07CDB7A96E");
 
             entity.ToTable("ServiceMaterial");
 
             entity.HasOne(d => d.Material).WithMany(p => p.ServiceMaterials)
                 .HasForeignKey(d => d.MaterialId)
-                .HasConstraintName("FK__ServiceMa__Mater__5AEE82B9");
+                .HasConstraintName("FK__ServiceMa__Mater__59FA5E80");
 
             entity.HasOne(d => d.Service).WithMany(p => p.ServiceMaterials)
                 .HasForeignKey(d => d.ServiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ServiceMa__Servi__59FA5E80");
+                .HasConstraintName("FK__ServiceMa__Servi__59063A47");
         });
 
         modelBuilder.Entity<SubscriptionPack>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subscrip__3214EC076827D139");
+            entity.HasKey(e => e.Id).HasName("PK__Subscrip__3214EC074C695883");
 
             entity.ToTable("SubscriptionPack");
 
-            entity.HasIndex(e => e.Name, "UQ__Subscrip__737584F688E082C5").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Subscrip__737584F6F10922C6").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
@@ -450,7 +506,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<SupportTicket>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__SupportT__3214EC07E486F11C");
+            entity.HasKey(e => e.Id).HasName("PK__SupportT__3214EC076A0075B3");
 
             entity.ToTable("SupportTicket");
 
@@ -458,34 +514,35 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Title).HasMaxLength(100);
 
             entity.HasOne(d => d.Category).WithMany(p => p.SupportTickets)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__SupportTi__Categ__160F4887");
+                .HasConstraintName("FK__SupportTi__Categ__2180FB33");
 
             entity.HasOne(d => d.Moderator).WithMany(p => p.SupportTicketModerators)
                 .HasForeignKey(d => d.ModeratorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__SupportTi__Moder__151B244E");
+                .HasConstraintName("FK__SupportTi__Moder__208CD6FA");
 
             entity.HasOne(d => d.Order).WithMany(p => p.SupportTickets)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__SupportTi__Order__17036CC0");
+                .HasConstraintName("FK__SupportTi__Order__22751F6C");
 
             entity.HasOne(d => d.User).WithMany(p => p.SupportTicketUsers)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__SupportTi__UserI__14270015");
+                .HasConstraintName("FK__SupportTi__UserI__1F98B2C1");
         });
 
         modelBuilder.Entity<TicketCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TicketCa__3214EC077E8EA34A");
+            entity.HasKey(e => e.Id).HasName("PK__TicketCa__3214EC075063FA68");
 
             entity.ToTable("TicketCategory");
 
-            entity.HasIndex(e => e.Name, "UQ__TicketCa__737584F68402F5D6").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__TicketCa__737584F6EF426028").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Status)
@@ -495,7 +552,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC0767F85638");
+            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC071ECE46F8");
 
             entity.ToTable("Transaction");
 
@@ -508,17 +565,17 @@ public partial class Tp4scsDevDatabaseContext : DbContext
             entity.HasOne(d => d.Account).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Accou__06CD04F7");
+                .HasConstraintName("FK__Transacti__Accou__123EB7A3");
 
             entity.HasOne(d => d.Method).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.MethodId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Metho__07C12930");
+                .HasConstraintName("FK__Transacti__Metho__1332DBDC");
 
             entity.HasOne(d => d.Pack).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.PackId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__PackI__08B54D69");
+                .HasConstraintName("FK__Transacti__PackI__14270015");
         });
 
         OnModelCreatingPartial(modelBuilder);

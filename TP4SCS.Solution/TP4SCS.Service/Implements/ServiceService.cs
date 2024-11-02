@@ -77,7 +77,7 @@ namespace TP4SCS.Services.Implements
             foreach (var branchId in serviceRequest.BranchId)
             {
                 var service = _mapper.Map<Service>(serviceRequest);
-                service.BranchId = branchId;
+                //service.BranchId = branchId;
                 service.CreateTime = DateTime.Now;
                 assetUrls = await _assetUrlService.AddAssestUrlsAsync(fileResponses);
                 foreach (var assetUrl in assetUrls)
@@ -192,8 +192,8 @@ namespace TP4SCS.Services.Implements
             if (services == null) return (Enumerable.Empty<Service>(), 0);
 
             var servicesGroupByName = services
-                .GroupBy(s => new { s.Name, s.Branch.BusinessId })
-                .Select(g => g.First())
+                //.GroupBy(s => new { s.Name, s.Branch.BusinessId })
+                //.Select(g => g.First())
                 .ToList();
 
             int totalCount = servicesGroupByName.Count;
@@ -218,7 +218,7 @@ namespace TP4SCS.Services.Implements
             if (services == null) return null;
 
             return services
-                    .Where(s => Util.IsEqual(s.Name, name) && s.Branch.BusinessId == businessId)
+                    //.Where(s => Util.IsEqual(s.Name, name) && s.Branch.BusinessId == businessId)
                     .ToList();
         }
 
@@ -226,7 +226,8 @@ namespace TP4SCS.Services.Implements
         {
             var services = await _serviceRepository.GetServicesAsync(null, null, null, null, OrderByEnum.IdAsc);
 
-            var filteredServices = services?.Where(s => Util.IsEqual(s.Name, name) && s.BranchId == branchId).ToList();
+            //var filteredServices = services?.Where(s => Util.IsEqual(s.Name, name) && s.BranchId == branchId).ToList();
+            var filteredServices = services?.Where(s => Util.IsEqual(s.Name, name)).ToList();
 
             if (filteredServices == null || !filteredServices.Any())
             {
@@ -242,7 +243,8 @@ namespace TP4SCS.Services.Implements
         public async Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId)
         {
             var services = await _serviceRepository.GetServicesAsync(null, null);
-            return services.Where(s => s.BranchId == branchId);
+            //return services.Where(s => s.BranchId == branchId);
+            return services;
         }
 
         public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, ExistingServiceRequest existingServiceRequest)

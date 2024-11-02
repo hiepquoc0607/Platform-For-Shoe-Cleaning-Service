@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Response.BusinessProfile;
@@ -12,7 +11,8 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
 {
-    public class BusinessService : IBusinessService
+    //public class BusinessService : IBusinessService
+    public class BusinessService
     {
         private readonly IBusinessRepository _businessRepository;
         private readonly IBranchService _branchService;

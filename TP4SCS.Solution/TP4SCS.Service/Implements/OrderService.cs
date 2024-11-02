@@ -47,7 +47,8 @@ namespace TP4SCS.Services.Implements
             {
                 return Enumerable.Empty<Order>();
             }
-            return orders.Where(o => o.OrderDetails.Any(od => od.Service.BranchId == branchId));
+            //return orders.Where(o => o.OrderDetails.Any(od => od.Service.BranchId == branchId));
+            return orders;
         }
 
         public async Task UpdateOrderStatus(int existingOrderedId, string newStatus)

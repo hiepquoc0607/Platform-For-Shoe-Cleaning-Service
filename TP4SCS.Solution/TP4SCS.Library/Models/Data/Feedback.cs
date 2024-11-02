@@ -14,7 +14,7 @@ public partial class Feedback
 
     public bool IsValidContent { get; set; }
 
-    public bool? IsValidAsset { get; set; }
+    public bool IsValidAsset { get; set; }
 
     public string Status { get; set; } = null!;
 
