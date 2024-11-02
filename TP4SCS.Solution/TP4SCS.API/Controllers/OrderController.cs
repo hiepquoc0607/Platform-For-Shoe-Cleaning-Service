@@ -11,10 +11,12 @@ namespace TP4SCS.API.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IEmailService _emailService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IEmailService emailService)
         {
             _orderService = orderService;
+            _emailService = emailService;
         }
 
         // GET: api/Order
@@ -52,6 +54,20 @@ namespace TP4SCS.API.Controllers
             var orders = await _orderService.GetOrdersByBranchIdAsync(branchId, status, orderBy);
             var response = orders?.Adapt<IEnumerable<OrderResponse>>();
             return Ok(response);
+        }
+
+        [HttpPost("send")]
+        public async Task<IActionResult> SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                await _emailService.SendEmailAsync(toEmail, subject, body);
+                return Ok("Email đã được gửi thành công!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi gửi email: {ex.Message}");
+            }
         }
     }
 }

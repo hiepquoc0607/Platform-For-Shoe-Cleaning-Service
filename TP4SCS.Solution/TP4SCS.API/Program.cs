@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Threading.RateLimiting;
 using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.Email;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
@@ -61,7 +62,8 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
+//Get EmailSettings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 //Inject Util
 builder.Services.AddScoped<Util>();
 builder.Services.AddScoped<BusinessUtil>();
@@ -98,6 +100,7 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAssetUrlService, AssetUrlService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 //Register Firebase
 
