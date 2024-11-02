@@ -8,6 +8,8 @@ public partial class OrderNotification
 
     public DateTime NotificationTime { get; set; }
 
+    public string Title { get; set; } = null!;
+
     public string Content { get; set; } = null!;
 
     public virtual Order Order { get; set; } = null!;

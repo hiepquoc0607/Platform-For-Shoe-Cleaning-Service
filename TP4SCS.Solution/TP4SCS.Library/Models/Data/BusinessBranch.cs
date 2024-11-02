@@ -30,7 +30,13 @@ public partial class BusinessBranch
 
     public string Status { get; set; } = null!;
 
+    public virtual ICollection<BranchMaterial> BranchMaterials { get; set; } = new List<BranchMaterial>();
+
+    public virtual ICollection<BranchService> BranchServices { get; set; } = new List<BranchService>();
+
     public virtual BusinessProfile Business { get; set; } = null!;
 
-    public virtual ICollection<Service> Services { get; set; } = new List<Service>();
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }

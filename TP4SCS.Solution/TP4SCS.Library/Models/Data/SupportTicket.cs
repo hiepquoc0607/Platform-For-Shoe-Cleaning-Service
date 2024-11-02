@@ -12,11 +12,15 @@ public partial class SupportTicket
 
     public int? OrderId { get; set; }
 
+    public int? ParentTicketId { get; set; }
+
     public string Title { get; set; } = null!;
 
     public string Content { get; set; } = null!;
 
     public DateTime CreateTime { get; set; }
+
+    public bool IsParentTicket { get; set; }
 
     public string Status { get; set; } = null!;
 

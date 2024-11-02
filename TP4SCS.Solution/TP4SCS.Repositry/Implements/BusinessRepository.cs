@@ -127,14 +127,14 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.Services
                 .AsNoTracking()
-                .GroupBy(s => new { s.Branch.BusinessId, s.Name })
-                .Select(s => new { s.Key.BusinessId, ServiceName = s.Key.Name })
-                .GroupBy(s => s.BusinessId)
-                .Select(s => new
-                {
-                    BusinessId = s.Key,
-                    DistinctService = s.ToList()
-                })
+                //.GroupBy(s => new { s.Branch.BusinessId, s.Name })
+                //.Select(s => new { s.Key.BusinessId, ServiceName = s.Key.Name })
+                //.GroupBy(s => s.BusinessId)
+                //.Select(s => new
+                //{
+                //    BusinessId = s.Key,
+                //    DistinctService = s.ToList()
+                //})
                 .CountAsync();
         }
     }

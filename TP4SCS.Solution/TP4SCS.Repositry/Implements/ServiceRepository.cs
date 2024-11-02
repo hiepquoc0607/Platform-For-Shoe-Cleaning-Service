@@ -91,7 +91,7 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.Services
                 .OrderBy(s => s.Id)
-                .Include(s => s.Branch)
+                //.Include(s => s.Branch)
                 .ToListAsync();
         }
 

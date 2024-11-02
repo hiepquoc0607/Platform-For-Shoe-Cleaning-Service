@@ -4,8 +4,6 @@ public partial class Service
 {
     public int Id { get; set; }
 
-    public int BranchId { get; set; }
-
     public int CategoryId { get; set; }
 
     public string Name { get; set; } = null!;
@@ -26,7 +24,7 @@ public partial class Service
 
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
 
-    public virtual BusinessBranch Branch { get; set; } = null!;
+    public virtual ICollection<BranchService> BranchServices { get; set; } = new List<BranchService>();
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

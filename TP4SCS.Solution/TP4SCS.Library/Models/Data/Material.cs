@@ -8,9 +8,11 @@ public partial class Material
 
     public decimal Price { get; set; }
 
-    public int Storage { get; set; }
-
     public string Status { get; set; } = null!;
+
+    public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
+
+    public virtual ICollection<BranchMaterial> BranchMaterials { get; set; } = new List<BranchMaterial>();
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

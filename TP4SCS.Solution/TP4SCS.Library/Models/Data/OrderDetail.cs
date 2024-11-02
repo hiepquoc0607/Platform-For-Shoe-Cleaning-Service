@@ -6,6 +6,8 @@ public partial class OrderDetail
 
     public int OrderId { get; set; }
 
+    public int BranchId { get; set; }
+
     public int? ServiceId { get; set; }
 
     public int? MaterialId { get; set; }
@@ -15,6 +17,8 @@ public partial class OrderDetail
     public decimal Price { get; set; }
 
     public string? Status { get; set; }
+
+    public virtual BusinessBranch Branch { get; set; } = null!;
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 

@@ -32,10 +32,10 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentOutOfRangeException(nameof(material.Price), "Price phải lớn hơn 0.");
             }
 
-            if (material.Storage < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
-            }
+            //if (material.Storage < 0)
+            //{
+            //    throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
+            //}
             await _materialRepository.AddMaterialAsync(serviceId, material);
         }
 
@@ -91,10 +91,10 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentOutOfRangeException(nameof(material.Price), "Price phải lớn hơn 0.");
             }
 
-            if (material.Storage < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
-            }
+            //if (material.Storage < 0)
+            //{
+            //    throw new ArgumentOutOfRangeException(nameof(material.Storage), "Storage không thể âm.");
+            //}
 
             if (string.IsNullOrEmpty(material.Status) || !Util.IsValidGeneralStatus(material.Status))
             {
@@ -109,7 +109,7 @@ namespace TP4SCS.Services.Implements
 
             existingMaterial.Name = material.Name;
             existingMaterial.Price = material.Price;
-            existingMaterial.Storage = material.Storage;
+            //existingMaterial.Storage = material.Storage;
             existingMaterial.Status = material.Status;
 
             await _materialRepository.UpdateMaterialAsync(existingMaterial);
