@@ -10,11 +10,11 @@ namespace TP4SCS.Repository.Interfaces
         int? pageSize = null,
         OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<Service?> GetServiceByIdAsync(int id);
-        Task AddServiceAsync(List<Service> services);
-        Task UpdateServiceAsync(Service service);
+        Task AddServicesAsync(List<Service> services);
+        Task AddServiceAsync(int[] branchIds, int businessId, Service service);
+        Task UpdateServiceAsync(Service service, int[] branchIds);
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null);
-        Task<IEnumerable<Service>> GetServicesIncludeBranchAsync();
     }
 }

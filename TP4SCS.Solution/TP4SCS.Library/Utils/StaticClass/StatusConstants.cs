@@ -9,7 +9,7 @@
 
         //PROMOTION STATUS
         public const string Available = "AVAILABLE";
-        public const string Unvailable = "UNAVAILABLE";
+        public const string Unavailable = "UNAVAILABLE";
 
         //ORDER STATUS
         public const string CANCELED = "CANCELED";

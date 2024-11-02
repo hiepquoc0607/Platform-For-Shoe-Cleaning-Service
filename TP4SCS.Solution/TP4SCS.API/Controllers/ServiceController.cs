@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
@@ -11,8 +9,6 @@ using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TP4SCS.API.Controllers
 {
     [Route("api/services")]
@@ -21,7 +17,6 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
-
 
         public ServiceController(IMapper mapper, IServiceService serviceService)
         {
@@ -61,14 +56,7 @@ namespace TP4SCS.API.Controllers
                 pagedRequest.PageSize
             );
 
-            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Success", pagedResponse));
-        }
-        [HttpGet("branches/{id}")]
-        public async Task<IActionResult> GetServicesByBranchIdAync([FromRoute] int id)
-        {
-            var services = await _serviceService.GetServicesByBranchIdAsync(id);
-            return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Fetch Service By Branch Id Success",
-                services.Adapt<IEnumerable<ServiceResponse>>()));
+            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
         }
 
         [HttpGet("{id}")]
@@ -79,12 +67,12 @@ namespace TP4SCS.API.Controllers
                 var service = await _serviceService.GetServiceByIdAsync(id);
                 if (service == null)
                 {
-                    Ok(new ResponseObject<ServiceResponse>($"Dịch vụ với ID {id} không tìm thấy.", null));
+                    return NotFound(new ResponseObject<ServiceResponse>($"Dịch vụ với ID {id} không tìm thấy.", null));
                 }
                 var response = _mapper.Map<ServiceResponse>(service);
                 response.Promotion = _mapper.Map<PromotionResponse>(response.Promotion);
-                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng Thái Null";
-                return Ok(new ResponseObject<ServiceResponse>("Fetch Service Success", response));
+                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng thái null";
+                return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
             }
             catch (Exception ex)
             {
@@ -111,124 +99,36 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>("Đã xảy ra lỗi khi lấy dịch vụ.", ex.Message));
             }
         }
-        [HttpGet("grouped")]
-        public async Task<IActionResult> GetServicesGroupByNameAsync(
-            [FromQuery] int? pageIndex = null,
-            [FromQuery] int? pageSize = null)
-        {
-            if (pageIndex.HasValue && pageIndex.Value < 1)
-            {
-                return BadRequest(new ResponseObject<string>("Chỉ số trang phải lớn hơn 0."));
-            }
-            if (pageSize.HasValue && pageSize.Value < 1)
-            {
-                return BadRequest(new ResponseObject<string>("Kích thước trang phải lớn hơn 0."));
-            }
 
-            var (services, totalCount) = await _serviceService.GetServicesGroupByNameAsync(pageIndex, pageSize, OrderByEnum.IdAsc);
-
-            if (pageIndex.HasValue && pageSize.HasValue)
-            {
-                var pageResponse = new PagedResponse<ServiceResponse>(
-                        services.Select(s => _mapper.Map<ServiceResponse>(s)),
-                        totalCount,
-                        pageIndex.Value,
-                        pageSize.Value);
-
-                return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Fetch Service Grouped Success", pageResponse));
-            }
-
-            return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Fetch Service Grouped Success",
-                    services.Select(s => _mapper.Map<ServiceResponse>(s))));
-        }
-
-
-
-        [HttpGet("by-name-and-branch")]
-        public async Task<IActionResult> GetServiceByNameAndBranchIdAsync(
-            [FromQuery] string name, [FromQuery] int branchId)
-        {
-            try
-            {
-                var service = await _serviceService.GetServicesByNameAndBranchIdAsync(name, branchId);
-
-                if (service == null)
-                {
-                    return NotFound(new ResponseObject<ServiceResponse>($"Không tìm thấy dịch vụ với tên '{name}' và branchId '{branchId}'", null));
-                }
-
-                var response = _mapper.Map<ServiceResponse>(service);
-                return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new ResponseObject<string>(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseObject<string>("Đã xảy ra lỗi khi lấy dịch vụ", ex.Message));
-            }
-        }
         [HttpPost]
-        public async Task<IActionResult> CreateServiceAync([FromForm] ServiceCreateRequest request)
+        public async Task<IActionResult> CreateServiceAync([FromBody] ServiceCreateRequest request)
         {
             try
             {
                 if (string.IsNullOrEmpty(request.Status) || !Util.IsValidGeneralStatus(request.Status))
                 {
-                    throw new ArgumentException("Status của Service không hợp lệ.", nameof(request.Status));
+                    throw new ArgumentException("Trạng thái của dịch vụ không hợp lệ.", nameof(request.Status));
                 }
                 request.Status = request.Status.ToUpper();
                 await _serviceService.AddServiceAsync(request);
-
-                var serviceResponse = _mapper.Map<ServiceCreateResponse>(_mapper.Map<Service>(request));
-                serviceResponse.BranchId = request.BranchId;
-                serviceResponse.NewPrice = request.NewPrice;
-                return Ok(new ResponseObject<ServiceCreateResponse>("Create Service Success", serviceResponse));
+                return Ok(new ResponseObject<string>("Tạo dịch vụ thành công"));
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Error: {ex.Message}", null));
+                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Lỗi: {ex.Message}", null));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Validation Error: {ex.Message}", null));
+                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Lỗi xác thực: {ex.Message}", null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<ServiceCreateResponse>($"An unexpected error occurred: {ex.Message}", null));
+                return StatusCode(500, new ResponseObject<ServiceCreateResponse>($"Đã xảy ra lỗi không mong muốn: {ex.Message}", null));
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateServiceStatusAync(int id, [FromBody] string status)
-        {
-            try
-            {
-
-                await _serviceService.UpdateServiceStatusAsync(status, id);
-                var service = await _serviceService.GetServiceByIdAsync(id);
-                return Ok(new ResponseObject<ServiceResponse>("Update Status Service with Id: {id} Success",
-                    _mapper.Map<ServiceResponse>(service)));
-            }
-
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new ResponseObject<ServiceResponse>(ex.Message));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return BadRequest(new ResponseObject<ServiceResponse>(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseObject<ServiceResponse>($"An error occurred: {ex.Message}"));
-            }
-        }
-        [HttpPut("bulk-update")]
-        public async Task<IActionResult> BulkUpdateServiceAsync(
-            [FromBody] ServiceUpdateRequest serviceUpdateRequest,
-            [FromQuery] ExistingServiceRequest existingServiceRequest)
+        public async Task<IActionResult> UpdateServiceAsync([FromBody] ServiceUpdateRequest serviceUpdateRequest, int id)
         {
             if (serviceUpdateRequest == null)
             {
@@ -237,7 +137,7 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                await _serviceService.UpdateServiceAsync(serviceUpdateRequest, existingServiceRequest);
+                await _serviceService.UpdateServiceAsync(serviceUpdateRequest, id);
                 return Ok("Các dịch vụ đã được cập nhật thành công.");
             }
             catch (ArgumentNullException ex)
@@ -254,7 +154,6 @@ namespace TP4SCS.API.Controllers
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi nếu cần
                 return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
             }
         }
@@ -272,7 +171,5 @@ namespace TP4SCS.API.Controllers
                 return NotFound(new ResponseObject<ServiceResponse>(ex.Message, null));
             }
         }
-
-
     }
 }

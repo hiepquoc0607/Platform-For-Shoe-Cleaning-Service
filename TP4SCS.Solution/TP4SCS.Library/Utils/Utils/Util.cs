@@ -83,7 +83,7 @@ namespace TP4SCS.Library.Utils.Utils
         }
         public static bool IsValidGeneralStatus(string status)
         {
-            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unvailable };
+            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unavailable };
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
 

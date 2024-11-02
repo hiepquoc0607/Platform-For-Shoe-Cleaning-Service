@@ -14,26 +14,5 @@ namespace TP4SCS.API.Controllers
         {
             _assetUrlService = assetUrlService;
         }
-
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadImage(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file selected");
-
-            var result = await _assetUrlService.UploadFileAsync(file);
-            return Ok(new { Url = result });
-        }
-        [HttpDelete]
-        public async Task<IActionResult> RemoveImage(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                return BadRequest("URL cannot be null or empty.");
-            }
-
-            await _assetUrlService.DeleteImageAsync(url);
-            return Ok();
-        }
     }
 }

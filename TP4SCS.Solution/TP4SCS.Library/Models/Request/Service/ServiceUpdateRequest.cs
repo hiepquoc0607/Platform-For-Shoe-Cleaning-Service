@@ -1,7 +1,10 @@
-﻿namespace TP4SCS.Library.Models.Request.Service
+﻿using TP4SCS.Library.Models.Request.AssetUrl;
+
+namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceUpdateRequest
     {
+        public int[] BranchId { get; set; } = Array.Empty<int>();
         public int CategoryId { get; set; }
 
         public string Name { get; set; } = string.Empty;
@@ -15,5 +18,6 @@
         public decimal? NewPrice { get; set; }
 
         public string? PromotionStatus { get; set; }
+        public List<AssetUrlRequest> AssetUrls { get; set; } = new List<AssetUrlRequest>();
     }
 }

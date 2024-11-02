@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.Service
+﻿using TP4SCS.Library.Models.Request.AssetUrl;
+
+namespace TP4SCS.Library.Models.Response.Service
 {
     public class ServiceCreateResponse
     {
@@ -12,5 +14,6 @@
         public decimal Price { get; set; }
         public decimal? NewPrice { get; set; }
         public string Status { get; set; } = null!;
+        public List<AssetUrlRequest> AssetUrls { get; set; } = new List<AssetUrlRequest>();
     }
 }

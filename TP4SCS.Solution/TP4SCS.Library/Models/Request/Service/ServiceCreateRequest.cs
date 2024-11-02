@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using TP4SCS.Library.Models.Request.AssetUrl;
 
 namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceCreateRequest
     {
+        public int BusinessId { get; set; }
         public int[] BranchId { get; set; } = Array.Empty<int>();
 
         public int CategoryId { get; set; }
@@ -16,6 +17,6 @@ namespace TP4SCS.Library.Models.Request.Service
         public string Status { get; set; } = string.Empty;
 
         public decimal? NewPrice { get; set; }
-        public List<IFormFile>? Files { get; set; }
+        public List<AssetUrlRequest> AssetUrls { get; set; } = new List<AssetUrlRequest>();
     }
 }
