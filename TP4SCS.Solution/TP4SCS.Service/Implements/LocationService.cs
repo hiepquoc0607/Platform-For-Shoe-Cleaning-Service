@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using MapsterMapper;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Repository.Interfaces;
