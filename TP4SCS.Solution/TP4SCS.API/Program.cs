@@ -94,8 +94,8 @@ builder.Services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
-//builder.Services.AddScoped<IBranchService, BranchService>();
-//builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IBusinessBranchService, BusinessBranchService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAssetUrlService, AssetUrlService>();
@@ -138,10 +138,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("ADMIN"));
-    options.AddPolicy("Moderator", policy => policy.RequireRole("ADMIN, MODERATOR"));
-    options.AddPolicy("Customer", policy => policy.RequireRole("ADMIN, CUSTOMER, OWNER"));
-    options.AddPolicy("Owner", policy => policy.RequireRole("ADMIN, OWNER"));
-    options.AddPolicy("Employee", policy => policy.RequireRole("ADMIN, OWNER, EMPLOYEE"));
+    options.AddPolicy("Moderator", policy => policy.RequireRole("ADMIN", "MODERATOR"));
+    options.AddPolicy("Customer", policy => policy.RequireRole("ADMIN", "CUSTOMER", "OWNER"));
+    options.AddPolicy("Owner", policy => policy.RequireRole("ADMIN", "OWNER"));
+    options.AddPolicy("Employee", policy => policy.RequireRole("ADMIN", "OWNER", "EMPLOYEE"));
 });
 
 //Config CORS

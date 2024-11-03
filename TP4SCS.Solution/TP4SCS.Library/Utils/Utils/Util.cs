@@ -77,7 +77,7 @@ namespace TP4SCS.Library.Utils.Utils
             return lowerStatus switch
             {
                 "unavailable" => "Ngưng Hoạt Động",
-                "available" => "Hoạt Động" ,
+                "available" => "Hoạt Động",
                 _ => "Trạng Thái Null"
             };
         }
@@ -152,46 +152,81 @@ namespace TP4SCS.Library.Utils.Utils
             return result;
         }
 
-        public string CheckDeleteEmployeesErrorType(string? old, string input)
+        public string CheckDeleteEmployeesErrorType(string? old, List<int> input)
         {
             if (string.IsNullOrEmpty(old)) return "Empty";
-            if (!input.Trim().Trim().Split(", ").All(item => old.Trim().Split(", ").Contains(item)))
+
+            List<int> oldList = old.Split(",").Select(int.Parse).ToList();
+
+            HashSet<int> oldSet = new HashSet<int>(oldList);
+
+            foreach (int element in input)
             {
-                return "Exist";
+                if (!oldSet.Contains(element))
+                {
+                    return "Null";
+                }
             }
-            if (!Regex.IsMatch(input, @"^[0-9, ]*$")) return "Invalid";
 
             return "None";
         }
 
-        public string CheckAddEmployeesErrorType(string? old, string input)
+        public string CheckAddEmployeesErrorType(string? old, List<int> input)
         {
-            if (input.Split(',').Length > 5) return "Full";
-            if (!string.IsNullOrEmpty(old) && input.Trim().Trim().Split(", ").All(item => old.Trim().Split(", ").Contains(item)))
+            List<int> oldList = new List<int>();
+
+            if (!string.IsNullOrEmpty(old))
             {
-                return "Exist";
+                oldList = old.Split(',').Select(int.Parse).ToList();
             }
-            if (!Regex.IsMatch(input, @"^[0-9, ]*$")) return "Invalid";
+
+            if (oldList.Count > 5) return "Full";
+
+            HashSet<int> oldSet = new HashSet<int>(oldList);
+
+            foreach (int element in input)
+            {
+                if (oldSet.Contains(element))
+                {
+                    return "Existed";
+                }
+            }
 
             return "None";
         }
 
-        public string DeleteEmployeesId(string? old, string input)
+        public string DeleteEmployeesId(string? old, List<int> input)
         {
-            var oldArray = old?.Split(",").Select(item => item.Trim()).ToArray();
-            var inputArray = input.Split(",").Select(item => item.Trim()).ToArray();
+            List<int> oldList = new List<int>();
 
-            var resultArray = oldArray?.Except(inputArray) ?? Array.Empty<string>();
+            if (!string.IsNullOrEmpty(old))
+            {
+                oldList = old.Split(',').Select(int.Parse).ToList();
+            }
 
-            return string.Join(", ", resultArray);
+            foreach (int element in input)
+            {
+                oldList.Remove(element);
+            }
+
+            return string.Join(",", oldList);
         }
 
-        public string AddEmployeeId(string? old, string input)
+        public string AddEmployeeId(string? old, List<int> input)
         {
-            var oldString = old?.Split(',').Select(x => x.Trim()) ?? Array.Empty<string>();
-            var inputString = input.Split(',').Select(x => x.Trim());
+            List<int> oldList = new List<int>();
 
-            return string.Join(", ", oldString.Concat(inputString));
+            if (!string.IsNullOrEmpty(old))
+            {
+                oldList = old.Split(',').Select(int.Parse).ToList();
+            }
+
+            foreach (int element in input)
+            {
+                oldList.Add(element);
+            }
+
+            return string.Join(",", oldList);
         }
     }
 }

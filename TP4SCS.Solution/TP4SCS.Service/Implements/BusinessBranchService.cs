@@ -10,14 +10,14 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
 {
-    public class BranchService : IBranchService
+    public class BusinessBranchService : IBusinessBranchService
     {
         private readonly IBusinessRepository _businessRepository;
         private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public BranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
+        public BusinessBranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
         {
             _businessRepository = businessRepository;
             _branchRepository = branchRepository;
@@ -43,7 +43,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
-            newBranch.Id = (int)businessId;
+            newBranch.BusinessId = (int)businessId;
 
             try
             {
@@ -136,14 +136,14 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
             }
 
-            while (updateBranchEmployeeRequest.IsDeleted)
+            if (updateBranchEmployeeRequest.IsDeleted)
             {
                 var deleteError = _util.CheckDeleteEmployeesErrorType(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
 
                 var deleteErrorMessage = new Dictionary<string, string>
                 {
                     { "Empty", "Chi Nhánh Chưa Có Nhân Viên Nào!" },
-                    { "Exist", "Nhân Viên Không Thuộc Chi Nhánh!" },
+                    { "Null", "Nhân Viên Không Thuộc Chi Nhánh!" },
                     { "Invalid", "Trường Nhập Không Khả Dụng!" },
                 };
 
@@ -154,22 +154,24 @@ namespace TP4SCS.Services.Implements
 
                 oldBranch.EmployeeIds = _util.DeleteEmployeesId(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
             }
+            else
+            {
+                var addError = _util.CheckAddEmployeesErrorType(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
 
-            var addError = _util.CheckAddEmployeesErrorType(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
-
-            var addErrorMessage = new Dictionary<string, string>
+                var addErrorMessage = new Dictionary<string, string>
                 {
                     { "Full", "Chi Nhánh Đã Đạt Tối Đa 5 Nhân Viên!" },
-                    { "Exist", "Nhân Viên Đã Thuộc Chi Nhánh!" },
+                    { "Existed", "Nhân Viên Đã Thuộc Chi Nhánh!" },
                     { "Invalid", "Trường Nhập Không Khả Dụng!" },
                 };
 
-            if (addErrorMessage.TryGetValue(addError, out var message))
-            {
-                return new ApiResponse<BranchResponse>("error", 400, message);
-            }
+                if (addErrorMessage.TryGetValue(addError, out var message))
+                {
+                    return new ApiResponse<BranchResponse>("error", 400, message);
+                }
 
-            oldBranch.EmployeeIds = _util.AddEmployeeId(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+                oldBranch.EmployeeIds = _util.AddEmployeeId(oldBranch.EmployeeIds, updateBranchEmployeeRequest.EmployeeIds);
+            }
 
             try
             {

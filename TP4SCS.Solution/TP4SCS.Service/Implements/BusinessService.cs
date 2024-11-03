@@ -11,15 +11,14 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
 {
-    //public class BusinessService : IBusinessService
-    public class BusinessService
+    public class BusinessService : IBusinessService
     {
         private readonly IBusinessRepository _businessRepository;
-        private readonly IBranchService _branchService;
+        private readonly IBusinessBranchService _branchService;
         private readonly IMapper _mapper;
         private readonly BusinessUtil _util;
 
-        public BusinessService(IBusinessRepository businessRepository, IBranchService branchService, IMapper mapper, BusinessUtil util)
+        public BusinessService(IBusinessRepository businessRepository, IBusinessBranchService branchService, IMapper mapper, BusinessUtil util)
         {
             _businessRepository = businessRepository;
             _branchService = branchService;
