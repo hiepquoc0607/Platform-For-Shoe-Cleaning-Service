@@ -55,7 +55,7 @@ namespace TP4SCS.API.Controllers
 
             var userId = int.TryParse(userIdClaim, out int id);
 
-            var result = await _branchService.CreateBranchAsync(id, createBranchRequest);
+            var result = await _branchService.CreateBranchByOwnerIdAsync(id, createBranchRequest);
 
             if (result.StatusCode != 200)
             {

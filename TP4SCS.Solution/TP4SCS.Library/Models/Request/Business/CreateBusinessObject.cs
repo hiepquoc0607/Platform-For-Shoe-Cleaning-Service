@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using TP4SCS.Library.Models.Request.Branch;
 
 namespace TP4SCS.Library.Models.Request.BusinessProfile
 {

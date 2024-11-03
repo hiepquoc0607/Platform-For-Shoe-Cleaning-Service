@@ -45,13 +45,6 @@ namespace TP4SCS.Services.Implements
             var businessData = createBusinessRequest.CreateBusiness;
             var branchData = createBusinessRequest.CreateBranch;
 
-            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
-
-            if (isNameExisted)
-            {
-                return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
-            }
-
             var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
 
             if (isPhoneExisted)
@@ -59,16 +52,24 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
             }
 
+            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
+
+            if (isNameExisted)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
+            }
+
             var newBusiness = _mapper.Map<BusinessProfile>(businessData);
             newBusiness.OwnerId = id;
 
+            var newBranch = _mapper.Map<BusinessBranch>(branchData);
+            newBranch.BusinessId = await _businessRepository.GetBusinessProfileMaxIdAsync() + 1;
+
             try
             {
-                await _businessRepository.CreateBusinessProfileAsync(newBusiness);
+                await _businessRepository.CreateBusinessProfileAsync(newBusiness, newBranch);
 
                 var newId = await _businessRepository.GetBusinessProfileMaxIdAsync();
-
-                //await _branchService.CreateBranchAsync(newId, newBranch);
 
                 var newBsn = await GetBusinessProfileByIdAsync(newId);
 
@@ -118,7 +119,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 404, "Trạng Thái Không Khả Dụng!");
             }
 
-            var oldBusiness = await _businessRepository.GetBusinessByOwnerIdAsync(id);
+            var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);
 
             if (oldBusiness == null)
             {

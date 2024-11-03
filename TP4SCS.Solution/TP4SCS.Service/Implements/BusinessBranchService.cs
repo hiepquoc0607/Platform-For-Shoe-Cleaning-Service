@@ -32,8 +32,36 @@ namespace TP4SCS.Services.Implements
             return Array.Exists(idArray, id => id == branchId);
         }
 
-        //Create Branch By Onwer Id
         public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest)
+        {
+            var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
+
+            if (business == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Tài Khoản Không Sở Hữu Doanh Nghiệp!");
+            }
+
+            var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
+            newBranch.BusinessId = id;
+
+            try
+            {
+                await _branchRepository.CreateBranchAsync(newBranch);
+
+                var newId = await GetBranchMaxIdAsync();
+
+                var newBr = await GetBranchByIdAsync(newId);
+
+                return new ApiResponse<BranchResponse>("success", "Tạo Chi Nhánh Thành Công!", newBr.Data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Tạo Chi Nhánh Thất Bại!");
+            }
+        }
+
+        //Create Branch By Onwer Id
+        public async Task<ApiResponse<BranchResponse>> CreateBranchByOwnerIdAsync(int id, CreateBranchRequest createBranchRequest)
         {
             var businessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
 
