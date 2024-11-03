@@ -1,6 +1,7 @@
 ﻿using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
+using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.Promotion;
 
 namespace TP4SCS.Library.Models.Response.Service
@@ -9,8 +10,7 @@ namespace TP4SCS.Library.Models.Response.Service
     {
         public int Id { get; set; }
 
-        public required int BranchId { get; set; }
-        public int CategoryId { get; set; }
+        public ServiceCategoryResponse Category { get; set; } = null!;
 
         public string Name { get; set; } = null!;
 

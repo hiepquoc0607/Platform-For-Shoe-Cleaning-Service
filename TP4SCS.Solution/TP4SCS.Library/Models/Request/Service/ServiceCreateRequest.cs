@@ -4,7 +4,6 @@ namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceCreateRequest
     {
-        public int BusinessId { get; set; }
         public int[] BranchId { get; set; } = Array.Empty<int>();
 
         public int CategoryId { get; set; }

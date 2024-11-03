@@ -69,11 +69,11 @@ namespace TP4SCS.Services.Implements
 
             foreach (var cartItem in cartItems)
             {
-                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync((int)cartItem.ServiceId);
+                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId!.Value);
 
-                if (servicePrice < 0)
+                if (servicePrice < 0 && cartItem.ServiceId.HasValue)
                 {
-                    throw new InvalidOperationException($"Giá dịch vụ không hợp lệ cho serviceId {cartItem.ServiceId}.");
+                    throw new InvalidOperationException($"Giá dịch vụ không hợp lệ cho serviceId {cartItem.ServiceId.Value}.");
                 }
 
                 totalPrice += servicePrice * cartItem.Quantity;
