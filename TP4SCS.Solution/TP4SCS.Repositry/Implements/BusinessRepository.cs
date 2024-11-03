@@ -8,13 +8,29 @@ namespace TP4SCS.Repository.Implements
 {
     public class BusinessRepository : GenericRepository<BusinessProfile>, IBusinessRepository
     {
-        public BusinessRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
+        private readonly IBranchRepository _branchRepository;
+
+        public BusinessRepository(Tp4scsDevDatabaseContext dbContext, IBranchRepository branchRepository) : base(dbContext)
         {
+            _branchRepository = branchRepository;
         }
 
-        public async Task CreateBusinessProfileAsync(BusinessProfile businessProfile)
+        public async Task CreateBusinessProfileAsync(BusinessProfile businessProfile, BusinessBranch businessBranch)
         {
-            await InsertAsync(businessProfile);
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await InsertAsync(businessProfile);
+
+                await _branchRepository.CreateBranchAsync(businessBranch);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest)

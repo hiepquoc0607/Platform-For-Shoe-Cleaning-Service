@@ -12,6 +12,8 @@ namespace TP4SCS.Services.Interfaces
 
         Task<int> GetBranchMaxIdAsync();
 
+        Task<ApiResponse<BranchResponse>> CreateBranchByOwnerIdAsync(int id, CreateBranchRequest createBranchRequest);
+
         Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest);
 
         Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest);

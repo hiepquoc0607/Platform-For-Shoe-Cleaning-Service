@@ -22,7 +22,7 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<bool> IsPhoneExistedAsync(string phone);
 
-        Task CreateBusinessProfileAsync(BusinessProfile businessProfile);
+        Task CreateBusinessProfileAsync(BusinessProfile businessProfile, BusinessBranch businessBranch);
 
         Task UpdateBusinessProfileAsync(BusinessProfile businessProfile);
     }
