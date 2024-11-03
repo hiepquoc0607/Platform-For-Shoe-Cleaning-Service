@@ -4,6 +4,12 @@ using System.Linq;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.BranchService;
+using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Promotion;
+using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -53,7 +59,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Giá giảm phải bé hơn giá gốc.");
             }
-            if(serviceRequest.AssetUrls == null)
+            if (serviceRequest.AssetUrls == null)
             {
                 throw new ArgumentException("Hình ảnh không được để trống.");
             }
@@ -248,7 +254,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
-            if (existingService == null )
+            if (existingService == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy dịch vụ nào.");
             }
@@ -378,6 +384,51 @@ namespace TP4SCS.Services.Implements
             return finalPrice;
         }
 
+        public async Task<ApiResponse<IEnumerable<ServiceResponse>?>> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBusinessServiceRequest)
+        {
+            var (services, pagination) = await _serviceRepository.GetServiceByBusinessIdAsync(getBusinessServiceRequest);
 
+            if (services == null)
+            {
+                return new ApiResponse<IEnumerable<ServiceResponse>?>("error", 404, "Doanh Nghiệp Chưa Có Dịch Vụ!");
+            }
+
+            var data = services.Select(s =>
+            {
+                var res = _mapper.Map<ServiceResponse>(s);
+                res.Status = Util.TranslateGeneralStatus(s.Status);
+
+                if (s.Promotion != null)
+                {
+                    var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
+                    promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
+                    res.Promotion = promotionRes;
+                }
+
+                if (s.AssetUrls != null && s.AssetUrls.Any())
+                {
+                    var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
+                    res.AssetUrls = assetRes;
+                }
+
+                if (s.BranchServices != null && s.BranchServices.Any())
+                {
+                    var branchServiceResponses = s.BranchServices.Select(bs =>
+                    {
+                        var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
+
+                        branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
+
+                        return branchServiceResponse;
+                    }).ToList();
+
+                    res.BranchServices = branchServiceResponses;
+                }
+
+                return res;
+            });
+
+            return new ApiResponse<IEnumerable<ServiceResponse>?>("success", "Lấy Dữ Liệu Dịch Vụ Thành Công!", data, pagination);
+        }
     }
 }

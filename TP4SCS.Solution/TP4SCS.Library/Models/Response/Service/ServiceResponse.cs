@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Response.AssetUrl;
-using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.Promotion;

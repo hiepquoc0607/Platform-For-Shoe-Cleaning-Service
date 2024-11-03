@@ -63,11 +63,8 @@ namespace TP4SCS.Repository.Implements
                 }
 
                 //Paging
-                if (getAccountRequest.PageNum > 0 && getAccountRequest.PageSize > 0)
-                {
-                    int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
-                    accounts = accounts.Skip(skipNum).Take(getAccountRequest.PageSize);
-                }
+                int skipNum = (getAccountRequest.PageNum - 1) * getAccountRequest.PageSize;
+                accounts = accounts.Skip(skipNum).Take(getAccountRequest.PageSize);
 
                 return await accounts.Select(a => new Account
                 {

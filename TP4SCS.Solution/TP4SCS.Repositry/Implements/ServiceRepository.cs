@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
@@ -191,6 +194,75 @@ namespace TP4SCS.Repository.Implements
             }
 
             await UpdateAsync(service);
+        }
+
+        public async Task<(IEnumerable<Service>?, Pagination)> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBranchServiceRequest)
+        {
+            int[] branchIds = await _dbContext.BusinessBranches
+                .AsNoTracking()
+                .Where(b => b.BusinessId == getBranchServiceRequest.BusinessId)
+                .Select(b => b.Id)
+                .ToArrayAsync();
+
+            var services = _dbContext.Services
+                .Include(s => s.BranchServices)
+                .ThenInclude(s => s.Branch)
+                .Where(bs => branchIds.Contains(bs.Id))
+                .Include(s => s.Category)
+                .Include(s => s.Promotion)
+                .Include(s => s.AssetUrls)
+                .OrderBy(s => s.OrderedNum)
+                .ThenBy(s => s.CreateTime)
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getBranchServiceRequest.SearchKey))
+            {
+                string searchKey = getBranchServiceRequest.SearchKey;
+                services = services.Where(s => EF.Functions.Like(s.Name, $"%{searchKey}%"));
+            }
+
+            //Category Sort
+            if (!string.IsNullOrEmpty(getBranchServiceRequest.Category))
+            {
+                string cateKey = getBranchServiceRequest.Category;
+                services = services
+                    .Where(s => EF.Functions
+                    .Collate(s.Category.Name, "SQL_Latin1_General_CP1_CI_AI")
+                    .Contains(cateKey));
+            }
+
+            //Order Sort
+            if (!string.IsNullOrEmpty(getBranchServiceRequest.SortBy))
+            {
+                services = getBranchServiceRequest.SortBy.ToUpper() switch
+                {
+                    "NAME" => getBranchServiceRequest.IsDecsending
+                                ? services.OrderByDescending(s => s.Name)
+                                : services.OrderBy(s => s.Name),
+                    "PRICE" => getBranchServiceRequest.IsDecsending
+                                  ? services.OrderByDescending(s => s.Price)
+                                  : services.OrderBy(s => s.Price),
+                    "CREATE" => getBranchServiceRequest.IsDecsending
+                                  ? services.OrderByDescending(s => s.CreateTime)
+                                  : services.OrderBy(s => s.CreateTime),
+                    _ => services
+                };
+            }
+
+            //Paging
+            int skipNum = (getBranchServiceRequest.PageNum - 1) * getBranchServiceRequest.PageSize;
+            services = services.Skip(skipNum).Take(getBranchServiceRequest.PageSize);
+
+            //Paging Data Calulation
+            var data = services;
+            var result = await services.ToListAsync();
+            int totalData = await data.AsNoTracking().CountAsync();
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getBranchServiceRequest.PageSize);
+
+            var paging = new Pagination(totalData, getBranchServiceRequest.PageSize, getBranchServiceRequest.PageNum, totalPage);
+
+            return (result, paging);
         }
     }
 }

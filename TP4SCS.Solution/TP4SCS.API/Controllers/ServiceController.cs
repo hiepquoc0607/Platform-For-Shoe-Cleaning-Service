@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -252,6 +251,19 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<ServiceResponse>(ex.Message, null));
             }
+        }
+
+        [HttpGet("business")]
+        public async Task<IActionResult> GetServiceByBusinessId([FromQuery] GetBusinessServiceRequest getBusinessServiceRequest)
+        {
+            var result = await _serviceService.GetServiceByBusinessIdAsync(getBusinessServiceRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
         }
     }
 }
