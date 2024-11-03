@@ -4,7 +4,7 @@ using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Services.Interfaces
 {
-    public interface IBranchService
+    public interface IBusinessBranchService
     {
         Task<ApiResponse<IEnumerable<BranchResponse>?>> GetBranchesByBusinessIdAsync(int id);
 
