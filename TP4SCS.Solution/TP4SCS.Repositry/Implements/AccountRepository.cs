@@ -89,12 +89,10 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
-
         public async Task<Account?> GetAccountLoginByEmailAsync(string email)
         {
             try
             {
-
                 return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).AsNoTracking().SingleOrDefaultAsync();
             }
             catch (Exception)
