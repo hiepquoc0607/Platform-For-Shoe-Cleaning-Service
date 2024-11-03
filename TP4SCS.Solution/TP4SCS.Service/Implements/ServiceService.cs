@@ -32,7 +32,7 @@ namespace TP4SCS.Services.Implements
             _assetUrlService = assetUrlService;
         }
 
-        public async Task AddServiceAsync(ServiceCreateRequest serviceRequest)
+        public async Task AddServiceAsync(ServiceCreateRequest serviceRequest, int businessId)
         {
             if (serviceRequest == null)
             {
@@ -93,7 +93,7 @@ namespace TP4SCS.Services.Implements
                 service.Promotion = null;
             }
 
-            await _serviceRepository.AddServiceAsync(serviceRequest.BranchId, serviceRequest.BusinessId, service);
+            await _serviceRepository.AddServiceAsync(serviceRequest.BranchId, businessId, service);
         }
 
 

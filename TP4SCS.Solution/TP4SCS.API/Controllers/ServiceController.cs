@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.BranchService;
+using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
@@ -27,28 +31,57 @@ namespace TP4SCS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _serviceService.GetServicesAsync(pagedRequest.Keyword,
+            var services = await _serviceService.GetServicesAsync(
+                pagedRequest.Keyword,
                 pagedRequest.Status,
-                pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
-            var totalCount = await _serviceService.GetTotalServiceCountAsync(pagedRequest.Keyword,
-                pagedRequest.Status);
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize,
+                pagedRequest.OrderBy
+            );
+
+            var totalCount = await _serviceService.GetTotalServiceCountAsync(
+                pagedRequest.Keyword,
+                pagedRequest.Status
+            );
 
             var pagedResponse = new PagedResponse<ServiceResponse>(
                 services?.Select(s =>
                 {
+                    // Ánh xạ Service sang ServiceResponse
                     var res = _mapper.Map<ServiceResponse>(s);
                     res.Status = Util.TranslateGeneralStatus(s.Status);
+
+                    // Ánh xạ Promotion nếu có
                     if (s.Promotion != null)
                     {
                         var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
                         promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
                         res.Promotion = promotionRes;
                     }
+
+                    // Ánh xạ AssetUrls nếu có
                     if (s.AssetUrls != null && s.AssetUrls.Any())
                     {
                         var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
                         res.AssetUrls = assetRes;
                     }
+
+                    // Ánh xạ BranchServices và các Branch bên trong
+                    if (s.BranchServices != null && s.BranchServices.Any())
+                    {
+                        var branchServiceResponses = s.BranchServices.Select(bs =>
+                        {
+                            var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
+
+                            // Ánh xạ Branch trong BranchServiceResponse
+                            branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
+
+                            return branchServiceResponse;
+                        }).ToList();
+
+                        res.BranchServices = branchServiceResponses;
+                    }
+
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
@@ -58,6 +91,8 @@ namespace TP4SCS.API.Controllers
 
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
         }
+
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceByIdAync(int id)
@@ -69,14 +104,47 @@ namespace TP4SCS.API.Controllers
                 {
                     return NotFound(new ResponseObject<ServiceResponse>($"Dịch vụ với ID {id} không tìm thấy.", null));
                 }
+
+                // Ánh xạ Service sang ServiceResponse
                 var response = _mapper.Map<ServiceResponse>(service);
-                response.Promotion = _mapper.Map<PromotionResponse>(response.Promotion);
+
+                // Ánh xạ Category
+                response.Category = _mapper.Map<ServiceCategoryResponse>(service.Category);
+
+                // Ánh xạ Promotion
+                if (service.Promotion != null)
+                {
+                    var promotionRes = _mapper.Map<PromotionResponse>(service.Promotion);
+                    promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
+                    response.Promotion = promotionRes;
+                }
+
+                // Ánh xạ AssetUrls
                 if (response.AssetUrls != null && response.AssetUrls.Any())
                 {
                     var assetRes = _mapper.Map<List<AssetUrlResponse>>(response.AssetUrls);
                     response.AssetUrls = assetRes;
                 }
+
+                // Ánh xạ BranchServices và Branch bên trong
+                if (service.BranchServices != null && service.BranchServices.Any())
+                {
+                    var branchServiceResponses = service.BranchServices.Select(bs =>
+                    {
+                        var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
+
+                        // Ánh xạ Branch trong BranchServiceResponse
+                        branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
+
+                        return branchServiceResponse;
+                    }).ToList();
+
+                    response.BranchServices = branchServiceResponses;
+                }
+
+                // Dịch trạng thái
                 response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng thái null";
+
                 return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
             }
             catch (Exception ex)
@@ -84,6 +152,7 @@ namespace TP4SCS.API.Controllers
                 return NotFound(new ResponseObject<string>(ex.Message));
             }
         }
+
 
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedServicesAsync()
@@ -106,7 +175,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateServiceAync([FromBody] ServiceCreateRequest request)
+        public async Task<IActionResult> CreateServiceAsync([FromBody] ServiceCreateRequest request)
         {
             try
             {
@@ -114,8 +183,16 @@ namespace TP4SCS.API.Controllers
                 {
                     throw new ArgumentException("Trạng thái của dịch vụ không hợp lệ.", nameof(request.Status));
                 }
+
+                // Đặt trạng thái lên chữ hoa
                 request.Status = request.Status.ToUpper();
-                await _serviceService.AddServiceAsync(request);
+
+                if (!HttpContext.Request.Headers.TryGetValue("X-Business-ID", out var businessIdValue) || !int.TryParse(businessIdValue, out var businessId))
+                {
+                    return BadRequest(new ResponseObject<ServiceCreateResponse>("Business ID không hợp lệ hoặc không tìm thấy trong header."));
+                }
+
+                await _serviceService.AddServiceAsync(request, businessId);
                 return Ok(new ResponseObject<string>("Tạo dịch vụ thành công"));
             }
             catch (ArgumentNullException ex)

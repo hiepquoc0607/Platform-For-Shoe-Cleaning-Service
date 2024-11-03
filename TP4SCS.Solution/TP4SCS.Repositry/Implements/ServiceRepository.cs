@@ -88,50 +88,53 @@ namespace TP4SCS.Repository.Implements
                 .Include(s => s.Promotion)
                 .Include(s => s.AssetUrls)
                 .Include(s => s.BranchServices)
+                .ThenInclude(bs => bs.Branch) // Bao gồm Branch trong BranchServices
+                .Include(s => s.Category)
                 .SingleOrDefaultAsync(s => s.Id == id);
         }
 
 
-        public Task<IEnumerable<Service>?> GetServicesAsync(
+        public async Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
+            // Xây dựng bộ lọc
             Expression<Func<Service, bool>> filter = s =>
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
-            // Sort based on OrderByEnum
+            // Sắp xếp theo OrderByEnum
             Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
             {
                 OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
                 _ => q.OrderBy(c => c.Id)
             };
 
-            // Check for pagination
+            // Bắt đầu truy vấn với bộ lọc và sắp xếp
+            var query = _dbSet.Where(filter);
+
+            // Bao gồm các thuộc tính liên quan
+            query = query
+                .Include(s => s.Promotion)
+                .Include(s => s.AssetUrls)
+                .Include(s => s.Category)
+                .Include(s => s.BranchServices) // Bao gồm BranchServices
+                    .ThenInclude(bs => bs.Branch); // Bao gồm Branch trong BranchServices
+
+            // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
             {
-                // Fetch paginated services
-                return GetAsync(
-                    filter: filter,
-                    includeProperties: "Promotion,AssetUrls,BranchServices",
-                    orderBy: orderByExpression,
-                    pageIndex: pageIndex.Value,
-                    pageSize: pageSize.Value
-                );
+                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value - 1 : 0;
+                int validPageSize = pageSize.Value > 0 ? pageSize.Value : 10;
+
+                query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
             }
 
-            // Fetch all services without pagination
-            return GetAsync(
-                filter: filter,
-                includeProperties: "Promotion,AssetUrls,BranchServices",
-                orderBy: orderByExpression
-            );
+            return await query.ToListAsync();
         }
-
-
 
         public async Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null)
         {

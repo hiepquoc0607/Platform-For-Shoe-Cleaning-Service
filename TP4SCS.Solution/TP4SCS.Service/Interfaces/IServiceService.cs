@@ -14,7 +14,7 @@ namespace TP4SCS.Services.Interfaces
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<IEnumerable<Service>?> GetDiscountedServicesAsync();
-        Task AddServiceAsync(ServiceCreateRequest service);
+        Task AddServiceAsync(ServiceCreateRequest service, int businessId);
         Task DeleteServiceAsync(int id);
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);

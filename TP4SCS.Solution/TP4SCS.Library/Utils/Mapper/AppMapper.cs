@@ -8,6 +8,7 @@ using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
@@ -51,6 +52,8 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<AssetUrlRequest, AssetUrl>();
             //BranchService Mapping
             CreateMap<BranchService, BranchServiceResponse>();
+            //BusinessBranch Mapping
+            CreateMap<BusinessBranch, BranchResponse>();
         }
 
         public void Register(TypeAdapterConfig config)
