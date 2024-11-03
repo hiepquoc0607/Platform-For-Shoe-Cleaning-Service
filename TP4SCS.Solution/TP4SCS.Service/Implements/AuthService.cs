@@ -18,14 +18,18 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IConfiguration _configuration;
         private readonly IAccountRepository _accountRepository;
+        private readonly IBusinessRepository _businessRepository;
+        private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;
         private readonly Util _util;
         private static readonly DateTime _time = DateTime.Now.AddDays(1);
 
-        public AuthService(IConfiguration configuration, IAccountRepository accountRepository, IMapper mapper, Util util)
+        public AuthService(IConfiguration configuration, IAccountRepository accountRepository, IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
         {
             _configuration = configuration;
             _accountRepository = accountRepository;
+            _businessRepository = businessRepository;
+            _branchRepository = branchRepository;
             _mapper = mapper;
             _util = util;
         }
@@ -88,6 +92,16 @@ namespace TP4SCS.Services.Implements
             var data = _mapper.Map<AuthResponse>(account);
             data.Token = token;
             data.ExpiresIn = expiredIn;
+
+            if (data.Role.Equals("OWNER", StringComparison.OrdinalIgnoreCase))
+            {
+                data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+            }
+
+            if (data.Role.Equals("EMPLOYEE", StringComparison.OrdinalIgnoreCase))
+            {
+                data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+            }
 
             return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
         }

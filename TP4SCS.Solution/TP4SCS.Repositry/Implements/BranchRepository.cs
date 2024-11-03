@@ -40,6 +40,15 @@ namespace TP4SCS.Repository.Implements
                 .ToArrayAsync();
         }
 
+        public async Task<int?> GetBranchIdByEmployeeIdAsync(int id)
+        {
+            return await _dbContext.BusinessBranches
+                .AsNoTracking()
+                .Where(b => EF.Functions.Like(b.EmployeeIds, $"%{id.ToString()}%"))
+                .Select(b => b.Id)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<int> GetBranchMaxIdAsync()
         {
             return await _dbContext.BusinessBranches.AsNoTracking().MaxAsync(b => b.Id);

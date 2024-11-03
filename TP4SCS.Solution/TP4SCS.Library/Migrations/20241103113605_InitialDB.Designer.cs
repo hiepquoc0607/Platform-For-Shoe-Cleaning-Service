@@ -12,7 +12,7 @@ using TP4SCS.Library.Models.Data;
 namespace TP4SCS.Library.Migrations
 {
     [DbContext(typeof(Tp4scsDevDatabaseContext))]
-    [Migration("20241102111145_InitialDB")]
+    [Migration("20241103113605_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
@@ -32,6 +32,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CreatedByOwnerId")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("Dob")
                         .HasColumnType("date");
