@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -50,8 +51,24 @@ namespace TP4SCS.Services.Implements
             //return orders.Where(o => o.OrderDetails.Any(od => od.Service.BranchId == branchId));
             return orders;
         }
+        public async Task ApprovedOrder(int orderId)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
 
-        public async Task UpdateOrderStatus(int existingOrderedId, string newStatus)
+            if (order == null)
+            {
+                throw new InvalidOperationException($"Đơn hàng với ID {orderId} không tồn tại.");
+            }
+
+            if (!Util.IsEqual(order.Status, StatusConstants.PENDING))
+            {
+                throw new InvalidOperationException($"Đơn hàng với ID {orderId} không ở trạng thái chờ duyệt.");
+            }
+
+            await UpdateOrderStatusAsync(orderId, StatusConstants.APPROVED);
+        }
+
+        public async Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus)
         {
             if (!Util.IsValidOrderStatus(newStatus))
             {
@@ -65,7 +82,7 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderedId}");
             }
 
-            order.Status = newStatus;
+            order.Status = newStatus.ToUpper();
 
             await _orderRepository.UpdateOrderAsync(order);
         }

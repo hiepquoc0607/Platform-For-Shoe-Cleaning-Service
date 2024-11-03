@@ -18,5 +18,7 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
+        Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus);
+        Task ApprovedOrder(int orderId);
     }
 }

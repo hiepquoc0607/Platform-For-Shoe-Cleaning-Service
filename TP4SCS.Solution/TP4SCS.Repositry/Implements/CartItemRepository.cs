@@ -24,14 +24,14 @@ namespace TP4SCS.Repository.Implements
             {
                 cart = await _cartRepository.CreateCartAsync(userId);
             }
-            var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId);
+            var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId ==item.BranchId);
             if (existingItem != null)
             {
                 existingItem.Quantity += item.Quantity;
             }
             else
             {
-                var service = await _serviceRepository.GetServiceByIdAsync((int)item.ServiceId);
+                var service = await _serviceRepository.GetServiceByIdAsync(item.ServiceId!.Value);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");

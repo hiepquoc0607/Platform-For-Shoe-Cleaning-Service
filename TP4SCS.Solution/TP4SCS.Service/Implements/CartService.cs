@@ -52,67 +52,68 @@ namespace TP4SCS.Services.Implements
 
             foreach (var item in cart.CartItems)
             {
-                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync((int)item.ServiceId);
+                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
 
                 totalPrice += servicePrice * item.Quantity;
             }
 
             return totalPrice;
         }
-        //public async Task CheckoutAsync(CheckoutRequest request)
-        //{
-        //    var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
-        //    var groupedItems = cartItems
-        //        .GroupBy(item => item.Service.BranchId)
-        //        .Select(group => new
-        //        {
-        //            BranchId = group.Key,
-        //            Items = group.ToList()
-        //        });
+        public async Task CheckoutAsync(CheckoutRequest request)
+        {
+            var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
+            var groupedItems = cartItems
+                .GroupBy(item => item.BranchId)
+                .Select(group => new
+                {
+                    BranchId = group.Key,
+                    Items = group.ToList()
+                });
 
-        //    var orders = new List<Order>();
+            var orders = new List<Order>();
 
-        //    foreach (var group in groupedItems)
-        //    {
-        //        var order = new Order
-        //        {
-        //            AccountId = request.AccountId,
-        //            AddressId = request.AddressId,
-        //            CreateTime = DateTime.UtcNow,
-        //            IsAutoReject = request.IsAutoReject,
-        //            Note = request.Note,
-        //            Status = StatusConstants.PENDING,
-        //            ShippingUnit = request.ShippingUnit,
-        //            ShippingCode = request.ShippingCode,
-        //            DeliveredFee = request.DeliveredFee,
-        //            OrderDetails = new List<OrderDetail>()
-        //        };
+            foreach (var group in groupedItems)
+            {
+                var order = new Order
+                {
+                    AccountId = request.AccountId,
+                    AddressId = request.AddressId,
+                    CreateTime = DateTime.UtcNow,
+                    IsAutoReject = request.IsAutoReject,
+                    Note = request.Note,
+                    Status = StatusConstants.PENDING,
+                    ShippingUnit = request.ShippingUnit,
+                    ShippingCode = request.ShippingCode,
+                    DeliveredFee = request.DeliveredFee,
+                    OrderDetails = new List<OrderDetail>()
+                };
 
-        //        decimal orderPrice = 0;
+                decimal orderPrice = 0;
 
-        //        foreach (var item in group.Items)
-        //        {
-        //            var finalPrice = await _serviceService.GetServiceFinalPriceAsync((int)item.ServiceId);
+                foreach (var item in group.Items)
+                {
+                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
 
-        //            order.OrderDetails.Add(new OrderDetail
-        //            {
-        //                ServiceId = item.ServiceId,
-        //                Quantity = item.Quantity,
-        //                Price = finalPrice,
-        //                Status = StatusConstants.PENDING
-        //            });
+                    order.OrderDetails.Add(new OrderDetail
+                    {
+                        BranchId = item.BranchId,
+                        ServiceId = item.ServiceId,
+                        Quantity = item.Quantity,
+                        Price = finalPrice,
+                        Status = StatusConstants.PENDING
+                    });
 
-        //            orderPrice += finalPrice * item.Quantity;
-        //        }
+                    orderPrice += finalPrice * item.Quantity;
+                }
 
-        //        order.OrderPrice = orderPrice;
-        //        order.TotalPrice = orderPrice + request.DeliveredFee;
-        //        orders.Add(order);
-        //    }
+                order.OrderPrice = orderPrice;
+                order.TotalPrice = orderPrice + request.DeliveredFee;
+                orders.Add(order);
+            }
 
-        //    await _orderRepository.AddOrdersAsync(orders);
-        //    await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
-        //}
+            await _orderRepository.AddOrdersAsync(orders);
+            await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
+        }
 
 
 

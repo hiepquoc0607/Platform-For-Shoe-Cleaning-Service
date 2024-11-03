@@ -25,14 +25,19 @@ namespace TP4SCS.API.Controllers
         public async Task<IActionResult> GetCartItems(int id)
         {
             var items = await _cartItemService.GetCartItemsAsync(id);
-            var itemsReponse = items.Adapt<List<CartItemResponse>>();
-            foreach (var item in itemsReponse)
+
+            var itemsResponse = items.Adapt<List<CartItemResponse>>();
+
+            foreach (var item in itemsResponse)
             {
-                item.Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+                var service = await _serviceService.GetServiceByIdAsync(item.ServiceId);
+                item.ServiceName = service!.Name;
+                item.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
             }
-            return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully",
-                itemsReponse));
+            return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
         }
+
+
 
 
         [HttpGet]
@@ -44,10 +49,17 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {id} không tìm thấy.", null));
             }
+
             var itemResponse = item.Adapt<CartItemResponse>();
-            itemResponse.Price = await _serviceService.GetServiceFinalPriceAsync(itemResponse.ServiceId);
+
+
+            var service = await _serviceService.GetServiceByIdAsync(itemResponse.ServiceId);
+            itemResponse.ServiceName = service!.Name;
+            itemResponse.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
+
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
+
         //[HttpGet]
         //[Route("api/cartitems/total")]
         //public async Task<IActionResult> CalculateCartItemsTotal([FromQuery] List<int> itemIds)
