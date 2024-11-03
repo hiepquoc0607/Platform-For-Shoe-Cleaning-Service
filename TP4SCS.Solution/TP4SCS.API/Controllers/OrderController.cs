@@ -3,6 +3,7 @@ using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Services.Interfaces;
 using Mapster;
+using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.API.Controllers
 {
@@ -69,5 +70,33 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, $"Lỗi khi gửi email: {ex.Message}");
             }
         }
+        [HttpPost("id")]
+        public async Task<IActionResult> Approved(int id, string toEmail)
+        {
+            try
+            {
+                // Cập nhật trạng thái đơn hàng
+                await _orderService.ApprovedOrder(id);
+
+                // Thiết lập subject và body cho email
+                string subject = "Đơn hàng đã được duyệt!";
+                string body = $"Chào bạn,\n\n" +
+                              $"Đơn hàng #{id} của bạn đã được duyệt thành công.\n" +
+                              "Cảm ơn bạn đã chọn dịch vụ của chúng tôi.\n\n" +
+                              "Trân trọng,\n" +
+                              "Đội ngũ hỗ trợ khách hàng";
+
+                // Gửi email
+                await _emailService.SendEmailAsync(toEmail, subject, body);
+
+                // Trả về thông báo thành công dưới dạng JSON
+                return Ok(new { message = "Đơn hàng đã được duyệt thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Lỗi khi gửi email: {ex.Message}" });
+            }
+        }
+
     }
 }

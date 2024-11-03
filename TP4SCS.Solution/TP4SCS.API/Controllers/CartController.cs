@@ -20,56 +20,54 @@ namespace TP4SCS.API.Controllers
             _serviceService = serviceService;
         }
 
-        //[HttpGet]
-        //[Route("api/user/{id}/cart")]
-        //public async Task<IActionResult> GetCartByUserIdAsync(int id)
-        //{
-        //    try
-        //    {
-        //        var cart = await _cartService.GetCartByUserIdAsync(id);
-        //        if (cart == null)
-        //        {
-        //            await _cartService.CreateCartAsync(id);
-        //            cart = await _cartService.GetCartByUserIdAsync(id);
-        //        }
-        //        var cartResponse = cart.Adapt<CartResponse>();
-        //        cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
+        [HttpGet]
+        [Route("api/user/{id}/cart")]
+        public async Task<IActionResult> GetCartByUserIdAsync(int id)
+        {
+            try
+            {
+                var cart = await _cartService.GetCartByUserIdAsync(id);
+                if (cart == null)
+                {
+                    await _cartService.CreateCartAsync(id);
+                    cart = await _cartService.GetCartByUserIdAsync(id);
+                }
 
-        //        if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
-        //        {
-        //            foreach (var cartItem in cartResponse.CartItems)
-        //            {
-        //                cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
-        //            }
-        //            var itemsWithBranchId = new List<(CartItemResponse Item, int? BranchId)>();
-        //            foreach (var cartItem in cartResponse.CartItems)
-        //            {
-        //                var service = await _serviceService.GetServiceByIdAsync(cartItem.ServiceId);
-        //                itemsWithBranchId.Add((cartItem, service?.BranchId));
-        //            }
-        //            var groupedCartItems = itemsWithBranchId
-        //                .GroupBy(x => x.BranchId)
-        //                .Select(group => new
-        //                {
-        //                    BranchId = group.Key,
-        //                    Items = group.Select(x => x.Item).ToList()
-        //                })
-        //                .ToList();
+                var cartResponse = cart.Adapt<CartResponse>();
+                cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
 
-        //            return Ok(new ResponseObject<IEnumerable<dynamic>>("Fetch success", groupedCartItems));
-        //        }
+                if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
+                {
+                    foreach (var cartItem in cartResponse.CartItems)
+                    {
+                        var service = await _serviceService.GetServiceByIdAsync(cartItem.ServiceId);
+                        cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
+                        cartItem.ServiceName = service!.Name;
+                        cartItem.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == cartItem.BranchId)!.Status;
+                    }
+                    var groupedCartItems = cartResponse.CartItems
+                        .GroupBy(item => item.BranchId)
+                        .Select(group => new
+                        {
+                            BranchId = group.Key,
+                            Items = group.ToList()
+                        })
+                        .ToList();
 
-        //        return Ok(new ResponseObject<CartResponse>("Fetch success", cartResponse));
-        //    }
-        //    catch (KeyNotFoundException ex)
-        //    {
-        //        return NotFound($"Lỗi: {ex.Message}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Đã xảy ra lỗi trong quá trình xử lý yêu cầu: {ex.Message}");
-        //    }
-        //}
+                    return Ok(new ResponseObject<IEnumerable<dynamic>>("Fetch success", groupedCartItems));
+                }
+
+                return Ok(new ResponseObject<CartResponse>("Fetch success", cartResponse));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound($"Lỗi: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi trong quá trình xử lý yêu cầu: {ex.Message}");
+            }
+        }
 
 
         //[HttpGet]
@@ -79,25 +77,25 @@ namespace TP4SCS.API.Controllers
         //    var total = await _cartService.GetCartTotalAsync(id);
         //    return Ok(new { Total = total });
         //}
-        //[HttpPost("api/carts/cart/checkout")]
-        //public async Task<IActionResult> CheckoutAsync([FromBody] CheckoutRequest request)
-        //{
-        //    if (request == null || request.CartItemIds == null || request.CartItemIds.Length == 0)
-        //    {
-        //        return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp ID sản phẩm trong giỏ hàng và ID tài khoản hợp lệ.");
-        //    }
+        [HttpPost("api/carts/cart/checkout")]
+        public async Task<IActionResult> CheckoutAsync([FromBody] CheckoutRequest request)
+        {
+            if (request == null || request.CartItemIds == null || request.CartItemIds.Length == 0)
+            {
+                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp ID sản phẩm trong giỏ hàng và ID tài khoản hợp lệ.");
+            }
 
-        //    try
-        //    {
-        //        await _cartService.CheckoutAsync(request);
-        //        return Ok("Thanh toán thành công.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Bạn có thể ghi log lỗi ở đây
-        //        return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
-        //    }
-        //}
+            try
+            {
+                await _cartService.CheckoutAsync(request);
+                return Ok("Thanh toán thành công.");
+            }
+            catch (Exception ex)
+            {
+                // Bạn có thể ghi log lỗi ở đây
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+            }
+        }
 
 
         //[HttpPost]
