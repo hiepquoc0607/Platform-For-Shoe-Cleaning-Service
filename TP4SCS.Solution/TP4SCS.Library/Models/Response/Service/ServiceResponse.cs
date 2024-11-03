@@ -30,7 +30,7 @@ namespace TP4SCS.Library.Models.Response.Service
 
         public PromotionResponse? Promotion { get; set; }
 
-        public List<AssetUrlResponse>? AssetUrl { get; set; }
+        public List<AssetUrlResponse>? AssetUrls { get; set; }
         public List<BranchServiceResponse> BranchServices { get; set; } = new List<BranchServiceResponse>();
     }
 }
