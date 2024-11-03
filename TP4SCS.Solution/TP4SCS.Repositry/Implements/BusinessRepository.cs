@@ -86,14 +86,15 @@ namespace TP4SCS.Repository.Implements
                 };
             }
 
+            //Count Total Data
+            int totalData = await businesses.AsNoTracking().CountAsync();
+
             //Paging
             int skipNum = (getBusinessRequest.PageNum - 1) * getBusinessRequest.PageSize;
             businesses = businesses.Skip(skipNum).Take(getBusinessRequest.PageSize);
 
             //Paging Data Calulation
-            var data = businesses;
             var result = await businesses.ToListAsync();
-            int totalData = await data.AsNoTracking().CountAsync();
             int totalPage = (int)Math.Ceiling((decimal)totalData / getBusinessRequest.PageSize);
 
             var paging = new Pagination(totalData, getBusinessRequest.PageSize, getBusinessRequest.PageNum, totalPage);

@@ -204,13 +204,24 @@ namespace TP4SCS.Repository.Implements
                 .Select(b => b.Id)
                 .ToArrayAsync();
 
+            //var services = _dbContext.Services
+            //    .Include(s => s.BranchServices)
+            //    .ThenInclude(s => s.Branch)
+            //    .Where(bs => branchIds.Contains(bs.Id))
+            //    .Include(s => s.Category)
+            //    .Include(s => s.Promotion)
+            //    .Include(s => s.AssetUrls)
+            //    .OrderBy(s => s.OrderedNum)
+            //    .ThenBy(s => s.CreateTime)
+            //    .AsQueryable();
+
             var services = _dbContext.Services
-                .Include(s => s.BranchServices)
-                .ThenInclude(s => s.Branch)
-                .Where(bs => branchIds.Contains(bs.Id))
                 .Include(s => s.Category)
                 .Include(s => s.Promotion)
                 .Include(s => s.AssetUrls)
+                .Include(s => s.BranchServices)
+                    .ThenInclude(bs => bs.Branch)
+                .Where(s => s.BranchServices.Any(b => branchIds.Contains(b.BranchId)))
                 .OrderBy(s => s.OrderedNum)
                 .ThenBy(s => s.CreateTime)
                 .AsQueryable();
@@ -250,14 +261,15 @@ namespace TP4SCS.Repository.Implements
                 };
             }
 
+            //Count Total Data
+            int totalData = await services.AsNoTracking().CountAsync();
+
             //Paging
             int skipNum = (getBranchServiceRequest.PageNum - 1) * getBranchServiceRequest.PageSize;
             services = services.Skip(skipNum).Take(getBranchServiceRequest.PageSize);
 
             //Paging Data Calulation
-            var data = services;
             var result = await services.ToListAsync();
-            int totalData = await data.AsNoTracking().CountAsync();
             int totalPage = (int)Math.Ceiling((decimal)totalData / getBranchServiceRequest.PageSize);
 
             var paging = new Pagination(totalData, getBranchServiceRequest.PageSize, getBranchServiceRequest.PageNum, totalPage);
