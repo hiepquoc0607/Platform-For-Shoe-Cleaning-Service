@@ -110,12 +110,15 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsNameExistedAsync(string name)
         {
-            return await _dbContext.BusinessProfiles.AnyAsync(b => string.Equals(b.Name, name, StringComparison.OrdinalIgnoreCase));
+            return await _dbContext.BusinessProfiles
+                .AnyAsync(b => EF.Functions
+                .Collate(b.Name, "SQL_Latin1_General_CP1_CI_AI")
+                .Contains(name));
         }
 
         public async Task<bool> IsPhoneExistedAsync(string phone)
         {
-            return await _dbContext.BusinessProfiles.AnyAsync(b => string.Equals(b.Phone, phone, StringComparison.OrdinalIgnoreCase));
+            return await _dbContext.BusinessProfiles.AnyAsync(b => b.Phone.Equals(phone));
         }
 
         public async Task UpdateBusinessProfileAsync(BusinessProfile businessProfile)

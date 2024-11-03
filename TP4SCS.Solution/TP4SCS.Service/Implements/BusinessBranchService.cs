@@ -32,7 +32,7 @@ namespace TP4SCS.Services.Implements
             return Array.Exists(idArray, id => id == branchId);
         }
 
-        //Create Branch
+        //Create Branch By Onwer Id
         public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest)
         {
             var businessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(id);

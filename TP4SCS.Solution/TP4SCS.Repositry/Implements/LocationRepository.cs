@@ -42,7 +42,9 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.Locations
                 .AsNoTracking()
-                .Where(w => EF.Functions.Collate(w.City, "SQL_Latin1_General_CP1_CI_AI").Contains(name))
+                .Where(w => EF.Functions
+                .Collate(w.City, "SQL_Latin1_General_CP1_CI_AI")
+                .Contains(name))
                 .Select(w => new Location
                 {
                     Ward = w.Ward

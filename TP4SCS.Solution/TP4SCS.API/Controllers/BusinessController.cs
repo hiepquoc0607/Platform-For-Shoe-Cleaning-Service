@@ -1,102 +1,104 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using System.Security.Claims;
-//using TP4SCS.Library.Models.Request.Business;
-//using TP4SCS.Library.Models.Request.BusinessProfile;
-//using TP4SCS.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using TP4SCS.Library.Models.Request.Business;
+using TP4SCS.Library.Models.Request.BusinessProfile;
+using TP4SCS.Services.Interfaces;
 
-//namespace TP4SCS.API.Controllers
-//{
-//    [ApiController]
-//    public class BusinessController : ControllerBase
-//    {
-//        private readonly IBusinessService _businessService;
+namespace TP4SCS.API.Controllers
+{
+    [ApiController]
+    public class BusinessController : ControllerBase
+    {
+        private readonly IBusinessService _businessService;
 
-//        public BusinessController(IBusinessService businessService)
-//        {
-//            _businessService = businessService;
-//        }
+        public BusinessController(IBusinessService businessService)
+        {
+            _businessService = businessService;
+        }
 
-//        [HttpGet]
-//        [Route("api/businesses")]
-//        public async Task<IActionResult> GetBusinessProfilesAsync([FromQuery] GetBusinessRequest getBusinessRequest)
-//        {
-//            var result = await _businessService.GetBusinessesProfilesAsync(getBusinessRequest);
+        [HttpGet]
+        [Route("api/businesses")]
+        public async Task<IActionResult> GetBusinessProfilesAsync([FromQuery] GetBusinessRequest getBusinessRequest)
+        {
+            var result = await _businessService.GetBusinessesProfilesAsync(getBusinessRequest);
 
-//            if (result.StatusCode != 200)
-//            {
-//                return StatusCode(result.StatusCode, result);
-//            }
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-//            return Ok(result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpGet]
-//        [Route("api/businesses/{id}", Name = "GetBusinessProfileById")]
-//        public async Task<IActionResult> GetBusinessProfileByIdAsync([FromRoute] int id)
-//        {
-//            var result = await _businessService.GetBusinessProfileByIdAsync(id);
+        [HttpGet]
+        [Route("api/businesses/{id}", Name = "GetBusinessProfileById")]
+        public async Task<IActionResult> GetBusinessProfileByIdAsync([FromRoute] int id)
+        {
+            var result = await _businessService.GetBusinessProfileByIdAsync(id);
 
-//            if (result.StatusCode != 200)
-//            {
-//                return StatusCode(result.StatusCode, result);
-//            }
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-//            return Ok(result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPost]
-//        [Route("api/busineses")]
-//        public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] CreateBusinessRequest createBusinessRequest)
-//        {
-//            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        [HttpPost]
+        [Route("api/busineses")]
+        public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] CreateBusinessRequest createBusinessRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-//            var userId = int.TryParse(userIdClaim, out int id);
+            var userId = int.TryParse(userIdClaim, out int id);
 
-//            var result = await _businessService.CreateBusinessProfileAsync(id, createBusinessRequest);
+            var result = await _businessService.CreateBusinessProfileAsync(id, createBusinessRequest);
 
-//            if (result.StatusCode != 200 || result.Data == null)
-//            {
-//                return StatusCode(result.StatusCode, result);
-//            }
+            if (result.StatusCode != 200 || result.Data == null)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-//            return CreatedAtAction("GetBusinessProfileById", new { id = result.Data.Id }, result.Data);
-//        }
+            return CreatedAtAction("GetBusinessProfileById", new { id = result.Data.Id }, result.Data);
+        }
 
-//        [HttpPost]
-//        [Route("api/busineses/{id}")]
-//        public async Task<IActionResult> UpdateBusinessProfileAsync([FromRoute] int id, [FromBody] UpdateBusinessRequest updateBusinessRequest)
-//        {
-//            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        [HttpPut]
+        [Route("api/businesses/{id}")]
+        public async Task<IActionResult> UpdateBusinessProfileAsync([FromRoute] int id, [FromBody] UpdateBusinessRequest updateBusinessRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-//            var userId = int.TryParse(userIdClaim, out int ownerId);
+            var userId = int.TryParse(userIdClaim, out int ownerId);
 
-//            if (!await _businessService.CheckOwnerOfBusiness(ownerId, id))
-//            {
-//                Forbid();
-//            }
+            if (!await _businessService.CheckOwnerOfBusiness(ownerId, id))
+            {
+                Forbid();
+            }
 
-//            var result = await _businessService.UpdateBusinessProfileAsync(id, updateBusinessRequest);
+            var result = await _businessService.UpdateBusinessProfileAsync(id, updateBusinessRequest);
 
-//            if (result.StatusCode != 200)
-//            {
-//                return StatusCode(result.StatusCode, result);
-//            }
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-//            return Ok(result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPost]
-//        [Route("api/admin/businesses/{id}")]
-//        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync(int id, [FromBody] UpdateBusinessStatusRequest updateBusinessStatusRequest)
-//        {
-//            var result = await _businessService.UpdateBusinessStatusForAdminAsync(id, updateBusinessStatusRequest);
+        [Authorize(Policy = "Admin")]
+        [HttpPut]
+        [Route("api/admin/businesses/{id}")]
+        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync(int id, [FromBody] UpdateBusinessStatusRequest updateBusinessStatusRequest)
+        {
+            var result = await _businessService.UpdateBusinessStatusForAdminAsync(id, updateBusinessStatusRequest);
 
-//            if (result.StatusCode != 200)
-//            {
-//                return StatusCode(result.StatusCode, result);
-//            }
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-//            return Ok(result);
-//        }
-//    }
-//}
+            return Ok(result);
+        }
+    }
+}
