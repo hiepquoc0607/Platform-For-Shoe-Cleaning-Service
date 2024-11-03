@@ -26,6 +26,8 @@ public partial class Account
 
     public string? Fcmtoken { get; set; }
 
+    public int? CreatedByOwnerId { get; set; }
+
     public string Role { get; set; } = null!;
 
     public string Status { get; set; } = null!;

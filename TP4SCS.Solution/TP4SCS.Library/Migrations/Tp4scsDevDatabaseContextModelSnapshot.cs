@@ -30,6 +30,9 @@ namespace TP4SCS.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CreatedByOwnerId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("Dob")
                         .HasColumnType("date");
 

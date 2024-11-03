@@ -1,8 +1,19 @@
-﻿namespace TP4SCS.Library.Models.Response.Auth
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Response.Auth
 {
     public class AuthResponse
     {
         public int Id { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [DefaultValue(null)]
+        public int? BusinessId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [DefaultValue(null)]
+        public int? BranchId { get; set; }
 
         public string Email { get; set; } = string.Empty;
 

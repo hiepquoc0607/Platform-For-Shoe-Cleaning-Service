@@ -147,11 +147,7 @@ builder.Services.AddAuthorization(options =>
 //Config CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "MyAllowSpecificOrigins",
-                      policy =>
-                      {
-                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                      });
+    options.AddPolicy(name: "MyAllowSpecificOrigins", policy => { policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 });
 
 //Config Model State Error Response
@@ -169,7 +165,7 @@ builder.Services.AddControllers()
             {
                 status = "error",
                 statusCode = "400",
-                message = "Đã xảy ra lỗi xác thực!",
+                message = "Input Validation Erorr!",
                 errors = errors
             };
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -27,6 +28,7 @@ namespace TP4SCS.Library.Migrations
                     IsVerified = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     FCMToken = table.Column<string>(type: "text", nullable: true),
+                    CreatedByOwnerId = table.Column<int>(type: "int", nullable: true),
                     Role = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },

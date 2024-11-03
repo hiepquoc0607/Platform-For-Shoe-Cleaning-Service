@@ -10,6 +10,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<BusinessBranch?> GetBranchByIdAsync(int id);
 
+        Task<int?> GetBranchIdByEmployeeIdAsync(int id);
+
         Task<int> GetBranchMaxIdAsync();
 
         Task<int> CountBranchDataByBusinessIdAsync(int id);
