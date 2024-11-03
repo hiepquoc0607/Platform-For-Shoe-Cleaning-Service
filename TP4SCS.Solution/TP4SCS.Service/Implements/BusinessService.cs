@@ -42,21 +42,17 @@ namespace TP4SCS.Services.Implements
         //Create Business
         public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, CreateBusinessRequest createBusinessRequest)
         {
-            var businessData = createBusinessRequest.BusinessObject;
+            var businessData = createBusinessRequest.CreateBusiness;
+            var branchData = createBusinessRequest.CreateBranch;
 
-
-            var isNameExistedTask = _businessRepository.IsNameExistedAsync(businessData.Name);
-            var isPhoneExistedTask = _businessRepository.IsPhoneExistedAsync(businessData.Phone);
-
-            await Task.WhenAll(isNameExistedTask, isPhoneExistedTask);
-
-            var isNameExisted = await isNameExistedTask;
-            var isPhoneExisted = await isPhoneExistedTask;
+            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
 
             if (isNameExisted)
             {
                 return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
             }
+
+            var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
 
             if (isPhoneExisted)
             {
@@ -71,11 +67,10 @@ namespace TP4SCS.Services.Implements
                 await _businessRepository.CreateBusinessProfileAsync(newBusiness);
 
                 var newId = await _businessRepository.GetBusinessProfileMaxIdAsync();
+
+                //await _branchService.CreateBranchAsync(newId, newBranch);
+
                 var newBsn = await GetBusinessProfileByIdAsync(newId);
-
-                var createBranchRequest = createBusinessRequest.CreateBranch;
-
-                await _branchService.CreateBranchAsync(id, createBranchRequest);
 
                 return new ApiResponse<BusinessResponse>("success", "Tạo Doanh Nghiệp Thành Công!", newBsn.Data);
             }

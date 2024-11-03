@@ -39,7 +39,7 @@ namespace TP4SCS.Services.Implements
             return (int)(dateTime - DateTime.Now).TotalSeconds;
         }
 
-        private async Task<string> GenerateToken(Account account)
+        private string GenerateToken(Account account)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -48,28 +48,11 @@ namespace TP4SCS.Services.Implements
                 new Claim(ClaimTypes.Role, account.Role),
             };
 
-            if (account.Role.Equals("OWNER", StringComparison.OrdinalIgnoreCase))
-            {
-                var businessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
-                if (businessId.HasValue)
-                {
-                    claims.Add(new Claim("BusinessId", businessId.Value.ToString()));
-                }
-            }
-
-            if (account.Role.Equals("EMPLOYEE", StringComparison.OrdinalIgnoreCase))
-            {
-                var branchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
-                if (branchId.HasValue)
-                {
-                    claims.Add(new Claim("BranchId", branchId.Value.ToString()));
-                }
-            }
-
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Key").Value!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
+            var token = new JwtSecurityToken
+            (
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
@@ -103,7 +86,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 401, "Mật Khẩu Không Đúng!");
             }
 
-            var token = await GenerateToken(account);
+            var token = GenerateToken(account);
             var expiredIn = CaculateSeccond(_time);
 
             var data = _mapper.Map<AuthResponse>(account);

@@ -92,7 +92,7 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Policy = "Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpPut]
         [Route("api/branches/{id}/employee")]
         public async Task<IActionResult> UpdateBranchEmployeeAsync([FromRoute] int id, [FromBody] UpdateBranchEmployeeRequest updateBranchEmployeeRequest)
@@ -101,10 +101,10 @@ namespace TP4SCS.API.Controllers
 
             var userId = int.TryParse(userIdClaim, out int ownerId);
 
-            //if (!await _branchService.CheckOwnerOfBranch(ownerId, id))
-            //{
-            //    return Forbid();
-            //}
+            if (!await _branchService.CheckOwnerOfBranch(ownerId, id))
+            {
+                return Forbid();
+            }
 
             var result = await _branchService.UpdateBranchEmployeeAsync(id, updateBranchEmployeeRequest);
 
