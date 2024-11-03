@@ -47,7 +47,7 @@ namespace TP4SCS.API.Controllers
                     if (s.AssetUrls != null && s.AssetUrls.Any())
                     {
                         var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
-                        res.AssetUrl = assetRes;
+                        res.AssetUrls = assetRes;
                     }
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
@@ -71,6 +71,11 @@ namespace TP4SCS.API.Controllers
                 }
                 var response = _mapper.Map<ServiceResponse>(service);
                 response.Promotion = _mapper.Map<PromotionResponse>(response.Promotion);
+                if (response.AssetUrls != null && response.AssetUrls.Any())
+                {
+                    var assetRes = _mapper.Map<List<AssetUrlResponse>>(response.AssetUrls);
+                    response.AssetUrls = assetRes;
+                }
                 response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng thái null";
                 return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
             }
