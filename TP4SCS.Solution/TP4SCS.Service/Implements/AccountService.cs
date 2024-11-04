@@ -167,7 +167,6 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map(updateAccountRequest, oldAccount);
-            newAccount.PasswordHash = _util.HashPassword(newAccount.PasswordHash);
 
             try
             {
