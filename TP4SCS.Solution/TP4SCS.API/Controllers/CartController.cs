@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
-using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -13,11 +13,12 @@ namespace TP4SCS.API.Controllers
     {
         private readonly ICartService _cartService;
         private readonly IServiceService _serviceService;
-
-        public CartController(ICartService cartService, IServiceService serviceService)
+        private readonly HttpClient _httpClient;
+        public CartController(ICartService cartService, IServiceService serviceService, IHttpClientFactory httpClientFactory)
         {
             _cartService = cartService;
             _serviceService = serviceService;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         [HttpGet]

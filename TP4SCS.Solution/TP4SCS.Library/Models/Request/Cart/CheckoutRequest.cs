@@ -15,10 +15,6 @@ namespace TP4SCS.Library.Models.Request.Cart
 
         public string? Note { get; set; }
 
-        public decimal DeliveredFee { get; set; }
-
-        public string? ShippingUnit { get; set; }
-
-        public string? ShippingCode { get; set; }
+        public bool IsShip { get; set; } = false;
     }
 }
