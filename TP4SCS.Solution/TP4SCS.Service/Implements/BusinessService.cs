@@ -224,5 +224,10 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Gói Doanh Nghiệp Thất Bại!");
             }
         }
+
+        public async Task<int?> GetBusinessIdByOwnerId(int id)
+        {
+            return await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
+        }
     }
 }
