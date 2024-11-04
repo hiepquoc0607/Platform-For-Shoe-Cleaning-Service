@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
@@ -20,11 +21,13 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
+        private readonly IBusinessService _businessService;
 
-        public ServiceController(IMapper mapper, IServiceService serviceService)
+        public ServiceController(IMapper mapper, IServiceService serviceService, IBusinessService businessService)
         {
             _mapper = mapper;
             _serviceService = serviceService;
+            _businessService = businessService;
         }
 
         [HttpGet]
@@ -186,12 +189,15 @@ namespace TP4SCS.API.Controllers
                 // Đặt trạng thái lên chữ hoa
                 request.Status = request.Status.ToUpper();
 
-                if (!HttpContext.Request.Headers.TryGetValue("X-Business-ID", out var businessIdValue) || !int.TryParse(businessIdValue, out var businessId))
-                {
-                    return BadRequest(new ResponseObject<ServiceCreateResponse>("Business ID không hợp lệ hoặc không tìm thấy trong header."));
-                }
+                string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = int.TryParse(userIdClaim, out int ownerId);
+                var businessId = await _businessService.GetBusinessIdByOwnerId(ownerId);
 
-                await _serviceService.AddServiceAsync(request, businessId);
+                if (businessId == null)
+                {
+                    throw new ArgumentException("Account này không phải Owner.", nameof(request.Status));
+                }
+                await _serviceService.AddServiceAsync(request, businessId.Value);
                 return Ok(new ResponseObject<string>("Tạo dịch vụ thành công"));
             }
             catch (ArgumentNullException ex)

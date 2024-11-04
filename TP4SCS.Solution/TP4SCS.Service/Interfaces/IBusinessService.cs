@@ -24,5 +24,6 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<BusinessResponse>> UpdateBusinessSubscriptionAsync(int id, UpdateBusinessSubcriptionRequest updateBusinessSubcriptionRequest);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest);
+        Task<int?> GetBusinessIdByOwnerId(int id);
     }
 }
