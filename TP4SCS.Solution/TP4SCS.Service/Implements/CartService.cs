@@ -82,9 +82,9 @@ namespace TP4SCS.Services.Implements
                     IsAutoReject = request.IsAutoReject,
                     Note = request.Note,
                     Status = StatusConstants.PENDING,
-                    ShippingUnit = request.ShippingUnit,
-                    ShippingCode = request.ShippingCode,
-                    DeliveredFee = request.DeliveredFee,
+                    ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
+                    ShippingCode = request.IsShip ? "" : null,
+                    DeliveredFee = request.IsShip ? 1 : 0,
                     OrderDetails = new List<OrderDetail>()
                 };
 
@@ -107,28 +107,12 @@ namespace TP4SCS.Services.Implements
                 }
 
                 order.OrderPrice = orderPrice;
-                order.TotalPrice = orderPrice + request.DeliveredFee;
+                order.TotalPrice = orderPrice + 0;
                 orders.Add(order);
             }
 
             await _orderRepository.AddOrdersAsync(orders);
             await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
         }
-
-
-
-        //public async Task UpdateCartAsync(Cart cart, int existingCartId)
-        //{
-        //    if (cart == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(cart), "Giỏ hàng không được để trống.");
-        //    }
-        //    var existingCart = await _cartRepository.GetCartByIdAsync(existingCartId);
-        //    if (existingCart == null)
-        //    {
-        //        throw new KeyNotFoundException($"Giỏ hàng với ID {existingCartId} không tìm thấy.");
-        //    }
-        //    await _cartRepository.UpdateCartAsync(cart);
-        //}
     }
 }
