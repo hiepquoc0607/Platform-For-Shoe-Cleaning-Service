@@ -99,7 +99,7 @@ namespace TP4SCS.API.Controllers
 
         [HttpGet]
         [Route("branches/{id}")]
-        public async Task<IActionResult> GetServicesByBranchIdAync(int id,[FromQuery] PagedRequest pagedRequest)
+        public async Task<IActionResult> GetServicesByBranchIdAync(int id, [FromQuery] PagedRequest pagedRequest)
         {
             var services = await _serviceService.GetServicesByBranchIdAsync(
                 id,
@@ -252,8 +252,6 @@ namespace TP4SCS.API.Controllers
                 {
                     throw new ArgumentException("Trạng thái của dịch vụ không hợp lệ.", nameof(request.Status));
                 }
-
-                // Đặt trạng thái lên chữ hoa
                 request.Status = request.Status.ToUpper();
 
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -262,7 +260,7 @@ namespace TP4SCS.API.Controllers
                 var account = await _accountService.GetAccountByIdAsync(id);
                 if (account.Data == null || !Util.IsEqual(account.Data.Role, "OWNER"))
                 {
-                    throw new ArgumentException("Account không hợp lệ.", nameof(request.Status));
+                    throw new ArgumentException("Account không hợp lệ.");
                 }
 
                 var businessId = await _businessService.GetBusinessIdByOwnerId(id);
