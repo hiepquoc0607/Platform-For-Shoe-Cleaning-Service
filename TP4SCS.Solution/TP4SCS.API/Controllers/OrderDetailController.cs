@@ -62,15 +62,13 @@ namespace TP4SCS.API.Controllers
 
         [HttpPost]
         [Route("api/orderdetails")]
-        public async Task<IActionResult> AddOrderDetailsAsync([FromBody] List<OrderDetailRequest> request)
+        public async Task<IActionResult> AddOrderDetailsAsync([FromBody] OrderDetailCreateRequest request)
         {
             try
             {
-                var orderDetails = request.Adapt<List<OrderDetail>>();
-                await _orderDetailService.AddOrderDetailsAsync(orderDetails);
-
-                var response = orderDetails.Adapt<IEnumerable<OrderDetailResponse>>();
-                return Ok(new ResponseObject<IEnumerable<OrderDetailResponse>>("Thêm chi tiết đơn hàng thành công.", response));
+                var orderDetail = request.Adapt<OrderDetail>();
+                await _orderDetailService.AddOrderDetailAsync(orderDetail);
+                return Ok(new ResponseObject<string>("Thêm chi tiết đơn hàng thành công."));
             }
             catch (InvalidOperationException ex)
             {
@@ -88,16 +86,18 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                var orderDetail = request.Adapt<OrderDetail>();
-                await _orderDetailService.UpdateOrderDetailAsync(orderDetail, id);
+                await _orderDetailService.UpdateOrderDetailAsync(request, id);
 
                 var updatedOrderDetail = await _orderDetailService.GetOrderDetailByIdAsync(id);
-                var response = updatedOrderDetail.Adapt<OrderDetailResponse>();
-                return Ok(new ResponseObject<OrderDetailResponse>("Cập nhật chi tiết đơn hàng thành công.", response));
+                return Ok(new ResponseObject<string>("Cập nhật chi tiết đơn hàng thành công."));
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new ResponseObject<string>(ex.Message));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi hợp lệ: {ex.Message}"));
             }
             catch (ArgumentNullException ex)
             {
@@ -117,6 +117,14 @@ namespace TP4SCS.API.Controllers
             {
                 await _orderDetailService.DeleteOrderDetailAsync(id);
                 return Ok(new ResponseObject<string>("Xóa chi tiết đơn hàng thành công."));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>(ex.Message));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi hợp lệ: {ex.Message}"));
             }
             catch (Exception ex)
             {

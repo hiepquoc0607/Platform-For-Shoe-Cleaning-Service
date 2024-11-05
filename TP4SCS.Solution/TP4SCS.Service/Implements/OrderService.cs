@@ -48,8 +48,19 @@ namespace TP4SCS.Services.Implements
             {
                 return Enumerable.Empty<Order>();
             }
-            //return orders.Where(o => o.OrderDetails.Any(od => od.Service.BranchId == branchId));
-            return orders;
+            return orders.Where(o => o.OrderDetails.Any(od => od.BranchId == branchId));
+        }
+        public async Task<IEnumerable<Order>?> GetOrdersByBusinessIdAsync(
+            int businessId,
+            string? status = null,
+            OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc)
+        {
+            var orders = await GetOrdersAsync(status, null, null, orderBy);
+            if (orders == null)
+            {
+                return Enumerable.Empty<Order>();
+            }
+            return orders.Where(o => o.OrderDetails.Any(od => od.Branch.BusinessId == businessId));
         }
         public async Task ApprovedOrder(int orderId)
         {

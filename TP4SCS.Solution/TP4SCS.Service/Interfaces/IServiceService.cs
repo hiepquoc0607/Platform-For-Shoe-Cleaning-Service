@@ -29,13 +29,13 @@ namespace TP4SCS.Services.Interfaces
 
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);
 
-        //Task<Service?> GetServicesByNameAndBranchIdAsync(string name, int branchId);
-        //Task<(IEnumerable<Service> Services, int TotalCount)> GetServicesGroupByNameAsync(
-        //    int? pageIndex = null,
-        //    int? pageSize = null,
-        //    OrderByEnum orderBy = OrderByEnum.IdAsc);
-        //Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(int branchId);
-        //Task UpdateServiceStatusAsync(String status, int existingServiceId);
+        Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(
+            int branchId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc);
 
         Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId);
 

@@ -20,5 +20,8 @@
         public const string SHIPPING = "SHIPPING";
         public const string FINISHED = "FINISHED";
         public const string ABANDONED = "ABANDONED";
+        //ORDER DETAIL STATUS
+        public const string RECEIVED = "RECEIVED";
+        public const string DONE = "DONE";
     }
 }
