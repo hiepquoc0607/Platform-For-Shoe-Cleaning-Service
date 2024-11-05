@@ -12,6 +12,8 @@ public partial class AssetUrl
 
     public int? MaterialId { get; set; }
 
+    public int? TicketId { get; set; }
+
     public string Url { get; set; } = null!;
 
     public bool IsImage { get; set; }
@@ -25,4 +27,6 @@ public partial class AssetUrl
     public virtual Material? Material { get; set; }
 
     public virtual Service? Service { get; set; }
+
+    public virtual SupportTicket? Ticket { get; set; }
 }
