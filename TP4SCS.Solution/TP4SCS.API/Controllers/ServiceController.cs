@@ -258,7 +258,8 @@ namespace TP4SCS.API.Controllers
                 int.TryParse(userIdClaim, out int id);
 
                 var account = await _accountService.GetAccountByIdAsync(id);
-                if (account.Data == null || !Util.IsEqual(account.Data.Role, "OWNER"))
+                if (account.Data == null ||
+                    !(Util.IsEqual(account.Data.Role, "OWNER") || Util.IsEqual(account.Data.Role, "Chủ cung cấp")))
                 {
                     throw new ArgumentException("Account không hợp lệ.");
                 }
