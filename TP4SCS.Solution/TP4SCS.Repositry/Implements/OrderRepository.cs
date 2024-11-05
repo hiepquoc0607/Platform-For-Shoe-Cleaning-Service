@@ -52,6 +52,7 @@ namespace TP4SCS.Repository.Implements
 
             // Bao gồm các thuộc tính liên quan
             query = query
+                    .Include(o => o.Account)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch);
 
