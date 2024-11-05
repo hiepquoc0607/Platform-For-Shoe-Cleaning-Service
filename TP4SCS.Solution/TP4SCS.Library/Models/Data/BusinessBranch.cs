@@ -12,9 +12,9 @@ public partial class BusinessBranch
 
     public string Ward { get; set; } = null!;
 
-    public string Province { get; set; } = null!;
+    public string District { get; set; } = null!;
 
-    public string City { get; set; } = null!;
+    public string Province { get; set; } = null!;
 
     public string? EmployeeIds { get; set; }
 

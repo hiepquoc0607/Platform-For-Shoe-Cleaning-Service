@@ -24,6 +24,8 @@ public partial class Account
 
     public string? RefreshToken { get; set; }
 
+    public DateTime? RefreshExpireTime { get; set; }
+
     public string? Fcmtoken { get; set; }
 
     public int? CreatedByOwnerId { get; set; }

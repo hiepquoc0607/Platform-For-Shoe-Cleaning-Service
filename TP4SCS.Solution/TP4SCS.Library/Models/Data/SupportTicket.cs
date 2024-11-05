@@ -6,7 +6,7 @@ public partial class SupportTicket
 
     public int UserId { get; set; }
 
-    public int ModeratorId { get; set; }
+    public int? ModeratorId { get; set; }
 
     public int CategoryId { get; set; }
 
@@ -24,9 +24,11 @@ public partial class SupportTicket
 
     public string Status { get; set; } = null!;
 
+    public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
+
     public virtual TicketCategory Category { get; set; } = null!;
 
-    public virtual Account Moderator { get; set; } = null!;
+    public virtual Account? Moderator { get; set; }
 
     public virtual Order? Order { get; set; }
 
