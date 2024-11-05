@@ -6,49 +6,69 @@ namespace TP4SCS.API.Controllers
     [ApiController]
     public class LocationController : ControllerBase
     {
-        private readonly ILocationService _locationService;
+        private readonly IShipService _shipService;
+        private readonly HttpClient _httpClient;
 
-        public LocationController(ILocationService locationService)
+        public LocationController(IShipService shipService, IHttpClientFactory httpClientFactory)
         {
-            _locationService = locationService;
+            _shipService = shipService;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         [HttpGet]
-        [Route("api/locations/cities")]
-        public async Task<IActionResult> GetCitiesAsync()
+        [Route("api/locations/provinces")]
+        public async Task<IActionResult> GetProvincesAsync()
         {
-            var result = await _locationService.GetCityAsync();
+            var result = await _shipService.GetProvincesAsync(_httpClient);
 
-            if (result.StatusCode != 200)
+            if (result == null)
             {
-                return StatusCode(result.StatusCode, result);
+                return NotFound(new
+                {
+                    status = "error",
+                    statusCode = 404,
+                    message = "Không Tìm Thấy Dữ Liệu Tỉnh!"
+                });
             }
+
             return Ok(result);
         }
 
         [HttpGet]
-        [Route("api/locations/{cityName}/wards")]
-        public async Task<IActionResult> GetWardsByCityAsync([FromRoute] string cityName)
+        [Route("api/locations/{provinceId}/districts")]
+        public async Task<IActionResult> GetDistrictsByProvinceIdAsync([FromRoute] int provinceId)
         {
-            var result = await _locationService.GetWardByCityAsync(cityName);
+            var result = await _shipService.GetDistrictsAsync(_httpClient, provinceId);
 
-            if (result.StatusCode != 200)
+            if (result == null)
             {
-                return StatusCode(result.StatusCode, result);
+                return NotFound(new
+                {
+                    status = "error",
+                    statusCode = 404,
+                    message = "Không Tìm Thấy Dữ Liệu Quận!"
+                });
             }
+
             return Ok(result);
         }
 
         [HttpGet]
-        [Route("api/locations/{wardName}/provinces")]
-        public async Task<IActionResult> GetProvincesByWardAsync([FromRoute] string wardName)
+        [Route("api/locations/{districtId}/wards")]
+        public async Task<IActionResult> GetWardsByDistrictIdAsync([FromRoute] int districtId)
         {
-            var result = await _locationService.GetProviceByWardAsync(wardName);
+            var result = await _shipService.GetWardsAsync(_httpClient, districtId);
 
-            if (result.StatusCode != 200)
+            if (result == null)
             {
-                return StatusCode(result.StatusCode, result);
+                return NotFound(new
+                {
+                    status = "error",
+                    statusCode = 404,
+                    message = "Không Tìm Thấy Dữ Liệu Phường!"
+                });
             }
+
             return Ok(result);
         }
     }
