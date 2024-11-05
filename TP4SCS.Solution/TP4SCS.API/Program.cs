@@ -85,6 +85,7 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IAssetUrlRepository, AssetUrlRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -104,6 +105,7 @@ builder.Services.AddScoped<IAssetUrlService, AssetUrlService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IShipService, ShipService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
 //Register Firebase
 
