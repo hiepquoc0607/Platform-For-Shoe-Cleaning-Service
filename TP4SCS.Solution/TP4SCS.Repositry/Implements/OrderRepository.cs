@@ -68,10 +68,6 @@ namespace TP4SCS.Repository.Implements
             return await query.ToListAsync();
         }
 
-
-
-
-
         public async Task UpdateOrderAsync(Order order)
         {
             await UpdateAsync(order);
