@@ -25,7 +25,13 @@ namespace TP4SCS.Library.Models.Response.Account
         public string? RefreshToken { get; set; } = null;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public DateTime? RefreshExpireTime { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Fcmtoken { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? CreatedByOwnerId { get; set; }
 
         public string Role { get; set; } = null!;
 

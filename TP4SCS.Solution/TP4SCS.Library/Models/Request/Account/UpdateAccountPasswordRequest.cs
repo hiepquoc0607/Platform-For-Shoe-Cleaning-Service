@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Account
 {
@@ -12,6 +11,7 @@ namespace TP4SCS.Library.Models.Request.Account
         public string NewPassword { get; set; } = string.Empty;
 
         [Required]
+        [Compare("NewPassword")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
