@@ -22,7 +22,7 @@ namespace TP4SCS.Services.Implements
         private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;
         private readonly Util _util;
-        private static readonly DateTime _time = DateTime.Now.AddDays(1);
+        private static readonly DateTime _time = DateTime.Now.AddHours(1);
 
         public AuthService(IConfiguration configuration, IAccountRepository accountRepository, IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
         {
@@ -63,6 +63,10 @@ namespace TP4SCS.Services.Implements
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        private string GenerateRefreshToken()
+        {
+            return Guid.NewGuid().ToString();
+        }
 
         //Login
         public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest)
@@ -87,7 +91,11 @@ namespace TP4SCS.Services.Implements
             }
 
             var token = GenerateToken(account);
+            var refreshToken = GenerateRefreshToken();
             var expiredIn = CaculateSeccond(_time);
+
+            account.RefreshToken = token;
+            account.RefreshExpireTime = DateTime.UtcNow.AddDays(1);
 
             var data = _mapper.Map<AuthResponse>(account);
             data.Token = token;
@@ -103,7 +111,16 @@ namespace TP4SCS.Services.Implements
                 data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
             }
 
-            return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
+            }
         }
 
         //Reset Password
@@ -147,6 +164,53 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Đặt Lại Mật Khẩu Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(refeshToken.AccountId);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Không Tìm Thấy Tài Khoản!");
+            }
+
+            if (account.RefreshExpireTime == null || account.RefreshExpireTime <= DateTime.Now)
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Hết Phiên Đăng Nhập!");
+            }
+
+            var token = GenerateToken(account);
+            var newRefreshToken = GenerateRefreshToken();
+            var expiredIn = CaculateSeccond(_time);
+
+            account.RefreshToken = token;
+            account.RefreshExpireTime = DateTime.UtcNow.AddDays(1);
+
+            var data = _mapper.Map<AuthResponse>(account);
+            data.Token = token;
+            data.ExpiresIn = expiredIn;
+
+            if (data.Role.Equals("OWNER", StringComparison.OrdinalIgnoreCase))
+            {
+                data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+            }
+
+            if (data.Role.Equals("EMPLOYEE", StringComparison.OrdinalIgnoreCase))
+            {
+                data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+            }
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Tạo Mới Refresh Token Thành Công!", data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Tạo Mới Refresh Token Thất Bại!");
             }
         }
     }

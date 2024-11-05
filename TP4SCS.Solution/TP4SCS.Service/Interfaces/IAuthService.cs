@@ -8,6 +8,8 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
+        Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken);
+
         Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     }
 }

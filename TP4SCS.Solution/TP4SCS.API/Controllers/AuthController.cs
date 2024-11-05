@@ -28,6 +28,19 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshToken refreshToken)
+        {
+            var result = await _authService.RefreshTokenAsync(refreshToken);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
         //[HttpPost("register")]
         //public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest)
         //{

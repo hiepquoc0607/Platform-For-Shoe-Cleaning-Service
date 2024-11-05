@@ -29,13 +29,14 @@ namespace TP4SCS.Library.Models.Response.Auth
 
         public string? RefreshToken { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Fcmtoken { get; set; }
 
         public string Role { get; set; } = string.Empty;
 
-        public int ExpiresIn { get; set; }
-
         public string Token { get; set; } = string.Empty;
+
+        public int ExpiresIn { get; set; }
 
     }
 }

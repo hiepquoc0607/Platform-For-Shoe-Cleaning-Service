@@ -178,17 +178,11 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thất Bại!");
             }
-
         }
 
         //Update Account Password
         public async Task<ApiResponse<AccountResponse>> UpdateAccountPasswordAsync(int id, UpdateAccountPasswordRequest updateAccountPasswordRequest)
         {
-            if (!updateAccountPasswordRequest.NewPassword.Equals(updateAccountPasswordRequest.ConfirmPassword))
-            {
-                return new ApiResponse<AccountResponse>("error", 400, "Mật Khẩu Không Trùng!");
-            }
-
             var oldAccount = await _accountRepository.GetAccountByIdAsync(id);
 
             if (oldAccount == null)
@@ -216,7 +210,6 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Đổi Mật Khẩu Thất Bại!");
             }
-
         }
 
         //Update Account Status For Admin
