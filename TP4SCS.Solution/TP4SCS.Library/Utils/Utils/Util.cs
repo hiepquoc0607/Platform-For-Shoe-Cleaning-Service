@@ -65,20 +65,20 @@ namespace TP4SCS.Library.Utils.Utils
 
         public static string TranslateGeneralStatus(string? status)
         {
-            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
             var lowerStatus = status.ToLower();
             return lowerStatus switch
             {
                 "unavailable" => "Ngưng Hoạt Động",
                 "available" => "Hoạt Động",
-                _ => "Trạng Thái Null"
+                _ => "Trạng Thái Không Hợp Lệ"
             };
         }
 
         public static string TranslateOrderStatus(string? status)
         {
-            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
             var lowerStatus = status.ToLower();
             return lowerStatus switch
@@ -91,13 +91,13 @@ namespace TP4SCS.Library.Utils.Utils
                 "shipping" => "Đang giao hàng",
                 "finished" => "Hoàn thành",
                 "abandoned" => "Quá hạn nhận hàng",
-                _ => "Trạng Thái Null"
+                _ => "Trạng Thái Không Hợp Lệ"
             };
         }
 
         public static string TranslateOrderDetailStatus(string? status)
         {
-            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
             var lowerStatus = status.ToLower();
             return lowerStatus switch
@@ -106,7 +106,7 @@ namespace TP4SCS.Library.Utils.Utils
                 "received" => "Đã nhận",
                 "processing" => "Đang xử lý",
                 "done" => "Hoàn thành",
-                _ => "Trạng Thái Null"
+                _ => "Trạng Thái Không Hợp Lệ"
             };
         }
 
