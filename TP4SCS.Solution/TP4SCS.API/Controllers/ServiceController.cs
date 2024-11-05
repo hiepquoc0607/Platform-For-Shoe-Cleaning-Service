@@ -22,12 +22,15 @@ namespace TP4SCS.API.Controllers
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
         private readonly IBusinessService _businessService;
+        private readonly IAccountService _accountService;
 
-        public ServiceController(IMapper mapper, IServiceService serviceService, IBusinessService businessService)
+        public ServiceController(IMapper mapper, IServiceService serviceService, IBusinessService businessService,
+            IAccountService accountService)
         {
             _mapper = mapper;
             _serviceService = serviceService;
             _businessService = businessService;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -94,7 +97,71 @@ namespace TP4SCS.API.Controllers
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
         }
 
+        [HttpGet]
+        [Route("branches/{id}")]
+        public async Task<IActionResult> GetServicesByBranchIdAync(int id,[FromQuery] PagedRequest pagedRequest)
+        {
+            var services = await _serviceService.GetServicesByBranchIdAsync(
+                id,
+                pagedRequest.Keyword,
+                pagedRequest.Status,
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize,
+                pagedRequest.OrderBy
+            );
 
+            var totalCount = await _serviceService.GetTotalServiceCountAsync(
+                pagedRequest.Keyword,
+                pagedRequest.Status
+            );
+
+            var pagedResponse = new PagedResponse<ServiceResponse>(
+                services?.Select(s =>
+                {
+                    // Ánh xạ Service sang ServiceResponse
+                    var res = _mapper.Map<ServiceResponse>(s);
+                    res.Status = Util.TranslateGeneralStatus(s.Status);
+
+                    // Ánh xạ Promotion nếu có
+                    if (s.Promotion != null)
+                    {
+                        var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
+                        promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
+                        res.Promotion = promotionRes;
+                    }
+
+                    // Ánh xạ AssetUrls nếu có
+                    if (s.AssetUrls != null && s.AssetUrls.Any())
+                    {
+                        var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
+                        res.AssetUrls = assetRes;
+                    }
+
+                    // Ánh xạ BranchServices và các Branch bên trong
+                    if (s.BranchServices != null && s.BranchServices.Any())
+                    {
+                        var branchServiceResponses = s.BranchServices.Select(bs =>
+                        {
+                            var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
+
+                            // Ánh xạ Branch trong BranchServiceResponse
+                            branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
+
+                            return branchServiceResponse;
+                        }).ToList();
+
+                        res.BranchServices = branchServiceResponses;
+                    }
+
+                    return res;
+                }) ?? Enumerable.Empty<ServiceResponse>(),
+                totalCount,
+                pagedRequest.PageIndex,
+                pagedRequest.PageSize
+            );
+
+            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceByIdAync(int id)
@@ -190,13 +257,21 @@ namespace TP4SCS.API.Controllers
                 request.Status = request.Status.ToUpper();
 
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userId = int.TryParse(userIdClaim, out int ownerId);
-                var businessId = await _businessService.GetBusinessIdByOwnerId(ownerId);
+                int.TryParse(userIdClaim, out int id);
+
+                var account = await _accountService.GetAccountByIdAsync(id);
+                if (account.Data == null || !Util.IsEqual(account.Data.Role, "OWNER"))
+                {
+                    throw new ArgumentException("Account không hợp lệ.", nameof(request.Status));
+                }
+
+                var businessId = await _businessService.GetBusinessIdByOwnerId(id);
 
                 if (businessId == null)
                 {
-                    throw new ArgumentException("Account này không phải Owner.", nameof(request.Status));
+                    throw new ArgumentException("Account này chưa có doanh nghiệp nào.", nameof(request.Status));
                 }
+
                 await _serviceService.AddServiceAsync(request, businessId.Value);
                 return Ok(new ResponseObject<string>("Tạo dịch vụ thành công"));
             }

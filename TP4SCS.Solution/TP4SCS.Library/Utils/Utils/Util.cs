@@ -1,14 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
 using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils.Utils
 {
     public class Util
     {
-        public Util()
-        {
-        }
+        public Util() { }
 
+        // Password-related methods
         public string CheckPasswordErrorType(string password)
         {
             bool hasDigit = false;
@@ -37,16 +36,6 @@ namespace TP4SCS.Library.Utils.Utils
             return "None";
         }
 
-        public static string UpperCaseStringStatic(string input)
-        {
-            return input.ToUpper();
-        }
-
-        public bool CheckStatusForAdmin(string status, string statusRequest)
-        {
-            return !string.Equals(status, statusRequest, StringComparison.OrdinalIgnoreCase);
-        }
-
         public string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
@@ -57,23 +46,28 @@ namespace TP4SCS.Library.Utils.Utils
             return BCrypt.Net.BCrypt.Verify(password1, password2);
         }
 
-        public string TranslateAccountStatus(string status)
+        // String utility methods
+        public static string UpperCaseStringStatic(string input)
         {
-            string result = status switch
-            {
-                "INACTIVE" => "Ngưng Hoạt Động",
-                "SUSPENDED" => "Đã Khoá",
-                _ => "Hoạt Động"
-            };
-
-            return result;
+            return input.ToUpper();
         }
+
+        public static bool IsEqual(string s1, string s2)
+        {
+            return string.Equals(s1.Trim(), s2.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Status-related methods
+        public bool CheckStatusForAdmin(string status, string statusRequest)
+        {
+            return !string.Equals(status, statusRequest, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static string TranslateGeneralStatus(string? status)
         {
             if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
 
             var lowerStatus = status.ToLower();
-
             return lowerStatus switch
             {
                 "unavailable" => "Ngưng Hoạt Động",
@@ -81,6 +75,41 @@ namespace TP4SCS.Library.Utils.Utils
                 _ => "Trạng Thái Null"
             };
         }
+
+        public static string TranslateOrderStatus(string? status)
+        {
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
+
+            var lowerStatus = status.ToLower();
+            return lowerStatus switch
+            {
+                "canceled" => "Đã hủy",
+                "pending" => "Đang chờ",
+                "approved" => "Đã xác nhận",
+                "processing" => "Đang xử lý",
+                "storage" => "Lưu trữ",
+                "shipping" => "Đang giao hàng",
+                "finished" => "Hoàn thành",
+                "abandoned" => "Quá hạn nhận hàng",
+                _ => "Trạng Thái Null"
+            };
+        }
+
+        public static string TranslateOrderDetailStatus(string? status)
+        {
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Null";
+
+            var lowerStatus = status.ToLower();
+            return lowerStatus switch
+            {
+                "pending" => "Đang chờ",
+                "received" => "Đã nhận",
+                "processing" => "Đang xử lý",
+                "done" => "Hoàn thành",
+                _ => "Trạng Thái Null"
+            };
+        }
+
         public static bool IsValidGeneralStatus(string status)
         {
             var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unavailable };
@@ -100,19 +129,35 @@ namespace TP4SCS.Library.Utils.Utils
                 StatusConstants.FINISHED,
                 StatusConstants.ABANDONED
             };
-
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
 
-
-        public static bool IsEqual(string s1, string s2)
+        public static bool IsValidOrderDetailStatus(string status)
         {
-            return string.Equals(s1.Trim(), s2.Trim(), StringComparison.OrdinalIgnoreCase);
+            var validStatuses = new[]
+            {
+                StatusConstants.PENDING,
+                StatusConstants.RECEIVED,
+                StatusConstants.PROCESSING,
+                StatusConstants.DONE
+            };
+            return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
+        }
+
+        // Account-related methods
+        public string TranslateAccountStatus(string status)
+        {
+            return status switch
+            {
+                "INACTIVE" => "Ngưng Hoạt Động",
+                "SUSPENDED" => "Đã Khoá",
+                _ => "Hoạt Động"
+            };
         }
 
         public string TranslateAccountRole(string role)
         {
-            string result = role switch
+            return role switch
             {
                 "OWNER" => "Chủ Cung Cấp",
                 "EMPLOYEE" => "Nhân Viên",
@@ -120,13 +165,11 @@ namespace TP4SCS.Library.Utils.Utils
                 "MODERATOR" => "Người Điều Hành",
                 _ => "Khách Hàng"
             };
-
-            return result;
         }
 
         public bool CheckAccountRole(string role)
         {
-            bool result = role.ToUpper() switch
+            return role.ToUpper() switch
             {
                 "OWNER" => true,
                 "EMPLOYEE" => true,
@@ -135,45 +178,41 @@ namespace TP4SCS.Library.Utils.Utils
                 "CUSTOMER" => true,
                 _ => false
             };
-
-            return result;
         }
 
+        // Branch-related methods
         public bool CheckBranchStatus(string status)
         {
-            bool result = status.ToUpper() switch
+            return status.ToUpper() switch
             {
                 "ACTIVE" => true,
                 "INACTIVE" => true,
                 "SUSPENDED" => true,
                 _ => false
             };
-
-            return result;
         }
 
+        // Employee-related methods
         public string CheckDeleteEmployeesErrorType(string? old, List<int> input)
         {
             if (string.IsNullOrEmpty(old)) return "Empty";
 
-            List<int> oldList = old.Split(",").Select(int.Parse).ToList();
+            var oldList = old.Split(",").Select(int.Parse).ToList();
+            var oldSet = new HashSet<int>(oldList);
 
-            HashSet<int> oldSet = new HashSet<int>(oldList);
-
-            foreach (int element in input)
+            foreach (var element in input)
             {
                 if (!oldSet.Contains(element))
                 {
                     return "Null";
                 }
             }
-
             return "None";
         }
 
         public string CheckAddEmployeesErrorType(string? old, List<int> input)
         {
-            List<int> oldList = new List<int>();
+            var oldList = new List<int>();
 
             if (!string.IsNullOrEmpty(old))
             {
@@ -182,50 +221,34 @@ namespace TP4SCS.Library.Utils.Utils
 
             if (oldList.Count > 5) return "Full";
 
-            HashSet<int> oldSet = new HashSet<int>(oldList);
-
-            foreach (int element in input)
+            var oldSet = new HashSet<int>(oldList);
+            foreach (var element in input)
             {
                 if (oldSet.Contains(element))
                 {
                     return "Existed";
                 }
             }
-
             return "None";
         }
 
         public string DeleteEmployeesId(string? old, List<int> input)
         {
-            List<int> oldList = new List<int>();
-
-            if (!string.IsNullOrEmpty(old))
-            {
-                oldList = old.Split(',').Select(int.Parse).ToList();
-            }
-
-            foreach (int element in input)
+            var oldList = string.IsNullOrEmpty(old) ? new List<int>() : old.Split(',').Select(int.Parse).ToList();
+            foreach (var element in input)
             {
                 oldList.Remove(element);
             }
-
             return string.Join(",", oldList);
         }
 
         public string AddEmployeeId(string? old, List<int> input)
         {
-            List<int> oldList = new List<int>();
-
-            if (!string.IsNullOrEmpty(old))
-            {
-                oldList = old.Split(',').Select(int.Parse).ToList();
-            }
-
-            foreach (int element in input)
+            var oldList = string.IsNullOrEmpty(old) ? new List<int>() : old.Split(',').Select(int.Parse).ToList();
+            foreach (var element in input)
             {
                 oldList.Add(element);
             }
-
             return string.Join(",", oldList);
         }
     }

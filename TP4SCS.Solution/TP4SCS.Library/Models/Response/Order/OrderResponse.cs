@@ -4,6 +4,7 @@ namespace TP4SCS.Library.Models.Response.Order
 {
     public class OrderResponse
     {
+        public int Id { get; set; }
         public int AccountId { get; set; }
 
         public int? AddressId { get; set; }

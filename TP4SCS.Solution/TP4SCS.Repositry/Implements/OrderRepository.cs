@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Utils.Utils;
@@ -28,7 +29,7 @@ namespace TP4SCS.Repository.Implements
             return await GetByIDAsync(id);
         }
 
-        public Task<IEnumerable<Order>?> GetOrdersAsync(
+        public async Task<IEnumerable<Order>?> GetOrdersAsync(
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
@@ -47,26 +48,23 @@ namespace TP4SCS.Repository.Implements
                 _ => q.OrderBy(o => o.CreateTime)
             };
 
-            // Check if both pageIndex and pageSize are provided
+            var query = _dbSet.Where(filter);
+
+            // Bao gồm các thuộc tính liên quan
+            query = query
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Branch);
+
+            // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
             {
-                return GetAsync(
-                    filter: filter,
-                    orderBy: orderByExpression,
-                    includeProperties: "OrderDetails",
-                    pageIndex: pageIndex.Value,
-                    pageSize: pageSize.Value
-                );
+                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value - 1 : 0;
+                int validPageSize = pageSize.Value > 0 ? pageSize.Value : 10;
+
+                query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
             }
-            else
-            {
-                // Fetch all orders if pagination parameters are not provided
-                return GetAsync(
-                    filter: filter,
-                    includeProperties: "OrderDetails",
-                    orderBy: orderByExpression
-                );
-            }
+
+            return await query.ToListAsync();
         }
 
 

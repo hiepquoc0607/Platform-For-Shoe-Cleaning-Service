@@ -7,31 +7,36 @@ namespace TP4SCS.Repository.Implements
 {
     public class CartItemRepository : GenericRepository<CartItem>, ICartItemRepository
     {
-        private readonly ICartRepository _cartRepository;
-        private readonly IServiceRepository _serviceRepository;
+ 
 
-        public CartItemRepository(Tp4scsDevDatabaseContext dbContext, ICartRepository cartRepository
-            , IServiceRepository serviceRepository) : base(dbContext)
+        public CartItemRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
-            _cartRepository = cartRepository;
-            _serviceRepository = serviceRepository;
+
         }
 
         public async Task AddItemToCartAsync(int userId, CartItem item)
         {
-            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+            // Lấy giỏ hàng của người dùng từ DbContext
+            var cart = await _dbContext.Carts
+                .Include(c => c.CartItems) // Đảm bảo bao gồm các CartItems
+                .SingleOrDefaultAsync(c => c.AccountId == userId);
+
+            // Nếu giỏ hàng không tồn tại, tạo một giỏ hàng mới
             if (cart == null)
             {
-                cart = await _cartRepository.CreateCartAsync(userId);
+                cart = new Cart { AccountId = userId };
+                await _dbContext.Carts.AddAsync(cart);
             }
-            var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId ==item.BranchId);
+
+            // Kiểm tra xem item đã tồn tại trong giỏ hàng chưa
+            var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId == item.BranchId);
             if (existingItem != null)
             {
-                existingItem.Quantity += item.Quantity;
+                existingItem.Quantity += item.Quantity; // Cập nhật số lượng
             }
             else
             {
-                var service = await _serviceRepository.GetServiceByIdAsync(item.ServiceId!.Value);
+                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == item.ServiceId!.Value);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");
@@ -40,10 +45,14 @@ namespace TP4SCS.Repository.Implements
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }
+
+                // Thêm item vào giỏ hàng
                 item.CartId = cart.Id;
                 cart.CartItems.Add(item);
             }
-            await _cartRepository.UpdateCartAsync(cart);
+
+            // Cập nhật giỏ hàng trong DbContext
+            await _dbContext.SaveChangesAsync();
         }
         public async Task<IEnumerable<CartItem>> GetCartItemsByIdsAsync(int[] cartItemIds)
         {
