@@ -7,6 +7,7 @@ namespace TP4SCS.Library.Models.Response.Order
         public int Id { get; set; }
         public int AccountId { get; set; }
         public string Email { get; set; } = null!;
+        public string FullName { get; set; } = null!;
         public string Phone { get; set; } = null!;
 
         public int? AddressId { get; set; }

@@ -24,7 +24,19 @@ namespace TP4SCS.API.Middleware
                 {
                     status = "error",
                     statusCode = 403,
-                    message = "Truy cập bị từ chối!"
+                    message = "Truy Cập Bị Từ Chối!"
+                }));
+            }
+
+            // Check if the response status is 401
+            if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    status = "error",
+                    statusCode = 401,
+                    message = "Yêu Cầu Xác Thực!"
                 }));
             }
         }

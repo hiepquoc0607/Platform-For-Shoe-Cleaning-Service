@@ -66,6 +66,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.Status, src => Util.TranslateOrderStatus(src.Status))
                 .Map(dest => dest.OrderDetails, src => src.OrderDetails.Adapt<List<OrderDetailResponse>>())
                 .Map(dest => dest.Phone, src => src.Account.Phone)
+                .Map(dest => dest.FullName, src => src.Account.FullName)
                 .Map(dest => dest.Email, src => src.Account.Email);
 
         }
