@@ -15,10 +15,12 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AuthResponse>> SendOTPAsync(RefreshToken refeshToken);
 
-        Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email, string url);
+        Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email);
 
         Task<ApiResponse<AuthResponse>> VerifyEmailAsync(VerifyEmailRequest verifyEmailRequest);
 
-        Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
+        Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordQuery resetPasswordQuery, ResetPasswordRequest resetPasswordRequest);
+
+        Task<ApiResponse<AuthResponse>> RequestResetPasswordAsync(string email);
     }
 }
