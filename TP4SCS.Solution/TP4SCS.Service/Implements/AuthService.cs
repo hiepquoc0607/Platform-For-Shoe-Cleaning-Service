@@ -25,7 +25,7 @@ namespace TP4SCS.Services.Implements
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
-        private static readonly DateTime _time = DateTime.Now.AddDays(7);
+        private static readonly DateTime _time = DateTime.Now.AddMonths(1);
 
         public AuthService(IConfiguration configuration,
             IAccountRepository accountRepository,
@@ -87,7 +87,7 @@ namespace TP4SCS.Services.Implements
 
             if (account == null)
             {
-                return new ApiResponse<AuthResponse>("error", 401, "Xác thực thất bại!");
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
             if (account.Status.Equals("SUSPENDED"))

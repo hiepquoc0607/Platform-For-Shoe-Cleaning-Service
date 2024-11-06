@@ -10,9 +10,9 @@ namespace TP4SCS.Library.Models.Request.Branch
 
         public string Ward { get; set; } = string.Empty;
 
-        public string Province { get; set; } = string.Empty;
+        public string District { get; set; } = string.Empty;
 
-        public string City { get; set; } = string.Empty;
+        public string Province { get; set; } = string.Empty;
 
         [DefaultValue(true)]
         public bool IsDeliverySupport { get; set; }
