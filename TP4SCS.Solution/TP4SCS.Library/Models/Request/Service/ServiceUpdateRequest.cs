@@ -16,8 +16,6 @@ namespace TP4SCS.Library.Models.Request.Service
         public string? Status { get; set; }
 
         public decimal? NewPrice { get; set; }
-
-        public string? PromotionStatus { get; set; }
         public List<AssetUrlRequest> AssetUrls { get; set; } = new List<AssetUrlRequest>();
     }
 }
