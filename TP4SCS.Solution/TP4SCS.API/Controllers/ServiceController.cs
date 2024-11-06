@@ -3,12 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
-using TP4SCS.Library.Models.Response.AssetUrl;
-using TP4SCS.Library.Models.Response.Branch;
-using TP4SCS.Library.Models.Response.BranchService;
-using TP4SCS.Library.Models.Response.Category;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
@@ -51,39 +46,6 @@ namespace TP4SCS.API.Controllers
                 {
                     // Ánh xạ Service sang ServiceResponse
                     var res = _mapper.Map<ServiceResponse>(s);
-                    res.Status = Util.TranslateGeneralStatus(s.Status);
-
-                    // Ánh xạ Promotion nếu có
-                    if (s.Promotion != null)
-                    {
-                        var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
-                        promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
-                        res.Promotion = promotionRes;
-                    }
-
-                    // Ánh xạ AssetUrls nếu có
-                    if (s.AssetUrls != null && s.AssetUrls.Any())
-                    {
-                        var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
-                        res.AssetUrls = assetRes;
-                    }
-
-                    // Ánh xạ BranchServices và các Branch bên trong
-                    if (s.BranchServices != null && s.BranchServices.Any())
-                    {
-                        var branchServiceResponses = s.BranchServices.Select(bs =>
-                        {
-                            var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
-
-                            // Ánh xạ Branch trong BranchServiceResponse
-                            branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
-
-                            return branchServiceResponse;
-                        }).ToList();
-
-                        res.BranchServices = branchServiceResponses;
-                    }
-
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
@@ -117,39 +79,6 @@ namespace TP4SCS.API.Controllers
                 {
                     // Ánh xạ Service sang ServiceResponse
                     var res = _mapper.Map<ServiceResponse>(s);
-                    res.Status = Util.TranslateGeneralStatus(s.Status);
-
-                    // Ánh xạ Promotion nếu có
-                    if (s.Promotion != null)
-                    {
-                        var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
-                        promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
-                        res.Promotion = promotionRes;
-                    }
-
-                    // Ánh xạ AssetUrls nếu có
-                    if (s.AssetUrls != null && s.AssetUrls.Any())
-                    {
-                        var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
-                        res.AssetUrls = assetRes;
-                    }
-
-                    // Ánh xạ BranchServices và các Branch bên trong
-                    if (s.BranchServices != null && s.BranchServices.Any())
-                    {
-                        var branchServiceResponses = s.BranchServices.Select(bs =>
-                        {
-                            var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
-
-                            // Ánh xạ Branch trong BranchServiceResponse
-                            branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
-
-                            return branchServiceResponse;
-                        }).ToList();
-
-                        res.BranchServices = branchServiceResponses;
-                    }
-
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
                 totalCount,
@@ -173,43 +102,6 @@ namespace TP4SCS.API.Controllers
 
                 // Ánh xạ Service sang ServiceResponse
                 var response = _mapper.Map<ServiceResponse>(service);
-
-                // Ánh xạ Category
-                response.Category = _mapper.Map<ServiceCategoryResponse>(service.Category);
-
-                // Ánh xạ Promotion
-                if (service.Promotion != null)
-                {
-                    var promotionRes = _mapper.Map<PromotionResponse>(service.Promotion);
-                    promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
-                    response.Promotion = promotionRes;
-                }
-
-                // Ánh xạ AssetUrls
-                if (response.AssetUrls != null && response.AssetUrls.Any())
-                {
-                    var assetRes = _mapper.Map<List<AssetUrlResponse>>(response.AssetUrls);
-                    response.AssetUrls = assetRes;
-                }
-
-                // Ánh xạ BranchServices và Branch bên trong
-                if (service.BranchServices != null && service.BranchServices.Any())
-                {
-                    var branchServiceResponses = service.BranchServices.Select(bs =>
-                    {
-                        var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
-
-                        // Ánh xạ Branch trong BranchServiceResponse
-                        branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
-
-                        return branchServiceResponse;
-                    }).ToList();
-
-                    response.BranchServices = branchServiceResponses;
-                }
-
-                // Dịch trạng thái
-                response.Status = Util.TranslateGeneralStatus(response.Status) ?? "Trạng thái null";
 
                 return Ok(new ResponseObject<ServiceResponse>("Lấy dịch vụ thành công", response));
             }
