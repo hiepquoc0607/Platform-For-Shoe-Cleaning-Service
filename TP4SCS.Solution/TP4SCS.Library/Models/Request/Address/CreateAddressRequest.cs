@@ -15,13 +15,13 @@ namespace TP4SCS.Library.Models.Request.Address
         public string Ward { get; set; } = string.Empty;
 
         [Required]
+        public string District { get; set; } = string.Empty;
+
+        [Required]
         public string Province { get; set; } = string.Empty;
 
         [Required]
-        public string City { get; set; } = string.Empty;
-
-        [Required]
-        [DeniedValues(false)]
+        [DefaultValue(false)]
         public bool IsDefault { get; set; }
     }
 }

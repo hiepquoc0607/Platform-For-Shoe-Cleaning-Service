@@ -2,6 +2,7 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -45,41 +46,48 @@ namespace TP4SCS.Repository.Implements
             }
 
             //Status Filter
-            if (!string.IsNullOrEmpty(getBusinessRequest.Status))
+            if (getBusinessRequest.Status != null)
             {
-                businesses = businesses.Where(b => b.Status.Equals(getBusinessRequest.Status));
+                //businesses = businesses.Where(b => b.Status.Equals(getBusinessRequest.Status));
+                businesses = getBusinessRequest.Status switch
+                {
+                    BusinessStatus.ACTIVE => businesses.Where(b => b.Status.Equals(StatusConstants.ACTIVE)),
+                    BusinessStatus.INACTIVE => businesses.Where(b => b.Status.Equals(StatusConstants.INACTIVE)),
+                    BusinessStatus.SUSPENDED => businesses.Where(b => b.Status.Equals(StatusConstants.SUSPENDED)),
+                    _ => businesses
+                };
             }
 
             //Order Sort
-            if (!string.IsNullOrEmpty(getBusinessRequest.SortBy))
+            if (getBusinessRequest.SortBy != null)
             {
-                businesses = getBusinessRequest.SortBy.ToUpper() switch
+                businesses = getBusinessRequest.SortBy switch
                 {
-                    "NAME" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.NAME => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.Name)
                                 : businesses.OrderBy(b => b.Name),
-                    "RATING" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.RATING => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.Rating)
                                 : businesses.OrderBy(b => b.Rating),
-                    "RANK" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.RANK => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.Rank)
                                 : businesses.OrderBy(b => b.Rank),
-                    "TOTAL" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.TOTAL => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.TotalOrder)
                                 : businesses.OrderBy(b => b.TotalOrder),
-                    "PENDING" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.PENDING => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.PendingAmount)
                                 : businesses.OrderBy(b => b.PendingAmount),
-                    "PROCESSING" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.PROCESSING => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.ProcessingAmount)
                                 : businesses.OrderBy(b => b.ProcessingAmount),
-                    "FINISHED" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.FINISHED => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.FinishedAmount)
                                 : businesses.OrderBy(b => b.FinishedAmount),
-                    "CANCEL" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.CANCEL => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.CanceledAmount)
                                 : businesses.OrderBy(b => b.CanceledAmount),
-                    "STATUS" => getBusinessRequest.IsDecsending
+                    BusinessSortOption.STATUS => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.Status)
                                 : businesses.OrderBy(b => b.Status),
                     _ => businesses

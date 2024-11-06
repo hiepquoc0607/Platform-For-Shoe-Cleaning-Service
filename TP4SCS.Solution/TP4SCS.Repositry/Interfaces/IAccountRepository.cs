@@ -1,11 +1,12 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Repository.Interfaces
 {
     public interface IAccountRepository : IGenericRepository<Account>
     {
-        Task<IEnumerable<Account>?> GetAccountsAsync(GetAccountRequest getAccountRequest);
+        Task<(IEnumerable<Account>?, Pagination)> GetAccountsAsync(GetAccountRequest getAccountRequest);
 
         Task<Account?> GetAccountByIdAsync(int id);
 
