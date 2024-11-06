@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.AssetUrl;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.Category;
+using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
@@ -26,13 +27,16 @@ namespace TP4SCS.Library.Utils.Mapper
     {
         public AppMapper()
         {
-            CreateMap<Service, ServiceResponse>();
-            CreateMap<Service, ServiceCreateResponse>();
+            CreateMap<Service, ServiceResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+            CreateMap<Service, ServiceCreateResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<ServiceRequest, Service>();
             CreateMap<ServiceCreateRequest, Service>();
 
             // Category Mappings
-            CreateMap<ServiceCategory, ServiceCategoryResponse>();
+            CreateMap<ServiceCategory, ServiceCategoryResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<ServiceCategoryRequest, ServiceCategory>();
             //Cart Mappings
             CreateMap<Cart, CartResponse>();
@@ -40,20 +44,25 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<CartItemCreateRequest, CartItem>();
             CreateMap<CartItem, CartItemResponse>();
             //Promotion Mappings
-            CreateMap<Promotion, PromotionResponse>();
+            CreateMap<Promotion, PromotionResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<PromotionCreateRequest, Promotion>();
             CreateMap<PromotionUpdateRequest, Promotion>();
             //Material Mappings
             CreateMap<MaterialCreateRequest, Material>();
             CreateMap<MaterialUpdateRequest, Material>();
-            CreateMap<Material, MaterialResponse>();
+            CreateMap<Material, MaterialResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             //AssetUrl Mapping
             CreateMap<AssetUrl, AssetUrlResponse>();
             CreateMap<AssetUrlRequest, AssetUrl>();
             //BranchService Mapping
-            CreateMap<BranchService, BranchServiceResponse>();
+            CreateMap<BranchService, BranchServiceResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             //BusinessBranch Mapping
             CreateMap<BusinessBranch, BranchResponse>();
+            //Feedback Mapping
+            CreateMap<FeedbackRequest, Feedback>();
         }
 
         public void Register(TypeAdapterConfig config)
