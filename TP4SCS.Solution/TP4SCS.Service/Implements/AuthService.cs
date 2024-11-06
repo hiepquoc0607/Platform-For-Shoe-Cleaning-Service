@@ -1,15 +1,12 @@
-﻿using Azure.Core;
-using MapsterMapper;
+﻿using MapsterMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Auth;
-using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
@@ -28,7 +25,7 @@ namespace TP4SCS.Services.Implements
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
-        private static readonly DateTime _time = DateTime.Now.AddHours(1);
+        private static readonly DateTime _time = DateTime.Now.AddDays(7);
 
         public AuthService(IConfiguration configuration,
             IAccountRepository accountRepository,
