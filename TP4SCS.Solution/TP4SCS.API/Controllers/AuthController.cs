@@ -68,25 +68,8 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(account.StatusCode, account);
             }
 
-            string? url = Url.Action
-                (
-                    action: "verify-email",
-                    controller: "auth",
-                    values: new { userId = account.Data.Id, token = account.Data.RefreshToken },
-                    protocol: Request.Scheme
-                );
-
-            if (url == null)
-            {
-                return StatusCode(500, new
-                {
-                    status = "error",
-                    statusCode = 500,
-                    message = "Tạo Link Xác Nhận Thất Bại!"
-                });
-            }
-
-            var result = await _authService.SendVerificationEmailAsync(email, url);
+            var result = await _authService.SendVerificationEmailAsync(email,
+                $"https://shoecarehub.site/api/auth/email-verification?id={account.Data.Id}&token={account.Data.RefreshToken}");
 
             if (result.StatusCode != 200)
             {
