@@ -22,15 +22,12 @@ namespace TP4SCS.API.Controllers
         private readonly IMapper _mapper;
         private readonly IServiceService _serviceService;
         private readonly IBusinessService _businessService;
-        private readonly IAccountService _accountService;
 
-        public ServiceController(IMapper mapper, IServiceService serviceService, IBusinessService businessService,
-            IAccountService accountService)
+        public ServiceController(IMapper mapper, IServiceService serviceService, IBusinessService businessService)
         {
             _mapper = mapper;
             _serviceService = serviceService;
             _businessService = businessService;
-            _accountService = accountService;
         }
 
         [HttpGet]
@@ -256,13 +253,6 @@ namespace TP4SCS.API.Controllers
 
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int.TryParse(userIdClaim, out int id);
-
-                var account = await _accountService.GetAccountByIdAsync(id);
-                if (account.Data == null ||
-                    !(Util.IsEqual(account.Data.Role, "OWNER") || Util.IsEqual(account.Data.Role, "Chủ cung cấp")))
-                {
-                    throw new ArgumentException("Account không hợp lệ.");
-                }
 
                 var businessId = await _businessService.GetBusinessIdByOwnerId(id);
 
