@@ -54,7 +54,11 @@ namespace TP4SCS.Repository.Implements
             query = query
                     .Include(o => o.Account)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Branch);
+                        .ThenInclude(od => od.Service)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Branch)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Material);
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
