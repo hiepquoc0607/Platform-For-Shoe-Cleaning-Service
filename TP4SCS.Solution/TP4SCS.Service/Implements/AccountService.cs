@@ -58,12 +58,12 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
             }
 
-            if (!_util.CheckAccountRole(createAccountRequest.Role.Trim()))
-            {
-                return new ApiResponse<AccountResponse>("error", 400, "Role Không Phù Hợp!");
-            }
+            //if (!_util.CheckAccountRole(createAccountRequest.Role.Trim()))
+            //{
+            //    return new ApiResponse<AccountResponse>("error", 400, "Role Không Phù Hợp!");
+            //}
 
-            createAccountRequest.Role = createAccountRequest.Role.ToUpper();
+            //createAccountRequest.Role = createAccountRequest.Role.ToUpper();
 
             var newAccount = _mapper.Map<Account>(createAccountRequest);
 
@@ -111,6 +111,20 @@ namespace TP4SCS.Services.Implements
 
         }
 
+        public async Task<ApiResponse<AccountResponse?>> GetAccountByEmailAsync(string email)
+        {
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AccountResponse?>("error", 400, "Tài Khoản Không Tồn Tại!");
+            }
+
+            var data = _mapper.Map<AccountResponse>(account);
+
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+        }
+
         //Get Account By Id
         public async Task<ApiResponse<AccountResponse?>> GetAccountByIdAsync(int id)
         {
@@ -147,7 +161,7 @@ namespace TP4SCS.Services.Implements
 
             //Paging caculate
             int totalData = await _accountRepository.CountAccountDataAsync();
-           
+
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
             return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, pagination);

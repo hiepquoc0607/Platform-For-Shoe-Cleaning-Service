@@ -11,6 +11,8 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AccountResponse?>> GetAccountByIdAsync(int id);
 
+        Task<ApiResponse<AccountResponse?>> GetAccountByEmailAsync(string email);
+
         Task<int> GetAccountMaxIdAsync();
 
         Task<ApiResponse<AccountResponse>> CreateAccountAsync(CreateAccountRequest createAccountRequest);

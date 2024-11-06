@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Account
 {
+    public enum Gender
+    {
+        MALE,
+        FEMALE
+    }
+
     public class CreateAccountRequest
     {
         [Required]
@@ -15,6 +21,10 @@ namespace TP4SCS.Library.Models.Request.Account
         public string Password { get; set; } = string.Empty;
 
         [Required]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Required]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
@@ -24,12 +34,9 @@ namespace TP4SCS.Library.Models.Request.Account
         public string Phone { get; set; } = string.Empty;
 
         [Required]
-        public string Gender { get; set; } = string.Empty;
+        public Gender Gender { get; set; }
 
         [Required]
         public DateOnly Dob { get; set; }
-
-        [Required]
-        public string Role { get; set; } = string.Empty;
     }
 }
