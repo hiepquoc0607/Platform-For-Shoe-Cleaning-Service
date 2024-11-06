@@ -194,8 +194,7 @@ namespace TP4SCS.Services.Implements
             existingService.Price = serviceUpdateRequest.Price;
             existingService.Status = serviceUpdateRequest.Status;
 
-            if (serviceUpdateRequest.NewPrice.HasValue &&
-                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price)
+            if (serviceUpdateRequest.NewPrice.HasValue)
             {
                 if (existingService.Promotion != null)
                 {
