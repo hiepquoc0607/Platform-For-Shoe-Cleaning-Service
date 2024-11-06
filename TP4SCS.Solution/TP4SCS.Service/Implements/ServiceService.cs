@@ -177,8 +177,12 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
-
-            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
+            if (serviceUpdateRequest.NewPrice.HasValue &&
+                serviceUpdateRequest.NewPrice > serviceUpdateRequest.Price)
+            {
+                throw new ArgumentException("Giá sau khi giảm phải nhỏ hơn giá gốc.");
+            }
+                var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy dịch vụ nào.");
@@ -191,13 +195,12 @@ namespace TP4SCS.Services.Implements
             existingService.Status = serviceUpdateRequest.Status;
 
             if (serviceUpdateRequest.NewPrice.HasValue &&
-                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price &&
-                !string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
+                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price)
             {
                 if (existingService.Promotion != null)
                 {
                     existingService.Promotion.NewPrice = serviceUpdateRequest.NewPrice.Value;
-                    existingService.Promotion.Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus);
+                    existingService.Promotion.Status = StatusConstants.Available;
 
                     await _promotionService.UpdatePromotionAsync(existingService.Promotion, existingService.Promotion.Id);
                 }
@@ -207,17 +210,18 @@ namespace TP4SCS.Services.Implements
                     {
                         ServiceId = existingService.Id,
                         NewPrice = serviceUpdateRequest.NewPrice.Value,
-                        Status = Util.UpperCaseStringStatic(serviceUpdateRequest.PromotionStatus)
+                        Status = StatusConstants.Available
                     };
                     await _promotionService.AddPromotionAsync(newPromotion);
                 }
             }
-            else if (!serviceUpdateRequest.NewPrice.HasValue && string.IsNullOrEmpty(serviceUpdateRequest.PromotionStatus))
+            else if (!serviceUpdateRequest.NewPrice.HasValue)
             {
                 if (existingService.Promotion != null)
                 {
-                    await _promotionService.DeletePromotionAsync(existingService.Promotion.Id);
-                    existingService.Promotion = null;
+                    existingService.Promotion.NewPrice = existingService.Price;
+                    existingService.Promotion.Status = StatusConstants.Unavailable;
+
                 }
             }
 
