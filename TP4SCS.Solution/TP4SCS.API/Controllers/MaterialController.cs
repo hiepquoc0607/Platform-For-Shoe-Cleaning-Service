@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
-using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.MaterialResponse;
+using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
@@ -25,7 +24,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMaterials([FromBody]PagedRequest pagedRequest)
+        public async Task<IActionResult> GetMaterials([FromBody] PagedRequest pagedRequest)
         {
             var materials = await _materialService.GetMaterialsAsync(pagedRequest.Keyword, pagedRequest.Status,
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);

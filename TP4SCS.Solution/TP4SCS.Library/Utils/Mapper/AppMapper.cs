@@ -13,7 +13,7 @@ using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
-using TP4SCS.Library.Models.Response.MaterialResponse;
+using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Models.Response.Promotion;

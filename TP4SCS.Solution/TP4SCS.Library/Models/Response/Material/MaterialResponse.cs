@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Models.Response.MaterialResponse
+﻿namespace TP4SCS.Library.Models.Response.Material
 {
     public class MaterialResponse
     {

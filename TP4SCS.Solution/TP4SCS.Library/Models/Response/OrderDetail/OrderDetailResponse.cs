@@ -1,14 +1,18 @@
-﻿namespace TP4SCS.Library.Models.Response.OrderDetail
+﻿using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.Service;
+using TP4SCS.Library.Models.Response.Material;
+
+namespace TP4SCS.Library.Models.Response.OrderDetail
 {
     public class OrderDetailResponse
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-        public int BranchId { get; set; }
+        public BranchResponse Branch { get; set; } = null!;
 
-        public int? ServiceId { get; set; }
+        public ServiceResponse? Service { get; set; }
 
-        public int? MaterialId { get; set; }
+        public MaterialResponse? Material { get; set; }
 
         public int Quantity { get; set; }
 

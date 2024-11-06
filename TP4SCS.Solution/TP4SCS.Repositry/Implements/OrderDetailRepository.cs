@@ -86,15 +86,24 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<OrderDetail?> GetOrderDetailByIdAsync(int id)
         {
-            return await GetByIDAsync(id);
+            return await _dbContext.OrderDetails
+                .Include(od => od.Branch)
+                .Include(od => od.Material)
+                .Include(od => od.Service)
+                .SingleOrDefaultAsync(od => od.Id == id);
         }
+
 
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
         {
             return await _dbContext.OrderDetails
                 .Where(od => od.OrderId == orderId)
+                .Include(od => od.Branch)
+                .Include(od => od.Material)
+                .Include(od => od.Service)
                 .ToListAsync();
         }
+
 
         public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
