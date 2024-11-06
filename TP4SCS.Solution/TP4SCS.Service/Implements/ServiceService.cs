@@ -173,7 +173,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("ID danh mục không hợp lệ.");
             }
 
-            if (Util.IsEqual(category.Status, StatusConstants.Inactive))
+            if (Util.IsEqual(category.Status, StatusConstants.INACTIVE))
             {
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }

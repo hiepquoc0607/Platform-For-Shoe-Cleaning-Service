@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Address
 {
@@ -8,8 +9,8 @@ namespace TP4SCS.Library.Models.Request.Address
 
         public string Ward { get; set; } = string.Empty;
 
-        public string Province { get; set; } = string.Empty;
+        public string District { get; set; } = string.Empty;
 
-        public string City { get; set; } = string.Empty;
+        public string Province { get; set; } = string.Empty;
     }
 }

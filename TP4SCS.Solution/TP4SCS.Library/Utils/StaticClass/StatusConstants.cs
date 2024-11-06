@@ -3,9 +3,9 @@
     public static class StatusConstants
     {
         //GENERAL STATUS
-        public const string Active = "ACTIVE";
-        public const string Inactive = "INACTIVE";
-        public const string Suspended = "SUSPENDED";
+        public const string ACTIVE = "ACTIVE";
+        public const string INACTIVE = "INACTIVE";
+        public const string SUSPENDED = "SUSPENDED";
 
         //PROMOTION STATUS
         public const string Available = "AVAILABLE";

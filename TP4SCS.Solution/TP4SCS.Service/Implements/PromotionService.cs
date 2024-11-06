@@ -36,7 +36,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("ID dịch vụ không hợp lệ.");
             }
 
-            if (Util.IsEqual(service.Status, StatusConstants.Inactive))
+            if (Util.IsEqual(service.Status, StatusConstants.INACTIVE))
             {
                 throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }
@@ -111,7 +111,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("ID dịch vụ không hợp lệ.");
             }
-            if (Util.IsEqual(service.Status, StatusConstants.Inactive))
+            if (Util.IsEqual(service.Status, StatusConstants.INACTIVE))
             {
                 throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
             }

@@ -3,13 +3,35 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Business
 {
+    public enum BusinessSortOption
+    {
+        NAME,
+        RATING,
+        RANK,
+        TOTAL,
+        PENDING,
+        PROCESSING,
+        FINISHED,
+        CANCEL,
+        STATUS
+    }
+
+    public enum BusinessStatus
+    {
+        ACTIVE,
+        INACTIVE,
+        SUSPENDED
+    }
+
     public class GetBusinessRequest
     {
         public string? SearchKey { get; set; } = string.Empty;
 
-        public string? SortBy { get; set; } = string.Empty;
+        [DefaultValue(null)]
+        public BusinessSortOption? SortBy { get; set; }
 
-        public string? Status { get; set; } = string.Empty;
+        [DefaultValue(null)]
+        public BusinessStatus? Status { get; set; }
 
         [Required]
         [DefaultValue(false)]

@@ -3,11 +3,29 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.General
 {
+    public enum AccountSearchOption
+    {
+        EMAIL,
+        FULLNAME,
+        STATUS
+    }
+
+    public enum AccountStatus
+    {
+        ACTIVE,
+        INACTIVE,
+        SUSPENDED
+    }
+
     public class GetAccountRequest
     {
         public string? SearchKey { get; set; }
 
-        public string? SortBy { get; set; }
+        [DefaultValue(null)]
+        public AccountSearchOption? SortBy { get; set; }
+
+        [DefaultValue(null)]
+        public AccountStatus? Status { get; set; }
 
         [Required]
         [DefaultValue(false)]

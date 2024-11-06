@@ -41,7 +41,7 @@ namespace TP4SCS.Repository.Implements
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");
                 }
-                if (service.Status.ToUpper() == StatusConstants.Inactive)
+                if (service.Status.ToUpper() == StatusConstants.INACTIVE)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }

@@ -138,7 +138,7 @@ namespace TP4SCS.Services.Implements
         //Get Accounts
         public async Task<ApiResponse<IEnumerable<AccountResponse>?>> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
-            var accounts = await _accountRepository.GetAccountsAsync(getAccountRequest);
+            var (accounts, pagination) = await _accountRepository.GetAccountsAsync(getAccountRequest);
 
             if (accounts == null)
             {
@@ -147,10 +147,7 @@ namespace TP4SCS.Services.Implements
 
             //Paging caculate
             int totalData = await _accountRepository.CountAccountDataAsync();
-            int totalPage = (int)Math.Ceiling((decimal)totalData / getAccountRequest.PageSize);
-
-            var pagination = new Pagination(totalData, getAccountRequest.PageSize, getAccountRequest.PageNum, totalPage);
-
+           
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
             return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, pagination);
