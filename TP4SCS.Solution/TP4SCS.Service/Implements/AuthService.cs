@@ -49,6 +49,7 @@ namespace TP4SCS.Services.Implements
             return (int)(dateTime - DateTime.Now).TotalSeconds;
         }
 
+        //Generate JWT Token
         private string GenerateToken(Account account)
         {
             List<Claim> claims = new List<Claim>
@@ -73,6 +74,7 @@ namespace TP4SCS.Services.Implements
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        //Generate Refresh Token
         private string GenerateRefreshToken()
         {
             return Guid.NewGuid().ToString();
@@ -139,8 +141,20 @@ namespace TP4SCS.Services.Implements
         }
 
         //Reset Password
-        public async Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+        public async Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordQuery resetPasswordQuery, ResetPasswordRequest resetPasswordRequest)
         {
+            var account = await _accountRepository.GetAccountByIdAsync(resetPasswordQuery.AccountId);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            if (account.RefreshToken != resetPasswordQuery.Token || account.RefreshExpireTime <= DateTime.Now)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Token KhÔng Đúng Hoặc Hết Hạn!");
+            }
+
             var passwordError = _util.CheckPasswordErrorType(resetPasswordRequest.NewPassword);
 
             var passwordErrorMessages = new Dictionary<string, string>
@@ -156,19 +170,9 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, message);
             }
 
-            var account = await _accountRepository.GetAccountByEmailAsync(resetPasswordRequest.Email.Trim());
-
-            if (account == null)
-            {
-                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
-            }
-
-            if (!resetPasswordRequest.NewPassword.Equals(resetPasswordRequest.ConfirmPassword))
-            {
-                return new ApiResponse<AuthResponse>("error", 400, "Mật Khẩu Xác Nhận Không Trùng!");
-            }
-
             account.PasswordHash = _util.HashPassword(resetPasswordRequest.NewPassword);
+            account.RefreshToken = string.Empty;
+            account.RefreshExpireTime = null;
 
             try
             {
@@ -182,6 +186,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Refresh Token
         public async Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken)
         {
             var account = await _accountRepository.GetAccountByIdAsync(refeshToken.AccountId);
@@ -229,11 +234,13 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Send OTP
         public Task<ApiResponse<AuthResponse>> SendOTPAsync(RefreshToken refeshToken)
         {
             throw new NotImplementedException();
         }
 
+        //Verify Email
         public async Task<ApiResponse<AuthResponse>> VerifyEmailAsync(VerifyEmailRequest verifyEmailRequest)
         {
             var account = await _accountRepository.GetAccountByIdAsync(verifyEmailRequest.AccountId);
@@ -269,8 +276,18 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email, string url)
+        //Send Verification Email
+        public async Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email)
         {
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            string url = $"https://shoecarehub.site/api/auth/verify-email?AccountId={account.Id}&Token={account.RefreshToken}";
+
             try
             {
                 await _emailService.SendEmailAsync(email, "ShoeCareHub Email Verification", url);
@@ -283,6 +300,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Customer Register
         public async Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CreateAccountRequest createAccountRequest)
         {
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
@@ -315,6 +333,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map<Account>(createAccountRequest);
+            newAccount.Gender = newAccount.Gender.Trim().ToUpper();
             newAccount.PasswordHash = _util.HashPassword(createAccountRequest.Password);
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.CUSTOMER;
@@ -322,8 +341,6 @@ namespace TP4SCS.Services.Implements
             try
             {
                 await _accountRepository.CreateAccountAsync(newAccount);
-
-                //var maxId = await _accountRepository.GetAccountMaxIdAsync();
 
                 var newAcc = await _accountRepository.GetAccountByIdAsync(newAccount.Id);
 
@@ -339,6 +356,35 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+            }
+        }
+
+        //Request Reset Password
+        public async Task<ApiResponse<AuthResponse>> RequestResetPasswordAsync(string email)
+        {
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            account.RefreshToken = GenerateRefreshToken();
+            account.RefreshExpireTime = DateTime.Now.AddSeconds(150);
+
+            string url = $"https://shoecarehub.site/api/auth/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
+
+            try
+            {
+                await _emailService.SendEmailAsync(email, "ShoeCareHub Reset Password Link", url);
+
+                await _accountRepository.UpdateAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Gửi Email Đặt Lại Mật Khẩu Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Gửi Email Đặt Lại Mật Khẩu Thất Bại!");
             }
         }
     }

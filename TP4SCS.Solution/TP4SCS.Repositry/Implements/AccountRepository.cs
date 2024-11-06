@@ -138,7 +138,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Equals(email)).SingleOrDefaultAsync();
+                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
             }
             catch (Exception)
             {

@@ -58,18 +58,36 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("send-verification-email")]
-        public async Task<IActionResult> SendVerificationEmailAsync([FromQuery] string email)
+        [HttpPost("send-verification-email")]
+        public async Task<IActionResult> SendVerificationEmailAsync([FromQuery] EmailRequest emailRequest)
         {
-            var account = await _accountService.GetAccountByEmailAsync(email);
+            var result = await _authService.SendVerificationEmailAsync(emailRequest.Email);
 
-            if (account.Data == null)
+            if (result.StatusCode != 200)
             {
-                return StatusCode(account.StatusCode, account);
+                return StatusCode(result.StatusCode, result);
             }
 
-            var result = await _authService.SendVerificationEmailAsync(email,
-                $"https://shoecarehub.site/api/auth/email-verification?id={account.Data.Id}&token={account.Data.RefreshToken}");
+            return Ok(result);
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmailAsync([FromQuery] VerifyEmailRequest verifyEmailRequest)
+        {
+            var result = await _authService.VerifyEmailAsync(verifyEmailRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost("request-reset-password")]
+        public async Task<IActionResult> RequestResetPasswordAsync([FromBody] EmailRequest emailRequest)
+        {
+            var result = await _authService.RequestResetPasswordAsync(emailRequest.Email);
 
             if (result.StatusCode != 200)
             {
@@ -80,9 +98,9 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("reset-password")]
-        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest resetPasswordRequest)
+        public async Task<IActionResult> ResetPasswordAsync([FromQuery] ResetPasswordQuery resetPasswordQuery, [FromBody] ResetPasswordRequest resetPasswordRequest)
         {
-            var result = await _authService.ResetPasswordAsync(resetPasswordRequest);
+            var result = await _authService.ResetPasswordAsync(resetPasswordQuery, resetPasswordRequest);
 
             if (result.StatusCode != 200)
             {
