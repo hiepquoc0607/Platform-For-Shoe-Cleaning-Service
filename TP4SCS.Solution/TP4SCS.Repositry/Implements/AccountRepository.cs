@@ -43,6 +43,12 @@ namespace TP4SCS.Repository.Implements
                     EF.Functions.Like(a.Email, $"%{searchKey}%"));
             }
 
+            //Owner Sort
+            if (getAccountRequest.OwnerId != null)
+            {
+                accounts = accounts.Where(a => a.CreatedByOwnerId == getAccountRequest.OwnerId);
+            }
+
             //Status Sort
             if (getAccountRequest.Status != null)
             {

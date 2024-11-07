@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
+using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Response.Address;
 
 namespace TP4SCS.Library.Utils.Mapper
@@ -13,7 +14,8 @@ namespace TP4SCS.Library.Utils.Mapper
 
             config.NewConfig<AccountAddress, UpdateAccountRequest>();
 
-            config.NewConfig<AccountAddress, CreateAccountRequest>();
+            config.NewConfig<CreateAddressRequest, AccountAddress>()
+                .Map(dest => dest.Status, src => "AVAILABLE");
         }
     }
 }

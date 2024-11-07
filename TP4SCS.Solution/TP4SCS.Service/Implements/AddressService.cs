@@ -26,11 +26,11 @@ namespace TP4SCS.Services.Implements
         //Create Address
         public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
         {
-            while (createAddressRequest.IsDefault == true)
+            if (createAddressRequest.IsDefault == true)
             {
                 var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(createAddressRequest.AccountId);
 
-                if (oldDefault != null)
+                if (oldDefault != null && oldDefault.IsDefault)
                 {
                     oldDefault.IsDefault = false;
 
@@ -51,9 +51,7 @@ namespace TP4SCS.Services.Implements
             {
                 await _addressRepository.CreateAddressAsync(newAddress);
 
-                var newId = await GetAddressMaxIdAsync();
-
-                var newAddr = await GetAddressesByIdAsync(newId);
+                var newAddr = await GetAddressesByIdAsync(newAddress.Id);
 
                 return new ApiResponse<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data);
             }
