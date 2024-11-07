@@ -37,7 +37,7 @@ namespace TP4SCS.Repository.Implements
         {
             // Filter by status and accountId
             Expression<Func<Order, bool>> filter = o =>
-                (string.IsNullOrEmpty(status) || o.Status.ToLower().Trim()==status.ToLower().Trim());
+                (string.IsNullOrEmpty(status) || o.Status.ToLower().Trim() == status.ToLower().Trim());
 
             // Sort based on OrderByEnum
             Func<IQueryable<Order>, IOrderedQueryable<Order>> orderByExpression = q => orderBy switch
@@ -53,12 +53,34 @@ namespace TP4SCS.Repository.Implements
             // Bao gồm các thuộc tính liên quan
             query = query
                     .Include(o => o.Account)
+                        .ThenInclude(a => a.AccountAddresses)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.Promotion)
+                    //.Include(o => o.OrderDetails)
+                    //    .ThenInclude(od => od.Service)
+                    //        .ThenInclude(s => s.Category)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Material);
+                        .ThenInclude(od => od.Material)
+                    .Select(o => new Order
+                     {
+                         Id = o.Id,
+                         Account = o.Account,
+                         Address = o.Address,
+                         OrderDetails = o.OrderDetails,
+                         CreateTime = o.CreateTime,
+                         DeliveredTime = o.DeliveredTime,
+                         IsAutoReject = o.IsAutoReject,
+                         Note = o.Note,
+                         OrderPrice = o.OrderPrice,
+                         DeliveredFee = o.DeliveredFee,
+                         TotalPrice = o.TotalPrice,
+                         ShippingUnit = o.ShippingUnit,
+                         ShippingCode = o.ShippingCode,
+                         Status = o.Status,
+                     });
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
