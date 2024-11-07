@@ -28,7 +28,7 @@ namespace TP4SCS.Library.Models.Request.General
         public AccountStatus? Status { get; set; }
 
         [DefaultValue(null)]
-        public int? OwnerId { get; set; }
+        public int? BusinessId { get; set; }
 
         [Required]
         [DefaultValue(false)]
