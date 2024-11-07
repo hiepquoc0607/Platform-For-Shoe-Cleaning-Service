@@ -11,6 +11,7 @@ using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
+using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
@@ -60,14 +61,29 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<BranchService, BranchServiceResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             //BusinessBranch Mapping
-            CreateMap<BusinessBranch, BranchResponse>();
+            CreateMap<BusinessBranch, BranchResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateBranchStatus(src.Status)));
             //Feedback Mapping
             CreateMap<FeedbackRequest, Feedback>();
+            //Order Mapping
+            CreateMap<Order, OrderResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderStatus(src.Status)))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
+            //OrderDetail Mapping
+            CreateMap<OrderDetail, OrderDetailResponse>()
+               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderDetailStatus(src.Status)));
+            CreateMap<OrderDetail, OrderDetailResponseV2>()
+               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderDetailStatus(src.Status)));
         }
 
         public void Register(TypeAdapterConfig config)
         {
             TypeAdapterConfig<OrderDetail, OrderDetailResponse>
+                .NewConfig()
+                .Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
+            TypeAdapterConfig<OrderDetail, OrderDetailResponseV2>
                 .NewConfig()
                 .Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
             TypeAdapterConfig<Order, OrderResponse>

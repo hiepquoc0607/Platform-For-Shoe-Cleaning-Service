@@ -1,4 +1,4 @@
-﻿using Mapster;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
@@ -14,11 +14,13 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IEmailService _emailService;
+        private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IEmailService emailService)
+        public OrderController(IOrderService orderService, IEmailService emailService, IMapper mapper)
         {
             _orderService = orderService;
             _emailService = emailService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -31,7 +33,8 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
-                var response = orders?.Adapt<IEnumerable<OrderResponse>>();
+                var totalCount = (await _orderService.GetOrdersAsync(status, null, null, orderBy))?.Count();
+                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
                 return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng thành công.", response));
             }
             catch (Exception ex)
@@ -49,7 +52,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByAccountIdAsync(accountId, status, orderBy);
-                var response = orders?.Adapt<IEnumerable<OrderResponse>>();
+                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
                 return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo tài khoản thành công.", response));
             }
             catch (Exception ex)
@@ -67,7 +70,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByBranchIdAsync(id, status, orderBy);
-                var response = orders?.Adapt<IEnumerable<OrderResponse>>();
+                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
                 return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo chi nhánh thành công.", response));
             }
             catch (Exception ex)
@@ -75,6 +78,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
+
         [HttpGet("businesses/{id}")]
         public async Task<IActionResult> GetOrdersByBusinessIdAsync(
             int id,
@@ -84,7 +88,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByBusinessIdAsync(id, status, orderBy);
-                var response = orders?.Adapt<IEnumerable<OrderResponse>>();
+                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
                 return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo doanh nghiệp thành công.", response));
             }
             catch (Exception ex)
@@ -92,6 +96,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
+
         [HttpPut("{id}/approved")]
         public async Task<IActionResult> Approved(int id, string toEmail)
         {
@@ -119,6 +124,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Lỗi khi gửi email: {ex.Message}"));
             }
         }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateOrderAsync(int id, UpdateOrderRequest request)
         {
@@ -136,7 +142,5 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Lỗi khi cập nhật: {ex.Message}", null));
             }
         }
-
-
     }
 }
