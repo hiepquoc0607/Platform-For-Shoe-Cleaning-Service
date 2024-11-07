@@ -27,6 +27,9 @@ namespace TP4SCS.Library.Models.Request.General
         [DefaultValue(null)]
         public AccountStatus? Status { get; set; }
 
+        [DefaultValue(null)]
+        public int? OwnerId { get; set; }
+
         [Required]
         [DefaultValue(false)]
         public bool IsDecsending { get; set; }

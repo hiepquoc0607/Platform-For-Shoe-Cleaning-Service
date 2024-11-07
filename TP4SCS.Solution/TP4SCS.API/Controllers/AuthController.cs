@@ -55,7 +55,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result);
+            return StatusCode(201, result.Data);
         }
 
         [HttpPost("send-verification-email")]

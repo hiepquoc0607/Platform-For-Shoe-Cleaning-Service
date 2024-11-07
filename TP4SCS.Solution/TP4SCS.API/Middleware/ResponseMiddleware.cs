@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace TP4SCS.API.Middleware
 {

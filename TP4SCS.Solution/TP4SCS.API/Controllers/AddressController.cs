@@ -29,7 +29,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/addresses/{id}", Name = "GetAddressById")]
+        [Route("api/addresses/{id}")]
         public async Task<IActionResult> GetAddressesByIdAsync([FromRoute] int id)
         {
             var result = await _addressService.GetAddressesByIdAsync(id);
@@ -60,7 +60,7 @@ namespace TP4SCS.API.Controllers
 
             int newAddId = await _addressService.GetAddressMaxIdAsync();
 
-            return CreatedAtAction("GetAddressById", new { id = newAddId }, result.Data);
+            return StatusCode(201, result.Data);
         }
 
         [HttpPut]
