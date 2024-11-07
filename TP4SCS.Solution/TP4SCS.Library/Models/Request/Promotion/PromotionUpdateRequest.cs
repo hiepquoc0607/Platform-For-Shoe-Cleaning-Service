@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace TP4SCS.Library.Models.Request.Promotion
+﻿namespace TP4SCS.Library.Models.Request.Promotion
 {
     public class PromotionUpdateRequest
     {

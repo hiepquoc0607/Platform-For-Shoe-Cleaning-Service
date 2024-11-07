@@ -68,8 +68,8 @@ namespace TP4SCS.Library.Utils.Mapper
         public void Register(TypeAdapterConfig config)
         {
             TypeAdapterConfig<OrderDetail, OrderDetailResponse>
-                .NewConfig()
-                .Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
+                .NewConfig();
+            //.Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
             TypeAdapterConfig<Order, OrderResponse>
                 .NewConfig()
                 .Map(dest => dest.Status, src => Util.TranslateOrderStatus(src.Status))

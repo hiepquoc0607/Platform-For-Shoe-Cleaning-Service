@@ -1,5 +1,4 @@
-﻿using FirebaseAdmin.Messaging;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Auth

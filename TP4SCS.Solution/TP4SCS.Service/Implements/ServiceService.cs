@@ -247,7 +247,7 @@ namespace TP4SCS.Services.Implements
                     var newAssetUrl = new AssetUrl
                     {
                         Url = newAsset.Url,
-                        IsImage = newAsset.IsImage,
+                        //IsImage = newAsset.IsImage,
                         Type = newAsset.Type
                     };
                     existingService.AssetUrls.Add(newAssetUrl);
