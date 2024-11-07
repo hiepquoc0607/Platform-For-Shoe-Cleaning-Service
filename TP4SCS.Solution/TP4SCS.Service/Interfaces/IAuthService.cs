@@ -1,5 +1,4 @@
-﻿using TP4SCS.Library.Models.Request.Account;
-using TP4SCS.Library.Models.Request.Auth;
+﻿using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
 
@@ -9,7 +8,9 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
-        Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CreateAccountRequest createAccountRequest);
+        Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CustomerRegisterRequest customerRegisterRequest);
+
+        Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken);
 

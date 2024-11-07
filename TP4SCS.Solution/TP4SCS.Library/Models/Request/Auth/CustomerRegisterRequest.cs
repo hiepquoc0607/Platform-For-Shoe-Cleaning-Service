@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace TP4SCS.Library.Models.Request.Account
+namespace TP4SCS.Library.Models.Request.Auth
 {
-    public class CreateAccountRequest
+    public class CustomerRegisterRequest
     {
         [Required]
         [EmailAddress]

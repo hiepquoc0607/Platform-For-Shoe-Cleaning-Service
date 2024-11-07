@@ -1,8 +1,8 @@
 ﻿using Mapster;
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.Business;
-using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.Utils;
@@ -40,7 +40,7 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Business
-        public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, CreateBusinessRequest createBusinessRequest)
+        public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest)
         {
             var businessData = createBusinessRequest.CreateBusiness;
             var branchData = createBusinessRequest.CreateBranch;
@@ -93,7 +93,7 @@ namespace TP4SCS.Services.Implements
 
             var data = businesses.Adapt<IEnumerable<BusinessResponse>>();
 
-            return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, pagination);
+            return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, 200, pagination);
         }
 
         //Get Business By Id

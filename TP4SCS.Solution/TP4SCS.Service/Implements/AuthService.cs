@@ -5,7 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
@@ -301,9 +300,9 @@ namespace TP4SCS.Services.Implements
         }
 
         //Customer Register
-        public async Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CreateAccountRequest createAccountRequest)
+        public async Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CustomerRegisterRequest customerRegisterRequest)
         {
-            var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
+            var passwordError = _util.CheckPasswordErrorType(customerRegisterRequest.Password);
 
             var passwordErrorMessages = new Dictionary<string, string>
             {
@@ -318,23 +317,23 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, message);
             }
 
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.Trim().ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(customerRegisterRequest.Email.Trim().ToLower());
 
             if (isEmailExisted == true)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Email đã được sử dụng!");
             }
 
-            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone.Trim());
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(customerRegisterRequest.Phone.Trim());
 
             if (isPhoneExisted == true)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Số điện thoại đã được sử dụng!");
             }
 
-            var newAccount = _mapper.Map<Account>(createAccountRequest);
+            var newAccount = _mapper.Map<Account>(customerRegisterRequest);
             newAccount.Gender = newAccount.Gender.Trim().ToUpper();
-            newAccount.PasswordHash = _util.HashPassword(createAccountRequest.Password);
+            newAccount.PasswordHash = _util.HashPassword(customerRegisterRequest.Password);
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.CUSTOMER;
 
@@ -386,6 +385,50 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Gửi Email Đặt Lại Mật Khẩu Thất Bại!");
             }
+        }
+
+        public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
+        {
+            //var account = ownerRegisterRequest.CustomerRegister;
+            //var business = ownerRegisterRequest.CreateBusiness;
+            //var branch = ownerRegisterRequest.CreateBranch;
+
+            //var passwordError = _util.CheckPasswordErrorType(account.Password);
+
+            //var passwordErrorMessages = new Dictionary<string, string>
+            //{
+            //    { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
+            //    { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
+            //    { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
+            //    { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
+            //};
+
+            //if (passwordErrorMessages.TryGetValue(passwordError, out var message))
+            //{
+            //    return new ApiResponse<AuthResponse>("error", 400, message);
+            //}
+
+            //var isEmailExisted = await _accountRepository.IsEmailExistedAsync(account.Email.Trim().ToLower());
+
+            //if (isEmailExisted == true)
+            //{
+            //    return new ApiResponse<AuthResponse>("error", 400, "Email đã được sử dụng!");
+            //}
+
+            //var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(account.Phone.Trim());
+
+            //if (isPhoneExisted == true)
+            //{
+            //    return new ApiResponse<AuthResponse>("error", 400, "Số điện thoại đã được sử dụng!");
+            //}
+
+            //var newAccount = _mapper.Map<Account>(account);
+            //newAccount.Gender = newAccount.Gender.Trim().ToUpper();
+            //newAccount.PasswordHash = _util.HashPassword(account.Password);
+            //newAccount.RefreshToken = GenerateRefreshToken();
+            //newAccount.Role = RoleConstants.CUSTOMER;
+
+            throw new NotImplementedException();
         }
     }
 }

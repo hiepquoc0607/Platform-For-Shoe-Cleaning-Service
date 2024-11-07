@@ -12,7 +12,7 @@ namespace TP4SCS.Library.Utils.Mapper
         {
             config.NewConfig<BusinessProfile, BusinessResponse>();
 
-            config.NewConfig<CreateBusinessObject, BusinessProfile>()
+            config.NewConfig<CreateBusinessRequest, BusinessProfile>()
                 .Map(dest => dest.ImageUrl, otp => string.Empty)
                 .Map(dest => dest.Rating, otp => 0)
                 .Map(dest => dest.Rank, otp => int.MaxValue)

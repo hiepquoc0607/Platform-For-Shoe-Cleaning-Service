@@ -29,7 +29,7 @@ namespace TP4SCS.Repository.Implements
             }
             var existingOrderDetail = order.OrderDetails.SingleOrDefault(od => od.ServiceId!.Value == orderDetail.ServiceId
              && od.BranchId == orderDetail.BranchId);
-            if(existingOrderDetail != null)
+            if (existingOrderDetail != null)
             {
                 existingOrderDetail.Quantity += orderDetail.Quantity;
                 existingOrderDetail.Status = StatusConstants.PROCESSING;
@@ -62,15 +62,15 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new KeyNotFoundException($"Không tìm thấy OrderDetail với ID {id}.");
             }
-            if(od.Feedbacks != null)
+            if (od.Feedbacks != null)
             {
                 throw new InvalidOperationException("Không thể xóa OrderDetail vì có liên kết với Feedbacks.");
             }
             var order = await _dbContext.Orders
                              .Include(o => o.OrderDetails)
                              .SingleOrDefaultAsync(c => c.Id == od.OrderId);
-            
-            
+
+
             if (order != null)
             {
                 if (order.OrderDetails.Count() <= 1)
@@ -90,6 +90,7 @@ namespace TP4SCS.Repository.Implements
                 .Include(od => od.Branch)
                 .Include(od => od.Material)
                 .Include(od => od.Service)
+                .ThenInclude(s => s!.Promotion)
                 .SingleOrDefaultAsync(od => od.Id == id);
         }
 
@@ -126,7 +127,7 @@ namespace TP4SCS.Repository.Implements
                 .Include(o => o.OrderDetails)
                 .SingleOrDefaultAsync(o => o.Id == orderDetail.OrderId);
 
-            if (order != null )
+            if (order != null)
             {
                 order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
                 order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;

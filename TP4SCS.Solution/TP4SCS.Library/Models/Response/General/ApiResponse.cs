@@ -5,9 +5,10 @@ namespace TP4SCS.Library.Models.Response.General
 {
     public class ApiResponse<T>
     {
-        public ApiResponse(string status, string message, T? data, Pagination? pagination = null)
+        public ApiResponse(string status, string message, T? data, int statusCode = 200, Pagination? pagination = null)
         {
             Status = status;
+            StatusCode = statusCode;
             Message = message;
             Data = data;
             Pagination = pagination;

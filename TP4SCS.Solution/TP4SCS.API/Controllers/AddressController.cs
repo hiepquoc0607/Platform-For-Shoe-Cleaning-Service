@@ -53,14 +53,14 @@ namespace TP4SCS.API.Controllers
                 return BadRequest("Trường Nhập Không Hợp Lệ Hoặc Thiếu!");
             }
 
-            if (result.StatusCode != 200)
+            if (result.StatusCode != 201)
             {
                 return StatusCode(result.StatusCode, result);
             }
 
             int newAddId = await _addressService.GetAddressMaxIdAsync();
 
-            return StatusCode(201, result.Data);
+            return StatusCode(201, result);
         }
 
         [HttpPut]

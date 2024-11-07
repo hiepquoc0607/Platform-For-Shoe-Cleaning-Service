@@ -2,6 +2,7 @@
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
+using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
@@ -27,7 +28,7 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Account
-        public async Task<ApiResponse<AccountResponse>> CreateAccountAsync(CreateAccountRequest createAccountRequest)
+        public async Task<ApiResponse<AccountResponse>> CreateAccountAsync(CustomerRegisterRequest createAccountRequest)
         {
             var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
 
@@ -164,7 +165,7 @@ namespace TP4SCS.Services.Implements
 
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
-            return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, pagination);
+            return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, 200, pagination);
         }
 
         //Update Account

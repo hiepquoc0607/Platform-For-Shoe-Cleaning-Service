@@ -352,7 +352,7 @@ namespace TP4SCS.Services.Implements
                 return res;
             });
 
-            return new ApiResponse<IEnumerable<ServiceResponse>?>("success", "Lấy Dữ Liệu Dịch Vụ Thành Công!", data, pagination);
+            return new ApiResponse<IEnumerable<ServiceResponse>?>("success", "Lấy Dữ Liệu Dịch Vụ Thành Công!", data, 200, pagination);
         }
     }
 }

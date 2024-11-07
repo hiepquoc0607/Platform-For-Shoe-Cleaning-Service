@@ -1,5 +1,5 @@
-﻿using TP4SCS.Library.Models.Request.Business;
-using TP4SCS.Library.Models.Request.BusinessProfile;
+﻿using TP4SCS.Library.Models.Request.Auth;
+using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 
@@ -13,7 +13,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId);
 
-        Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, CreateBusinessRequest createBusinessRequest);
+        Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest);
 
