@@ -182,7 +182,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Giá sau khi giảm phải bé hơn hoặc bằng giá gốc.");
             }
-                var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
+            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy dịch vụ nào.");

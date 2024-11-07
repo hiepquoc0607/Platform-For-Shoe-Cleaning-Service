@@ -81,9 +81,9 @@ namespace TP4SCS.API.Controllers
         [HttpPost("api/carts/cart/checkout")]
         public async Task<IActionResult> CheckoutAsync([FromBody] CheckoutRequest request)
         {
-            if (request == null || request.CartItemIds == null || request.CartItemIds.Length == 0)
+            if (request == null)
             {
-                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp ID sản phẩm trong giỏ hàng và ID tài khoản hợp lệ.");
+                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp sản phẩm trong giỏ hàng.");
             }
 
             try
