@@ -1,12 +1,11 @@
-﻿namespace TP4SCS.Library.Models.Request.Order
+﻿namespace TP4SCS.Library.Models.Response.Order
 {
-    public class UpdateOrderRequest
+    public class OrderTimeResponse
     {
-        public string? ShippingUnit { get; set; }
+        public DateTime CreateTime { get; set; }
 
-        public string? ShippingCode { get; set; }
-        public decimal? DeliveredFee { get; set; }
-        public string? Status { get; set; }
+        public DateTime? CanceledTime { get; set; }
+
         public DateTime? PendingTime { get; set; }
 
         public DateTime? ApprovedTime { get; set; }

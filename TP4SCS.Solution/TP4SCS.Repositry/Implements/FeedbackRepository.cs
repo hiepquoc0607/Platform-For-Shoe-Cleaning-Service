@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -9,7 +11,10 @@ namespace TP4SCS.Repository.Implements
         public FeedbackRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
         }
-
+        public async Task<Feedback?> GetFeedbackByidAsync(int id)
+        {
+            return await GetByIDAsync(id);
+        }
         public async Task AddFeedbacksAsync(Feedback feedback)
         {
             await InsertAsync(feedback);
@@ -29,7 +34,62 @@ namespace TP4SCS.Repository.Implements
 
             _dbContext.Services.Update(service);
             await _dbContext.SaveChangesAsync();
+        }
+        public Task<IEnumerable<Feedback>?> GetFeedbacksAsync(
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
+        {
+            // Biểu thức lọc với cả keyword và status
+            Expression<Func<Feedback, bool>> filter = s =>
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
 
+            Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>> orderByExpression = q => orderBy switch
+            {
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
+            };
+            return GetAsync(
+                filter: filter,
+                includeProperties : "AssetUrls",
+                orderBy: orderByExpression,
+                pageIndex: pageIndex,
+                pageSize: pageSize
+            );
+        }
+        public async Task<IEnumerable<Feedback>?> GetFeedbacksByServiceIdAsync(
+            int serviceId,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
+        {
+            // Biểu thức lọc với cả keyword và status
+            Expression<Func<Feedback, bool>> filter = s =>
+                (string.IsNullOrEmpty(status) || s.Status.ToLower() == status.ToLower());
+
+            Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>> orderByExpression = q => orderBy switch
+            {
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
+            };
+            var feedbacks = await GetAsync(
+                filter: filter,
+                includeProperties: "AssetUrls, OrderItem",
+                orderBy: orderByExpression,
+                pageIndex: pageIndex,
+                pageSize: pageSize);
+            return feedbacks?.Where(f => f.OrderItem.ServiceId == serviceId);
+        }
+        public async Task DeleteFeedbackAsync(int id)
+        {
+            await DeleteAsync(id);
+        }
+
+        public async Task UpdateFeedbackAsync(Feedback feedback)
+        {
+            await UpdateAsync(feedback);
         }
     }
 }

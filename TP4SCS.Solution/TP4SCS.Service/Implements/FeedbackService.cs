@@ -12,6 +12,11 @@ namespace TP4SCS.Services.Implements
         {
             _feedbackRepository = feedbackRepository;
         }
+
+        public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
+        {
+            return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
+        }
         public async Task AddFeedbacksAsync(Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)
@@ -29,6 +34,21 @@ namespace TP4SCS.Services.Implements
             }
             feedback.CreatedTime = DateTime.UtcNow;
             await _feedbackRepository.AddFeedbacksAsync(feedback);
+        }
+        public async Task DeleteFeedbackAsync(int id)
+        {
+            await _feedbackRepository.DeleteFeedbackAsync(id);
+        }
+        public async Task UpdateFeedbackAsync(Feedback feedback, int existingFeedbackId)
+        {
+            var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
+            if(existingFeedback == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy đánh giá với ID: {existingFeedbackId}.");
+            }
+            existingFeedback.Status = feedback.Status;
+            existingFeedback.Content = feedback.Status;
+            await _feedbackRepository.UpdateFeedbackAsync(feedback);
         }
     }
 }

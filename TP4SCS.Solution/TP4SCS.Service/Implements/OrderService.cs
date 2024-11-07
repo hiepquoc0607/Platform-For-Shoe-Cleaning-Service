@@ -24,7 +24,10 @@ namespace TP4SCS.Services.Implements
         {
             return await _orderRepository.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
         }
-
+        public async Task<Order?> GetOrderByOrderId(int orderId)
+        {
+            return await _orderRepository.GetOrderByIdAsync(orderId);
+        }
         public async Task<IEnumerable<Order>?> GetOrdersByAccountIdAsync(
             int accountId,
             string? status = null,
@@ -111,6 +114,8 @@ namespace TP4SCS.Services.Implements
             {
                 throw new KeyNotFoundException($"Status không hợp lệ.");
             }
+
+            // Cập nhật thông tin ShippingUnit và ShippingCode nếu có
             if (request.ShippingUnit != null)
             {
                 existingOrder.ShippingUnit = request.ShippingUnit;
@@ -121,17 +126,68 @@ namespace TP4SCS.Services.Implements
                 existingOrder.ShippingCode = request.ShippingCode;
             }
 
+            // Cập nhật DeliveredFee nếu có giá trị
             if (request.DeliveredFee.HasValue)
             {
                 existingOrder.DeliveredFee = request.DeliveredFee.Value;
             }
+
+            // Cập nhật Status nếu có
             if (request.Status != null && Util.IsValidOrderStatus(request.Status))
             {
                 existingOrder.Status = request.Status;
             }
 
+            // Cập nhật các thời gian nếu không phải null
+            if (request.PendingTime.HasValue)
+            {
+                existingOrder.PendingTime = request.PendingTime.Value;
+            }
+
+            if (request.ApprovedTime.HasValue)
+            {
+                existingOrder.ApprovedTime = request.ApprovedTime.Value;
+            }
+
+            if (request.RevievedTime.HasValue)
+            {
+                existingOrder.RevievedTime = request.RevievedTime.Value;
+            }
+
+            if (request.ProcessingTime.HasValue)
+            {
+                existingOrder.ProcessingTime = request.ProcessingTime.Value;
+            }
+
+            if (request.StoragedTime.HasValue)
+            {
+                existingOrder.StoragedTime = request.StoragedTime.Value;
+            }
+
+            if (request.ShippingTime.HasValue)
+            {
+                existingOrder.ShippingTime = request.ShippingTime.Value;
+            }
+
+            if (request.DeliveredTime.HasValue)
+            {
+                existingOrder.DeliveredTime = request.DeliveredTime.Value;
+            }
+
+            if (request.FinishedTime.HasValue)
+            {
+                existingOrder.FinishedTime = request.FinishedTime.Value;
+            }
+
+            if (request.AbandonedTime.HasValue)
+            {
+                existingOrder.AbandonedTime = request.AbandonedTime.Value;
+            }
+
+            // Cập nhật đơn hàng trong cơ sở dữ liệu
             await _orderRepository.UpdateOrderAsync(existingOrder);
         }
+
 
     }
 }

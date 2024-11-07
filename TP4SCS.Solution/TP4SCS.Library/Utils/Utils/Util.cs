@@ -88,6 +88,7 @@ namespace TP4SCS.Library.Utils.Utils
                 "processing" => "Đang xử lý",
                 "storage" => "Lưu trữ",
                 "shipping" => "Đang giao hàng",
+                "delivered" => "Đã giao hàng",
                 "finished" => "Hoàn thành",
                 "abandoned" => "Quá hạn nhận hàng",
                 _ => "Trạng Thái Không Hợp Lệ"
@@ -108,7 +109,19 @@ namespace TP4SCS.Library.Utils.Utils
                 _ => "Trạng Thái Không Hợp Lệ"
             };
         }
+        public static string TranslateBranchStatus(string? status)
+        {
+            if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
+            var lowerStatus = status.ToLower();
+            return lowerStatus switch
+            {
+                "active" => "Hoạt động",
+                "inactive" => "Không Hoạt Động",
+                "suspended" => "Bị Đình Chỉ",
+                _ => "Trạng Thái Không Hợp Lệ"
+            };
+        }
         public static bool IsValidGeneralStatus(string status)
         {
             var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unavailable };

@@ -32,7 +32,6 @@ namespace TP4SCS.Repository.Implements
             if (existingOrderDetail != null)
             {
                 existingOrderDetail.Quantity += orderDetail.Quantity;
-                //existingOrderDetail.Status = StatusConstants.PROCESSING;
             }
             else
             {

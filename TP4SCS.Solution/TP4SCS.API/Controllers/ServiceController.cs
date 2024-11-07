@@ -44,7 +44,6 @@ namespace TP4SCS.API.Controllers
             var pagedResponse = new PagedResponse<ServiceResponse>(
                 services?.Select(s =>
                 {
-                    // Ánh xạ Service sang ServiceResponse
                     var res = _mapper.Map<ServiceResponse>(s);
                     return res;
                 }) ?? Enumerable.Empty<ServiceResponse>(),
