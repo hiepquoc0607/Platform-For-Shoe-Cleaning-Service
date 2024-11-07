@@ -77,7 +77,7 @@ jobs:
             docker pull hieu15402/tp4scsapi:latest
             
             # Xóa image cũ nếu không sử dụng
-            docker rmi hieu15402/tp4scsapi || echo "Không thể xóa image hieu15402/tp4scsapi, có thể không tồn tại hoặc đang được sử dụng."
+            docker images -f "dangling=true" -q | xargs -r docker rmi || echo "Không thể xóa các image không tag, có thể không tồn tại hoặc đang được sử dụng."
             
             # Khởi động lại container
             docker run -d -p 8080:8080 --name tp4scsapi --restart always hieu15402/tp4scsapi || { echo "Không thể khởi động container tp4scsapi"; exit 1; }
