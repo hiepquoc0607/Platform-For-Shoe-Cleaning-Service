@@ -26,15 +26,15 @@ namespace TP4SCS.Services.Implements
             foreach (var orderDetail in orderDetails)
             {
                 // Kiểm tra MaterialId và ServiceId
-                if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
-                {
-                    throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
-                }
+                //if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId)
+                //{
+                //    throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
+                //}
 
-                if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
-                {
-                    throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
-                }
+                //if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId)
+                //{
+                //    throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
+                //}
 
                 // Kiểm tra Material
                 if (orderDetail.MaterialId.HasValue)
@@ -46,14 +46,14 @@ namespace TP4SCS.Services.Implements
                     }
                 }
                 // Kiểm tra Service
-                else if (orderDetail.ServiceId.HasValue)
-                {
-                    var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId.Value);
-                    if (service == null || service.Status != StatusConstants.Available)
-                    {
-                        throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
-                    }
-                }
+                //else if (orderDetail.ServiceId)
+                //{
+                //    var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId);
+                //    if (service == null || service.Status != StatusConstants.Available)
+                //    {
+                //        throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+                //    }
+                //}
                 // Kiểm tra quantity
                 if (orderDetail.Quantity <= 0)
                 {
@@ -67,12 +67,12 @@ namespace TP4SCS.Services.Implements
                 }
 
                 // Kiểm tra status
-                if (String.IsNullOrEmpty(orderDetail.Status) || !Util.IsValidOrderDetailStatus(orderDetail.Status))
-                {
-                    throw new InvalidOperationException("Trạng thái không hợp lệ.");
-                }
+                //if (String.IsNullOrEmpty(orderDetail) || !Util.IsValidOrderDetailStatus(orderDetail))
+                //{
+                //    throw new InvalidOperationException("Trạng thái không hợp lệ.");
+                //}
 
-                orderDetail.Status = orderDetail.Status.ToUpper();
+                //orderDetail.Status = orderDetail.ToUpper();
             }
 
             await _orderDetailRepository.AddOrderDetailsAsync(orderDetails);
@@ -80,15 +80,15 @@ namespace TP4SCS.Services.Implements
 
         public async Task AddOrderDetailAsync(OrderDetail orderDetail)
         {
-            if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
-            {
-                throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
-            }
+            //if (!orderDetail.MaterialId.HasValue && !orderDetail.ServiceId.HasValue)
+            //{
+            //    throw new InvalidOperationException("Phải cung cấp ít nhất một trong hai: MaterialId hoặc ServiceId.");
+            //}
 
-            if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
-            {
-                throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
-            }
+            //if (orderDetail.MaterialId.HasValue && orderDetail.ServiceId.HasValue)
+            //{
+            //    throw new InvalidOperationException("Chỉ được cung cấp một trong hai: MaterialId hoặc ServiceId.");
+            //}
 
             // Kiểm tra Material
             if (orderDetail.MaterialId.HasValue)
@@ -100,24 +100,24 @@ namespace TP4SCS.Services.Implements
                 }
             }
             // Kiểm tra Service
-            else if (orderDetail.ServiceId.HasValue)
-            {
-                var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId.Value);
-                if (service == null || service.Status != StatusConstants.Available)
-                {
-                    throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
-                }
-            }
+            //else if (orderDetail.ServiceId.)
+            //{
+            //    var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId.Value);
+            //    if (service == null || service.Status != StatusConstants.Available)
+            //    {
+            //        throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+            //    }
+            //}
             // Kiểm tra quantity
             if (orderDetail.Quantity <= 0)
             {
                 throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
             }
 
-            orderDetail.Price = await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId!.Value);
+            orderDetail.Price = await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId!);
 
 
-            orderDetail.Status = StatusConstants.PROCESSING;
+            //orderDetail.Status = StatusConstants.PROCESSING;
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
         }
@@ -165,10 +165,10 @@ namespace TP4SCS.Services.Implements
             {
                 existingOrderDetail.Quantity = request.Quantity.Value;
             }
-            if (!string.IsNullOrEmpty(request.Status) && Util.IsValidOrderDetailStatus(request.Status))
-            {
-                existingOrderDetail.Status = request.Status.Trim().ToUpper();
-            }
+            //if (!string.IsNullOrEmpty(request.Status) && Util.IsValidOrderDetailStatus(request.Status))
+            //{
+            //    existingOrderDetail.Status = request.Status.Trim().ToUpper();
+            //}
             await _orderDetailRepository.UpdateOrderDetailAsync(existingOrderDetail);
         }
 

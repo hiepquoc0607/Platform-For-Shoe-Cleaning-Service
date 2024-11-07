@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-
-namespace TP4SCS.Library.Models.Request.Service
+﻿namespace TP4SCS.Library.Models.Request.Service
 {
     public class ServiceRequest
     {

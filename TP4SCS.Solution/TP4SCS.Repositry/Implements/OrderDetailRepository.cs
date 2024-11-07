@@ -27,16 +27,16 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new Exception($"Order với id: {orderDetail.OrderId} không tồn tại");
             }
-            var existingOrderDetail = order.OrderDetails.SingleOrDefault(od => od.ServiceId!.Value == orderDetail.ServiceId
+            var existingOrderDetail = order.OrderDetails.SingleOrDefault(od => od.ServiceId == orderDetail.ServiceId
              && od.BranchId == orderDetail.BranchId);
             if (existingOrderDetail != null)
             {
                 existingOrderDetail.Quantity += orderDetail.Quantity;
-                existingOrderDetail.Status = StatusConstants.PROCESSING;
+                //existingOrderDetail.Status = StatusConstants.PROCESSING;
             }
             else
             {
-                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == orderDetail.ServiceId!.Value);
+                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == orderDetail.ServiceId);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} không tìm thấy.");
@@ -112,7 +112,7 @@ namespace TP4SCS.Repository.Implements
                     Material = od.Material,
                     Quantity = od.Quantity,
                     Price = od.Price,
-                    Status = od.Status
+                    //Status = od.Status
                 })
                 .ToListAsync();
         }
