@@ -204,7 +204,7 @@ namespace TP4SCS.Services.Implements
 
             var oldPass = _util.HashPassword(updateAccountPasswordRequest.OldPassword);
 
-            if (!_util.CompareHashedPassword(oldPass, oldAccount.PasswordHash))
+            if (!_util.CompareHashedPassword(oldPass, _util.HashPassword(oldAccount.PasswordHash)))
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Mật Khẩu Không Đúng!");
             }
