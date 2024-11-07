@@ -119,14 +119,15 @@ namespace TP4SCS.Services.Implements
                         ServiceId = item.ServiceId,
                         Quantity = item.Quantity,
                         Price = finalPrice,
-                        //Status = StatusConstants.PENDING
                     });
 
                     orderPrice += finalPrice * item.Quantity;
                 }
 
                 order.OrderPrice = orderPrice;
-                order.TotalPrice = orderPrice + 0;
+                order.PendingTime = DateTime.UtcNow;
+                order.CreateTime = DateTime.UtcNow;
+                order.TotalPrice = orderPrice + (request.IsShip ? 10000 : 0);
                 orders.Add(order);
             }
 

@@ -72,27 +72,12 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
             //OrderDetail Mapping
-            CreateMap<OrderDetail, OrderDetailResponse>()
-               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderDetailStatus(src.Status)));
-            CreateMap<OrderDetail, OrderDetailResponseV2>()
-               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderDetailStatus(src.Status)));
+            CreateMap<OrderDetail, OrderDetailResponse>();
+            CreateMap<OrderDetail, OrderDetailResponseV2>();
         }
 
         public void Register(TypeAdapterConfig config)
         {
-            TypeAdapterConfig<OrderDetail, OrderDetailResponse>
-                .NewConfig()
-                .Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
-            TypeAdapterConfig<OrderDetail, OrderDetailResponseV2>
-                .NewConfig()
-                .Map(dest => dest.Status, src => Util.TranslateOrderDetailStatus(src.Status));
-            TypeAdapterConfig<Order, OrderResponse>
-                .NewConfig()
-                .Map(dest => dest.Status, src => Util.TranslateOrderStatus(src.Status))
-                .Map(dest => dest.OrderDetails, src => src.OrderDetails.Adapt<List<OrderDetailResponseV2>>())
-                .Map(dest => dest.Phone, src => src.Account.Phone)
-                .Map(dest => dest.FullName, src => src.Account.FullName)
-                .Map(dest => dest.Email, src => src.Account.Email);
 
         }
     }

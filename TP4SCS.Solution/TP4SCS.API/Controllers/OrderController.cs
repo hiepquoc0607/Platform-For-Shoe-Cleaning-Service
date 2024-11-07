@@ -53,14 +53,27 @@ namespace TP4SCS.API.Controllers
             {
                 var orders = await _orderService.GetOrdersByAccountIdAsync(accountId, status, orderBy);
                 var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo tài khoản thành công.", response));
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy đơn hàng theo tài khoản thành công.", response));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
-
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderByIdAsync(int id)
+        {
+            try
+            {
+                var orders = await _orderService.GetOrderByOrderId(id);
+                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo id thành công.", response));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
+            }
+        }
         [HttpGet("branches/{id}")]
         public async Task<IActionResult> GetOrdersByBranchIdAsync(
             int id,
