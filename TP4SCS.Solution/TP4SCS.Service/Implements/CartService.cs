@@ -61,14 +61,33 @@ namespace TP4SCS.Services.Implements
         }
         public async Task CheckoutAsync(CheckoutRequest request)
         {
-            var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
-            var groupedItems = cartItems
-                .GroupBy(item => item.BranchId)
-                .Select(group => new
-                {
-                    BranchId = group.Key,
-                    Items = group.ToList()
-                });
+            IEnumerable<dynamic> groupedItems = Enumerable.Empty<dynamic>();
+            if ((request.CartItemIds.Any() && request.Items.Any()) || (!request.CartItemIds.Any() && !request.Items.Any()))
+            {
+                throw new ArgumentException("Vui lòng chỉ chọn một trong hai: CartItemIds hoặc Items. Không thể chọn cả hai hoặc để cả hai trống.");
+            }
+
+            if (request.CartItemIds.Any())
+            {
+                var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
+                groupedItems = cartItems
+                    .GroupBy(item => item.BranchId)
+                    .Select(group => new
+                    {
+                        BranchId = group.Key,
+                        Items = group.ToList()
+                    });
+            }
+            else if (request.Items.Any())
+            {
+                groupedItems = request.Items
+                    .GroupBy(item => item.BranchId)
+                    .Select(group => new
+                    {
+                        BranchId = group.Key,
+                        Items = group.ToList()
+                    });
+            }
 
             var orders = new List<Order>();
 
@@ -84,7 +103,7 @@ namespace TP4SCS.Services.Implements
                     Status = StatusConstants.PENDING,
                     ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
                     ShippingCode = request.IsShip ? "" : null,
-                    DeliveredFee = request.IsShip ? 1 : 0,
+                    DeliveredFee = request.IsShip ? 10000 : 0,
                     OrderDetails = new List<OrderDetail>()
                 };
 
@@ -92,7 +111,7 @@ namespace TP4SCS.Services.Implements
 
                 foreach (var item in group.Items)
                 {
-                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
+                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
 
                     order.OrderDetails.Add(new OrderDetail
                     {
@@ -112,7 +131,11 @@ namespace TP4SCS.Services.Implements
             }
 
             await _orderRepository.AddOrdersAsync(orders);
-            await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
+            if (request.CartItemIds.Any())
+            {
+                await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
+            }              
         }
+
     }
 }

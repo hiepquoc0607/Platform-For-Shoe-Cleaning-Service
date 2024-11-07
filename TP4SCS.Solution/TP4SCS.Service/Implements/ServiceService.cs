@@ -53,9 +53,9 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Giá giảm phải lớn hơn 0.");
             }
 
-            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice >= serviceRequest.Price)
+            if (serviceRequest.NewPrice.HasValue && serviceRequest.NewPrice > serviceRequest.Price)
             {
-                throw new ArgumentException("Giá giảm phải bé hơn giá gốc.");
+                throw new ArgumentException("Giá sau khi giảm phải bé hơn hoặc bằng giá gốc.");
             }
             if (serviceRequest.AssetUrls == null)
             {
@@ -180,9 +180,9 @@ namespace TP4SCS.Services.Implements
             if (serviceUpdateRequest.NewPrice.HasValue &&
                 serviceUpdateRequest.NewPrice > serviceUpdateRequest.Price)
             {
-                throw new ArgumentException("Giá sau khi giảm phải nhỏ hơn giá gốc.");
+                throw new ArgumentException("Giá sau khi giảm phải bé hơn hoặc bằng giá gốc.");
             }
-                var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
+            var existingService = await _serviceRepository.GetServiceByIdAsync(existingServiceId);
             if (existingService == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy dịch vụ nào.");
@@ -194,8 +194,7 @@ namespace TP4SCS.Services.Implements
             existingService.Price = serviceUpdateRequest.Price;
             existingService.Status = serviceUpdateRequest.Status;
 
-            if (serviceUpdateRequest.NewPrice.HasValue &&
-                serviceUpdateRequest.NewPrice < serviceUpdateRequest.Price)
+            if (serviceUpdateRequest.NewPrice.HasValue)
             {
                 if (existingService.Promotion != null)
                 {
