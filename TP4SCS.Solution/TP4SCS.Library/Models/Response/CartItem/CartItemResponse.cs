@@ -1,6 +1,4 @@
-﻿using TP4SCS.Library.Models.Response.Service;
-
-namespace TP4SCS.Library.Models.Response.CartItem
+﻿namespace TP4SCS.Library.Models.Response.CartItem
 {
     public class CartItemResponse
     {

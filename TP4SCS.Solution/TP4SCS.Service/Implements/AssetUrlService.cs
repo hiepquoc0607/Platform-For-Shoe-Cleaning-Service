@@ -43,7 +43,7 @@ namespace TP4SCS.Services.Implements
                     FeedbackId = feedbackId,
                     ServiceId = serviceId,
                     Url = assetUrlRequest.Url,
-                    IsImage = assetUrlRequest.IsImage,
+                    //IsImage = assetUrlRequest.IsImage,
                     Type = assetUrlRequest.Type
                 };
 

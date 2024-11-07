@@ -119,7 +119,7 @@ namespace TP4SCS.Services.Implements
                         ServiceId = item.ServiceId,
                         Quantity = item.Quantity,
                         Price = finalPrice,
-                        Status = StatusConstants.PENDING
+                        //Status = StatusConstants.PENDING
                     });
 
                     orderPrice += finalPrice * item.Quantity;

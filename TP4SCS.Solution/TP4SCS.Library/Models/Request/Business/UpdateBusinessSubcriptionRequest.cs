@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace TP4SCS.Library.Models.Request.Business
+﻿namespace TP4SCS.Library.Models.Request.Business
 {
     public class UpdateBusinessSubcriptionRequest
     {
