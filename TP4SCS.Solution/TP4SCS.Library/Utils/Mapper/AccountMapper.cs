@@ -14,7 +14,7 @@ namespace TP4SCS.Library.Utils.Mapper
             config.NewConfig<CustomerRegisterRequest, Account>()
                 .Map(dest => dest.PasswordHash, src => src.Password)
                 .Map(dest => dest.ImageUrl, opt => string.Empty)
-                .Map(dest => dest.IsVerified, opt => true)
+                .Map(dest => dest.IsVerified, opt => false)
                 .Map(dest => dest.IsGoogle, opt => false)
                 .Map(dest => dest.RefreshToken, opt => string.Empty)
                 .Map(dest => dest.RefreshExpireTime, opt => DateTime.Now)
