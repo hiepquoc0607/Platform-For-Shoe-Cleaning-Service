@@ -57,30 +57,19 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
                             .ThenInclude(s => s!.Promotion)
-                    //.Include(o => o.OrderDetails)
-                    //    .ThenInclude(od => od.Service)
-                    //        .ThenInclude(s => s.Category)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.Category)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.AssetUrls)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.BranchServices)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Material)
-                    .Select(o => new Order
-                     {
-                         Id = o.Id,
-                         Account = o.Account,
-                         Address = o.Address,
-                         OrderDetails = o.OrderDetails,
-                         CreateTime = o.CreateTime,
-                         DeliveredTime = o.DeliveredTime,
-                         IsAutoReject = o.IsAutoReject,
-                         Note = o.Note,
-                         OrderPrice = o.OrderPrice,
-                         DeliveredFee = o.DeliveredFee,
-                         TotalPrice = o.TotalPrice,
-                         ShippingUnit = o.ShippingUnit,
-                         ShippingCode = o.ShippingCode,
-                         Status = o.Status,
-                     });
+                        .ThenInclude(od => od.Material);
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)

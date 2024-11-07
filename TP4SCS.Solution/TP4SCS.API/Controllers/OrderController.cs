@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Order;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Services.Interfaces;
@@ -91,7 +92,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
-        [HttpPut("id")]
+        [HttpPut("{id}/approved")]
         public async Task<IActionResult> Approved(int id, string toEmail)
         {
             try
@@ -118,6 +119,24 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Lỗi khi gửi email: {ex.Message}"));
             }
         }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateOrderAsync(int id, UpdateOrderRequest request)
+        {
+            try
+            {
+                await _orderService.UpdateOrderAsync(id, request);
+                return Ok(new ResponseObject<string>("Đơn hàng đã được cập nhật thành công!", null));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseObject<string>($"Không tìm thấy đơn hàng với ID: {id}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Lỗi khi cập nhật: {ex.Message}", null));
+            }
+        }
+
 
     }
 }
