@@ -202,9 +202,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
-            var oldPass = _util.HashPassword(updateAccountPasswordRequest.OldPassword);
-
-            if (!_util.CompareHashedPassword(oldPass, _util.HashPassword(oldAccount.PasswordHash)))
+            if (!_util.CompareHashedPassword(updateAccountPasswordRequest.OldPassword, oldAccount.PasswordHash))
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Mật Khẩu Không Đúng!");
             }
