@@ -43,10 +43,16 @@ namespace TP4SCS.Repository.Implements
                     EF.Functions.Like(a.Email, $"%{searchKey}%"));
             }
 
-            //Owner Sort
-            if (getAccountRequest.OwnerId != null)
+            //Employee Sort
+            if (getAccountRequest.BusinessId != null)
             {
-                accounts = accounts.Where(a => a.CreatedByOwnerId == getAccountRequest.OwnerId);
+                var ownerId = await _dbContext.BusinessProfiles
+                    .AsNoTracking()
+                    .Where(b => b.Id == getAccountRequest.BusinessId)
+                    .Select(b => b.OwnerId)
+                    .SingleOrDefaultAsync();
+
+                accounts = accounts.Where(a => a.CreatedByOwnerId == ownerId);
             }
 
             //Status Sort

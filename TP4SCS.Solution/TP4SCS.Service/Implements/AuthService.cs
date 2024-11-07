@@ -387,7 +387,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
+        public Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
         {
             //var account = ownerRegisterRequest.CustomerRegister;
             //var business = ownerRegisterRequest.CreateBusiness;
