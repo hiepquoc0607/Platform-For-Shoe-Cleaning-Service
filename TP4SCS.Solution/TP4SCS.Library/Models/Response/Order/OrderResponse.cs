@@ -36,6 +36,6 @@ namespace TP4SCS.Library.Models.Response.Order
 
         public string Status { get; set; } = null!;
 
-        public virtual ICollection<OrderDetailResponse> OrderDetails { get; set; } = new List<OrderDetailResponse>();
+        public virtual ICollection<OrderDetailResponseV2> OrderDetails { get; set; } = new List<OrderDetailResponseV2>();
     }
 }

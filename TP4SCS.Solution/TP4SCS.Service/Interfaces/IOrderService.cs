@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Order;
 
 namespace TP4SCS.Services.Interfaces
 {
@@ -24,5 +25,6 @@ namespace TP4SCS.Services.Interfaces
             OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
         Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus);
         Task ApprovedOrder(int orderId);
+        Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request);
     }
 }
