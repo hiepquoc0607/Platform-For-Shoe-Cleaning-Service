@@ -99,12 +99,31 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.OrderDetails
                 .Where(od => od.OrderId == orderId)
+                .Include(od => od.Order)
                 .Include(od => od.Branch)
                 .Include(od => od.Material)
                 .Include(od => od.Service)
+                .Select(od => new OrderDetail
+                {
+                    Id = od.Id,
+                    Order = od.Order,
+                    Branch = od.Branch,
+                    Service = od.Service,
+                    Material = od.Material,
+                    Quantity = od.Quantity,
+                    Price = od.Price,
+                    Status = od.Status
+                })
                 .ToListAsync();
         }
 
+        //return await _dbContext.Orders
+        //    .Where(o => o.Id == orderId)
+        //    .SelectMany(o => o.OrderDetails)
+        //    .Include(od => od.Branch)
+        //    .Include(od => od.Material)
+        //    .Include(od => od.Service)
+        //    .ToListAsync();
 
         public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
