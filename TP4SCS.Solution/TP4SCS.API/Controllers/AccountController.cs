@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.Account;
+using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Services.Interfaces;
 
@@ -49,7 +50,7 @@ namespace TP4SCS.API.Controllers
 
         [HttpPost]
         [Route("api/accounts")]
-        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest)
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
         {
             var result = await _accountService.CreateAccountAsync(createAccountRequest);
 

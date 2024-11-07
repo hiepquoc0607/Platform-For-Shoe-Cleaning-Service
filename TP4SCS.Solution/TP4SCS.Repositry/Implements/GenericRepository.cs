@@ -90,5 +90,22 @@ namespace TP4SCS.Repository.Implements
             _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
         }
+
+        public async Task RunInTransactionAsync(Func<Task> operations)
+        {
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await operations();
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
     }
 }

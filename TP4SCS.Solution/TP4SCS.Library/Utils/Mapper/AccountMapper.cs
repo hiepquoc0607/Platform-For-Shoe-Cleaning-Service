@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
+using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
 
@@ -10,7 +11,7 @@ namespace TP4SCS.Library.Utils.Mapper
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<CreateAccountRequest, Account>()
+            config.NewConfig<CustomerRegisterRequest, Account>()
                 .Map(dest => dest.PasswordHash, src => src.Password)
                 .Map(dest => dest.ImageUrl, opt => string.Empty)
                 .Map(dest => dest.IsVerified, opt => true)

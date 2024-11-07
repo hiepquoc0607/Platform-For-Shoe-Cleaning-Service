@@ -26,34 +26,30 @@ namespace TP4SCS.Services.Implements
         //Create Address
         public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
         {
-            if (createAddressRequest.IsDefault == true)
-            {
-                var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(createAddressRequest.AccountId);
-
-                if (oldDefault != null && oldDefault.IsDefault)
-                {
-                    oldDefault.IsDefault = false;
-
-                    try
-                    {
-                        await _addressRepository.UpdateAddressAsync(oldDefault);
-                    }
-                    catch (Exception)
-                    {
-                        return new ApiResponse<AddressResponse>("error", 400, "Tạo Địa Chỉ Thất Bại!");
-                    }
-                }
-            }
-
-            var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
-
             try
             {
-                await _addressRepository.CreateAddressAsync(newAddress);
+                var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
+
+                await _addressRepository.RunInTransactionAsync(async () =>
+                {
+                    if (createAddressRequest.IsDefault == true)
+                    {
+                        var oldDefault = await _addressRepository.GetDefaultAddressesByAccountIdAsync(createAddressRequest.AccountId);
+
+                        if (oldDefault != null && oldDefault.IsDefault)
+                        {
+                            oldDefault.IsDefault = false;
+
+                            await _addressRepository.UpdateAddressAsync(oldDefault);
+                        }
+                    }
+
+                    await _addressRepository.CreateAddressAsync(newAddress);
+                });
 
                 var newAddr = await GetAddressesByIdAsync(newAddress.Id);
 
-                return new ApiResponse<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data);
+                return new ApiResponse<AddressResponse>("success", "Tạo Địa Chỉ Thành Công!", newAddr.Data, 201);
             }
             catch (Exception)
             {

@@ -24,7 +24,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMaterials([FromBody] PagedRequest pagedRequest)
+        public async Task<IActionResult> GetMaterials([FromQuery] PagedRequest pagedRequest)
         {
             var materials = await _materialService.GetMaterialsAsync(pagedRequest.Keyword, pagedRequest.Status,
                 pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);

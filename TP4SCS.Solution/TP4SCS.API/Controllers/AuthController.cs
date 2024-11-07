@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Services.Interfaces;
 
@@ -46,7 +45,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("customer-register")]
-        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest createAccountRequest)
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
         {
             var result = await _authService.CustomerRegisterAsync(createAccountRequest);
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.Business;
-using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -47,7 +47,7 @@ namespace TP4SCS.API.Controllers
 
         [HttpPost]
         [Route("api/busineses")]
-        public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] CreateBusinessRequest createBusinessRequest)
+        public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] OwnerRegisterRequest createBusinessRequest)
         {
             string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
