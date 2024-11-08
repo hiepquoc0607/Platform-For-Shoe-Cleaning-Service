@@ -16,22 +16,9 @@ namespace TP4SCS.Repository.Implements
             _branchRepository = branchRepository;
         }
 
-        public async Task CreateBusinessProfileAsync(BusinessProfile businessProfile, BusinessBranch businessBranch)
+        public async Task CreateBusinessProfileAsync(BusinessProfile businessProfile)
         {
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
-            try
-            {
-                await InsertAsync(businessProfile);
-
-                await _branchRepository.CreateBranchAsync(businessBranch);
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-            }
+            await InsertAsync(businessProfile);
         }
 
         public async Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest)

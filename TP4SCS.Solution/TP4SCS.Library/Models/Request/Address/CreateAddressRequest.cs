@@ -12,6 +12,7 @@ namespace TP4SCS.Library.Models.Request.Address
         public string Address { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression(@"^\d{1,9}$")]
         public string WardCode { get; set; } = string.Empty;
 
         [Required]

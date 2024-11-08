@@ -40,46 +40,46 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Business
-        public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest)
-        {
-            var businessData = createBusinessRequest.CreateBusiness;
-            var branchData = createBusinessRequest.CreateBranch;
+        //public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest)
+        //{
+        //    var businessData = createBusinessRequest.CreateBusiness;
+        //    var branchData = createBusinessRequest.CreateBranch;
 
-            var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
+        //    //var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
 
-            if (isPhoneExisted)
-            {
-                return new ApiResponse<BusinessResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
-            }
+        //    //if (isPhoneExisted)
+        //    //{
+        //    //    return new ApiResponse<BusinessResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
+        //    //}
 
-            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
+        //    var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
 
-            if (isNameExisted)
-            {
-                return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
-            }
+        //    if (isNameExisted)
+        //    {
+        //        return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
+        //    }
 
-            var newBusiness = _mapper.Map<BusinessProfile>(businessData);
-            newBusiness.OwnerId = id;
+        //    var newBusiness = _mapper.Map<BusinessProfile>(businessData);
+        //    newBusiness.OwnerId = id;
 
-            var newBranch = _mapper.Map<BusinessBranch>(branchData);
-            newBranch.BusinessId = await _businessRepository.GetBusinessProfileMaxIdAsync() + 1;
+        //    var newBranch = _mapper.Map<BusinessBranch>(branchData);
+        //    newBranch.BusinessId = await _businessRepository.GetBusinessProfileMaxIdAsync() + 1;
 
-            try
-            {
-                await _businessRepository.CreateBusinessProfileAsync(newBusiness, newBranch);
+        //    try
+        //    {
+        //        await _businessRepository.CreateBusinessProfileAsync(newBusiness, newBranch);
 
-                var newId = await _businessRepository.GetBusinessProfileMaxIdAsync();
+        //        var newId = await _businessRepository.GetBusinessProfileMaxIdAsync();
 
-                var newBsn = await GetBusinessProfileByIdAsync(newId);
+        //        var newBsn = await GetBusinessProfileByIdAsync(newId);
 
-                return new ApiResponse<BusinessResponse>("success", "Tạo Doanh Nghiệp Thành Công!", newBsn.Data);
-            }
-            catch (Exception)
-            {
-                return new ApiResponse<BusinessResponse>("error", 400, "Tạo Doanh Nghiệp Thất Bại!");
-            }
-        }
+        //        return new ApiResponse<BusinessResponse>("success", "Tạo Doanh Nghiệp Thành Công!", newBsn.Data);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return new ApiResponse<BusinessResponse>("error", 400, "Tạo Doanh Nghiệp Thất Bại!");
+        //    }
+        //}
 
         //Get Businesses
         public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest)

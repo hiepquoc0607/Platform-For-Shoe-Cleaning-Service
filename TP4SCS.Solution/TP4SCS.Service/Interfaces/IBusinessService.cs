@@ -13,7 +13,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId);
 
-        Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest);
+        //Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest);
 
