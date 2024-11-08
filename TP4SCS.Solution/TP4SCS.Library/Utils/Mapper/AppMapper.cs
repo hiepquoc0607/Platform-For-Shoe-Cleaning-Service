@@ -14,6 +14,7 @@ using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
+using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
@@ -64,6 +65,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateBranchStatus(src.Status)));
             //Feedback Mapping
             CreateMap<FeedbackRequest, Feedback>();
+            CreateMap<Feedback, FeedbackResponse>();
             //Order Mapping
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderStatus(src.Status)))
