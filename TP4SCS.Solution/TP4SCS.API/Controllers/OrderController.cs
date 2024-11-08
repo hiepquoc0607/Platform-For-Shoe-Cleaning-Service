@@ -65,8 +65,8 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrderByOrderId(id);
-                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo id thành công.", response));
+                var response = _mapper.Map<OrderResponse>(orders);
+                return Ok(new ResponseObject<OrderResponse>("Lấy danh sách đơn hàng theo id thành công.", response));
             }
             catch (Exception ex)
             {

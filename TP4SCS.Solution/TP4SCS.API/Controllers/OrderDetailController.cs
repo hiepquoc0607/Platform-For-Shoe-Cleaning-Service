@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.OrderDetail;
@@ -12,10 +13,11 @@ namespace TP4SCS.API.Controllers
     public class OrderDetailController : ControllerBase
     {
         private readonly IOrderDetailService _orderDetailService;
-
-        public OrderDetailController(IOrderDetailService orderDetailService)
+        private readonly IMapper _mapper;
+        public OrderDetailController(IOrderDetailService orderDetailService, IMapper mapper)
         {
             _orderDetailService = orderDetailService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,11 +29,11 @@ namespace TP4SCS.API.Controllers
                 var orderDetail = await _orderDetailService.GetOrderDetailByIdAsync(id);
                 if (orderDetail == null)
                 {
-                    return NotFound(new ResponseObject<OrderDetailResponse>($"Không tìm thấy chi tiết đơn hàng với ID {id}.", null));
+                    return NotFound(new ResponseObject<OrderDetailResponseV2>($"Không tìm thấy chi tiết đơn hàng với ID {id}.", null));
                 }
 
-                var response = orderDetail.Adapt<OrderDetailResponse>();
-                return Ok(new ResponseObject<OrderDetailResponse>("Lấy chi tiết đơn hàng thành công.", response));
+                var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+                return Ok(new ResponseObject<OrderDetailResponseV2>("Lấy chi tiết đơn hàng thành công.", response));
             }
             catch (Exception ex)
             {
@@ -48,11 +50,11 @@ namespace TP4SCS.API.Controllers
                 var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(id);
                 if (orderDetails == null || !orderDetails.Any())
                 {
-                    return NotFound(new ResponseObject<IEnumerable<OrderDetailResponse>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                    return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
                 }
 
-                var response = orderDetails.Adapt<IEnumerable<OrderDetailResponse>>();
-                return Ok(new ResponseObject<IEnumerable<OrderDetailResponse>>("Lấy danh sách chi tiết đơn hàng thành công.", response));
+                var response = _mapper.Map<IEnumerable<OrderDetailResponseV2>>(orderDetails);
+                return Ok(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Lấy danh sách chi tiết đơn hàng thành công.", response));
             }
             catch (Exception ex)
             {
@@ -87,8 +89,6 @@ namespace TP4SCS.API.Controllers
             try
             {
                 await _orderDetailService.UpdateOrderDetailAsync(request, id);
-
-                var updatedOrderDetail = await _orderDetailService.GetOrderDetailByIdAsync(id);
                 return Ok(new ResponseObject<string>("Cập nhật chi tiết đơn hàng thành công."));
             }
             catch (KeyNotFoundException ex)
