@@ -2,9 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.BusinessProfile;
@@ -22,6 +24,7 @@ namespace TP4SCS.Services.Implements
         private readonly IAccountRepository _accountRepository;
         private readonly IBusinessRepository _businessRepository;
         private readonly IBranchRepository _branchRepository;
+        private readonly IShipService _shipService;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
@@ -31,6 +34,7 @@ namespace TP4SCS.Services.Implements
             IAccountRepository accountRepository,
             IBusinessRepository businessRepository,
             IBranchRepository branchRepository,
+            IShipService shipService,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -39,6 +43,7 @@ namespace TP4SCS.Services.Implements
             _accountRepository = accountRepository;
             _businessRepository = businessRepository;
             _branchRepository = branchRepository;
+            _shipService = shipService;
             _emailService = emailService;
             _mapper = mapper;
             _util = util;
@@ -388,7 +393,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
+        public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest)
         {
             var account = ownerRegisterRequest.CustomerRegister;
             var businessData = ownerRegisterRequest.CreateBusiness;
@@ -446,8 +451,14 @@ namespace TP4SCS.Services.Implements
             var newBusiness = _mapper.Map<BusinessProfile>(businessData);
             //newBusiness.OwnerId = await _accountRepository.GetAccountMaxIdAsync() + 1;
 
-            var newBranch = _mapper.Map<BusinessBranch>(branchData);
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, branchData.DistrictId, branchData.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, branchData.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, branchData.ProvinceId) ?? string.Empty;
 
+            var newBranch = _mapper.Map<BusinessBranch>(branchData);
+            newBranch.Ward = wardName;
+            newBranch.District = districtName;
+            newBranch.Province = provinceName;
 
             try
             {

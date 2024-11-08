@@ -13,22 +13,31 @@ namespace TP4SCS.Services.Implements
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IShipService _shipService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AddressService(IAddressRepository addressRepository, IMapper mapper, Util util)
+        public AddressService(IAddressRepository addressRepository, IShipService shipService, IMapper mapper, Util util)
         {
             _addressRepository = addressRepository;
+            _shipService = shipService;
             _mapper = mapper;
             _util = util;
         }
 
         //Create Address
-        public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest)
+        public async Task<ApiResponse<AddressResponse>> CreateAddressAsync(HttpClient httpClient, CreateAddressRequest createAddressRequest)
         {
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, createAddressRequest.DistrictId, createAddressRequest.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, createAddressRequest.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, createAddressRequest.ProvinceId) ?? string.Empty;
+
             try
             {
                 var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
+                newAddress.Ward = wardName;
+                newAddress.District = districtName;
+                newAddress.Province = provinceName;
 
                 await _addressRepository.RunInTransactionAsync(async () =>
                 {
@@ -116,8 +125,12 @@ namespace TP4SCS.Services.Implements
         }
 
         //Update Address
-        public async Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest)
+        public async Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, HttpClient httpClient, UpdateAddressRequest updateAddressRequest)
         {
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, updateAddressRequest.DistrictId, updateAddressRequest.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, updateAddressRequest.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, updateAddressRequest.ProvinceId) ?? string.Empty;
+
             var oldAddress = await _addressRepository.GetAddressesByIdAsync(id);
 
             if (oldAddress == null)
@@ -126,6 +139,9 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAddress = _mapper.Map(updateAddressRequest, oldAddress);
+            newAddress.Ward = wardName;
+            newAddress.District = districtName;
+            newAddress.Province = provinceName;
 
             try
             {

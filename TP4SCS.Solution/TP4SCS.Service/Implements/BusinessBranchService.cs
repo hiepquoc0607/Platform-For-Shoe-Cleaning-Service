@@ -1,6 +1,8 @@
 ﻿using Mapster;
 using MapsterMapper;
+using System.Net.Http;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;
@@ -14,13 +16,15 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IBusinessRepository _businessRepository;
         private readonly IBranchRepository _branchRepository;
+        private readonly IShipService _shipService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public BusinessBranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IMapper mapper, Util util)
+        public BusinessBranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IShipService shipService, IMapper mapper, Util util)
         {
             _businessRepository = businessRepository;
             _branchRepository = branchRepository;
+            _shipService = shipService;
             _mapper = mapper;
             _util = util;
         }
@@ -32,8 +36,12 @@ namespace TP4SCS.Services.Implements
             return Array.Exists(idArray, id => id == branchId);
         }
 
-        public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, CreateBranchRequest createBranchRequest)
+        public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, HttpClient httpClient, CreateBranchRequest createBranchRequest)
         {
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, createBranchRequest.DistrictId, createBranchRequest.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, createBranchRequest.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, createBranchRequest.ProvinceId) ?? string.Empty;
+
             var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
 
             if (business == null)
@@ -43,6 +51,9 @@ namespace TP4SCS.Services.Implements
 
             var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
             newBranch.BusinessId = id;
+            newBranch.Ward = wardName;
+            newBranch.District = districtName;
+            newBranch.Province = provinceName;
 
             try
             {
@@ -61,8 +72,12 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Branch By Onwer Id
-        public async Task<ApiResponse<BranchResponse>> CreateBranchByOwnerIdAsync(int id, CreateBranchRequest createBranchRequest)
+        public async Task<ApiResponse<BranchResponse>> CreateBranchByOwnerIdAsync(int id, HttpClient httpClient, CreateBranchRequest createBranchRequest)
         {
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, createBranchRequest.DistrictId, createBranchRequest.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, createBranchRequest.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, createBranchRequest.ProvinceId) ?? string.Empty;
+
             var businessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
 
             if (businessId == null)
@@ -72,6 +87,9 @@ namespace TP4SCS.Services.Implements
 
             var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
             newBranch.BusinessId = (int)businessId;
+            newBranch.Ward = wardName;
+            newBranch.District = districtName;
+            newBranch.Province = provinceName;
 
             try
             {
@@ -126,12 +144,16 @@ namespace TP4SCS.Services.Implements
         }
 
         //Update Branch
-        public async Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, UpdateBranchRequest updateBranchRequest)
+        public async Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, HttpClient httpClient, UpdateBranchRequest updateBranchRequest)
         {
             if (!_util.CheckBranchStatus(updateBranchRequest.Status))
             {
                 return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Không Tồn Tại!");
             }
+
+            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, updateBranchRequest.DistrictId, updateBranchRequest.WardCode) ?? string.Empty;
+            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, updateBranchRequest.DistrictId) ?? string.Empty;
+            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, updateBranchRequest.ProvinceId) ?? string.Empty;
 
             var oldBranch = await _branchRepository.GetBranchByIdAsync(id);
 
@@ -141,6 +163,9 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBranch = _mapper.Map(updateBranchRequest, oldBranch);
+            newBranch.Ward = wardName;
+            newBranch.District = districtName;
+            newBranch.Province = provinceName;
 
             try
             {

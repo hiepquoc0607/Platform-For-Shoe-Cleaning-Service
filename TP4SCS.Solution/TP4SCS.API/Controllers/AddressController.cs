@@ -8,10 +8,12 @@ namespace TP4SCS.API.Controllers
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
+        private readonly HttpClient _httpClient;
 
-        public AddressController(IAddressService addressService)
+        public AddressController(IAddressService addressService, HttpClient httpClient)
         {
             _addressService = addressService;
+            _httpClient = httpClient;
         }
 
         [HttpGet]
@@ -46,7 +48,7 @@ namespace TP4SCS.API.Controllers
         [Route("api/addresses")]
         public async Task<IActionResult> CreateAddressAsync([FromBody] CreateAddressRequest createAddressRequest)
         {
-            var result = await _addressService.CreateAddressAsync(createAddressRequest);
+            var result = await _addressService.CreateAddressAsync(_httpClient, createAddressRequest);
 
             if (!ModelState.IsValid)
             {
@@ -67,7 +69,7 @@ namespace TP4SCS.API.Controllers
         [Route("api/addresses/{id}")]
         public async Task<IActionResult> UpdateAddressAsync([FromRoute] int id, [FromBody] UpdateAddressRequest updateAddressRequest)
         {
-            var result = await _addressService.UpdateAddressAsync(id, updateAddressRequest);
+            var result = await _addressService.UpdateAddressAsync(id, _httpClient, updateAddressRequest);
 
             if (!ModelState.IsValid)
             {
