@@ -8,7 +8,7 @@ public partial class AccountAddress
 
     public string Address { get; set; } = null!;
 
-    public int WardId { get; set; }
+    public string WardCode { get; set; } = null!;
 
     public string Ward { get; set; } = null!;
 

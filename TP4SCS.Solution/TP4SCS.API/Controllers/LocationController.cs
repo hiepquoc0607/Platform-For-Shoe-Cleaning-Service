@@ -38,7 +38,7 @@ namespace TP4SCS.API.Controllers
         [Route("api/locations/{provinceId}/districts")]
         public async Task<IActionResult> GetDistrictsByProvinceIdAsync([FromRoute] int provinceId)
         {
-            var result = await _shipService.GetDistrictsAsync(_httpClient, provinceId);
+            var result = await _shipService.GetDistrictsByProvinceIdAsync(_httpClient, provinceId);
 
             if (result == null)
             {
@@ -57,7 +57,7 @@ namespace TP4SCS.API.Controllers
         [Route("api/locations/{districtId}/wards")]
         public async Task<IActionResult> GetWardsByDistrictIdAsync([FromRoute] int districtId)
         {
-            var result = await _shipService.GetWardsAsync(_httpClient, districtId);
+            var result = await _shipService.GetWardsByDistrictIdAsync(_httpClient, districtId);
 
             if (result == null)
             {

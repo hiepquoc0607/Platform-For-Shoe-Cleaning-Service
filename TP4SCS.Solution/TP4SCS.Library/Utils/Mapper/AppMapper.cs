@@ -11,7 +11,6 @@ using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
-using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Category;
