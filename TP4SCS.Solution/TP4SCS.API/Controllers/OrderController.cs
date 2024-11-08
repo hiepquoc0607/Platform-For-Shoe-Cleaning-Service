@@ -33,7 +33,6 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
-                var totalCount = (await _orderService.GetOrdersAsync(status, null, null, orderBy))?.Count();
                 var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
                 return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng thành công.", response));
             }

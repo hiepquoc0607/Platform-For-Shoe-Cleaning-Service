@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Google.Apis.Storage.v1.Data;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Feedback;
+using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.Service;
+using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -20,9 +22,11 @@ namespace TP4SCS.API.Controllers
             _feedbackService = feedbackService;
             _mapper = mapper;
         }
+
+        // POST: api/feedbacks
         [HttpPost]
         public async Task<IActionResult> CreateFeedback([FromBody] FeedbackRequest feedbackRequest)
-        {          
+        {
             try
             {
                 var feedback = _mapper.Map<Feedback>(feedbackRequest);
@@ -34,6 +38,65 @@ namespace TP4SCS.API.Controllers
                 return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
+
+        // GET: api/feedbacks/{serviceId}
+        [HttpGet("{serviceId}")]
+        public async Task<IActionResult> GetFeedbacksByServiceId(int serviceId)
+        {
+            try
+            {
+                var feedbacks = await _feedbackService.GetFeedbackByServiceId(serviceId);
+                var response = _mapper.Map<IEnumerable<FeedbackResponse>>(feedbacks);
+                return Ok(new ResponseObject<IEnumerable<FeedbackResponse>>("Lấy danh sách đánh giá thành công",response));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
+
+        // DELETE: api/feedbacks/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFeedback(int id)
+        {
+            try
+            {
+                await _feedbackService.DeleteFeedbackAsync(id);
+                return Ok(new ResponseObject<string>("Xóa đánh giá thành công"));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
+
+        // PUT: api/feedbacks/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackRequest feedbackRequest)
+        {
+            try
+            {
+                var feedback = _mapper.Map<Feedback>(feedbackRequest);
+                await _feedbackService.UpdateFeedbackAsync(feedback, id);
+                return Ok(new ResponseObject<string>("Cập nhật đánh giá thành công"));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (ArgumentException ex)
             {
                 return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
             }
