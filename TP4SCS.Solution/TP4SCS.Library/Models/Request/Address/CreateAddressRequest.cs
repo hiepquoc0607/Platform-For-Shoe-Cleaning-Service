@@ -14,6 +14,7 @@ namespace TP4SCS.Library.Models.Request.Address
         [Required]
         [RegularExpression(@"^\d{1,9}$")]
         [MaxLength(10)]
+        [DefaultValue("0")]
         public string WardCode { get; set; } = string.Empty;
 
         [Required]
