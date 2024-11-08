@@ -119,11 +119,6 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
             }
 
-            if (!string.IsNullOrEmpty(request.Status) && !Util.IsValidOrderDetailStatus(request.Status))
-            {
-                throw new InvalidOperationException("Trạng thái không hợp lệ.");
-            }
-
             if (request.Quantity.HasValue)
             {
                 existingOrderDetail.Quantity = request.Quantity.Value;
