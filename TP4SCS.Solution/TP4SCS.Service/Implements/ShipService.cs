@@ -5,6 +5,7 @@ using TP4SCS.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using TP4SCS.Library.Models.Request.ShipFee;
+using Microsoft.EntityFrameworkCore;
 
 namespace TP4SCS.Services.Implements
 {
@@ -17,6 +18,7 @@ namespace TP4SCS.Services.Implements
             _configuration = configuration;
         }
 
+        //Get Available Services
         public async Task<List<AvailableService>?> GetAvailableServicesAsync(HttpClient httpClient, int fromDistrict, int toDistrict)
         {
             try
@@ -60,7 +62,8 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<List<District>?> GetDistrictsAsync(HttpClient httpClient, int provinceId)
+        //Get District By Province Id
+        public async Task<List<District>?> GetDistrictsByProvinceIdAsync(HttpClient httpClient, int provinceId)
         {
             try
             {
@@ -94,6 +97,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Get Provinces
         public async Task<List<Province>?> GetProvincesAsync(HttpClient httpClient)
         {
             try
@@ -127,6 +131,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Get Shipping Fee
         public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest)
         {
             if (!httpClient.DefaultRequestHeaders.Contains("Token"))
@@ -167,7 +172,8 @@ namespace TP4SCS.Services.Implements
             return totalFee.GetDecimal();
         }
 
-        public async Task<List<Ward>?> GetWardsAsync(HttpClient httpClient, int districtId)
+        //Get Ward By District Id
+        public async Task<List<Ward>?> GetWardsByDistrictIdAsync(HttpClient httpClient, int districtId)
         {
             try
             {

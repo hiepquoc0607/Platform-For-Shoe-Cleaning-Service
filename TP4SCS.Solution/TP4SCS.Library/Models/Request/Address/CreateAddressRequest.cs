@@ -12,10 +12,19 @@ namespace TP4SCS.Library.Models.Request.Address
         public string Address { get; set; } = string.Empty;
 
         [Required]
+        public string WardCode { get; set; } = string.Empty;
+
+        [Required]
         public string Ward { get; set; } = string.Empty;
 
         [Required]
+        public int DistrictId { get; set; }
+
+        [Required]
         public string District { get; set; } = string.Empty;
+
+        [Required]
+        public int ProvinceId { get; set; }
 
         [Required]
         public string Province { get; set; } = string.Empty;
