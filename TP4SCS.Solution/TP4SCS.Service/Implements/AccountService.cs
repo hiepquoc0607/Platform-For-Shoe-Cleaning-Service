@@ -78,7 +78,7 @@ namespace TP4SCS.Services.Implements
 
                 var newAcc = await GetAccountByIdAsync(maxId);
 
-                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data);
+                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data, 201);
             }
             catch (Exception)
             {
@@ -123,7 +123,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data, 200);
         }
 
         //Get Account By Id
@@ -141,7 +141,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data, 200);
         }
 
         //Get Account Max Id
