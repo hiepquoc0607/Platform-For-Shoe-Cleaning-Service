@@ -26,7 +26,27 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
-            return await GetByIDAsync(id);
+            return await _dbContext.Orders
+                .Include(o => o.Account)
+                        .ThenInclude(a => a.AccountAddresses)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.Promotion)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.Category)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.AssetUrls)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Service)
+                            .ThenInclude(s => s!.BranchServices)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Branch)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Material)
+                .Where(o => o.Id == id)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(
