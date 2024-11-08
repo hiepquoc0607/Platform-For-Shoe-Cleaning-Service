@@ -11,8 +11,5 @@ namespace TP4SCS.Library.Models.Request.Auth
 
         [Required]
         public CreateBusinessRequest CreateBusiness { get; set; } = new CreateBusinessRequest();
-
-        [Required]
-        public CreateBranchRequest CreateBranch { get; set; } = new CreateBranchRequest();
     }
 }

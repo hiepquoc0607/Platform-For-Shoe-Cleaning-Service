@@ -48,21 +48,21 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        [Route("api/accounts")]
-        public async Task<IActionResult> CreateAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
-        {
-            var result = await _accountService.CreateAccountAsync(createAccountRequest);
+        //[HttpPost]
+        //[Route("api/accounts")]
+        //public async Task<IActionResult> CreateAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
+        //{
+        //    var result = await _accountService.CreateAccountAsync(createAccountRequest);
 
-            if (result.StatusCode != 200)
-            {
-                return StatusCode(result.StatusCode, result);
-            }
+        //    if (result.StatusCode != 200)
+        //    {
+        //        return StatusCode(result.StatusCode, result);
+        //    }
 
-            int newAccId = await _accountService.GetAccountMaxIdAsync();
+        //    int newAccId = await _accountService.GetAccountMaxIdAsync();
 
-            return CreatedAtAction("GetAccountById", new { id = newAccId }, result.Data);
-        }
+        //    return CreatedAtAction("GetAccountById", new { id = newAccId }, result.Data);
+        //}
 
         [Authorize]
         [HttpPut]
