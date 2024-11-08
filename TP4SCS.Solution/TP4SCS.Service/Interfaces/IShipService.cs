@@ -9,10 +9,16 @@ namespace TP4SCS.Services.Interfaces
 
         Task<List<District>?> GetDistrictsByProvinceIdAsync(HttpClient httpClient, int provinceId);
 
+        Task<string?> GetDistrictNamByIdAsync(HttpClient httpClient, int id);
+
         Task<List<Province>?> GetProvincesAsync(HttpClient httpClient);
+
+        Task<string?> GetProvinceNameByIdAsync(HttpClient httpClient, int id);
 
         Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest);
 
-        Task<List<Ward>?> GetWardsByDistrictIdAsync(HttpClient httpClient, int districtId);
+        Task<List<Ward>?> GetWardsByDistrictIdAsync(HttpClient httpClient, int id);
+
+        Task<string?> GetWardNameByWardCodeAsync(HttpClient httpClient, int districtId, string code);
     }
 }

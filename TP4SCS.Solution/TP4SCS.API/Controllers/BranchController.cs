@@ -11,11 +11,13 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IBusinessBranchService _branchService;
         private readonly IBusinessService _businessService;
+        private readonly HttpClient _httpClient;
 
-        public BranchController(IBusinessBranchService branchService, IBusinessService businessService)
+        public BranchController(IBusinessBranchService branchService, IBusinessService businessService, HttpClient httpClient)
         {
             _branchService = branchService;
             _businessService = businessService;
+            _httpClient = httpClient;
         }
 
         [HttpGet]
@@ -55,7 +57,7 @@ namespace TP4SCS.API.Controllers
 
             var userId = int.TryParse(userIdClaim, out int id);
 
-            var result = await _branchService.CreateBranchByOwnerIdAsync(id, createBranchRequest);
+            var result = await _branchService.CreateBranchByOwnerIdAsync(id, _httpClient, createBranchRequest);
 
             if (result.StatusCode != 200)
             {
@@ -82,7 +84,7 @@ namespace TP4SCS.API.Controllers
                 return Forbid();
             }
 
-            var result = await _branchService.UpdateBranchAsync(id, updateBranchRequest);
+            var result = await _branchService.UpdateBranchAsync(id, _httpClient, updateBranchRequest);
 
             if (result.StatusCode != 200)
             {

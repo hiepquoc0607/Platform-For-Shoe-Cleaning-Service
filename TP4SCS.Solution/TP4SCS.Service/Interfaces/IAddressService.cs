@@ -12,9 +12,9 @@ namespace TP4SCS.Services.Interfaces
 
         Task<int> GetAddressMaxIdAsync();
 
-        Task<ApiResponse<AddressResponse>> CreateAddressAsync(CreateAddressRequest createAddressRequest);
+        Task<ApiResponse<AddressResponse>> CreateAddressAsync(HttpClient httpClient, CreateAddressRequest createAddressRequest);
 
-        Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, UpdateAddressRequest updateAddressRequest);
+        Task<ApiResponse<AddressResponse>> UpdateAddressAsync(int id, HttpClient httpClient, UpdateAddressRequest updateAddressRequest);
 
         Task<ApiResponse<AddressResponse>> UpdateAddressDefaultAsync(int id);
 

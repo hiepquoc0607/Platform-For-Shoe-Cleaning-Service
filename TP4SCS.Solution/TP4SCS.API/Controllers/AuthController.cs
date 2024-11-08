@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Services.Interfaces;
 
@@ -11,11 +10,13 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IAccountService _accountService;
+        private readonly HttpClient _httpClient;
 
-        public AuthController(IAuthService authService, IAccountService accountService)
+        public AuthController(IAuthService authService, IAccountService accountService, HttpClient httpClient)
         {
             _authService = authService;
             _accountService = accountService;
+            _httpClient = httpClient;
         }
 
         [HttpPost("login")]
@@ -60,7 +61,7 @@ namespace TP4SCS.API.Controllers
         [HttpPost("owner-register")]
         public async Task<IActionResult> CreateOwnerAccountAsync([FromBody] OwnerRegisterRequest ownerRegisterRequest)
         {
-            var result = await _authService.OwnerRegisterAsync(ownerRegisterRequest);
+            var result = await _authService.OwnerRegisterAsync(_httpClient, ownerRegisterRequest);
 
             if (result.StatusCode != 200)
             {

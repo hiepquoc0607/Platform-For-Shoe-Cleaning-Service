@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Address
 {
@@ -9,22 +10,15 @@ namespace TP4SCS.Library.Models.Request.Address
 
         [Required]
         [RegularExpression(@"^\d{1,9}$")]
+        [MaxLength(10)]
+        [DefaultValue("0")]
         public string WardCode { get; set; } = string.Empty;
-
-        [Required]
-        public string Ward { get; set; } = string.Empty;
 
         [Required]
         public int DistrictId { get; set; }
 
         [Required]
-        public string District { get; set; } = string.Empty;
-
-        [Required]
         public int ProvinceId { get; set; }
-
-        [Required]
-        public string Province { get; set; } = string.Empty;
 
     }
 }

@@ -10,7 +10,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CustomerRegisterRequest customerRegisterRequest);
 
-        Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest);
+        Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken);
 

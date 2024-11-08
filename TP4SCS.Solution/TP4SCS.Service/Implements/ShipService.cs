@@ -62,6 +62,35 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        public async Task<string?> GetDistrictNamByIdAsync(HttpClient httpClient, int id)
+        {
+            try
+            {
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                // Gửi request đến API
+                var url = _configuration["GHN_API:DistrictUrl"];
+                var response = await httpClient.GetStringAsync(url);
+
+                using var document = JsonDocument.Parse(response);
+                var districtName = document.RootElement
+                    .GetProperty("data")
+                    .EnumerateArray()
+                    .Where(district => district.GetProperty("DistrictID").GetInt32() == id)
+                    .Select(district => district.GetProperty("DistrictName").GetString() ?? string.Empty)
+                    .SingleOrDefault();
+
+                return districtName;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         //Get District By Province Id
         public async Task<List<District>?> GetDistrictsByProvinceIdAsync(HttpClient httpClient, int provinceId)
         {
@@ -90,6 +119,35 @@ namespace TP4SCS.Services.Implements
                     .ToList();
 
                 return provinces;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<string?> GetProvinceNameByIdAsync(HttpClient httpClient, int id)
+        {
+            try
+            {
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                // Gửi request đến API
+                var response = await httpClient.GetStringAsync(_configuration["GHN_API:ProvinceUrl"]);
+
+                // Parse dữ liệu JSON và lấy danh sách Province
+                using var document = JsonDocument.Parse(response);
+                var provinceName = document.RootElement
+                    .GetProperty("data")
+                    .EnumerateArray()
+                    .Where(province => province.GetProperty("ProvinceID").GetInt32() == id)
+                    .Select(province => province.GetProperty("ProvinceName").GetString() ?? string.Empty)
+                    .SingleOrDefault();
+
+                return provinceName;
             }
             catch (Exception)
             {
@@ -170,6 +228,40 @@ namespace TP4SCS.Services.Implements
                 .GetProperty("total");
 
             return totalFee.GetDecimal();
+        }
+
+        public async Task<string?> GetWardNameByWardCodeAsync(HttpClient httpClient, int districtId, string code)
+        {
+            try
+            {
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                var requestData = new { district_id = districtId };
+                var response = await httpClient.PostAsJsonAsync(_configuration["GHN_API:WardUrl"], requestData);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Failed to fetch wards: {response.ReasonPhrase}");
+                }
+
+                var responseData = await response.Content.ReadAsStringAsync();
+                using var document = JsonDocument.Parse(responseData);
+                var wardName = document.RootElement
+                    .GetProperty("data")
+                    .EnumerateArray()
+                    .Where(ward => (ward.GetProperty("WardCode").GetString() ?? string.Empty).Equals(code, StringComparison.OrdinalIgnoreCase))
+                    .Select(ward => ward.GetProperty("WardName").GetString() ?? string.Empty)
+                    .SingleOrDefault();
+
+                return wardName;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         //Get Ward By District Id
