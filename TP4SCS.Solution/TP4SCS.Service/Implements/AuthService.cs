@@ -354,6 +354,8 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
+                await SendVerificationEmailAsync(newAcc.Email);
+
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
                 return new ApiResponse<AuthResponse>("success", "Tạo Tài Khoản Thành Công!", data);
@@ -397,7 +399,6 @@ namespace TP4SCS.Services.Implements
         {
             var account = ownerRegisterRequest.CustomerRegister;
             var businessData = ownerRegisterRequest.CreateBusiness;
-            var branchData = ownerRegisterRequest.CreateBranch;
 
             var passwordError = _util.CheckPasswordErrorType(account.Password);
 
@@ -434,13 +435,6 @@ namespace TP4SCS.Services.Implements
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.OWNER;
 
-            //var isBusinessPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
-
-            //if (isPhoneExisted)
-            //{
-            //    return new ApiResponse<AuthResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
-            //}
-
             var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
 
             if (isNameExisted)
@@ -449,16 +443,6 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBusiness = _mapper.Map<BusinessProfile>(businessData);
-            //newBusiness.OwnerId = await _accountRepository.GetAccountMaxIdAsync() + 1;
-
-            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, branchData.DistrictId, branchData.WardCode) ?? string.Empty;
-            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, branchData.DistrictId) ?? string.Empty;
-            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, branchData.ProvinceId) ?? string.Empty;
-
-            var newBranch = _mapper.Map<BusinessBranch>(branchData);
-            newBranch.Ward = wardName;
-            newBranch.District = districtName;
-            newBranch.Province = provinceName;
 
             try
             {
@@ -470,10 +454,6 @@ namespace TP4SCS.Services.Implements
                     newBusiness.Phone = newAccount.Phone;
 
                     await _businessRepository.CreateBusinessProfileAsync(newBusiness);
-
-                    newBranch.BusinessId = newBusiness.Id;
-
-                    await _branchRepository.CreateBranchAsync(newBranch);
                 });
 
                 var newAcc = await _accountRepository.GetAccountByIdAsync(newAccount.Id);
@@ -482,6 +462,8 @@ namespace TP4SCS.Services.Implements
                 {
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
+
+                await SendVerificationEmailAsync(newAcc.Email);
 
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
