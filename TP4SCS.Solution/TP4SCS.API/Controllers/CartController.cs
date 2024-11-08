@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -88,16 +87,32 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                await _cartService.CheckoutAsync(request);
+                await _cartService.CheckoutAsync(_httpClient, request);
                 return Ok("Thanh toán thành công.");
             }
             catch (Exception ex)
             {
-                // Bạn có thể ghi log lỗi ở đây
                 return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
             }
         }
+        [HttpGet("api/carts/cart/checkout/feeship")]
+        public async Task<IActionResult> Feeship(int addressId, int branchId, int quantity)
+        {
 
+            try
+            {
+                var fee = await _cartService.GetFeeShip(_httpClient, addressId,branchId,quantity);
+                return Ok(fee);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+            }
+        }
 
         //[HttpPost]
         //[Route("api/carts")]

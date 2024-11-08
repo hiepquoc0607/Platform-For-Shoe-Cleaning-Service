@@ -5,7 +5,6 @@ using TP4SCS.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using TP4SCS.Library.Models.Request.ShipFee;
-using Microsoft.EntityFrameworkCore;
 
 namespace TP4SCS.Services.Implements
 {
@@ -190,30 +189,43 @@ namespace TP4SCS.Services.Implements
         }
 
         //Get Shipping Fee
-        public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest)
+        public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest, int quantity)
         {
             if (!httpClient.DefaultRequestHeaders.Contains("Token"))
             {
                 httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
             }
 
-            //var requestBody = new
-            //{
-            //    service_type_id = getShipFeeRequest.ServiceTypeId,
-            //    from_district_id = getShipFeeRequest.FromDistricId,
-            //    from_ward_code = getShipFeeRequest.FromWardCode,
-            //    to_district_id = toDistrictId,
-            //    to_ward_code = toWardCode,
-            //    height = height,
-            //    length = length,
-            //    weight = weight,
-            //    width = width,
-            //    insurance_value = insuranceValue,
-            //    coupon = (string?)null,
-            //    items = items
-            //};
+            int heightPerBox = 15;
+            int lengthPerBox = 35;
+            int widthPerBox = 25;
+            int weightPerBox = 400;
 
-            var json = JsonSerializer.Serialize(getShipFeeRequest);
+            int widthCount = Math.Min(quantity, 5);
+            int lengthCount = Math.Min((quantity + 4) / 5, 5); 
+            int heightCount = (quantity + 24) / (5 * 5);
+
+            int totalWidth = widthPerBox * widthCount;
+            int totalLength = lengthPerBox * lengthCount;
+            int totalHeight = heightPerBox * heightCount;
+            int totalWeight = weightPerBox * quantity;
+
+            var requestBody = new
+            {
+                service_type_id = 2,
+                from_district_id = getShipFeeRequest.FromDistricId,
+                from_ward_code = getShipFeeRequest.FromWardCode,
+                to_district_id = getShipFeeRequest.ToDistricId,
+                to_ward_code = getShipFeeRequest.ToWardCode,
+                height = totalHeight,
+                length = totalLength,
+                weight = totalWeight,
+                width = totalWidth,
+                insurance_value = 0,
+                coupon = (string?)null
+            };
+
+            var json = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync(_configuration["GHN_API:ShipFeeUrl"], content);
@@ -222,7 +234,6 @@ namespace TP4SCS.Services.Implements
             var responseBody = await response.Content.ReadAsStringAsync();
             using var document = JsonDocument.Parse(responseBody);
 
-            // Giả sử bạn sẽ nhận được total trong response
             var totalFee = document.RootElement
                 .GetProperty("data")
                 .GetProperty("total");

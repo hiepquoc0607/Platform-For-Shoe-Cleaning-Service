@@ -1,5 +1,7 @@
-﻿using TP4SCS.Library.Models.Data;
+﻿using System.Net.Http;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
+using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -13,16 +15,25 @@ namespace TP4SCS.Services.Implements
         private readonly ICartItemRepository _cartItemRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderDetailRepository _orderDetailRepository;
+        private readonly IShipService _shipService;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IBranchRepository _branchRepository;
 
         public CartService(ICartRepository cartRepository, IServiceService serviceService
             , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
-            IOrderDetailRepository orderDetailRepository)
+            IOrderDetailRepository orderDetailRepository,
+            IShipService shipService,
+            IAddressRepository addressRepository,
+            IBranchRepository branchRepository)
         {
             _cartRepository = cartRepository;
             _serviceService = serviceService;
             _cartItemRepository = cartItemRepository;
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;
+            _shipService = shipService;
+            _addressRepository = addressRepository;
+            _branchRepository = branchRepository;
         }
 
         public async Task ClearCartAsync(int cartId)
@@ -59,7 +70,7 @@ namespace TP4SCS.Services.Implements
 
             return totalPrice;
         }
-        public async Task CheckoutAsync(CheckoutRequest request)
+        public async Task CheckoutAsync(HttpClient httpClient, CheckoutRequest request)
         {
             IEnumerable<dynamic> groupedItems = Enumerable.Empty<dynamic>();
             if ((request.CartItemIds.Any() && request.Items.Any()) || (!request.CartItemIds.Any() && !request.Items.Any()))
@@ -90,7 +101,6 @@ namespace TP4SCS.Services.Implements
             }
 
             var orders = new List<Order>();
-
             foreach (var group in groupedItems)
             {
                 var order = new Order
@@ -103,11 +113,11 @@ namespace TP4SCS.Services.Implements
                     Status = StatusConstants.PENDING,
                     ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
                     ShippingCode = request.IsShip ? "" : null,
-                    DeliveredFee = request.IsShip ? 10000 : 0,
                     OrderDetails = new List<OrderDetail>()
                 };
 
                 decimal orderPrice = 0;
+                int quantiy = 0;
 
                 foreach (var item in group.Items)
                 {
@@ -122,12 +132,14 @@ namespace TP4SCS.Services.Implements
                     });
 
                     orderPrice += finalPrice * item.Quantity;
+                    quantiy += item.Quantity;
                 }
-
+                order.DeliveredFee = request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0;
                 order.OrderPrice = orderPrice;
                 order.PendingTime = DateTime.UtcNow;
                 order.CreateTime = DateTime.UtcNow;
-                order.TotalPrice = orderPrice + (request.IsShip ? 10000 : 0);
+                order.TotalPrice = orderPrice + 
+                    (request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0);
                 orders.Add(order);
             }
 
@@ -136,6 +148,30 @@ namespace TP4SCS.Services.Implements
             {
                 await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
             }              
+        }
+
+        public async Task<decimal> GetFeeShip(HttpClient httpClient, int addressId, int branchId, int quantity)
+        {
+            var address = await _addressRepository.GetByIDAsync(addressId);
+            var branch = await _branchRepository.GetBranchByIdAsync(branchId);
+
+            if(branch == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy chi nhánh với ID: {branchId}");
+            }
+            if (address == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy địa chỉ của tài khoảng với ID: {addressId}");
+            }
+
+            var getFeeShipReqeust = new GetShipFeeRequest
+            {
+                FromDistricId = branch.DistrictId,
+                FromWardCode = branch.WardCode,
+                ToDistricId = address.DistrictId,
+                ToWardCode = address.WardCode,               
+            };
+            return await _shipService.GetShippingFeeAsync(httpClient, getFeeShipReqeust, quantity);
         }
 
     }
