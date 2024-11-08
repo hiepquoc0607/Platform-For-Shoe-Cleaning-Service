@@ -45,23 +45,23 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        [Route("api/busineses")]
-        public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] OwnerRegisterRequest createBusinessRequest)
-        {
-            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //[HttpPost]
+        //[Route("api/busineses")]
+        //public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] OwnerRegisterRequest createBusinessRequest)
+        //{
+        //    string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var userId = int.TryParse(userIdClaim, out int id);
+        //    var userId = int.TryParse(userIdClaim, out int id);
 
-            var result = await _businessService.CreateBusinessProfileAsync(id, createBusinessRequest);
+        //    var result = await _businessService.CreateBusinessProfileAsync(id, createBusinessRequest);
 
-            if (result.StatusCode != 200 || result.Data == null)
-            {
-                return StatusCode(result.StatusCode, result);
-            }
+        //    if (result.StatusCode != 200 || result.Data == null)
+        //    {
+        //        return StatusCode(result.StatusCode, result);
+        //    }
 
-            return CreatedAtAction("GetBusinessProfileById", new { id = result.Data.Id }, result.Data);
-        }
+        //    return CreatedAtAction("GetBusinessProfileById", new { id = result.Data.Id }, result.Data);
+        //}
 
         [HttpPut]
         [Route("api/businesses/{id}")]

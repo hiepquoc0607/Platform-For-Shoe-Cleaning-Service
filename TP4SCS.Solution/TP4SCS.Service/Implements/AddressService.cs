@@ -168,7 +168,7 @@ namespace TP4SCS.Services.Implements
                     await _addressRepository.UpdateAddressAsync(oldDefault);
                 }
 
-                return new ApiResponse<AddressResponse>("success", " Đổi Địa Chỉ Mặc Định Thành Công!", null);
+                return new ApiResponse<AddressResponse>("success", " Đổi Địa Chỉ Mặc Định Thành Công!", null, 200);
             }
             catch (Exception)
             {

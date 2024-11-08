@@ -7,6 +7,7 @@ using System.Text;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Auth;
+using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
@@ -387,48 +388,98 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
+        public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(OwnerRegisterRequest ownerRegisterRequest)
         {
-            //var account = ownerRegisterRequest.CustomerRegister;
-            //var business = ownerRegisterRequest.CreateBusiness;
-            //var branch = ownerRegisterRequest.CreateBranch;
+            var account = ownerRegisterRequest.CustomerRegister;
+            var businessData = ownerRegisterRequest.CreateBusiness;
+            var branchData = ownerRegisterRequest.CreateBranch;
 
-            //var passwordError = _util.CheckPasswordErrorType(account.Password);
+            var passwordError = _util.CheckPasswordErrorType(account.Password);
 
-            //var passwordErrorMessages = new Dictionary<string, string>
+            var passwordErrorMessages = new Dictionary<string, string>
+            {
+                { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
+                { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
+                { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
+                { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
+            };
+
+            if (passwordErrorMessages.TryGetValue(passwordError, out var message))
+            {
+                return new ApiResponse<AuthResponse>("error", 400, message);
+            }
+
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(account.Email.Trim().ToLower());
+
+            if (isEmailExisted == true)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Email đã được sử dụng!");
+            }
+
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(account.Phone.Trim());
+
+            if (isPhoneExisted == true)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Số điện thoại đã được sử dụng!");
+            }
+
+            var newAccount = _mapper.Map<Account>(account);
+            newAccount.Gender = newAccount.Gender.Trim().ToUpper();
+            newAccount.PasswordHash = _util.HashPassword(account.Password);
+            newAccount.RefreshToken = GenerateRefreshToken();
+            newAccount.Role = RoleConstants.OWNER;
+
+            //var isBusinessPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
+
+            //if (isPhoneExisted)
             //{
-            //    { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
-            //    { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
-            //    { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
-            //    { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
-            //};
-
-            //if (passwordErrorMessages.TryGetValue(passwordError, out var message))
-            //{
-            //    return new ApiResponse<AuthResponse>("error", 400, message);
+            //    return new ApiResponse<AuthResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
             //}
 
-            //var isEmailExisted = await _accountRepository.IsEmailExistedAsync(account.Email.Trim().ToLower());
+            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
 
-            //if (isEmailExisted == true)
-            //{
-            //    return new ApiResponse<AuthResponse>("error", 400, "Email đã được sử dụng!");
-            //}
+            if (isNameExisted)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
+            }
 
-            //var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(account.Phone.Trim());
+            var newBusiness = _mapper.Map<BusinessProfile>(businessData);
+            //newBusiness.OwnerId = await _accountRepository.GetAccountMaxIdAsync() + 1;
 
-            //if (isPhoneExisted == true)
-            //{
-            //    return new ApiResponse<AuthResponse>("error", 400, "Số điện thoại đã được sử dụng!");
-            //}
+            var newBranch = _mapper.Map<BusinessBranch>(branchData);
 
-            //var newAccount = _mapper.Map<Account>(account);
-            //newAccount.Gender = newAccount.Gender.Trim().ToUpper();
-            //newAccount.PasswordHash = _util.HashPassword(account.Password);
-            //newAccount.RefreshToken = GenerateRefreshToken();
-            //newAccount.Role = RoleConstants.CUSTOMER;
 
-            throw new NotImplementedException();
+            try
+            {
+                await _accountRepository.RunInTransactionAsync(async () =>
+                {
+                    await _accountRepository.CreateAccountAsync(newAccount);
+
+                    newBusiness.OwnerId = newAccount.Id;
+                    newBusiness.Phone = newAccount.Phone;
+
+                    await _businessRepository.CreateBusinessProfileAsync(newBusiness);
+
+                    newBranch.BusinessId = newBusiness.Id;
+
+                    await _branchRepository.CreateBranchAsync(newBranch);
+                });
+
+                var newAcc = await _accountRepository.GetAccountByIdAsync(newAccount.Id);
+
+                if (newAcc == null)
+                {
+                    return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+                }
+
+                var data = _mapper.Map<AuthResponse>(newAcc);
+
+                return new ApiResponse<AuthResponse>("success", "Tạo Tài Khoản Thành Công!", data, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+            }
         }
     }
 }
