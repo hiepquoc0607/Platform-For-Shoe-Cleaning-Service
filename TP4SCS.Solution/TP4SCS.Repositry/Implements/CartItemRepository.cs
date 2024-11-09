@@ -7,7 +7,7 @@ namespace TP4SCS.Repository.Implements
 {
     public class CartItemRepository : GenericRepository<CartItem>, ICartItemRepository
     {
- 
+
 
         public CartItemRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
@@ -95,7 +95,7 @@ namespace TP4SCS.Repository.Implements
             var itemToUpdate = await _dbContext.CartItems
                 .SingleOrDefaultAsync(item => item.Id == itemId);
 
-            if (itemToUpdate != null )
+            if (itemToUpdate != null)
             {
                 itemToUpdate.Quantity = newQuantity;
                 await UpdateAsync(itemToUpdate);

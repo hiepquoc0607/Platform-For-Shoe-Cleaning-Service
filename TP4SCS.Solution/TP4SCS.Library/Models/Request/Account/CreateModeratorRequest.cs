@@ -1,22 +1,13 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace TP4SCS.Library.Models.Request.Auth
+namespace TP4SCS.Library.Models.Request.Account
 {
-    public class CustomerRegisterRequest
+    public class CreateModeratorRequest
     {
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
-
-        [Required]
-        [MinLength(8)]
-        [DefaultValue("string")]
-        public string Password { get; set; } = string.Empty;
-
-        [Required]
-        [Compare("Password")]
-        public string ConfirmPassword { get; set; } = string.Empty;
 
         [Required]
         public string FullName { get; set; } = string.Empty;

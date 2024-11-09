@@ -1,5 +1,7 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Repository.Interfaces
@@ -9,6 +11,8 @@ namespace TP4SCS.Repository.Interfaces
         Task<(IEnumerable<Account>?, Pagination)> GetAccountsAsync(GetAccountRequest getAccountRequest);
 
         Task<Account?> GetAccountByIdAsync(int id);
+
+        Task<(IEnumerable<EmployeeResponse>?, Pagination)> GetEmployeesAsync(GetEmployeeRequest getEmployeeRequest);
 
         Task<Account?> GetAccountByIdForAdminAsync(int id);
 

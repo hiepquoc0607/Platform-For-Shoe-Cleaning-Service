@@ -8,7 +8,7 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
-        Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CustomerRegisterRequest customerRegisterRequest);
+        Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(AccountRegisterRequest customerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest);
 
@@ -23,5 +23,7 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordQuery resetPasswordQuery, ResetPasswordRequest resetPasswordRequest);
 
         Task<ApiResponse<AuthResponse>> RequestResetPasswordAsync(string email);
+
+        Task<ApiResponse<AuthResponse>> SendAccountInfoEmail(string email, string password);
     }
 }

@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.Account;
+using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
@@ -41,18 +45,6 @@ namespace TP4SCS.Repository.Implements
                 accounts = accounts.Where(a =>
                     EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
                     EF.Functions.Like(a.Email, $"%{searchKey}%"));
-            }
-
-            //Employee Sort
-            if (getAccountRequest.BusinessId != null)
-            {
-                var ownerId = await _dbContext.BusinessProfiles
-                    .AsNoTracking()
-                    .Where(b => b.Id == getAccountRequest.BusinessId)
-                    .Select(b => b.OwnerId)
-                    .SingleOrDefaultAsync();
-
-                accounts = accounts.Where(a => a.CreatedByOwnerId == ownerId);
             }
 
             //Status Sort
@@ -173,6 +165,119 @@ namespace TP4SCS.Repository.Implements
             {
                 return null;
             }
+        }
+
+        public async Task<(IEnumerable<EmployeeResponse>?, Pagination)> GetEmployeesAsync(GetEmployeeRequest getEmployeeRequest)
+        {
+            var branchEmployee = await _dbContext.BusinessBranches
+                .AsNoTracking()
+                .Where(b => b.BusinessId == getEmployeeRequest.BusinessId)
+                .Select(b => b.EmployeeIds)
+                .ToListAsync();
+
+            var branchId = await _dbContext.BusinessBranches
+                .AsNoTracking()
+                .Select(b => b.Id)
+                .ToListAsync();
+
+            var ids = new StringBuilder();
+
+            foreach (var item in branchEmployee)
+            {
+                if (ids.Length > 0)
+                {
+                    ids.Append(",");
+                }
+                ids.Append(item);
+            }
+
+            var idList = ids.Length == 0 ? new List<int>() : ids.ToString()
+                .Split(',')
+                .Where(id => int.TryParse(id, out _))
+                .Select(int.Parse)
+                .ToList();
+
+
+            var accounts = _dbContext.Accounts
+                .Where(a => idList.Contains(a.Id))
+                .Select(a => new EmployeeResponse
+                {
+                    Id = a.Id,
+                    Email = a.Email,
+                    FullName = a.FullName,
+                    Phone = a.Phone,
+                    Gender = a.Gender,
+                    Dob = a.Dob,
+                    ImageUrl = a.ImageUrl,
+                    CreatedByOwnerId = a.CreatedByOwnerId,
+                    Status = a.Status,
+                    Branch = _dbContext.BusinessBranches
+                        .Where(bb => bb.EmployeeIds != null && bb.EmployeeIds.Contains(a.Id.ToString()))
+                        .Select(bb => new EmployeeBranchResponse
+                        {
+                            Id = bb.Id,
+                            BusinessId = bb.BusinessId,
+                            Name = bb.Name,
+                            Address = bb.Address,
+                            Status = bb.Status
+                        })
+                        .FirstOrDefault()!
+                })
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getEmployeeRequest.SearchKey))
+            {
+                string searchKey = getEmployeeRequest.SearchKey;
+                accounts = accounts.Where(a =>
+                    EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.Email, $"%{searchKey}%"));
+            }
+
+            //Status Sort
+            if (getEmployeeRequest.Status != null)
+            {
+                accounts = getEmployeeRequest.Status switch
+                {
+                    AccountStatus.ACTIVE => accounts.Where(a => a.Status.Equals(StatusConstants.ACTIVE)),
+                    AccountStatus.INACTIVE => accounts.Where(a => a.Status.Equals(StatusConstants.INACTIVE)),
+                    AccountStatus.SUSPENDED => accounts.Where(a => a.Status.Equals(StatusConstants.SUSPENDED)),
+                    _ => accounts
+                };
+            }
+
+            //Order Sort
+            if (getEmployeeRequest.SortBy != null)
+            {
+                accounts = getEmployeeRequest.SortBy switch
+                {
+                    AccountSearchOption.EMAIL => getEmployeeRequest.IsDecsending
+                                ? accounts.OrderByDescending(a => a.Email)
+                                : accounts.OrderBy(a => a.Email),
+                    AccountSearchOption.FULLNAME => getEmployeeRequest.IsDecsending
+                                  ? accounts.OrderByDescending(a => a.FullName)
+                                  : accounts.OrderBy(a => a.FullName),
+                    AccountSearchOption.STATUS => getEmployeeRequest.IsDecsending
+                                  ? accounts.OrderByDescending(a => a.Status)
+                                  : accounts.OrderBy(a => a.Status),
+                    _ => accounts
+                };
+            }
+
+            //Count Total Data
+            int totalData = await accounts.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getEmployeeRequest.PageNum - 1) * getEmployeeRequest.PageSize;
+            accounts = accounts.Skip(skipNum).Take(getEmployeeRequest.PageSize);
+
+            var result = await accounts.ToListAsync();
+
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getEmployeeRequest.PageSize);
+
+            var pagination = new Pagination(totalData, getEmployeeRequest.PageSize, getEmployeeRequest.PageNum, totalPage);
+
+            return (result, pagination);
         }
     }
 }

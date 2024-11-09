@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using TP4SCS.Library.Models.Data;
+﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 
 namespace TP4SCS.Services.Interfaces
