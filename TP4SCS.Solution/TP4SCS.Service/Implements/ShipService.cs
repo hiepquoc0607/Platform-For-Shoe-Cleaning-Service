@@ -219,7 +219,7 @@ namespace TP4SCS.Services.Implements
 
                 if (!serviceTypeId.HasValue)
                 {
-                    throw new InvalidOperationException($"Không hỗ trợ ship từ DistricId: {getShipFeeRequest.FromDistricId} tới FromDistricId: {getShipFeeRequest.ToDistricId});
+                    throw new InvalidOperationException($"Không hỗ trợ ship từ DistricId: {getShipFeeRequest.FromDistricId} tới FromDistricId: {getShipFeeRequest.ToDistricId}");
                 }
 
                 var requestBody = new
