@@ -69,35 +69,75 @@ namespace TP4SCS.Services.Implements
 
             return totalPrice;
         }
-        public async Task CheckoutAsync(HttpClient httpClient, CheckoutRequest request)
+        public async Task CheckoutForServiceAsync(HttpClient httpClient, CheckoutForServiceRequest request)
         {
             IEnumerable<dynamic> groupedItems = Enumerable.Empty<dynamic>();
-            if ((request.CartItemIds.Any() && request.Items.Any()) || (!request.CartItemIds.Any() && !request.Items.Any()))
+
+            groupedItems = request.Items
+                    .GroupBy(item => item.BranchId)
+                    .Select(group => new
+                    {
+                        BranchId = group.Key,
+                        Items = group.ToList()
+                    });
+
+            var orders = new List<Order>();
+            foreach (var group in groupedItems)
             {
-                throw new ArgumentException("Vui lòng chỉ chọn một trong hai: CartItemIds hoặc Items. Không thể chọn cả hai hoặc để cả hai trống.");
+                var order = new Order
+                {
+                    AccountId = request.AccountId,
+                    AddressId = request.AddressId,
+                    CreateTime = DateTime.UtcNow,
+                    IsAutoReject = request.IsAutoReject,
+                    Note = request.Note,
+                    Status = StatusConstants.PENDING,
+                    ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
+                    ShippingCode = request.IsShip ? "" : null,
+                    OrderDetails = new List<OrderDetail>()
+                };
+
+                decimal orderPrice = 0;
+                int quantiy = 0;
+
+                foreach (var item in group.Items)
+                {
+                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
+
+                    order.OrderDetails.Add(new OrderDetail
+                    {
+                        BranchId = item.BranchId,
+                        ServiceId = item.ServiceId,
+                        Quantity = item.Quantity,
+                        Price = finalPrice,
+                    });
+
+                    orderPrice += finalPrice * item.Quantity;
+                    quantiy += item.Quantity;
+                }
+                order.DeliveredFee = request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0;
+                order.OrderPrice = orderPrice;
+                order.PendingTime = DateTime.UtcNow;
+                order.CreateTime = DateTime.UtcNow;
+                order.TotalPrice = orderPrice +
+                    (request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0);
+                orders.Add(order);
             }
 
-            if (request.CartItemIds.Any())
-            {
-                var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
-                groupedItems = cartItems
-                    .GroupBy(item => item.BranchId)
-                    .Select(group => new
-                    {
-                        BranchId = group.Key,
-                        Items = group.ToList()
-                    });
-            }
-            else if (request.Items.Any())
-            {
-                groupedItems = request.Items
-                    .GroupBy(item => item.BranchId)
-                    .Select(group => new
-                    {
-                        BranchId = group.Key,
-                        Items = group.ToList()
-                    });
-            }
+            await _orderRepository.AddOrdersAsync(orders);
+        }
+        public async Task CheckoutForCartItemAsync(HttpClient httpClient, CheckoutForCartItemRequest request)
+        {
+            IEnumerable<dynamic> groupedItems = Enumerable.Empty<dynamic>();
+
+            var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(request.CartItemIds);
+            groupedItems = cartItems
+                .GroupBy(item => item.BranchId)
+                .Select(group => new
+                {
+                    BranchId = group.Key,
+                    Items = group.ToList()
+                });
 
             var orders = new List<Order>();
             foreach (var group in groupedItems)

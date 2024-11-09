@@ -78,7 +78,7 @@ namespace TP4SCS.API.Controllers
         //    return Ok(new { Total = total });
         //}
         [HttpPost("api/carts/cart/checkout")]
-        public async Task<IActionResult> CheckoutAsync([FromBody] CheckoutRequest request)
+        public async Task<IActionResult> CheckoutForCartItemAsync([FromBody] CheckoutForCartItemRequest request)
         {
             if (request == null)
             {
@@ -87,7 +87,25 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                await _cartService.CheckoutAsync(_httpClient, request);
+                await _cartService.CheckoutForCartItemAsync(_httpClient, request);
+                return Ok("Thanh toán thành công.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+            }
+        }
+        [HttpPost("api/services/service/checkout")]
+        public async Task<IActionResult> CheckoutForServiceAsync([FromBody] CheckoutForServiceRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp sản phẩm trong giỏ hàng.");
+            }
+
+            try
+            {
+                await _cartService.CheckoutForServiceAsync(_httpClient, request);
                 return Ok("Thanh toán thành công.");
             }
             catch (Exception ex)
