@@ -109,14 +109,11 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpPut("{id}/approved")]
+        [HttpPost("{id}/sendEmailApproved")]
         public async Task<IActionResult> Approved(int id, string toEmail)
         {
             try
             {
-                // Cập nhật trạng thái đơn hàng
-                await _orderService.ApprovedOrder(id);
-
                 // Thiết lập subject và body cho email
                 string subject = "Đơn hàng đã được duyệt!";
                 string body = $"Chào bạn,\n\n" +
@@ -129,14 +126,29 @@ namespace TP4SCS.API.Controllers
                 await _emailService.SendEmailAsync(toEmail, subject, body);
 
                 // Trả về thông báo thành công dưới dạng ResponseObject
-                return Ok(new ResponseObject<string>("Đơn hàng đã được duyệt thành công!", null));
+                return Ok(new ResponseObject<string>("Gửi email thành công!"));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseObject<string>($"Lỗi khi gửi email: {ex.Message}"));
             }
         }
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, string status)
+        {
+            try
+            {
+                // Cập nhật trạng thái đơn hàng
+                await _orderService.UpdateOrderStatusAsync(id,status);
 
+                // Trả về thông báo thành công dưới dạng ResponseObject
+                return Ok(new ResponseObject<string>("Đơn hàng đã được duyệt thành công!", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Lỗi khi duyệt đơn hàng: {ex.Message}"));
+            }
+        }
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateOrderAsync(int id, UpdateOrderRequest request)
         {

@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel;
-using TP4SCS.Library.Models.Request.CartItem;
 
 namespace TP4SCS.Library.Models.Request.Cart
 {
-    public class CheckoutRequest
+    public class CheckoutForCartItemRequest
     {
-        public List<CartItemCreateRequest> Items { get; set; } = new List<CartItemCreateRequest> { };
         public int[] CartItemIds { get; set; } = Array.Empty<int>();
 
         public int AccountId { get; set; }
