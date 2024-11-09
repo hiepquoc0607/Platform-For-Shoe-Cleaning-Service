@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
@@ -113,20 +114,28 @@ namespace TP4SCS.API.Controllers
 
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedServicesAsync(
-            string? status = null,
-            int? pageIndex = null,
-            int? pageSize = null)
+            int pageIndex =1,
+            int pageSize = 5,
+            string? status = null
+        )
         {
             try
             {
-                var discountedServices = await _serviceService.GetDiscountedServicesAsync(status,pageIndex,pageSize);
+                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(status, pageIndex, pageSize);
+
                 if (discountedServices == null || !discountedServices.Any())
                 {
                     return NotFound(new ResponseObject<IEnumerable<ServiceResponse>>("Không tìm thấy dịch vụ nào đang giảm giá."));
                 }
 
-                var response = discountedServices.Select(s => _mapper.Map<ServiceResponse>(s));
-                return Ok(new ResponseObject<IEnumerable<ServiceResponse>>("Lấy dịch vụ giảm giá thành công.", response));
+                var pagedResponse = new PagedResponse<ServiceResponse>(
+                    discountedServices.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>(),
+                    totalCount,
+                    pageIndex,
+                    pageSize
+                );
+
+                return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ giảm giá thành công.", pagedResponse));
             }
             catch (Exception ex)
             {
