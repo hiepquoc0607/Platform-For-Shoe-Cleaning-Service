@@ -19,10 +19,10 @@ namespace TP4SCS.Services.Interfaces
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
 
-        Task<IEnumerable<Service>?> GetDiscountedServicesAsync(
-            string? status = null,
-            int? pageIndex = null,
-            int? pageSize = null);
+        Task<(IEnumerable<Service>?, int)> GetDiscountedServicesAsync(
+                    string? status = null,
+                    int? pageIndex = null,
+                    int? pageSize = null);
 
         Task AddServiceAsync(ServiceCreateRequest service, int businessId);
 
