@@ -97,12 +97,12 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Account__3214EC07C9ACB9DA");
+                        .HasName("PK__Account__3214EC07120E971C");
 
-                    b.HasIndex(new[] { "Phone" }, "UQ__Account__5C7E359EDB8A192B")
+                    b.HasIndex(new[] { "Phone" }, "UQ__Account__5C7E359E50350315")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Email" }, "UQ__Account__A9D10534348CDA74")
+                    b.HasIndex(new[] { "Email" }, "UQ__Account__A9D105341831F612")
                         .IsUnique();
 
                     b.ToTable("Account", (string)null);
@@ -161,7 +161,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__AccountA__3214EC07BC4DD2F3");
+                        .HasName("PK__AccountA__3214EC07C4C4435A");
 
                     b.HasIndex("AccountId");
 
@@ -202,7 +202,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id")
-                        .HasName("PK__AssetURL__3214EC07732D0784");
+                        .HasName("PK__AssetURL__3214EC073E9C43F0");
 
                     b.HasIndex("BusinessId");
 
@@ -241,7 +241,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__BranchMa__3214EC074A95B67C");
+                        .HasName("PK__BranchMa__3214EC07E2A80A1A");
 
                     b.HasIndex("BranchId");
 
@@ -271,7 +271,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__BranchSe__3214EC074244B97E");
+                        .HasName("PK__BranchSe__3214EC075E26A926");
 
                     b.HasIndex("BranchId");
 
@@ -355,7 +355,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Business__3214EC078DC12F30");
+                        .HasName("PK__Business__3214EC07EB1E9ECA");
 
                     b.HasIndex("BusinessId");
 
@@ -370,8 +370,17 @@ namespace TP4SCS.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BackCitizenImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<int>("CanceledAmount")
                         .HasColumnType("int");
+
+                    b.Property<string>("CitizenIdnumber")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("CitizenIDNumber");
 
                     b.Property<DateOnly>("CreatedDate")
                         .HasColumnType("date");
@@ -381,6 +390,9 @@ namespace TP4SCS.Library.Migrations
 
                     b.Property<int>("FinishedAmount")
                         .HasColumnType("int");
+
+                    b.Property<string>("FrontCitizenImageUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
@@ -427,15 +439,15 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Business__3214EC07194AC4B8");
+                        .HasName("PK__Business__3214EC078506CCAA");
 
-                    b.HasIndex(new[] { "Phone" }, "UQ__Business__5C7E359E0733639F")
+                    b.HasIndex(new[] { "Phone" }, "UQ__Business__5C7E359EA148355A")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Business__737584F619DE6B28")
+                    b.HasIndex(new[] { "Name" }, "UQ__Business__737584F69945F928")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "OwnerId" }, "UQ__Business__819385B9C6A26C8A")
+                    b.HasIndex(new[] { "OwnerId" }, "UQ__Business__819385B985082097")
                         .IsUnique();
 
                     b.ToTable("BusinessProfile", (string)null);
@@ -456,9 +468,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Cart__3214EC07EA76D814");
+                        .HasName("PK__Cart__3214EC07D9482011");
 
-                    b.HasIndex(new[] { "AccountId" }, "UQ__Cart__349DA5A72D636C38")
+                    b.HasIndex(new[] { "AccountId" }, "UQ__Cart__349DA5A72218F318")
                         .IsUnique();
 
                     b.ToTable("Cart", (string)null);
@@ -491,7 +503,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__CartItem__3214EC0725959601");
+                        .HasName("PK__CartItem__3214EC0792DB57EF");
 
                     b.HasIndex("BranchId");
 
@@ -537,9 +549,10 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Feedback__3214EC07089D0130");
+                        .HasName("PK__Feedback__3214EC07F2DC61F4");
 
-                    b.HasIndex("OrderItemId");
+                    b.HasIndex(new[] { "OrderItemId" }, "UQ__Feedback__57ED0680450E03D9")
+                        .IsUnique();
 
                     b.ToTable("Feedback", (string)null);
                 });
@@ -567,7 +580,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Material__3214EC0760987C54");
+                        .HasName("PK__Material__3214EC070B915019");
 
                     b.ToTable("Material", (string)null);
                 });
@@ -648,7 +661,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Order__3214EC07DA957CBD");
+                        .HasName("PK__Order__3214EC079913C4DB");
 
                     b.HasIndex("AccountId");
 
@@ -684,7 +697,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderDet__3214EC07A868DFC7");
+                        .HasName("PK__OrderDet__3214EC07141615D1");
 
                     b.HasIndex("BranchId");
 
@@ -721,7 +734,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderNot__3214EC07A4E9C54F");
+                        .HasName("PK__OrderNot__3214EC071B708BC5");
 
                     b.HasIndex("OrderId");
 
@@ -742,9 +755,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__PaymentM__3214EC07ED6922A9");
+                        .HasName("PK__PaymentM__3214EC07E29BB221");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__PaymentM__737584F6C355381B")
+                    b.HasIndex(new[] { "Name" }, "UQ__PaymentM__737584F659D70606")
                         .IsUnique();
 
                     b.ToTable("PaymentMethod", (string)null);
@@ -774,9 +787,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Promotio__3214EC07E2416035");
+                        .HasName("PK__Promotio__3214EC0714D3972F");
 
-                    b.HasIndex(new[] { "ServiceId" }, "UQ__Promotio__C51BB00BAFBB37E9")
+                    b.HasIndex(new[] { "ServiceId" }, "UQ__Promotio__C51BB00B84C38478")
                         .IsUnique();
 
                     b.ToTable("Promotion", (string)null);
@@ -824,7 +837,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Service__3214EC07C2E46723");
+                        .HasName("PK__Service__3214EC0774D0EEE3");
 
                     b.HasIndex("CategoryId");
 
@@ -851,9 +864,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__ServiceC__3214EC0718410B13");
+                        .HasName("PK__ServiceC__3214EC07D3D8ABA4");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__ServiceC__737584F6C12A8EE1")
+                    b.HasIndex(new[] { "Name" }, "UQ__ServiceC__737584F6924A8531")
                         .IsUnique();
 
                     b.ToTable("ServiceCategory", (string)null);
@@ -874,7 +887,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__ServiceM__3214EC0704444BE3");
+                        .HasName("PK__ServiceM__3214EC07BD31FBED");
 
                     b.HasIndex("MaterialId");
 
@@ -907,9 +920,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Subscrip__3214EC07F8E204EA");
+                        .HasName("PK__Subscrip__3214EC07DA3C551B");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Subscrip__737584F67CEE6788")
+                    b.HasIndex(new[] { "Name" }, "UQ__Subscrip__737584F6D6D08F5B")
                         .IsUnique();
 
                     b.ToTable("SubscriptionPack", (string)null);
@@ -960,7 +973,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__SupportT__3214EC072D4927ED");
+                        .HasName("PK__SupportT__3214EC07AAB90051");
 
                     b.HasIndex("CategoryId");
 
@@ -996,9 +1009,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__TicketCa__3214EC0735FC7DA7");
+                        .HasName("PK__TicketCa__3214EC07B3B83897");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__TicketCa__737584F6B7C8D56A")
+                    b.HasIndex(new[] { "Name" }, "UQ__TicketCa__737584F6B91D3660")
                         .IsUnique();
 
                     b.ToTable("TicketCategory", (string)null);
@@ -1037,7 +1050,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Transact__3214EC07001256F3");
+                        .HasName("PK__Transact__3214EC074FEA16CD");
 
                     b.HasIndex("AccountId");
 
@@ -1064,27 +1077,27 @@ namespace TP4SCS.Library.Migrations
                     b.HasOne("TP4SCS.Library.Models.Data.BusinessProfile", "Business")
                         .WithMany("AssetUrls")
                         .HasForeignKey("BusinessId")
-                        .HasConstraintName("FK__AssetURL__Busine__0F624AF8");
+                        .HasConstraintName("FK__AssetURL__Busine__10566F31");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Feedback", "Feedback")
                         .WithMany("AssetUrls")
                         .HasForeignKey("FeedbackId")
-                        .HasConstraintName("FK__AssetURL__Feedba__10566F31");
+                        .HasConstraintName("FK__AssetURL__Feedba__114A936A");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Material", "Material")
                         .WithMany("AssetUrls")
                         .HasForeignKey("MaterialId")
-                        .HasConstraintName("FK__AssetURL__Materi__123EB7A3");
+                        .HasConstraintName("FK__AssetURL__Materi__1332DBDC");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Service", "Service")
                         .WithMany("AssetUrls")
                         .HasForeignKey("ServiceId")
-                        .HasConstraintName("FK__AssetURL__Servic__114A936A");
+                        .HasConstraintName("FK__AssetURL__Servic__123EB7A3");
 
                     b.HasOne("TP4SCS.Library.Models.Data.SupportTicket", "Ticket")
                         .WithMany("AssetUrls")
                         .HasForeignKey("TicketId")
-                        .HasConstraintName("FK__AssetURL__Ticket__1332DBDC");
+                        .HasConstraintName("FK__AssetURL__Ticket__14270015");
 
                     b.Navigation("Business");
 
@@ -1204,10 +1217,10 @@ namespace TP4SCS.Library.Migrations
             modelBuilder.Entity("TP4SCS.Library.Models.Data.Feedback", b =>
                 {
                     b.HasOne("TP4SCS.Library.Models.Data.OrderDetail", "OrderItem")
-                        .WithMany("Feedbacks")
-                        .HasForeignKey("OrderItemId")
+                        .WithOne("Feedback")
+                        .HasForeignKey("TP4SCS.Library.Models.Data.Feedback", "OrderItemId")
                         .IsRequired()
-                        .HasConstraintName("FK__Feedback__OrderI__00200768");
+                        .HasConstraintName("FK__Feedback__OrderI__01142BA1");
 
                     b.Navigation("OrderItem");
                 });
@@ -1270,7 +1283,7 @@ namespace TP4SCS.Library.Migrations
                         .WithMany("OrderNotifications")
                         .HasForeignKey("OrderId")
                         .IsRequired()
-                        .HasConstraintName("FK__OrderNoti__Order__2180FB33");
+                        .HasConstraintName("FK__OrderNoti__Order__22751F6C");
 
                     b.Navigation("Order");
                 });
@@ -1321,23 +1334,23 @@ namespace TP4SCS.Library.Migrations
                         .WithMany("SupportTickets")
                         .HasForeignKey("CategoryId")
                         .IsRequired()
-                        .HasConstraintName("FK__SupportTi__Categ__0A9D95DB");
+                        .HasConstraintName("FK__SupportTi__Categ__0B91BA14");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Account", "Moderator")
                         .WithMany("SupportTicketModerators")
                         .HasForeignKey("ModeratorId")
-                        .HasConstraintName("FK__SupportTi__Moder__09A971A2");
+                        .HasConstraintName("FK__SupportTi__Moder__0A9D95DB");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Order", "Order")
                         .WithMany("SupportTickets")
                         .HasForeignKey("OrderId")
-                        .HasConstraintName("FK__SupportTi__Order__0B91BA14");
+                        .HasConstraintName("FK__SupportTi__Order__0C85DE4D");
 
                     b.HasOne("TP4SCS.Library.Models.Data.Account", "User")
                         .WithMany("SupportTicketUsers")
                         .HasForeignKey("UserId")
                         .IsRequired()
-                        .HasConstraintName("FK__SupportTi__UserI__08B54D69");
+                        .HasConstraintName("FK__SupportTi__UserI__09A971A2");
 
                     b.Navigation("Category");
 
@@ -1354,19 +1367,19 @@ namespace TP4SCS.Library.Migrations
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .IsRequired()
-                        .HasConstraintName("FK__Transacti__Accou__1CBC4616");
+                        .HasConstraintName("FK__Transacti__Accou__1DB06A4F");
 
                     b.HasOne("TP4SCS.Library.Models.Data.PaymentMethod", "Method")
                         .WithMany("Transactions")
                         .HasForeignKey("MethodId")
                         .IsRequired()
-                        .HasConstraintName("FK__Transacti__Metho__1DB06A4F");
+                        .HasConstraintName("FK__Transacti__Metho__1EA48E88");
 
                     b.HasOne("TP4SCS.Library.Models.Data.SubscriptionPack", "Pack")
                         .WithMany("Transactions")
                         .HasForeignKey("PackId")
                         .IsRequired()
-                        .HasConstraintName("FK__Transacti__PackI__1EA48E88");
+                        .HasConstraintName("FK__Transacti__PackI__1F98B2C1");
 
                     b.Navigation("Account");
 
@@ -1449,7 +1462,7 @@ namespace TP4SCS.Library.Migrations
 
             modelBuilder.Entity("TP4SCS.Library.Models.Data.OrderDetail", b =>
                 {
-                    b.Navigation("Feedbacks");
+                    b.Navigation("Feedback");
                 });
 
             modelBuilder.Entity("TP4SCS.Library.Models.Data.PaymentMethod", b =>

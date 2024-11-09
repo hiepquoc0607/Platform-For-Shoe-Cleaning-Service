@@ -18,7 +18,7 @@ public partial class OrderDetail
 
     public virtual BusinessBranch Branch { get; set; } = null!;
 
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+    public virtual Feedback? Feedback { get; set; }
 
     public virtual Material? Material { get; set; }
 
