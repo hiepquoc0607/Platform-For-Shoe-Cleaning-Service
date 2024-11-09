@@ -8,5 +8,6 @@ namespace TP4SCS.Services.Interfaces
         Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId);
         Task DeleteFeedbackAsync(int id);
         Task UpdateFeedbackAsync(Feedback feedback, int existingFeedbackId);
+        Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId);
     }
 }

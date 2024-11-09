@@ -27,7 +27,7 @@ namespace TP4SCS.Repository.Implements
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _dbContext.Orders
-                .Include(o => o.Account)
+                    .Include(o => o.Account)
                         .ThenInclude(a => a.AccountAddresses)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
@@ -45,6 +45,8 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Material)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Feedbacks)
                 .Where(o => o.Id == id)
                 .SingleOrDefaultAsync();
         }
@@ -89,7 +91,9 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Material);
+                        .ThenInclude(od => od.Material)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Feedbacks);
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)

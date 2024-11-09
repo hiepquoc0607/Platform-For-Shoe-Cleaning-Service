@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Service;
 
@@ -12,6 +13,7 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
         public ServiceResponse? Service { get; set; }
 
         public MaterialResponse? Material { get; set; }
+        public virtual List<FeedbackResponse> Feedbacks { get; set; } = new List<FeedbackResponse>();
 
         public int Quantity { get; set; }
 

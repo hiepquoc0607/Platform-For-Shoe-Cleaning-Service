@@ -17,6 +17,10 @@ namespace TP4SCS.Services.Implements
         {
             return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
         }
+        public async Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId)
+        {
+            return await _feedbackRepository.GetFeedbacksByAccountIdAsync(accountId);
+        }
         public async Task AddFeedbacksAsync(Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)

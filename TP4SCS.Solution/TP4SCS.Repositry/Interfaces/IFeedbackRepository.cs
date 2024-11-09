@@ -20,5 +20,11 @@ namespace TP4SCS.Repository.Interfaces
         Task DeleteFeedbackAsync(int id);
         Task UpdateFeedbackAsync(Feedback feedback);
         Task<Feedback?> GetFeedbackByidAsync(int id);
+        Task<IEnumerable<Feedback>?> GetFeedbacksByAccountIdAsync(
+           int accountId,
+           string? status = null,
+           int? pageIndex = null,
+           int? pageSize = null,
+           OrderByEnum orderBy = OrderByEnum.IdAsc);
     }
 }
