@@ -46,12 +46,12 @@ namespace TP4SCS.API.Controllers
         }
 
         // GET: api/feedbacks/{serviceId}
-        [HttpGet("{serviceId}")]
-        public async Task<IActionResult> GetFeedbacksByServiceId(int serviceId)
+        [HttpGet("services/{id}")]
+        public async Task<IActionResult> GetFeedbacksByServiceId(int id)
         {
             try
             {
-                var feedbacks = await _feedbackService.GetFeedbackByServiceId(serviceId);
+                var feedbacks = await _feedbackService.GetFeedbackByServiceId(id);
                 var response = _mapper.Map<IEnumerable<FeedbackResponse>>(feedbacks);
                 return Ok(new ResponseObject<IEnumerable<FeedbackResponse>>("Lấy danh sách đánh giá thành công", response));
             }
@@ -60,7 +60,20 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
-
+        [HttpGet("accounts/{id}")]
+        public async Task<IActionResult> GetFeedbacksByAccountId(int id)
+        {
+            try
+            {
+                var feedbacks = await _feedbackService.GetFeedbackByAccountId(id);
+                var response = _mapper.Map<IEnumerable<FeedbackResponse>>(feedbacks);
+                return Ok(new ResponseObject<IEnumerable<FeedbackResponse>>("Lấy danh sách đánh giá thành công", response));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
         // DELETE: api/feedbacks/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFeedback(int id)

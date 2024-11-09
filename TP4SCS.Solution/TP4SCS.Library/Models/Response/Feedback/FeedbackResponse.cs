@@ -22,7 +22,5 @@ namespace TP4SCS.Library.Models.Response.Feedback
         public string Status { get; set; } = null!;
 
         public virtual ICollection<AssetUrlResponse> AssetUrls { get; set; } = new List<AssetUrlResponse>();
-
-        public virtual OrderDetailResponseV2 OrderItem { get; set; } = null!;
     }
 }
