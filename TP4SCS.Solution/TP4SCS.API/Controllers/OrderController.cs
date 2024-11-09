@@ -157,9 +157,9 @@ namespace TP4SCS.API.Controllers
                 await _orderService.UpdateOrderAsync(id, request);
                 return Ok(new ResponseObject<string>("Đơn hàng đã được cập nhật thành công!", null));
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound(new ResponseObject<string>($"Không tìm thấy đơn hàng với ID: {id}"));
+                return NotFound(new ResponseObject<string>(ex.Message));
             }
             catch (Exception ex)
             {

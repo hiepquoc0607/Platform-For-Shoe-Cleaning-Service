@@ -45,7 +45,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
-                        //.ThenInclude(od => od.Feedbacks)
+                        .ThenInclude(od => od.Feedback)
                 .Where(o => o.Id == id)
                 .SingleOrDefaultAsync();
         }
@@ -91,8 +91,8 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Material)
-                    .Include(o => o.OrderDetails);
-                        //.ThenInclude(od => od.Feedbacks);
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Feedback);
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
