@@ -29,7 +29,7 @@ namespace TP4SCS.Services.Implements
 
                 var requestBody = new
                 {
-                    shop_id = _configuration["GHN_API:ShopId"],
+                    shop_id = 195216,
                     from_district = fromDistrict,
                     to_district = toDistrict
                 };
@@ -55,9 +55,9 @@ namespace TP4SCS.Services.Implements
 
                 return services;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                throw new InvalidOperationException(ex.Message);
             }
         }
 
@@ -210,9 +210,18 @@ namespace TP4SCS.Services.Implements
             int totalHeight = heightPerBox * heightCount;
             int totalWeight = weightPerBox * quantity;
 
+            var availableServices = await GetAvailableServicesAsync(httpClient, getShipFeeRequest.FromDistricId, getShipFeeRequest.ToDistricId);
+
+            int? serviceTypeId = availableServices?.SingleOrDefault(s => s.ServiceTypeID == 2)?.ServiceTypeID
+                               ?? availableServices?.SingleOrDefault(s => s.ServiceTypeID == 5)?.ServiceTypeID;
+
+            if (!serviceTypeId.HasValue)
+            {
+                throw new InvalidOperationException($"Không hỗ trợ ship từ {getShipFeeRequest.FromDistricId} tới {getShipFeeRequest.ToDistricId}");
+            }
             var requestBody = new
             {
-                service_type_id = 2,
+                service_type_id = serviceTypeId.Value,
                 from_district_id = getShipFeeRequest.FromDistricId,
                 from_ward_code = getShipFeeRequest.FromWardCode,
                 to_district_id = getShipFeeRequest.ToDistricId,

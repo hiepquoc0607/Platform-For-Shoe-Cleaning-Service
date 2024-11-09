@@ -53,16 +53,16 @@ namespace TP4SCS.Repository.Implements
         public async Task DeleteOrderDetailAsync(int id)
         {
             var od = await _dbContext.OrderDetails
-                //.Include(od => od.Feedbacks)
+                .Include(od => od.Feedback)
                 .SingleOrDefaultAsync(_ => _.Id == id);
             if (od == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy OrderDetail với ID {id}.");
             }
-            //if (od.Feedbacks != null)
-            //{
-            //    throw new InvalidOperationException("Không thể xóa OrderDetail vì có liên kết với Feedbacks.");
-            //}
+            if (od.Feedback != null)
+            {
+                throw new InvalidOperationException("Không thể xóa OrderDetail vì có liên kết với Feedbacks.");
+            }
             var order = await _dbContext.Orders
                              .Include(o => o.OrderDetails)
                              .SingleOrDefaultAsync(c => c.Id == od.OrderId);

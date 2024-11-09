@@ -6,7 +6,6 @@
 
         public string? ShippingCode { get; set; }
         public decimal? DeliveredFee { get; set; }
-        public string? Status { get; set; }
         public DateTime? PendingTime { get; set; }
 
         public DateTime? ApprovedTime { get; set; }

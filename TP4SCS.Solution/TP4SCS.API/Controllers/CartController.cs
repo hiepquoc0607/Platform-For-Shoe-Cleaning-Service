@@ -90,6 +90,10 @@ namespace TP4SCS.API.Controllers
                 await _cartService.CheckoutForCartItemAsync(_httpClient, request);
                 return Ok("Thanh toán thành công.");
             }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(400, new ResponseObject<string>(ex.Message));
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");

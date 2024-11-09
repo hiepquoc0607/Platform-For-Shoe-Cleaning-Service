@@ -112,11 +112,14 @@ namespace TP4SCS.API.Controllers
 
 
         [HttpGet("discounted")]
-        public async Task<IActionResult> GetDiscountedServicesAsync()
+        public async Task<IActionResult> GetDiscountedServicesAsync(
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null)
         {
             try
             {
-                var discountedServices = await _serviceService.GetDiscountedServicesAsync();
+                var discountedServices = await _serviceService.GetDiscountedServicesAsync(status,pageIndex,pageSize);
                 if (discountedServices == null || !discountedServices.Any())
                 {
                     return NotFound(new ResponseObject<IEnumerable<ServiceResponse>>("Không tìm thấy dịch vụ nào đang giảm giá."));

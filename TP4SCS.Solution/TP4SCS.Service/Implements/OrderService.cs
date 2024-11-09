@@ -110,10 +110,6 @@ namespace TP4SCS.Services.Implements
             {
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderId}");
             }
-            if (request.Status != null && !Util.IsValidOrderStatus(request.Status))
-            {
-                throw new KeyNotFoundException($"Status không hợp lệ.");
-            }
 
             // Cập nhật thông tin ShippingUnit và ShippingCode nếu có
             if (request.ShippingUnit != null)
@@ -130,12 +126,6 @@ namespace TP4SCS.Services.Implements
             if (request.DeliveredFee.HasValue)
             {
                 existingOrder.DeliveredFee = request.DeliveredFee.Value;
-            }
-
-            // Cập nhật Status nếu có
-            if (request.Status != null && Util.IsValidOrderStatus(request.Status))
-            {
-                existingOrder.Status = request.Status;
             }
 
             // Cập nhật các thời gian nếu không phải null

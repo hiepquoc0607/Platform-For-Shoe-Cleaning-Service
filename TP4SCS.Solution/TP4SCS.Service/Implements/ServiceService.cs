@@ -257,9 +257,12 @@ namespace TP4SCS.Services.Implements
 
         }
 
-        public async Task<IEnumerable<Service>?> GetDiscountedServicesAsync()
+        public async Task<IEnumerable<Service>?> GetDiscountedServicesAsync(
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null)
         {
-            var services = await _serviceRepository.GetServicesAsync(null, null);
+            var services = await _serviceRepository.GetServicesAsync(null, status,pageIndex,pageSize);
 
             var discountedServices = services?.Where(service =>
                 service.Promotion != null &&
