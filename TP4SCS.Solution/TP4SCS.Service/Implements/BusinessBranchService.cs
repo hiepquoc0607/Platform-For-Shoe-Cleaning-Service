@@ -1,8 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
-using System.Net.Http;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;

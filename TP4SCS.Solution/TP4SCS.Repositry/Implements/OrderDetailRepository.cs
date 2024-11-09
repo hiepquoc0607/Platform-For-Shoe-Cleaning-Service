@@ -1,7 +1,5 @@
-﻿using Google.Apis.Storage.v1.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 

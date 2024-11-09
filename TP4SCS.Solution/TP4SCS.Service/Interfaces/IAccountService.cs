@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Request.Account;
-using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
@@ -16,7 +15,9 @@ namespace TP4SCS.Services.Interfaces
 
         Task<int> GetAccountMaxIdAsync();
 
-        Task<ApiResponse<AccountResponse>> CreateAccountAsync(CustomerRegisterRequest createAccountRequest);
+        Task<ApiResponse<AccountResponse>> CreateEmployeeAccountAsync(int id, CreateEmployeeRequest createEmployeeRequest);
+
+        Task<ApiResponse<AccountResponse>> CreateModeratorAccountAsync(CreateModeratorRequest createModeratorRequest);
 
         Task<ApiResponse<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
 

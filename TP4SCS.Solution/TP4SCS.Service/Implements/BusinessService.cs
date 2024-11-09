@@ -1,7 +1,5 @@
 ﻿using Mapster;
 using MapsterMapper;
-using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;

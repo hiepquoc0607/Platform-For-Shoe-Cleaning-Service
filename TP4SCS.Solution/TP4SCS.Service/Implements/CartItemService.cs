@@ -43,7 +43,7 @@ namespace TP4SCS.Services.Implements
         {
             await _cartItemRepository.RemoveItemsFromCartAsync(itemIds);
         }
-        
+
         public async Task UpdateCartItemQuantityAsync(int itemId, int newQuantity)
         {
             if (newQuantity <= 0)

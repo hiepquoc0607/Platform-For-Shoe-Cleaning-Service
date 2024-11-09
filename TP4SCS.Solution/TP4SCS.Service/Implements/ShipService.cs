@@ -1,10 +1,10 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http.Json;
-using TP4SCS.Library.Models.Request.ShipFee;
 
 namespace TP4SCS.Services.Implements
 {
@@ -202,7 +202,7 @@ namespace TP4SCS.Services.Implements
             int weightPerBox = 400;
 
             int widthCount = Math.Min(quantity, 5);
-            int lengthCount = Math.Min((quantity + 4) / 5, 5); 
+            int lengthCount = Math.Min((quantity + 4) / 5, 5);
             int heightCount = (quantity + 24) / (5 * 5);
 
             int totalWidth = widthPerBox * widthCount;
