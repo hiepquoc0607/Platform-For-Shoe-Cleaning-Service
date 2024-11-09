@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Services.Interfaces;
 

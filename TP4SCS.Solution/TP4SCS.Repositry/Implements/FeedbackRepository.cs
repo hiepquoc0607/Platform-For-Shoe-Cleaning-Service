@@ -52,7 +52,7 @@ namespace TP4SCS.Repository.Implements
             };
             return GetAsync(
                 filter: filter,
-                includeProperties : "AssetUrls",
+                includeProperties: "AssetUrls",
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
                 pageSize: pageSize

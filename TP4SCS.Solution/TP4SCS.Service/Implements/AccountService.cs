@@ -2,10 +2,11 @@
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
-using TP4SCS.Library.Models.Request.Auth;
+using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -16,69 +17,120 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IAuthService _authService;
+        private readonly IBusinessBranchService _businessBranchService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AccountService(IAccountRepository accountRepository, IAuthService authService, IMapper mapper, Util util)
+        public AccountService(IAccountRepository accountRepository,
+            IAuthService authService,
+            IBusinessBranchService businessBranchService,
+            IMapper mapper,
+            Util util)
         {
             _accountRepository = accountRepository;
             _authService = authService;
+            _businessBranchService = businessBranchService;
             _mapper = mapper;
             _util = util;
         }
 
-        //Create Account
-        public async Task<ApiResponse<AccountResponse>> CreateAccountAsync(CustomerRegisterRequest createAccountRequest)
+        //Generate Random Password
+        private string GanerateRandomPassword()
         {
-            var passwordError = _util.CheckPasswordErrorType(createAccountRequest.Password);
+            return Guid.NewGuid().ToString();
+        }
 
-            var passwordErrorMessages = new Dictionary<string, string>
-            {
-                { "Number", "Mật khẩu phải chứa ít nhất 1 kí tự số!" },
-                { "Lower", "Mật khẩu phải chứa ít nhất 1 kí tự viết thường!" },
-                { "Upper", "Mật khẩu phải chứa ít nhất 1 kí tự viết hoa!" },
-                { "Special", "Mật khẩu phải chứa ít nhất 1 kí tự đặc biệt (!, @, #, $,...)!" },
-            };
-
-            if (passwordErrorMessages.TryGetValue(passwordError, out var message))
-            {
-                return new ApiResponse<AccountResponse>("error", 400, message);
-            }
-
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createAccountRequest.Email.Trim().ToLower());
+        //Create Employee Account
+        public async Task<ApiResponse<AccountResponse>> CreateEmployeeAccountAsync(int id, CreateEmployeeRequest createEmployeeRequest)
+        {
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createEmployeeRequest.Email.Trim().ToLower());
 
             if (isEmailExisted == true)
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Email đã được sử dụng!");
             }
 
-            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createAccountRequest.Phone.Trim());
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createEmployeeRequest.Phone.Trim());
 
             if (isPhoneExisted == true)
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
             }
 
-            //if (!_util.CheckAccountRole(createAccountRequest.Role.Trim()))
-            //{
-            //    return new ApiResponse<AccountResponse>("error", 400, "Role Không Phù Hợp!");
-            //}
+            var password = GanerateRandomPassword();
 
-            //createAccountRequest.Role = createAccountRequest.Role.ToUpper();
+            var newAccount = _mapper.Map<Account>(createEmployeeRequest);
+            newAccount.PasswordHash = _util.HashPassword(password);
+            newAccount.CreatedByOwnerId = id;
 
-            var newAccount = _mapper.Map<Account>(createAccountRequest);
+            var newBranchEmp = new UpdateBranchEmployeeRequest();
+            newBranchEmp.EmployeeIds = new List<int>();
+            newBranchEmp.IsDeleted = false;
 
-            newAccount.PasswordHash = _util.HashPassword(createAccountRequest.Password);
+            try
+            {
+                await _accountRepository.RunInTransactionAsync(async () =>
+                {
+                    await _accountRepository.InsertAsync(newAccount);
+
+                    newBranchEmp.EmployeeIds.Add(newAccount.Id);
+
+                    await _businessBranchService.UpdateBranchEmployeeAsync(createEmployeeRequest.BranchId, newBranchEmp);
+                });
+
+                var newAcc = await GetAccountByIdAsync(newAccount.Id);
+
+                if (newAcc == null)
+                {
+                    return new ApiResponse<AccountResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+                }
+
+                await _authService.SendAccountInfoEmail(newAccount.Email, password);
+
+                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data, 201);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+            }
+        }
+
+        //Create Moderator Account
+        public async Task<ApiResponse<AccountResponse>> CreateModeratorAccountAsync(CreateModeratorRequest createModeratorRequest)
+        {
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createModeratorRequest.Email.Trim().ToLower());
+
+            if (isEmailExisted == true)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Email đã được sử dụng!");
+            }
+
+            var isPhoneExisted = await _accountRepository.IsPhoneExistedAsync(createModeratorRequest.Phone.Trim());
+
+            if (isPhoneExisted == true)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Số điện thoại đã được sử dụng!");
+            }
+
+            var password = GanerateRandomPassword();
+
+            var newAccount = _mapper.Map<Account>(createModeratorRequest);
+            newAccount.PasswordHash = _util.HashPassword(password);
 
             try
             {
                 await _accountRepository.InsertAsync(newAccount);
 
-                var maxId = await GetAccountMaxIdAsync();
+                var newAcc = await GetAccountByIdAsync(newAccount.Id);
 
-                var newAcc = await GetAccountByIdAsync(maxId);
+                if (newAcc == null)
+                {
+                    return new ApiResponse<AccountResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+                }
 
-                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data);
+                await _authService.SendAccountInfoEmail(newAccount.Email, password);
+
+                return new ApiResponse<AccountResponse>("success", "Tạo Tài Khoản Thành Công!", newAcc.Data, 201);
             }
             catch (Exception)
             {
@@ -101,7 +153,14 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                await _accountRepository.UpdateAccountAsync(account);
+                if (account.Role.Equals(RoleConstants.EMPLOYEE))
+                {
+                    await _accountRepository.DeleteAsync(account);
+                }
+                else
+                {
+                    await _accountRepository.UpdateAccountAsync(account);
+                }
 
                 return new ApiResponse<AccountResponse>("success", "Xoá Tài Khoản Thành Công!", null);
             }
@@ -123,7 +182,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data, 200);
         }
 
         //Get Account By Id
@@ -141,7 +200,7 @@ namespace TP4SCS.Services.Implements
 
             var data = _mapper.Map<AccountResponse>(account);
 
-            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data);
+            return new ApiResponse<AccountResponse?>("success", "Lấy dữ liệu thành công!", data, 200);
         }
 
         //Get Account Max Id

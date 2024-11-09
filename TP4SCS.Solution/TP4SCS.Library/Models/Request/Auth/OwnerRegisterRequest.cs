@@ -7,12 +7,9 @@ namespace TP4SCS.Library.Models.Request.Auth
     public class OwnerRegisterRequest
     {
         [Required]
-        public CustomerRegisterRequest CustomerRegister { get; set; } = new CustomerRegisterRequest();
+        public AccountRegisterRequest CustomerRegister { get; set; } = new AccountRegisterRequest();
 
         [Required]
         public CreateBusinessRequest CreateBusiness { get; set; } = new CreateBusinessRequest();
-
-        [Required]
-        public CreateBranchRequest CreateBranch { get; set; } = new CreateBranchRequest();
     }
 }

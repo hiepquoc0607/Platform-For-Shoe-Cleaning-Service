@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
+using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
@@ -11,7 +12,7 @@ namespace TP4SCS.Library.Utils.Mapper
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<CustomerRegisterRequest, Account>()
+            config.NewConfig<AccountRegisterRequest, Account>()
                 .Map(dest => dest.PasswordHash, src => src.Password)
                 .Map(dest => dest.ImageUrl, opt => string.Empty)
                 .Map(dest => dest.IsVerified, opt => false)
@@ -29,6 +30,27 @@ namespace TP4SCS.Library.Utils.Mapper
             config.NewConfig<Account, AccountResponse>();
 
             config.NewConfig<AuthResponse, Account>();
+
+            config.NewConfig<CreateModeratorRequest, Account>()
+                .Map(dest => dest.ImageUrl, opt => string.Empty)
+                .Map(dest => dest.IsVerified, opt => true)
+                .Map(dest => dest.IsGoogle, opt => false)
+                .Map(dest => dest.RefreshToken, opt => string.Empty)
+                .Map(dest => dest.RefreshExpireTime, opt => DateTime.Now)
+                .Map(dest => dest.Fcmtoken, opt => string.Empty)
+                .Map(dest => dest.CreatedByOwnerId, opt => (int?)null)
+                .Map(dest => dest.Role, opt => RoleConstants.MODERATOR)
+                .Map(dest => dest.Status, opt => "ACTIVE");
+
+            config.NewConfig<CreateEmployeeRequest, Account>()
+                .Map(dest => dest.ImageUrl, opt => string.Empty)
+                .Map(dest => dest.IsVerified, opt => true)
+                .Map(dest => dest.IsGoogle, opt => false)
+                .Map(dest => dest.RefreshToken, opt => string.Empty)
+                .Map(dest => dest.RefreshExpireTime, opt => DateTime.Now)
+                .Map(dest => dest.Fcmtoken, opt => string.Empty)
+                .Map(dest => dest.Role, opt => RoleConstants.EMPLOYEE)
+                .Map(dest => dest.Status, opt => "ACTIVE");
         }
     }
 }

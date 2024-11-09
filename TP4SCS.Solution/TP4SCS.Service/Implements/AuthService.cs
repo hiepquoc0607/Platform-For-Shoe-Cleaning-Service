@@ -2,14 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Response.Auth;
-using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
@@ -306,7 +303,7 @@ namespace TP4SCS.Services.Implements
         }
 
         //Customer Register
-        public async Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(CustomerRegisterRequest customerRegisterRequest)
+        public async Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(AccountRegisterRequest customerRegisterRequest)
         {
             var passwordError = _util.CheckPasswordErrorType(customerRegisterRequest.Password);
 
@@ -354,6 +351,8 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
+                await SendVerificationEmailAsync(newAcc.Email);
+
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
                 return new ApiResponse<AuthResponse>("success", "Tạo Tài Khoản Thành Công!", data);
@@ -393,11 +392,11 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Owner Register
         public async Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest)
         {
             var account = ownerRegisterRequest.CustomerRegister;
             var businessData = ownerRegisterRequest.CreateBusiness;
-            var branchData = ownerRegisterRequest.CreateBranch;
 
             var passwordError = _util.CheckPasswordErrorType(account.Password);
 
@@ -434,13 +433,6 @@ namespace TP4SCS.Services.Implements
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.OWNER;
 
-            //var isBusinessPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
-
-            //if (isPhoneExisted)
-            //{
-            //    return new ApiResponse<AuthResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
-            //}
-
             var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
 
             if (isNameExisted)
@@ -449,16 +441,6 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBusiness = _mapper.Map<BusinessProfile>(businessData);
-            //newBusiness.OwnerId = await _accountRepository.GetAccountMaxIdAsync() + 1;
-
-            var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, branchData.DistrictId, branchData.WardCode) ?? string.Empty;
-            var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, branchData.DistrictId) ?? string.Empty;
-            var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, branchData.ProvinceId) ?? string.Empty;
-
-            var newBranch = _mapper.Map<BusinessBranch>(branchData);
-            newBranch.Ward = wardName;
-            newBranch.District = districtName;
-            newBranch.Province = provinceName;
 
             try
             {
@@ -470,10 +452,6 @@ namespace TP4SCS.Services.Implements
                     newBusiness.Phone = newAccount.Phone;
 
                     await _businessRepository.CreateBusinessProfileAsync(newBusiness);
-
-                    newBranch.BusinessId = newBusiness.Id;
-
-                    await _branchRepository.CreateBranchAsync(newBranch);
                 });
 
                 var newAcc = await _accountRepository.GetAccountByIdAsync(newAccount.Id);
@@ -483,6 +461,8 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
+                await SendVerificationEmailAsync(newAcc.Email);
+
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
                 return new ApiResponse<AuthResponse>("success", "Tạo Tài Khoản Thành Công!", data, 200);
@@ -490,6 +470,29 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<AuthResponse>> SendAccountInfoEmail(string email, string password)
+        {
+            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            string body = $"Email: {email}/nPassword: {password}";
+
+            try
+            {
+                await _emailService.SendEmailAsync(email, "ShoeCareHub Moderator Account Info", body);
+
+                return new ApiResponse<AuthResponse>("success", "Gửi Email Xác Nhận Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Gửi Email Xác Nhận Thất Bại!");
             }
         }
     }

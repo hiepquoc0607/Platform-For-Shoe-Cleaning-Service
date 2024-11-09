@@ -46,7 +46,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("customer-register")]
-        public async Task<IActionResult> CreateCustomerAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
+        public async Task<IActionResult> CreateCustomerAccountAsync([FromBody] AccountRegisterRequest createAccountRequest)
         {
             var result = await _authService.CustomerRegisterAsync(createAccountRequest);
 
