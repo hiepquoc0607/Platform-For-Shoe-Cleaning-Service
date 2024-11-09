@@ -174,5 +174,15 @@ namespace TP4SCS.Repository.Implements
                 return null;
             }
         }
+
+        //public async Task<Account?> GetEmployeeByBusinessIdAsync(int id)
+        //{
+        //    var branchEmployee = await _dbContext.BusinessBranches
+        //        .Where(b => b.BusinessId == id)
+        //        .Select(b => b.EmployeeIds)
+        //        .ToListAsync();
+
+
+        //}
     }
 }

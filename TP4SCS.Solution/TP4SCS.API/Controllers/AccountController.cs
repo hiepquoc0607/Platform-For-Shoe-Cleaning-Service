@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.Account;
-using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Services.Interfaces;
 
@@ -48,21 +47,43 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        //[HttpPost]
-        //[Route("api/accounts")]
-        //public async Task<IActionResult> CreateAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
-        //{
-        //    var result = await _accountService.CreateAccountAsync(createAccountRequest);
+        //[Authorize(Policy = "Admin")]
+        [HttpPost]
+        [Route("api/accounts/moderator")]
+        public async Task<IActionResult> CreateModeratorAccountAsync([FromBody] CreateModeratorRequest createModeratorRequest)
+        {
+            var result = await _accountService.CreateModeratorAccountAsync(createModeratorRequest);
 
-        //    if (result.StatusCode != 200)
-        //    {
-        //        return StatusCode(result.StatusCode, result);
-        //    }
+            if (result.StatusCode != 201)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-        //    int newAccId = await _accountService.GetAccountMaxIdAsync();
+            int newAccId = await _accountService.GetAccountMaxIdAsync();
 
-        //    return CreatedAtAction("GetAccountById", new { id = newAccId }, result.Data);
-        //}
+            return StatusCode(result.StatusCode, result);
+        }
+
+        //[Authorize(Policy = "Owner")]
+        [HttpPost]
+        [Route("api/accounts/employee")]
+        public async Task<IActionResult> CreateEmployeeAccountAsync([FromBody] CreateEmployeeRequest createEmployeeRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var ownerId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _accountService.CreateEmployeeAccountAsync(id, createEmployeeRequest);
+
+            if (result.StatusCode != 201)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            int newAccId = await _accountService.GetAccountMaxIdAsync();
+
+            return StatusCode(result.StatusCode, result);
+        }
 
         [Authorize]
         [HttpPut]

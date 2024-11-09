@@ -43,8 +43,8 @@ namespace TP4SCS.Repository.Implements
 
             Func<IQueryable<ServiceCategory>, IOrderedQueryable<ServiceCategory>> orderByExpression = q => orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id), 
-                _ => q.OrderBy(c => c.Id)                            
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
             };
             return GetAsync(
                 filter: filter,

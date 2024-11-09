@@ -101,7 +101,7 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                var fee = await _cartService.GetFeeShip(_httpClient, addressId,branchId,quantity);
+                var fee = await _cartService.GetFeeShip(_httpClient, addressId, branchId, quantity);
                 return Ok(fee);
             }
             catch (KeyNotFoundException ex)

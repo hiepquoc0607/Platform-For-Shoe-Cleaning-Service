@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using TP4SCS.Library.Models.Data;
+﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.AssetUrl;
-using TP4SCS.Library.Models.Response.AssetUrl;
 
 namespace TP4SCS.Services.Interfaces
 {

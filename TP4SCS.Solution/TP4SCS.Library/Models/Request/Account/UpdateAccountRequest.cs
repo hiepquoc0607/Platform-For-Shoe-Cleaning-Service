@@ -16,7 +16,5 @@ namespace TP4SCS.Library.Models.Request.Account
         public string? Phone { get; set; }
 
         public DateOnly? Dob { get; set; }
-
-        public string? ImageUrl { get; set; }
     }
 }

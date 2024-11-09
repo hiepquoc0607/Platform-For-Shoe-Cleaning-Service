@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using TP4SCS.Library.Models.Data;
+﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Utils.StaticClass;
@@ -138,7 +137,7 @@ namespace TP4SCS.Services.Implements
                 order.OrderPrice = orderPrice;
                 order.PendingTime = DateTime.UtcNow;
                 order.CreateTime = DateTime.UtcNow;
-                order.TotalPrice = orderPrice + 
+                order.TotalPrice = orderPrice +
                     (request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0);
                 orders.Add(order);
             }
@@ -147,7 +146,7 @@ namespace TP4SCS.Services.Implements
             if (request.CartItemIds.Any())
             {
                 await _cartItemRepository.RemoveItemsFromCartAsync(request.CartItemIds);
-            }              
+            }
         }
 
         public async Task<decimal> GetFeeShip(HttpClient httpClient, int addressId, int branchId, int quantity)
@@ -155,7 +154,7 @@ namespace TP4SCS.Services.Implements
             var address = await _addressRepository.GetByIDAsync(addressId);
             var branch = await _branchRepository.GetBranchByIdAsync(branchId);
 
-            if(branch == null)
+            if (branch == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy chi nhánh với ID: {branchId}");
             }
@@ -169,7 +168,7 @@ namespace TP4SCS.Services.Implements
                 FromDistricId = branch.DistrictId,
                 FromWardCode = branch.WardCode,
                 ToDistricId = address.DistrictId,
-                ToWardCode = address.WardCode,               
+                ToWardCode = address.WardCode,
             };
             return await _shipService.GetShippingFeeAsync(httpClient, getFeeShipReqeust, quantity);
         }

@@ -46,7 +46,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("customer-register")]
-        public async Task<IActionResult> CreateCustomerAccountAsync([FromBody] CustomerRegisterRequest createAccountRequest)
+        public async Task<IActionResult> CreateCustomerAccountAsync([FromBody] AccountRegisterRequest createAccountRequest)
         {
             var result = await _authService.CustomerRegisterAsync(createAccountRequest);
 
@@ -71,18 +71,18 @@ namespace TP4SCS.API.Controllers
             return StatusCode(201, result.Data);
         }
 
-        //[HttpPost("send-verification-email")]
-        //public async Task<IActionResult> SendVerificationEmailAsync([FromBody] EmailRequest emailRequest)
-        //{
-        //    var result = await _authService.SendVerificationEmailAsync(emailRequest.Email);
+        [HttpPost("send-verification-email")]
+        public async Task<IActionResult> SendVerificationEmailAsync([FromBody] EmailRequest emailRequest)
+        {
+            var result = await _authService.SendVerificationEmailAsync(emailRequest.Email);
 
-        //    if (result.StatusCode != 200)
-        //    {
-        //        return StatusCode(result.StatusCode, result);
-        //    }
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
-        //    return Ok(result);
-        //}
+            return Ok(result);
+        }
 
         [HttpGet("verify-email")]
         public async Task<IActionResult> VerifyEmailAsync([FromQuery] VerifyEmailRequest verifyEmailRequest)
