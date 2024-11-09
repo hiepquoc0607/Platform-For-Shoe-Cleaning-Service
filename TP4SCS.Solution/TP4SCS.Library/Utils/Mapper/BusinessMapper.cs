@@ -13,7 +13,7 @@ namespace TP4SCS.Library.Utils.Mapper
             config.NewConfig<BusinessProfile, BusinessResponse>();
 
             config.NewConfig<CreateBusinessRequest, BusinessProfile>()
-                .Map(dest => dest.ImageUrl, otp => string.Empty)
+                .Map(dest => dest.ImageUrl, otp => "https://firebasestorage.googleapis.com/v0/b/shoecarehub-4dca3.firebasestorage.app/o/images%2Fe03d0778-890e-4cae-ad06-647a48756770.jpg?alt=media&token=42f7ce37-8693-4e94-bb4d-6615e0cad830")
                 .Map(dest => dest.Rating, otp => 0)
                 .Map(dest => dest.Rank, otp => int.MaxValue)
                 .Map(dest => dest.TotalOrder, otp => 0)

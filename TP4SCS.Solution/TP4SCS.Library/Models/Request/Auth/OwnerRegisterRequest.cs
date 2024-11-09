@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 
 namespace TP4SCS.Library.Models.Request.Auth
