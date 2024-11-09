@@ -191,63 +191,71 @@ namespace TP4SCS.Services.Implements
         //Get Shipping Fee
         public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest, int quantity)
         {
-            if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+            try
             {
-                httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                int heightPerBox = 15;
+                int lengthPerBox = 35;
+                int widthPerBox = 25;
+                int weightPerBox = 400;
+
+                int widthCount = Math.Min(quantity, 5);
+                int lengthCount = Math.Min((quantity + 4) / 5, 5);
+                int heightCount = (quantity + 24) / (5 * 5);
+
+                int totalWidth = widthPerBox * widthCount;
+                int totalLength = lengthPerBox * lengthCount;
+                int totalHeight = heightPerBox * heightCount;
+                int totalWeight = weightPerBox * quantity;
+
+                var availableServices = await GetAvailableServicesAsync(httpClient, getShipFeeRequest.FromDistricId, getShipFeeRequest.ToDistricId);
+
+                int? serviceTypeId = availableServices?.SingleOrDefault(s => s.ServiceTypeID == 2)?.ServiceTypeID
+                                   ?? availableServices?.SingleOrDefault(s => s.ServiceTypeID == 5)?.ServiceTypeID;
+
+                if (!serviceTypeId.HasValue)
+                {
+                    throw new InvalidOperationException($"Không hỗ trợ ship từ DistricId: {getShipFeeRequest.FromDistricId} tới FromDistricId: {getShipFeeRequest.ToDistricId});
+                }
+
+                var requestBody = new
+                {
+                    service_type_id = serviceTypeId.Value,
+                    from_district_id = getShipFeeRequest.FromDistricId,
+                    from_ward_code = getShipFeeRequest.FromWardCode,
+                    to_district_id = getShipFeeRequest.ToDistricId,
+                    to_ward_code = getShipFeeRequest.ToWardCode,
+                    height = totalHeight,
+                    length = totalLength,
+                    weight = totalWeight,
+                    width = totalWidth,
+                    insurance_value = 0,
+                    coupon = (string?)null
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(_configuration["GHN_API:ShipFeeUrl"], content);
+                response.EnsureSuccessStatusCode();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                using var document = JsonDocument.Parse(responseBody);
+
+                var totalFee = document.RootElement
+                    .GetProperty("data")
+                    .GetProperty("total");
+
+                return totalFee.GetDecimal();
             }
-
-            int heightPerBox = 15;
-            int lengthPerBox = 35;
-            int widthPerBox = 25;
-            int weightPerBox = 400;
-
-            int widthCount = Math.Min(quantity, 5);
-            int lengthCount = Math.Min((quantity + 4) / 5, 5);
-            int heightCount = (quantity + 24) / (5 * 5);
-
-            int totalWidth = widthPerBox * widthCount;
-            int totalLength = lengthPerBox * lengthCount;
-            int totalHeight = heightPerBox * heightCount;
-            int totalWeight = weightPerBox * quantity;
-
-            var availableServices = await GetAvailableServicesAsync(httpClient, getShipFeeRequest.FromDistricId, getShipFeeRequest.ToDistricId);
-
-            int? serviceTypeId = availableServices?.SingleOrDefault(s => s.ServiceTypeID == 2)?.ServiceTypeID
-                               ?? availableServices?.SingleOrDefault(s => s.ServiceTypeID == 5)?.ServiceTypeID;
-
-            if (!serviceTypeId.HasValue)
+            catch (Exception)
             {
-                throw new InvalidOperationException($"Không hỗ trợ ship từ {getShipFeeRequest.FromDistricId} tới {getShipFeeRequest.ToDistricId}");
+                throw new InvalidOperationException($"Không hỗ trợ ship từ DistricId: {getShipFeeRequest.FromDistricId} tới FromDistricId: {getShipFeeRequest.ToDistricId}");
             }
-            var requestBody = new
-            {
-                service_type_id = serviceTypeId.Value,
-                from_district_id = getShipFeeRequest.FromDistricId,
-                from_ward_code = getShipFeeRequest.FromWardCode,
-                to_district_id = getShipFeeRequest.ToDistricId,
-                to_ward_code = getShipFeeRequest.ToWardCode,
-                height = totalHeight,
-                length = totalLength,
-                weight = totalWeight,
-                width = totalWidth,
-                insurance_value = 0,
-                coupon = (string?)null
-            };
-
-            var json = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync(_configuration["GHN_API:ShipFeeUrl"], content);
-            response.EnsureSuccessStatusCode();
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-            using var document = JsonDocument.Parse(responseBody);
-
-            var totalFee = document.RootElement
-                .GetProperty("data")
-                .GetProperty("total");
-
-            return totalFee.GetDecimal();
         }
 
         public async Task<string?> GetWardNameByWardCodeAsync(HttpClient httpClient, int districtId, string code)
