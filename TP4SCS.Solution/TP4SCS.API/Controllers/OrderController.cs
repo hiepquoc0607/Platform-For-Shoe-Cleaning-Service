@@ -139,7 +139,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 // Cập nhật trạng thái đơn hàng
-                await _orderService.UpdateOrderStatusAsync(id,status);
+                await _orderService.UpdateOrderStatusAsync(id, status);
 
                 // Trả về thông báo thành công dưới dạng ResponseObject
                 return Ok(new ResponseObject<string>("Đơn hàng đã được duyệt thành công!", null));

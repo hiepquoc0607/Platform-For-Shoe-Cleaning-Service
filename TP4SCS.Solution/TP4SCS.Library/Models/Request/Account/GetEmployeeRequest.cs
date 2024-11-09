@@ -1,23 +1,10 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using TP4SCS.Library.Models.Request.General;
 
-namespace TP4SCS.Library.Models.Request.General
+namespace TP4SCS.Library.Models.Request.Account
 {
-    public enum AccountSearchOption
-    {
-        EMAIL,
-        FULLNAME,
-        STATUS
-    }
-
-    public enum AccountStatus
-    {
-        ACTIVE,
-        INACTIVE,
-        SUSPENDED
-    }
-
-    public class GetAccountRequest
+    public class GetEmployeeRequest
     {
         public string? SearchKey { get; set; }
 
@@ -28,13 +15,17 @@ namespace TP4SCS.Library.Models.Request.General
         public AccountStatus? Status { get; set; }
 
         [Required]
+        [DefaultValue(null)]
+        public int? BusinessId { get; set; }
+
+        [Required]
         [DefaultValue(false)]
         public bool IsDecsending { get; set; }
 
         [Required]
         [DefaultValue(10)]
         [Range(1, int.MaxValue)]
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; }
 
 
         [Required]

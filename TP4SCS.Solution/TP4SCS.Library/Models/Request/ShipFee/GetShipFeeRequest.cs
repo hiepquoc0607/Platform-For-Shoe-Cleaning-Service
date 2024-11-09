@@ -1,6 +1,4 @@
-﻿using TP4SCS.Library.Models.Response.Location;
-
-namespace TP4SCS.Library.Models.Request.ShipFee
+﻿namespace TP4SCS.Library.Models.Request.ShipFee
 {
     public class GetShipFeeRequest
     {

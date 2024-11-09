@@ -3,6 +3,7 @@ using MapsterMapper;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Account;
 using TP4SCS.Library.Models.Request.Branch;
+using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.General;
@@ -16,12 +17,14 @@ namespace TP4SCS.Services.Implements
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IAuthService _authService;
         private readonly IBusinessBranchService _businessBranchService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
         public AccountService(IAccountRepository accountRepository,
+            IBusinessRepository businessRepository,
             IAuthService authService,
             IBusinessBranchService businessBranchService,
             IMapper mapper,
@@ -29,6 +32,7 @@ namespace TP4SCS.Services.Implements
         {
             _accountRepository = accountRepository;
             _authService = authService;
+            _businessRepository = businessRepository;
             _businessBranchService = businessBranchService;
             _mapper = mapper;
             _util = util;
@@ -219,9 +223,6 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<IEnumerable<AccountResponse>?>("error", 404, "Tài Khoản Trống!");
             }
 
-            //Paging caculate
-            int totalData = await _accountRepository.CountAccountDataAsync();
-
             var data = accounts.Adapt<IEnumerable<AccountResponse>>();
 
             return new ApiResponse<IEnumerable<AccountResponse>?>("success", "Lấy dữ liệu thành công!", data, 200, pagination);
@@ -313,6 +314,53 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Trạng Thái Tài Khoản Thất Bại!");
             }
+        }
+
+        public async Task<ApiResponse<AccountResponse>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest)
+        {
+            var account = await _accountRepository.GetAccountByIdForAdminAsync(id);
+
+            if (account == null)
+            {
+                return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
+            }
+
+            account.Status = RoleConstants.OWNER;
+
+            var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);
+            newBusiness.OwnerId = id;
+            newBusiness.Phone = account.Phone;
+
+            try
+            {
+                await _accountRepository.RunInTransactionAsync(async () =>
+                {
+                    await _accountRepository.UpdateAsync(account);
+
+                    await _businessRepository.CreateBusinessProfileAsync(newBusiness);
+                });
+
+                return new ApiResponse<AccountResponse>("success", "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thành Công!", null, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<IEnumerable<EmployeeResponse>?>> GetEmployeesAsync(GetEmployeeRequest getEmployeeRequest)
+        {
+            var (accounts, pagination) = await _accountRepository.GetEmployeesAsync(getEmployeeRequest);
+
+            if (accounts == null)
+            {
+                return new ApiResponse<IEnumerable<EmployeeResponse>?>("error", 404, "Tài Khoản Trống!");
+            }
+
+            //Paging caculate
+            var data = accounts.Adapt<IEnumerable<EmployeeResponse>>();
+
+            return new ApiResponse<IEnumerable<EmployeeResponse>?>("success", "Lấy dữ liệu thành công!", data, 200, pagination);
         }
     }
 

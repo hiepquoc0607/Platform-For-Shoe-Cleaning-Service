@@ -29,10 +29,12 @@ namespace TP4SCS.Library.Utils.Mapper
 
             config.NewConfig<Account, AccountResponse>();
 
+            config.NewConfig<Account, EmployeeResponse>();
+
             config.NewConfig<AuthResponse, Account>();
 
             config.NewConfig<CreateModeratorRequest, Account>()
-                .Map(dest => dest.ImageUrl, opt => string.Empty)
+                .Map(dest => dest.ImageUrl, opt => "https://firebasestorage.googleapis.com/v0/b/shoecarehub-4dca3.firebasestorage.app/o/images%2Fe03d0778-890e-4cae-ad06-647a48756770.jpg?alt=media&token=42f7ce37-8693-4e94-bb4d-6615e0cad830")
                 .Map(dest => dest.IsVerified, opt => true)
                 .Map(dest => dest.IsGoogle, opt => false)
                 .Map(dest => dest.RefreshToken, opt => string.Empty)
