@@ -46,7 +46,7 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
             }
 
-            promotion.Status = StatusConstants.Available.ToUpper();
+            promotion.Status = StatusConstants.AVAILABLE.ToUpper();
             promotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
             await _promotionRepository.AddPromotionAsync(promotion);
         }
@@ -132,7 +132,7 @@ namespace TP4SCS.Services.Implements
             }
 
             // Sử dụng Util.IsEqual để kiểm tra trạng thái
-            return Util.IsEqual(promotion.Status, StatusConstants.Available);
+            return Util.IsEqual(promotion.Status, StatusConstants.AVAILABLE);
         }
     }
 }

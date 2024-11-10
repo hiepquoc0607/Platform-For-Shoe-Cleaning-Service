@@ -70,8 +70,10 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 });
 //Add HttpClient
 builder.Services.AddHttpClient();
+
 //Get EmailSettings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 //Inject Util
 builder.Services.AddScoped<Util>();
 builder.Services.AddScoped<BusinessUtil>();
@@ -91,6 +93,7 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IAssetUrlRepository, AssetUrlRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -110,6 +113,7 @@ builder.Services.AddScoped<IAssetUrlService, AssetUrlService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
 
 //Register Firebase
 

@@ -13,6 +13,7 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
         public ServiceResponse? Service { get; set; }
 
         public MaterialResponse? Material { get; set; }
+
         public virtual FeedbackResponse? Feedback { get; set; }
 
         public int Quantity { get; set; }

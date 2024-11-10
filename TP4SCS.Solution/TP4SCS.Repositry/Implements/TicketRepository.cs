@@ -1,0 +1,200 @@
+﻿using Microsoft.EntityFrameworkCore;
+using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Ticket;
+using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Ticket;
+using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Repository.Interfaces;
+
+namespace TP4SCS.Repository.Implements
+{
+    public class TicketRepository : GenericRepository<SupportTicket>, ITicketRepository
+    {
+        public TicketRepository(Tp4scsDevDatabaseContext dbConext) : base(dbConext)
+        {
+        }
+        public async Task CreateTicketAsync(SupportTicket supportTicket)
+        {
+            await InsertAsync(supportTicket);
+        }
+
+        public async Task DeleteTicketAsync(int id)
+        {
+            await DeleteAsync(id);
+        }
+
+        public async Task<TicketResponse?> GetTicketByIdAsync(int id)
+        {
+            var childTickets = await _dbContext.SupportTickets
+                .AsNoTracking()
+                .Where(c => c.ParentTicketId == id)
+                .Select(c => new TicketResponse
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    FullName = _dbContext.Accounts
+                            .Where(a => a.Id == c.UserId)
+                            .Select(a => a.FullName)
+                            .FirstOrDefault()!,
+                    CategoryId = c.CategoryId,
+                    CategoryName = _dbContext.TicketCategories
+                            .Where(cn => cn.Id == c.CategoryId)
+                            .Select(c => c.Name)
+                            .FirstOrDefault()!,
+                    Title = c.Title,
+                    Content = c.Content,
+                    CreateTime = c.CreateTime,
+                    Assets = _dbContext.AssetUrls
+                            .Where(a => a.TicketId == c.Id)
+                            .Select(a => new FileResponse
+                            {
+                                Url = a.Url,
+                                Type = a.Type
+                            })
+                            .ToList(),
+                })
+                .ToListAsync();
+
+            return await _dbContext.SupportTickets
+                .Select(t => new TicketResponse
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    FullName = _dbContext.Accounts
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    ModeratorId = t.ModeratorId,
+                    ModeratorName = _dbContext.Accounts
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _dbContext.TicketCategories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault()!,
+                    Priority = _dbContext.TicketCategories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Priority)
+                        .FirstOrDefault()!,
+                    OrderId = t.OrderId,
+                    Title = t.Title,
+                    Content = t.Content,
+                    CreateTime = t.CreateTime,
+                    Status = t.Status,
+                    Assets = _dbContext.AssetUrls
+                        .Where(a => a.TicketId == t.Id)
+                        .Select(a => new FileResponse
+                        {
+                            Url = a.Url,
+                            Type = a.Type
+                        })
+                        .ToList(),
+                    ChildTicket = childTickets,
+
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsAsync(GetTicketRequest getTicketRequest)
+        {
+            var tickets = _dbContext.SupportTickets
+                .Select(t => new TicketsResponse
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    FullName = _dbContext.Accounts
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    ModeratorId = t.ModeratorId,
+                    ModeratorName = _dbContext.Accounts
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _dbContext.TicketCategories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault()!,
+                    Priority = _dbContext.TicketCategories
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Priority)
+                        .FirstOrDefault()!,
+                    OrderId = t.OrderId,
+                    Title = t.Title,
+                    CreateTime = t.CreateTime,
+                    Status = t.Status
+                })
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getTicketRequest.SearchKey))
+            {
+                string searchKey = getTicketRequest.SearchKey;
+                tickets = tickets.Where(a =>
+                    EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.Title, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.CategoryName, $"%{searchKey}%"));
+            }
+
+            //Status Sort
+            if (getTicketRequest.Status != null)
+            {
+                tickets = getTicketRequest.Status switch
+                {
+                    TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
+                    TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
+                    TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    _ => tickets
+                };
+            }
+
+            //Order Sort
+            if (getTicketRequest.SortBy != null)
+            {
+                tickets = getTicketRequest.SortBy switch
+                {
+                    TicketSortOption.FULLNAME => getTicketRequest.IsDecsending
+                                ? tickets.OrderByDescending(a => a.FullName)
+                                : tickets.OrderBy(a => a.FullName),
+                    TicketSortOption.CATEGORY => getTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.CategoryName)
+                                  : tickets.OrderBy(a => a.CategoryName),
+                    TicketSortOption.TITLE => getTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Title)
+                                  : tickets.OrderBy(a => a.Title),
+                    TicketSortOption.PRIORITY => getTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Priority)
+                                  : tickets.OrderBy(a => a.Priority),
+                    TicketSortOption.STATUS => getTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Status)
+                                  : tickets.OrderBy(a => a.Status),
+                    _ => tickets
+                };
+            }
+
+            //Count Total Data
+            int totalData = await tickets.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getTicketRequest.PageNum - 1) * getTicketRequest.PageSize;
+            tickets = tickets.Skip(skipNum).Take(getTicketRequest.PageSize);
+
+            var result = await tickets.ToListAsync();
+
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getTicketRequest.PageSize);
+
+            var pagination = new Pagination(totalData, getTicketRequest.PageSize, getTicketRequest.PageNum, totalPage);
+
+            return (result, pagination);
+        }
+
+        public async Task UpdateTicketAsync(SupportTicket supportTicket)
+        {
+            await UpdateAsync(supportTicket);
+        }
+    }
+}

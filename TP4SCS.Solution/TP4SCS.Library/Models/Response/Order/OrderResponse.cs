@@ -17,6 +17,7 @@ namespace TP4SCS.Library.Models.Response.Order
         public int? AddressId { get; set; }
 
         public DateTime CreateTime { get; set; }
+
         public DateTime? PendingTime { get; set; }
 
         public DateTime? ApprovedTime { get; set; }

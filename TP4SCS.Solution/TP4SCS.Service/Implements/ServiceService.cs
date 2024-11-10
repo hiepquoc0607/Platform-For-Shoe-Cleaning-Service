@@ -69,7 +69,7 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("ID danh mục không hợp lệ.");
             }
 
-            if (Util.IsEqual(category.Status, StatusConstants.Unavailable))
+            if (Util.IsEqual(category.Status, StatusConstants.UNAVAILABLE))
             {
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
@@ -84,7 +84,7 @@ namespace TP4SCS.Services.Implements
                 {
                     NewPrice = serviceRequest.NewPrice.Value,
                     SaleOff = 100 - (int)Math.Round((serviceRequest.NewPrice.Value / serviceRequest.Price * 100), MidpointRounding.AwayFromZero),
-                    Status = StatusConstants.Available.ToUpper()
+                    Status = StatusConstants.AVAILABLE.ToUpper()
                 };
 
                 if (string.IsNullOrEmpty(service.Promotion.Status) || !Util.IsValidGeneralStatus(service.Promotion.Status))
@@ -199,7 +199,7 @@ namespace TP4SCS.Services.Implements
                 if (existingService.Promotion != null)
                 {
                     existingService.Promotion.NewPrice = serviceUpdateRequest.NewPrice.Value;
-                    existingService.Promotion.Status = StatusConstants.Available;
+                    existingService.Promotion.Status = StatusConstants.AVAILABLE;
 
                     await _promotionService.UpdatePromotionAsync(existingService.Promotion, existingService.Promotion.Id);
                 }
@@ -209,7 +209,7 @@ namespace TP4SCS.Services.Implements
                     {
                         ServiceId = existingService.Id,
                         NewPrice = serviceUpdateRequest.NewPrice.Value,
-                        Status = StatusConstants.Available
+                        Status = StatusConstants.AVAILABLE
                     };
                     await _promotionService.AddPromotionAsync(newPromotion);
                 }
@@ -219,7 +219,7 @@ namespace TP4SCS.Services.Implements
                 if (existingService.Promotion != null)
                 {
                     existingService.Promotion.NewPrice = existingService.Price;
-                    existingService.Promotion.Status = StatusConstants.Unavailable;
+                    existingService.Promotion.Status = StatusConstants.UNAVAILABLE;
 
                 }
             }
@@ -268,7 +268,7 @@ namespace TP4SCS.Services.Implements
             // Lọc các dịch vụ có khuyến mãi và trạng thái khuyến mãi là "Available"
             var discountedServices = allServices?.Where(service =>
                 service.Promotion != null &&
-                Util.IsEqual(service.Promotion.Status, StatusConstants.Available)
+                Util.IsEqual(service.Promotion.Status, StatusConstants.AVAILABLE)
             );
 
             // Tính tổng số lượng dịch vụ khuyến mãi
@@ -314,7 +314,7 @@ namespace TP4SCS.Services.Implements
                 return service.Price;
             }
 
-            var isPromotionActive = Util.IsEqual(service.Promotion.Status, StatusConstants.Available);
+            var isPromotionActive = Util.IsEqual(service.Promotion.Status, StatusConstants.AVAILABLE);
             if (!isPromotionActive)
             {
                 return service.Price;

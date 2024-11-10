@@ -27,6 +27,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
+        //Check Owner Of Branch
         public async Task<bool> CheckOwnerOfBranch(int ownerId, int branchId)
         {
             var idArray = await _branchRepository.GetBranchesIdByOwnerIdAsync(ownerId) ?? Array.Empty<int>();
@@ -34,6 +35,7 @@ namespace TP4SCS.Services.Implements
             return Array.Exists(idArray, id => id == branchId);
         }
 
+        //Create Branch
         public async Task<ApiResponse<BranchResponse>> CreateBranchAsync(int id, HttpClient httpClient, CreateBranchRequest createBranchRequest)
         {
             var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, createBranchRequest.DistrictId, createBranchRequest.WardCode) ?? string.Empty;

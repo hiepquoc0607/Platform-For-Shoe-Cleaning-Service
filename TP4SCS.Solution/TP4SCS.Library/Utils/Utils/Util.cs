@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Utils.StaticClass;
+﻿using System.Text;
+using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils.Utils
 {
@@ -124,7 +125,7 @@ namespace TP4SCS.Library.Utils.Utils
         }
         public static bool IsValidGeneralStatus(string status)
         {
-            var validStatuses = new[] { StatusConstants.Available, StatusConstants.Unavailable };
+            var validStatuses = new[] { StatusConstants.AVAILABLE, StatusConstants.UNAVAILABLE };
             return validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -262,6 +263,30 @@ namespace TP4SCS.Library.Utils.Utils
                 oldList.Add(element);
             }
             return string.Join(",", oldList);
+        }
+
+        public string FormatStringName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+
+            StringBuilder result = new StringBuilder(name.Length);
+            bool newWord = true;
+
+            foreach (char c in name)
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    result.Append(c);
+                    newWord = true;
+                }
+                else
+                {
+                    result.Append(newWord ? char.ToUpper(c) : char.ToLower(c));
+                    newWord = false;
+                }
+            }
+
+            return result.ToString();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
@@ -114,7 +113,7 @@ namespace TP4SCS.API.Controllers
 
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedServicesAsync(
-            int pageIndex =1,
+            int pageIndex = 1,
             int pageSize = 5,
             string? status = null
         )

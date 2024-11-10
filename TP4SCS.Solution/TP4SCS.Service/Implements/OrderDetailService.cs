@@ -29,14 +29,14 @@ namespace TP4SCS.Services.Implements
                 if (orderDetail.MaterialId.HasValue)
                 {
                     var material = await _materialRepository.GetMaterialByIdAsync(orderDetail.MaterialId.Value);
-                    if (material == null || material.Status != StatusConstants.Available)
+                    if (material == null || material.Status != StatusConstants.AVAILABLE)
                     {
                         throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
                     }
                 }
                 // Kiểm tra Service
                 var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId);
-                if (service == null || service.Status != StatusConstants.Available)
+                if (service == null || service.Status != StatusConstants.AVAILABLE)
                 {
                     throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
                 }
@@ -63,13 +63,13 @@ namespace TP4SCS.Services.Implements
             if (orderDetail.MaterialId.HasValue)
             {
                 var material = await _materialRepository.GetMaterialByIdAsync(orderDetail.MaterialId.Value);
-                if (material == null || material.Status != StatusConstants.Available)
+                if (material == null || material.Status != StatusConstants.AVAILABLE)
                 {
                     throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
                 }
             }
             var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId);
-            if (service == null || service.Status != StatusConstants.Available)
+            if (service == null || service.Status != StatusConstants.AVAILABLE)
             {
                 throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
             }

@@ -4,24 +4,40 @@
     {
         //GENERAL STATUS
         public const string ACTIVE = "ACTIVE";
+
         public const string INACTIVE = "INACTIVE";
+
         public const string SUSPENDED = "SUSPENDED";
 
-        //PROMOTION STATUS
-        public const string Available = "AVAILABLE";
-        public const string Unavailable = "UNAVAILABLE";
+        public const string PROCESSING = "PROCESSING";
+
+        public const string AVAILABLE = "AVAILABLE";
+
+        public const string UNAVAILABLE = "UNAVAILABLE";
 
         //ORDER STATUS
         public const string CANCELED = "CANCELED";
+
         public const string PENDING = "PENDING";
+
         public const string APPROVED = "APPROVED";
-        public const string PROCESSING = "PROCESSING";
+        
         public const string STORAGE = "STORAGE";
+
         public const string SHIPPING = "SHIPPING";
+
         public const string FINISHED = "FINISHED";
+
         public const string ABANDONED = "ABANDONED";
+
         //ORDER DETAIL STATUS
         public const string RECEIVED = "RECEIVED";
+
         public const string DONE = "DONE";
+
+        //TICKET STATUS
+        public const string OPENING = "OPENING";
+
+        public const string CLOSED = "CLOSED";
     }
 }
