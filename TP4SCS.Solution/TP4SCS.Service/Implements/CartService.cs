@@ -120,7 +120,7 @@ namespace TP4SCS.Services.Implements
                 order.PendingTime = DateTime.UtcNow;
                 order.CreateTime = DateTime.UtcNow;
                 order.TotalPrice = orderPrice +
-                    (request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0);
+                    (request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0);
                 orders.Add(order);
             }
 
@@ -178,7 +178,7 @@ namespace TP4SCS.Services.Implements
                 order.PendingTime = DateTime.UtcNow;
                 order.CreateTime = DateTime.UtcNow;
                 order.TotalPrice = orderPrice +
-                    (request.IsShip ? GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy) : 0);
+                    (request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0);
                 orders.Add(order);
             }
 
