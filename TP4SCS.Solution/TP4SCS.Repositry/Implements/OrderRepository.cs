@@ -46,6 +46,7 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
+                            .ThenInclude(f => f!.AssetUrls)
                 .Where(o => o.Id == id)
                 .SingleOrDefaultAsync();
         }
@@ -77,13 +78,13 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(a => a.AccountAddresses)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
-                            .ThenInclude(s => s!.Promotion)
+                            .ThenInclude(s => s.Promotion)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
-                            .ThenInclude(s => s!.Category)
+                            .ThenInclude(s => s.Category)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
-                            .ThenInclude(s => s!.AssetUrls)
+                            .ThenInclude(s => s.AssetUrls)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
                             .ThenInclude(s => s!.BranchServices)
@@ -92,7 +93,8 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Feedback);
+                        .ThenInclude(od => od.Feedback)
+                            .ThenInclude(f => f!.AssetUrls);
 
             // Thực hiện phân trang nếu có pageIndex và pageSize
             if (pageIndex.HasValue && pageSize.HasValue)
