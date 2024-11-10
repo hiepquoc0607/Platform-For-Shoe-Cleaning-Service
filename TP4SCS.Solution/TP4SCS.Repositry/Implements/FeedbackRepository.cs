@@ -108,8 +108,24 @@ namespace TP4SCS.Repository.Implements
         }
         public async Task DeleteFeedbackAsync(int id)
         {
+            // Kiểm tra nếu Feedback tồn tại
+            var feedback = await _dbContext.Feedbacks.FindAsync(id);
+            if (feedback == null)
+            {
+                throw new KeyNotFoundException($"Feedback with ID {id} not found.");
+            }
+
+            // Xóa AssetUrls liên quan
+            var assetUrlsToRemove = _dbContext.AssetUrls.Where(a => a.FeedbackId == id).ToList();
+            _dbContext.AssetUrls.RemoveRange(assetUrlsToRemove);
+
+            // Lưu thay đổi
+            await _dbContext.SaveChangesAsync();
+
+            // Xóa Feedback
             await DeleteAsync(id);
         }
+
 
         public async Task UpdateFeedbackAsync(Feedback feedback)
         {
