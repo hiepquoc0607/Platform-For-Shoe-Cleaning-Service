@@ -17,10 +17,12 @@ namespace TP4SCS.Services.Implements
         {
             return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
         }
+
         public async Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId)
         {
             return await _feedbackRepository.GetFeedbacksByAccountIdAsync(accountId);
         }
+
         public async Task AddFeedbacksAsync(Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)
@@ -39,10 +41,12 @@ namespace TP4SCS.Services.Implements
             feedback.CreatedTime = DateTime.UtcNow;
             await _feedbackRepository.AddFeedbacksAsync(feedback);
         }
+
         public async Task DeleteFeedbackAsync(int id)
         {
             await _feedbackRepository.DeleteFeedbackAsync(id);
         }
+
         public async Task UpdateFeedbackAsync(Feedback feedback, int existingFeedbackId)
         {
             var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);

@@ -23,7 +23,7 @@ namespace TP4SCS.Repository.Implements
         public async Task AddServiceAsync(int[] branchIds, int businessId, Service service)
         {
             // Kiểm tra trạng thái của service
-            if (service.Status.ToLower() == StatusConstants.Unavailable.ToLower())
+            if (service.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
             {
                 // Lấy tất cả BranchService có ServiceId tương ứng
                 var existingBranchServices = await _dbContext.BranchServices
@@ -33,7 +33,7 @@ namespace TP4SCS.Repository.Implements
                 // Cập nhật trạng thái của tất cả BranchService thành Unavailable
                 foreach (var branchService in existingBranchServices)
                 {
-                    branchService.Status = StatusConstants.Unavailable.ToUpper();
+                    branchService.Status = StatusConstants.UNAVAILABLE.ToUpper();
                 }
                 // Lưu lại thay đổi vào cơ sở dữ liệu
                 _dbContext.BranchServices.UpdateRange(existingBranchServices);
@@ -56,12 +56,12 @@ namespace TP4SCS.Repository.Implements
                 {
                     ServiceId = service.Id,
                     BranchId = branch.Id,
-                    Status = StatusConstants.Unavailable.ToUpper()
+                    Status = StatusConstants.UNAVAILABLE.ToUpper()
                 };
 
-                if (branchIds.Contains(branch.Id) && service.Status.ToLower() == StatusConstants.Available.ToLower())
+                if (branchIds.Contains(branch.Id) && service.Status.ToLower() == StatusConstants.AVAILABLE.ToLower())
                 {
-                    branchService.Status = StatusConstants.Available.ToUpper();
+                    branchService.Status = StatusConstants.AVAILABLE.ToUpper();
                 }
 
                 await _dbContext.BranchServices.AddAsync(branchService);
@@ -165,12 +165,12 @@ namespace TP4SCS.Repository.Implements
             var existingBranchServices = await _dbContext.BranchServices
                                 .Where(bs => bs.ServiceId == service.Id)
                                 .ToListAsync();
-            if (service.Status.ToLower() == StatusConstants.Unavailable.ToLower())
+            if (service.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
             {
                 // Cập nhật trạng thái của tất cả BranchService thành Unavailable
                 foreach (var branchService in existingBranchServices)
                 {
-                    branchService.Status = StatusConstants.Unavailable.ToUpper();
+                    branchService.Status = StatusConstants.UNAVAILABLE.ToUpper();
                 }
                 // Lưu lại thay đổi vào cơ sở dữ liệu
                 _dbContext.BranchServices.UpdateRange(existingBranchServices);
@@ -184,11 +184,11 @@ namespace TP4SCS.Repository.Implements
                 // Kiểm tra xem BusinessId có tồn tại trong serviceUpdateRequest hay không
                 if (branchIds.Contains(branchService.BranchId))
                 {
-                    branchService.Status = StatusConstants.Available;
+                    branchService.Status = StatusConstants.AVAILABLE;
                 }
                 else
                 {
-                    branchService.Status = StatusConstants.Unavailable;
+                    branchService.Status = StatusConstants.UNAVAILABLE;
                 }
             }
 
