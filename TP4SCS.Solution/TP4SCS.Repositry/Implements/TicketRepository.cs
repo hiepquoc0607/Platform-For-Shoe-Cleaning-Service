@@ -159,8 +159,14 @@ namespace TP4SCS.Repository.Implements
                     EF.Functions.Like(a.CategoryName, $"%{searchKey}%"));
             }
 
+            //Account Sort
+            if (getTicketRequest.AccountId.HasValue)
+            {
+                tickets = tickets.Where(t => t.UserId == getTicketRequest.AccountId);
+            }
+
             //Status Sort
-            if (getTicketRequest.Status != null)
+            if (getTicketRequest.Status.HasValue)
             {
                 tickets = getTicketRequest.Status switch
                 {
@@ -172,7 +178,7 @@ namespace TP4SCS.Repository.Implements
             }
 
             //Order Sort
-            if (getTicketRequest.SortBy != null)
+            if (getTicketRequest.SortBy.HasValue)
             {
                 tickets = getTicketRequest.SortBy switch
                 {

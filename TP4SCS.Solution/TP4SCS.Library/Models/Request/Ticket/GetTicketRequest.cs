@@ -28,6 +28,9 @@ namespace TP4SCS.Library.Models.Request.Ticket
         public TicketSortOption? SortBy { get; set; }
 
         [DefaultValue(null)]
+        public int? AccountId { get; set; }
+
+        [DefaultValue(null)]
         public TicketStatus? Status { get; set; }
 
         [Required]
