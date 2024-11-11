@@ -42,7 +42,7 @@ namespace TP4SCS.Repository.Implements
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnumV2 orderBy = OrderByEnumV2.CreateDes)
+            OrderByEnumV2 orderBy = OrderByEnumV2.CreateAsc)
         {
             // Biểu thức lọc với cả keyword và status
             Expression<Func<Feedback, bool>> filter = s =>
@@ -52,7 +52,7 @@ namespace TP4SCS.Repository.Implements
             {
                 OrderByEnumV2.CreateDes => q.OrderByDescending(c => c.CreatedTime),
                 OrderByEnumV2.CreateAsc => q.OrderBy(c => c.CreatedTime),
-                _ => q.OrderByDescending(c => c.CreatedTime)
+                _ => q.OrderBy(c => c.CreatedTime)
             };
             return GetAsync(
                 filter: filter,

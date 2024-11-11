@@ -14,9 +14,9 @@ namespace TP4SCS.Services.Implements
         {
             _feedbackRepository = feedbackRepository;
         }
-        public async Task<IEnumerable<Feedback>?> GetFeedbacks(OrderByEnumV2 order)
+        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status,OrderByEnumV2 order)
         {
-            return await _feedbackRepository.GetFeedbacksAsync(null, null, null, order);
+            return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
         }
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
@@ -45,7 +45,7 @@ namespace TP4SCS.Services.Implements
             }
             feedback.IsValidAsset = true;
             feedback.IsValidContent = true;
-            feedback.Status = StatusConstants.AVAILABLE;
+            feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;
             await _feedbackRepository.AddFeedbacksAsync(feedback);
         }

@@ -5,6 +5,7 @@ using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -23,11 +24,13 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeedbackss(OrderByEnumV2 orderBy = OrderByEnumV2.CreateDes, int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> GetFeedbackss(string? status,
+            OrderByEnumV2 orderBy = OrderByEnumV2.CreateAsc,
+            int pageIndex = 1, int pageSize = 10)
         {
             try
             {
-                var feedbacks = await _feedbackService.GetFeedbacks(orderBy);
+                var feedbacks = await _feedbackService.GetFeedbacks(status,orderBy);
 
                 var response = _mapper.Map<IEnumerable<FeedbackResponseForAdmin>>(feedbacks);
 
