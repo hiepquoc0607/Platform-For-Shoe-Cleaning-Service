@@ -69,7 +69,7 @@ namespace TP4SCS.Repository.Implements
                 _ => q.OrderBy(o => o.CreateTime)
             };
 
-            var query = _dbSet.Where(filter);
+            var query = _dbSet.OrderByDescending(o => o.CreateTime).Where(filter);
 
             // Bao gồm các thuộc tính liên quan
             query = query
