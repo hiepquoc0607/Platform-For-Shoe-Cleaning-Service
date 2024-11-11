@@ -5,7 +5,7 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IFeedbackService
     {
-        Task<IEnumerable<Feedback>?> GetFeedbacks(OrderByEnumV2 order);
+        Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnumV2 order);
         Task AddFeedbacksAsync(Feedback feedback);
         Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId);
         Task DeleteFeedbackAsync(int id);
