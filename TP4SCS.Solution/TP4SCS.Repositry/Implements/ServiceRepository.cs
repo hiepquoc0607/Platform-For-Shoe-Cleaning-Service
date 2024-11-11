@@ -23,32 +23,34 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddServiceAsync(int[] branchIds, int businessId, Service service)
         {
-            // Kiểm tra trạng thái của service
-            if (service.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
-            {
-                // Lấy tất cả BranchService có ServiceId tương ứng
-                var existingBranchServices = await _dbContext.BranchServices
-                    .Where(bs => bs.ServiceId == service.Id)
-                    .ToListAsync();
-
-                // Cập nhật trạng thái của tất cả BranchService thành Unavailable
-                foreach (var branchService in existingBranchServices)
-                {
-                    branchService.Status = StatusConstants.UNAVAILABLE.ToUpper();
-                }
-                // Lưu lại thay đổi vào cơ sở dữ liệu
-                _dbContext.BranchServices.UpdateRange(existingBranchServices);
-                await _dbContext.SaveChangesAsync();
-                return; // Kết thúc hàm nếu service là Unavailable
-            }
             // Lấy tất cả các branch từ businessId
             var branches = await _dbContext.BusinessBranches
-                                           .Where(b => b.BusinessId == businessId)
-                                           .ToListAsync();
+                               .Where(b => b.BusinessId == businessId)
+                               .ToListAsync();
 
             // Thêm service mới vào cơ sở dữ liệu
             await _dbContext.Services.AddAsync(service);
             await _dbContext.SaveChangesAsync();
+
+            // Kiểm tra trạng thái của service
+            if (service.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
+            {
+                // Tạo BranchService cho mỗi branch với trạng thái UNAVAILABLE
+                foreach (var branch in branches)
+                {
+                    var branchService = new BranchService
+                    {
+                        ServiceId = service.Id,
+                        BranchId = branch.Id,
+                        Status = StatusConstants.UNAVAILABLE.ToUpper()
+                    };
+                    await _dbContext.BranchServices.AddAsync(branchService);
+                }
+
+                // Lưu lại thay đổi vào cơ sở dữ liệu
+                await _dbContext.SaveChangesAsync();
+                return; // Kết thúc hàm nếu service là Unavailable
+            }
 
             // Tạo BranchService cho mỗi branch và liên kết với service vừa tạo
             foreach (var branch in branches)
