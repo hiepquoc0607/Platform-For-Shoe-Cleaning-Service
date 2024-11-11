@@ -147,6 +147,7 @@ namespace TP4SCS.Repository.Implements
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 2
                             : c.Status.Equals(StatusConstants.CLOSED) ? 3
                             : 4)
+                .ThenBy(c => c.CreateTime)
                 .AsQueryable();
 
             //Search
