@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Feedback;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
@@ -21,23 +22,24 @@ namespace TP4SCS.API.Controllers
             _mapper = mapper;
         }
 
-        // POST: api/feedbacks
-        [HttpPost]
-        public async Task<IActionResult> CreateFeedback([FromBody] FeedbackRequest feedbackRequest)
+        [HttpGet]
+        public async Task<IActionResult> GetFeedbackss(OrderByEnumV2 orderBy = OrderByEnumV2.CreateDes, int pageIndex = 1, int pageSize = 10)
         {
             try
             {
-                var feedback = _mapper.Map<Feedback>(feedbackRequest);
-                await _feedbackService.AddFeedbacksAsync(feedback);
-                return Ok(new ResponseObject<string>("Tạo đánh giá thành công"));
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+                var feedbacks = await _feedbackService.GetFeedbacks(orderBy);
+
+                var response = _mapper.Map<IEnumerable<FeedbackResponseForAdmin>>(feedbacks);
+
+                var totalCount = response.Count();
+                var pagedFeedbacks = response
+                    .Skip((pageIndex - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                var pagedResponse = new PagedResponse<FeedbackResponseForAdmin>(pagedFeedbacks, totalCount, pageIndex, pageSize);
+
+                return Ok(new ResponseObject<PagedResponse<FeedbackResponseForAdmin>>("Lấy danh sách đánh giá thành công", pagedResponse));
             }
             catch (Exception ex)
             {
@@ -74,6 +76,28 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateFeedback([FromBody] FeedbackRequest feedbackRequest)
+        {
+            try
+            {
+                var feedback = _mapper.Map<Feedback>(feedbackRequest);
+                await _feedbackService.AddFeedbacksAsync(feedback);
+                return Ok(new ResponseObject<string>("Tạo đánh giá thành công"));
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
         // DELETE: api/feedbacks/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFeedback(int id)
@@ -95,12 +119,11 @@ namespace TP4SCS.API.Controllers
 
         // PUT: api/feedbacks/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackRequest feedbackRequest)
+        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackUpdateRequest feedbackRequest)
         {
             try
             {
-                var feedback = _mapper.Map<Feedback>(feedbackRequest);
-                await _feedbackService.UpdateFeedbackAsync(feedback, id);
+                await _feedbackService.UpdateFeedbackAsync(feedbackRequest.IsValidAsset, feedbackRequest.IsValidContent, feedbackRequest.Status, id);
                 return Ok(new ResponseObject<string>("Cập nhật đánh giá thành công"));
             }
             catch (KeyNotFoundException ex)
