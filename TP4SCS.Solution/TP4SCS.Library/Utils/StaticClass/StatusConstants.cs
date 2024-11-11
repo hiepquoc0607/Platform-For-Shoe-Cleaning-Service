@@ -21,7 +21,7 @@
         public const string CANCELED = "CANCELED";
 
         public const string APPROVED = "APPROVED";
-        
+
         public const string STORAGE = "STORAGE";
 
         public const string SHIPPING = "SHIPPING";
