@@ -107,12 +107,12 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<BusinessProfile?> GetBusinessByOwnerIdAsync(int id)
         {
-            return await _dbContext.BusinessProfiles.Where(p => p.OwnerId == id).FirstOrDefaultAsync();
+            return await _dbContext.BusinessProfiles.SingleOrDefaultAsync(p => p.OwnerId == id);
         }
 
         public async Task<BusinessProfile?> GetBusinessProfileByIdAsync(int id)
         {
-            return await _dbContext.BusinessProfiles.Where(p => p.Id == id).FirstOrDefaultAsync();
+            return await _dbContext.BusinessProfiles.SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<int> GetBusinessProfileMaxIdAsync()
@@ -123,9 +123,10 @@ namespace TP4SCS.Repository.Implements
         public async Task<bool> IsNameExistedAsync(string name)
         {
             return await _dbContext.BusinessProfiles
+                .AsNoTracking()
                 .AnyAsync(b => EF.Functions
-                .Collate(b.Name, "SQL_Latin1_General_CP1_CI_AI")
-                .Contains(name));
+                .Collate(b.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals(name));
         }
 
         public async Task<bool> IsPhoneExistedAsync(string phone)

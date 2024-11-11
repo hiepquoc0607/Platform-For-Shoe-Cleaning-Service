@@ -32,13 +32,13 @@ namespace TP4SCS.Services.Implements
             var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, createAddressRequest.DistrictId) ?? string.Empty;
             var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, createAddressRequest.ProvinceId) ?? string.Empty;
 
+            var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
+            newAddress.Ward = wardName;
+            newAddress.District = districtName;
+            newAddress.Province = provinceName;
+
             try
             {
-                var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
-                newAddress.Ward = wardName;
-                newAddress.District = districtName;
-                newAddress.Province = provinceName;
-
                 await _addressRepository.RunInTransactionAsync(async () =>
                 {
                     if (createAddressRequest.IsDefault == true)

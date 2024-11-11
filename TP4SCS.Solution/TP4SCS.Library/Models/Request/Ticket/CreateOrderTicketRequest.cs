@@ -6,9 +6,6 @@ namespace TP4SCS.Library.Models.Request.Ticket
     public class CreateOrderTicketRequest
     {
         [Required]
-        public int CategoryId { get; set; }
-
-        [Required]
         public int OrderId { get; set; }
 
         [Required]
@@ -17,6 +14,7 @@ namespace TP4SCS.Library.Models.Request.Ticket
         [Required]
         public string Content { get; set; } = string.Empty;
 
-        public List<AssetUrlRequest>? Assets { get; set; }
+        [Required]
+        public List<AssetUrlRequest> Assets { get; set; } = new List<AssetUrlRequest>();
     }
 }

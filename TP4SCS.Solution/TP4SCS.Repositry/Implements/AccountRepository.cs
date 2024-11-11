@@ -26,7 +26,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
+                return await _dbContext.Accounts.SingleOrDefaultAsync(a => a.Id == id);
             }
             catch (Exception)
             {
@@ -110,7 +110,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).AsNoTracking().SingleOrDefaultAsync();
+                return await _dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Email.Equals(email));
             }
             catch (Exception)
             {
@@ -142,7 +142,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Email.Equals(email)).FirstOrDefaultAsync();
+                return await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Email.Equals(email));
             }
             catch (Exception)
             {
@@ -159,7 +159,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.Accounts.Where(a => a.Id == id).SingleOrDefaultAsync();
+                return await _dbContext.Accounts.SingleOrDefaultAsync(a => a.Id == id);
             }
             catch (Exception)
             {
@@ -173,11 +173,6 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .Where(b => b.BusinessId == getEmployeeRequest.BusinessId)
                 .Select(b => b.EmployeeIds)
-                .ToListAsync();
-
-            var branchId = await _dbContext.BusinessBranches
-                .AsNoTracking()
-                .Select(b => b.Id)
                 .ToListAsync();
 
             var ids = new StringBuilder();
@@ -212,6 +207,7 @@ namespace TP4SCS.Repository.Implements
                     CreatedByOwnerId = a.CreatedByOwnerId,
                     Status = a.Status,
                     Branch = _dbContext.BusinessBranches
+                        .AsNoTracking()
                         .Where(bb => bb.EmployeeIds != null && bb.EmployeeIds.Contains(a.Id.ToString()))
                         .Select(bb => new EmployeeBranchResponse
                         {

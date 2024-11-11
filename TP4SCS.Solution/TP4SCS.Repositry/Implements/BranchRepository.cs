@@ -12,7 +12,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<int> CountBranchDataByBusinessIdAsync(int id)
         {
-            return await _dbContext.BusinessBranches.Where(b => b.BusinessId == id).AsNoTracking().CountAsync();
+            return await _dbContext.BusinessBranches.AsNoTracking().CountAsync(b => b.BusinessId == id);
         }
 
         public async Task CreateBranchAsync(BusinessBranch businessBranch)
@@ -22,7 +22,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<BusinessBranch?> GetBranchByIdAsync(int id)
         {
-            return await _dbContext.BusinessBranches.Where(b => b.Id == id).FirstOrDefaultAsync();
+            return await _dbContext.BusinessBranches.SingleOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<IEnumerable<BusinessBranch>?> GetBranchesByBusinessIdAsync(int id)

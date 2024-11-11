@@ -16,6 +16,7 @@ namespace TP4SCS.Repository.Implements
             await _dbContext.AddRangeAsync(orderDetails);
             await _dbContext.SaveChangesAsync();
         }
+
         public async Task AddOrderDetailAsync(OrderDetail orderDetail)
         {
             var order = await _dbContext.Orders
@@ -25,7 +26,7 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new Exception($"Order với id: {orderDetail.OrderId} không tồn tại");
             }
-            var existingOrderDetail = order.OrderDetails.SingleOrDefault(od => od.ServiceId == orderDetail.ServiceId
+            var existingOrderDetail = order.OrderDetails.FirstOrDefault(od => od.ServiceId == orderDetail.ServiceId
              && od.BranchId == orderDetail.BranchId);
             if (existingOrderDetail != null)
             {
@@ -91,7 +92,6 @@ namespace TP4SCS.Repository.Implements
                 .SingleOrDefaultAsync(od => od.Id == id);
         }
 
-
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
         {
             return await _dbContext.OrderDetails
@@ -132,7 +132,6 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new KeyNotFoundException($"Không tìm thấy OrderDetail với ID {orderDetail.Id}.");
             }
-
 
             // Cập nhật OrderDetail
             _dbContext.Entry(existingOrderDetail).CurrentValues.SetValues(orderDetail);

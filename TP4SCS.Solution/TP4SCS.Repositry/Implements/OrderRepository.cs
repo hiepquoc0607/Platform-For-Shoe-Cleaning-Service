@@ -47,8 +47,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                             .ThenInclude(f => f!.AssetUrls)
-                .Where(o => o.Id == id)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(

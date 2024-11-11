@@ -175,6 +175,7 @@ namespace TP4SCS.Services.Implements
 
         }
 
+        //Get Account By Email
         public async Task<ApiResponse<AccountResponse?>> GetAccountByEmailAsync(string email)
         {
             var account = await _accountRepository.GetAccountLoginByEmailAsync(email);

@@ -54,9 +54,6 @@ namespace TP4SCS.Repository.Implements
             );
         }
 
-
-
-
         public async Task<ServiceCategory?> GetCategoryByIdAsync(int id)
         {
             return await GetByIDAsync(id);

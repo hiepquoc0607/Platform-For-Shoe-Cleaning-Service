@@ -34,7 +34,6 @@ namespace TP4SCS.Repository.Implements
             await _dbContext.SaveChangesAsync();
         }
 
-
         public async Task DeleteMaterialAsync(int id)
         {
             var serviceMaterials = await _dbContext.ServiceMaterials
@@ -48,7 +47,6 @@ namespace TP4SCS.Repository.Implements
             }
             await DeleteAsync(id);
         }
-
 
         public async Task<Material?> GetMaterialByIdAsync(int id)
         {
