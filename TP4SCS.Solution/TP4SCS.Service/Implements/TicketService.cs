@@ -218,6 +218,32 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
         }
 
+        //Get Tickets By Branch Id
+        public async Task<ApiResponse<IEnumerable<TicketsResponse>?>> GetTicketsByBranchIdAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var (tickets, pagination) = await _ticketRepository.GetTicketsByBranchIdAsync(id, getBusinessTicketRequest);
+
+            if (tickets == null)
+            {
+                return new ApiResponse<IEnumerable<TicketsResponse>?>("error", 404, "Không Tồn Tại Đơn Hỗ Trợ Nào!");
+            }
+
+            return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
+        }
+
+        //Get Tickets By Business Id
+        public async Task<ApiResponse<IEnumerable<TicketsResponse>?>> GetTicketsByBusinessAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var (tickets, pagination) = await _ticketRepository.GetTicketsByBusinessIdAsync(id, getBusinessTicketRequest);
+
+            if (tickets == null)
+            {
+                return new ApiResponse<IEnumerable<TicketsResponse>?>("error", 404, "Không Tồn Tại Đơn Hỗ Trợ Nào!");
+            }
+
+            return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
+        }
+
         //Update Ticket Status
         public async Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int moderatorId, int id, UpdateTicketStatusRequest updateTicketStatusRequest)
         {

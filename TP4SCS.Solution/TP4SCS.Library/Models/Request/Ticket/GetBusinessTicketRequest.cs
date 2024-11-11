@@ -1,14 +1,17 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
-namespace TP4SCS.Library.Models.Request.Business
+namespace TP4SCS.Library.Models.Request.Ticket
 {
-    public class GetInvalidateBusinessRequest
+    public class GetBusinessTicketRequest
     {
-        public string? SearchKey { get; set; } = string.Empty;
+        public string? SearchKey { get; set; }
 
         [DefaultValue(null)]
-        public string? SortBy { get; set; }
+        public TicketSortOption? SortBy { get; set; }
+
+        [DefaultValue(null)]
+        public TicketStatus? Status { get; set; }
 
         [Required]
         [DefaultValue(false)]

@@ -218,6 +218,232 @@ namespace TP4SCS.Repository.Implements
             return (result, pagination);
         }
 
+        public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBranchIdAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var tickets = _dbContext.SupportTickets
+                .Include(t => t.Order)
+                .ThenInclude(o => o!.OrderDetails)
+                .ThenInclude(od => od.Service)
+                .ThenInclude(s => s.BranchServices)
+                .Where(t => t.IsParentTicket == true &&
+                            t.Order!.OrderDetails
+                               .Any(od => od.Service!.BranchServices
+                                   .Any(bs => bs.Branch.Id == id)))
+                .Select(t => new TicketsResponse
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    FullName = _dbContext.Accounts
+                        .AsNoTracking()
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    ModeratorId = t.ModeratorId,
+                    ModeratorName = _dbContext.Accounts
+                        .AsNoTracking()
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _dbContext.TicketCategories
+                        .AsNoTracking()
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault()!,
+                    Priority = _dbContext.TicketCategories
+                        .AsNoTracking()
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Priority)
+                        .FirstOrDefault()!,
+                    OrderId = t.OrderId,
+                    Title = t.Title,
+                    CreateTime = t.CreateTime,
+                    Status = t.Status
+                })
+                .OrderByDescending(c => c.Priority)
+                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
+                            : 4)
+                .ThenBy(c => c.CreateTime)
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getBusinessTicketRequest.SearchKey))
+            {
+                string searchKey = getBusinessTicketRequest.SearchKey;
+                tickets = tickets.Where(a =>
+                    EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.Title, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.CategoryName, $"%{searchKey}%"));
+            }
+
+            //Status Sort
+            if (getBusinessTicketRequest.Status.HasValue)
+            {
+                tickets = getBusinessTicketRequest.Status switch
+                {
+                    TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
+                    TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
+                    TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    _ => tickets
+                };
+            }
+
+            //Order Sort
+            if (getBusinessTicketRequest.SortBy.HasValue)
+            {
+                tickets = getBusinessTicketRequest.SortBy switch
+                {
+                    TicketSortOption.FULLNAME => getBusinessTicketRequest.IsDecsending
+                                ? tickets.OrderByDescending(a => a.FullName)
+                                : tickets.OrderBy(a => a.FullName),
+                    TicketSortOption.CATEGORY => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.CategoryName)
+                                  : tickets.OrderBy(a => a.CategoryName),
+                    TicketSortOption.TITLE => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Title)
+                                  : tickets.OrderBy(a => a.Title),
+                    TicketSortOption.PRIORITY => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Priority)
+                                  : tickets.OrderBy(a => a.Priority),
+                    TicketSortOption.STATUS => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Status)
+                                  : tickets.OrderBy(a => a.Status),
+                    _ => tickets
+                };
+            }
+
+            //Count Total Data
+            int totalData = await tickets.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getBusinessTicketRequest.PageNum - 1) * getBusinessTicketRequest.PageSize;
+            tickets = tickets.Skip(skipNum).Take(getBusinessTicketRequest.PageSize);
+
+            var result = await tickets.ToListAsync();
+
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getBusinessTicketRequest.PageSize);
+
+            var pagination = new Pagination(totalData, getBusinessTicketRequest.PageSize, getBusinessTicketRequest.PageNum, totalPage);
+
+            return (result, pagination);
+        }
+
+        public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBusinessIdAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var tickets = _dbContext.SupportTickets
+                .Include(t => t.Order)
+                .ThenInclude(o => o!.OrderDetails)
+                .ThenInclude(od => od.Service)
+                .ThenInclude(s => s.BranchServices)
+                .ThenInclude(bs => bs.Branch)
+                .ThenInclude(b => b.Business)
+                .Where(t => t.IsParentTicket == true &&
+                            t.Order!.OrderDetails
+                                .Any(od => od.Service!.BranchServices
+                                    .Any(bs => bs.Branch.Business.Id == id)))
+                .Select(t => new TicketsResponse
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    FullName = _dbContext.Accounts
+                        .AsNoTracking()
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    ModeratorId = t.ModeratorId,
+                    ModeratorName = _dbContext.Accounts
+                        .AsNoTracking()
+                        .Where(a => a.Id == t.UserId)
+                        .Select(a => a.FullName)
+                        .FirstOrDefault()!,
+                    CategoryId = t.CategoryId,
+                    CategoryName = _dbContext.TicketCategories
+                        .AsNoTracking()
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault()!,
+                    Priority = _dbContext.TicketCategories
+                        .AsNoTracking()
+                        .Where(c => c.Id == t.CategoryId)
+                        .Select(c => c.Priority)
+                        .FirstOrDefault()!,
+                    OrderId = t.OrderId,
+                    Title = t.Title,
+                    CreateTime = t.CreateTime,
+                    Status = t.Status
+                })
+                .OrderByDescending(c => c.Priority)
+                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
+                            : 4)
+                .ThenBy(c => c.CreateTime)
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getBusinessTicketRequest.SearchKey))
+            {
+                string searchKey = getBusinessTicketRequest.SearchKey;
+                tickets = tickets.Where(a =>
+                    EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.Title, $"%{searchKey}%") ||
+                    EF.Functions.Like(a.CategoryName, $"%{searchKey}%"));
+            }
+
+            //Status Sort
+            if (getBusinessTicketRequest.Status.HasValue)
+            {
+                tickets = getBusinessTicketRequest.Status switch
+                {
+                    TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
+                    TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
+                    TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    _ => tickets
+                };
+            }
+
+            //Order Sort
+            if (getBusinessTicketRequest.SortBy.HasValue)
+            {
+                tickets = getBusinessTicketRequest.SortBy switch
+                {
+                    TicketSortOption.FULLNAME => getBusinessTicketRequest.IsDecsending
+                                ? tickets.OrderByDescending(a => a.FullName)
+                                : tickets.OrderBy(a => a.FullName),
+                    TicketSortOption.CATEGORY => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.CategoryName)
+                                  : tickets.OrderBy(a => a.CategoryName),
+                    TicketSortOption.TITLE => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Title)
+                                  : tickets.OrderBy(a => a.Title),
+                    TicketSortOption.PRIORITY => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Priority)
+                                  : tickets.OrderBy(a => a.Priority),
+                    TicketSortOption.STATUS => getBusinessTicketRequest.IsDecsending
+                                  ? tickets.OrderByDescending(a => a.Status)
+                                  : tickets.OrderBy(a => a.Status),
+                    _ => tickets
+                };
+            }
+
+            //Count Total Data
+            int totalData = await tickets.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getBusinessTicketRequest.PageNum - 1) * getBusinessTicketRequest.PageSize;
+            tickets = tickets.Skip(skipNum).Take(getBusinessTicketRequest.PageSize);
+
+            var result = await tickets.ToListAsync();
+
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getBusinessTicketRequest.PageSize);
+
+            var pagination = new Pagination(totalData, getBusinessTicketRequest.PageSize, getBusinessTicketRequest.PageNum, totalPage);
+
+            return (result, pagination);
+        }
+
         public async Task<SupportTicket?> GetUpdateTicketByIdAsync(int id)
         {
             return await _dbContext.SupportTickets.SingleOrDefaultAsync(t => t.Id == id);

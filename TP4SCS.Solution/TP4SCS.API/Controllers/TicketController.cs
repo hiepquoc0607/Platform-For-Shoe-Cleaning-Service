@@ -45,6 +45,34 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Policy = "Employee")]
+        [HttpGet("branch/{id}")]
+        public async Task<IActionResult> GetTicketsByBranchIdAsync([FromRoute] int id, [FromQuery] GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var result = await _ticketService.GetTicketsByBranchIdAsync(id, getBusinessTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Policy = "Employee")]
+        [HttpGet("business/{id}")]
+        public async Task<IActionResult> GetTicketsByBusinessIdAsync([FromRoute] int id, [FromQuery] GetBusinessTicketRequest getBusinessTicketRequest)
+        {
+            var result = await _ticketService.GetTicketsByBusinessAsync(id, getBusinessTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTicketByIdAsync([FromRoute] int id)
         {

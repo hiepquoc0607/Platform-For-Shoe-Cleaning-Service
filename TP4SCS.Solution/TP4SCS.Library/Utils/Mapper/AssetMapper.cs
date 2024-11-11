@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.AssetUrl;
-using TP4SCS.Library.Models.Request.Ticket;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
