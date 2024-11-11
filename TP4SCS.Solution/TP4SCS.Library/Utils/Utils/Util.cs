@@ -141,6 +141,7 @@ namespace TP4SCS.Library.Utils.Utils
                 StatusConstants.PROCESSING,
                 StatusConstants.STORAGE,
                 StatusConstants.SHIPPING,
+                StatusConstants.DELIVERED,
                 StatusConstants.FINISHED,
                 StatusConstants.ABANDONED
             };
