@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -38,7 +39,10 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Trạng thái của feedback không được để trống.", nameof(feedback.Status));
             }
-            feedback.CreatedTime = DateTime.UtcNow;
+            feedback.IsValidAsset = true;
+            feedback.IsValidContent = true;
+            feedback.Status = StatusConstants.AVAILABLE;
+            feedback.CreatedTime = DateTime.Now;
             await _feedbackRepository.AddFeedbacksAsync(feedback);
         }
 

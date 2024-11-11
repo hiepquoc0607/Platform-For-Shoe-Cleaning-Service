@@ -88,7 +88,7 @@ namespace TP4SCS.Services.Implements
                 {
                     AccountId = request.AccountId,
                     AddressId = request.AddressId,
-                    CreateTime = DateTime.UtcNow,
+                    CreateTime = DateTime.Now,
                     IsAutoReject = request.IsAutoReject,
                     Note = request.Note,
                     Status = StatusConstants.PENDING,
