@@ -8,11 +8,13 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest);
 
+        Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetInvalidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest);
+
         Task<ApiResponse<BusinessResponse?>> GetBusinessProfileByIdAsync(int id);
 
         Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId);
 
-        //Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest);
+        Task<int?> GetBusinessIdByOwnerId(int id);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest);
 
@@ -23,6 +25,7 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<BusinessResponse>> UpdateBusinessSubscriptionAsync(int id, UpdateBusinessSubcriptionRequest updateBusinessSubcriptionRequest);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest);
-        Task<int?> GetBusinessIdByOwnerId(int id);
+
+        Task<ApiResponse<BusinessResponse>> ValidateBusinessAsync(int id, ValidateBusinessRequest validateBusinessRequest);
     }
 }

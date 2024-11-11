@@ -12,6 +12,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Account?> GetAccountByIdAsync(int id);
 
+        Task<string> GetAccountEmailByIdAsync(int id);
+
         Task<(IEnumerable<EmployeeResponse>?, Pagination)> GetEmployeesAsync(GetEmployeeRequest getEmployeeRequest);
 
         Task<Account?> GetAccountByIdForAdminAsync(int id);

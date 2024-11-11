@@ -3,6 +3,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Response.BusinessProfile;
+using TP4SCS.Library.Utils.StaticClass;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
@@ -25,7 +26,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CreatedDate, otp => DateOnly.FromDateTime(DateTime.Now))
                 .Map(dest => dest.RegisteredTime, otp => DateTime.Now)
                 .Map(dest => dest.ExpiredTime, otp => DateTime.Now)
-                .Map(dest => dest.Status, otp => "ACTIVE");
+                .Map(dest => dest.Status, otp => StatusConstants.PENDING);
 
             config.NewConfig<BusinessProfile, UpdateBusinessRequest>();
 

@@ -3,6 +3,7 @@ using MapsterMapper;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -12,14 +13,23 @@ namespace TP4SCS.Services.Implements
     public class BusinessService : IBusinessService
     {
         private readonly IBusinessRepository _businessRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly IBusinessBranchService _branchService;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly BusinessUtil _util;
 
-        public BusinessService(IBusinessRepository businessRepository, IBusinessBranchService branchService, IMapper mapper, BusinessUtil util)
+        public BusinessService(IBusinessRepository businessRepository,
+            IAccountRepository accountRepository,
+            IBusinessBranchService branchService,
+            IEmailService emailService,
+            IMapper mapper,
+            BusinessUtil util)
         {
             _businessRepository = businessRepository;
+            _accountRepository = accountRepository;
             _branchService = branchService;
+            _emailService = emailService;
             _mapper = mapper;
             _util = util;
         }
@@ -36,48 +46,6 @@ namespace TP4SCS.Services.Implements
 
             return true;
         }
-
-        //Create Business
-        //public async Task<ApiResponse<BusinessResponse>> CreateBusinessProfileAsync(int id, OwnerRegisterRequest createBusinessRequest)
-        //{
-        //    var businessData = createBusinessRequest.CreateBusiness;
-        //    var branchData = createBusinessRequest.CreateBranch;
-
-        //    //var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(businessData.Phone.Trim());
-
-        //    //if (isPhoneExisted)
-        //    //{
-        //    //    return new ApiResponse<BusinessResponse>("error", 400, "Số Điện Thoại Doanh Nghiệp Đã Được Sử Dụng!");
-        //    //}
-
-        //    var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
-
-        //    if (isNameExisted)
-        //    {
-        //        return new ApiResponse<BusinessResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
-        //    }
-
-        //    var newBusiness = _mapper.Map<BusinessProfile>(businessData);
-        //    newBusiness.OwnerId = id;
-
-        //    var newBranch = _mapper.Map<BusinessBranch>(branchData);
-        //    newBranch.BusinessId = await _businessRepository.GetBusinessProfileMaxIdAsync() + 1;
-
-        //    try
-        //    {
-        //        await _businessRepository.CreateBusinessProfileAsync(newBusiness, newBranch);
-
-        //        var newId = await _businessRepository.GetBusinessProfileMaxIdAsync();
-
-        //        var newBsn = await GetBusinessProfileByIdAsync(newId);
-
-        //        return new ApiResponse<BusinessResponse>("success", "Tạo Doanh Nghiệp Thành Công!", newBsn.Data);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return new ApiResponse<BusinessResponse>("error", 400, "Tạo Doanh Nghiệp Thất Bại!");
-        //    }
-        //}
 
         //Get Businesses
         public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest)
@@ -226,6 +194,78 @@ namespace TP4SCS.Services.Implements
         public async Task<int?> GetBusinessIdByOwnerId(int id)
         {
             return await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
+        }
+
+        public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetInvalidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest)
+        {
+            var (businesses, pagination) = await _businessRepository.GetInvlaidateBusinessesProfilesAsync(getInvalidateBusinessRequest);
+
+            if (businesses == null)
+            {
+                return new ApiResponse<IEnumerable<BusinessResponse>?>("error", 404, "Không Tìm Thấy Doanh Nghiệp!");
+            }
+
+            var data = businesses.Adapt<IEnumerable<BusinessResponse>>();
+
+            return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, 200, pagination);
+        }
+
+        public async Task<ApiResponse<BusinessResponse>> ValidateBusinessAsync(int id, ValidateBusinessRequest validateBusinessRequest)
+        {
+            var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);
+
+            if (oldBusiness == null)
+            {
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Doanh Nghiệp!");
+            }
+
+            if (!oldBusiness.Status.Equals(StatusConstants.PENDING))
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Doanh Nghiệp Đã Được Xác Nhận Trước Đó!");
+            }
+
+            int businessId = oldBusiness.Id;
+
+            var emailBody = "";
+
+            try
+            {
+                if (validateBusinessRequest.IsApprove)
+                {
+                    oldBusiness.Status = StatusConstants.ACTIVE;
+
+                    await _businessRepository.RunInTransactionAsync(async () =>
+                    {
+                        await _businessRepository.UpdateAsync(oldBusiness);
+
+                        string email = await _accountRepository.GetAccountEmailByIdAsync(oldBusiness.OwnerId);
+
+                        emailBody = "Xác Nhận Doanh Nghiệp Bị Từ Chối!";
+
+                        await _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
+                    });
+                }
+                else
+                {
+                    await _businessRepository.RunInTransactionAsync(async () =>
+                    {
+                        await _businessRepository.DeleteAsync(oldBusiness);
+
+                        string email = await _accountRepository.GetAccountEmailByIdAsync(businessId);
+
+                        emailBody = "Xác Nhận Doanh Nghiệp Thành Công!";
+
+                        await _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
+                    });
+                }
+
+                return new ApiResponse<BusinessResponse>("success", "Xác Nhận Doanh Nghiệp Thành Công!", null, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Xác Nhận Doanh Nghiệp Thất Bại!");
+            }
+
         }
     }
 }

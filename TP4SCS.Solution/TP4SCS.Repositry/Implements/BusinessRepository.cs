@@ -153,5 +153,47 @@ namespace TP4SCS.Repository.Implements
                 //})
                 .CountAsync();
         }
+
+        public async Task<(IEnumerable<BusinessProfile>?, Pagination)> GetInvlaidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest)
+        {
+            var businesses = _dbContext.BusinessProfiles.Where(b => b.Status.Equals(StatusConstants.PENDING)).AsQueryable();
+
+
+
+            //Search
+            if (!string.IsNullOrEmpty(getInvalidateBusinessRequest.SearchKey))
+            {
+                string searchKey = getInvalidateBusinessRequest.SearchKey;
+                businesses = businesses.Where(b => EF.Functions.Like(b.Name, $"%{searchKey}%"));
+            }
+
+            //Order Sort
+            if (getInvalidateBusinessRequest.SortBy != null)
+            {
+                businesses = getInvalidateBusinessRequest.IsDecsending
+                                ? businesses.OrderByDescending(b => b.Name)
+                                : businesses.OrderBy(b => b.Name);
+            }
+
+            //Count Total Data
+            int totalData = await businesses.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getInvalidateBusinessRequest.PageNum - 1) * getInvalidateBusinessRequest.PageSize;
+            businesses = businesses.Skip(skipNum).Take(getInvalidateBusinessRequest.PageSize);
+
+            //Paging Data Calulation
+            var result = await businesses.ToListAsync();
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getInvalidateBusinessRequest.PageSize);
+
+            var paging = new Pagination(totalData, getInvalidateBusinessRequest.PageSize, getInvalidateBusinessRequest.PageNum, totalPage);
+
+            if (result == null || !result.Any())
+            {
+                return (null, paging);
+            }
+
+            return (result, paging);
+        }
     }
 }
