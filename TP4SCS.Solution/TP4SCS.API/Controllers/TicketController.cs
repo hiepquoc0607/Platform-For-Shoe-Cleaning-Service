@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.Ticket;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -18,9 +18,23 @@ namespace TP4SCS.API.Controllers
             _ticketService = ticketService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetTicketsAsync([FromQuery] GetTicketRequest getTicketRequest)
         {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userRole = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            if (userRole != null &&
+                (!userRole.Equals(RoleConstants.ADMIN) || !userRole.Equals(RoleConstants.MODERATOR)) &&
+                getTicketRequest.AccountId.HasValue &&
+                id != getTicketRequest.AccountId)
+            {
+                return Forbid();
+            }
+
             var result = await _ticketService.GetTicketsAsync(getTicketRequest);
 
             if (result.StatusCode != 200)
