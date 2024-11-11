@@ -11,6 +11,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<TicketResponse?> GetTicketByIdAsync(int id);
 
+        Task<SupportTicket?> GetUpdateTicketByIdAsync(int id);
+
         Task CreateTicketAsync(SupportTicket supportTicket);
 
         Task UpdateTicketAsync(SupportTicket supportTicket);

@@ -11,10 +11,12 @@ namespace TP4SCS.Repository.Implements
         public FeedbackRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
         }
+
         public async Task<Feedback?> GetFeedbackByidAsync(int id)
         {
             return await GetByIDAsync(id);
         }
+
         public async Task AddFeedbacksAsync(Feedback feedback)
         {
             await InsertAsync(feedback);
@@ -35,6 +37,7 @@ namespace TP4SCS.Repository.Implements
             _dbContext.Services.Update(service);
             await _dbContext.SaveChangesAsync();
         }
+
         public Task<IEnumerable<Feedback>?> GetFeedbacksAsync(
             string? status = null,
             int? pageIndex = null,
@@ -58,6 +61,7 @@ namespace TP4SCS.Repository.Implements
                 pageSize: pageSize
             );
         }
+
         public async Task<IEnumerable<Feedback>?> GetFeedbacksByServiceIdAsync(
             int serviceId,
             string? status = null,
@@ -82,6 +86,7 @@ namespace TP4SCS.Repository.Implements
                 pageSize: pageSize);
             return feedbacks?.Where(f => f.OrderItem.ServiceId == serviceId);
         }
+
         public async Task<IEnumerable<Feedback>?> GetFeedbacksByAccountIdAsync(
             int accountId,
             string? status = null,
@@ -106,6 +111,7 @@ namespace TP4SCS.Repository.Implements
                     .ThenInclude(od => od.Order);
             return await query.Where(f => f.OrderItem.Order.AccountId == accountId).ToListAsync();
         }
+
         public async Task DeleteFeedbackAsync(int id)
         {
             // Kiểm tra nếu Feedback tồn tại
@@ -125,7 +131,6 @@ namespace TP4SCS.Repository.Implements
             // Xóa Feedback
             await DeleteAsync(id);
         }
-
 
         public async Task UpdateFeedbackAsync(Feedback feedback)
         {

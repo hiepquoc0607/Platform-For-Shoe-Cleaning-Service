@@ -8,6 +8,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<TicketCategory?> GetCategoryByIdAsync(int id);
 
+        Task<int> GetOrderTicketCategoryIdAsync();
+
         Task<bool> IsNameExistedAsync(string name);
 
         Task CreateCategoryAsync(TicketCategory category);

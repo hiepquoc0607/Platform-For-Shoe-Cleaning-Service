@@ -19,7 +19,7 @@ namespace TP4SCS.Repository.Implements
             // Lấy giỏ hàng của người dùng từ DbContext
             var cart = await _dbContext.Carts
                 .Include(c => c.CartItems) // Đảm bảo bao gồm các CartItems
-                .SingleOrDefaultAsync(c => c.AccountId == userId);
+                .FirstOrDefaultAsync(c => c.AccountId == userId);
 
             // Nếu giỏ hàng không tồn tại, tạo một giỏ hàng mới
             if (cart == null)
@@ -29,7 +29,7 @@ namespace TP4SCS.Repository.Implements
             }
 
             // Kiểm tra xem item đã tồn tại trong giỏ hàng chưa
-            var existingItem = cart.CartItems.SingleOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId == item.BranchId);
+            var existingItem = cart.CartItems.FirstOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId == item.BranchId);
             if (existingItem != null)
             {
                 existingItem.Quantity += item.Quantity; // Cập nhật số lượng

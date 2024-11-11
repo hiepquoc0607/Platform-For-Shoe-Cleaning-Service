@@ -10,13 +10,13 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<TicketResponse?>> GetTicketByIdAsync(int id);
 
-        Task<ApiResponse<TicketResponse>> CreateTicketAsync(CreateTicketRequest createTicketRequest);
+        Task<ApiResponse<TicketResponse>> CreateTicketAsync(int id, CreateTicketRequest createTicketRequest);
 
-        Task<ApiResponse<TicketResponse>> CreateOrderTicketAsync(CreateOrderTicketRequest createOrderTicketRequest);
+        Task<ApiResponse<TicketResponse>> CreateOrderTicketAsync(int id, CreateOrderTicketRequest createOrderTicketRequest);
 
-        Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(CreateChildTicketRequest createChildTicketRequest);
+        Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(int id, CreateChildTicketRequest createChildTicketRequest);
 
-        Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int id, UpdateTicketStatusRequest updateTicketStatusRequest);
+        Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int moderatorId, int id, UpdateTicketStatusRequest updateTicketStatusRequest);
 
         Task<ApiResponse<TicketResponse>> CancelTicketAsync(int id);
     }

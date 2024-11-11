@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.Ticket
+﻿using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Response.Ticket
 {
     public class TicketsResponse
     {
@@ -8,9 +10,11 @@
 
         public string FullName { get; set; } = string.Empty;
 
-        public int? ModeratorId { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? ModeratorId { get; set; } = null;
 
-        public string? ModeratorName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ModeratorName { get; set; } = null;
 
         public int CategoryId { get; set; }
 
@@ -18,7 +22,8 @@
 
         public int Priority { get; set; }
 
-        public int? OrderId { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? OrderId { get; set; } = null;
 
         public string Title { get; set; } = string.Empty;
 

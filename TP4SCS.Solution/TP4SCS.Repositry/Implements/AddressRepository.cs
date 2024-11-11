@@ -36,7 +36,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.AccountAddresses.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await _dbContext.AccountAddresses.SingleOrDefaultAsync(a => a.Id == id);
             }
             catch (Exception)
             {
@@ -53,7 +53,7 @@ namespace TP4SCS.Repository.Implements
         {
             try
             {
-                return await _dbContext.AccountAddresses.Where(a => a.AccountId == id && a.IsDefault == true).FirstOrDefaultAsync();
+                return await _dbContext.AccountAddresses.FirstOrDefaultAsync(a => a.AccountId == id && a.IsDefault == true);
             }
             catch (Exception)
             {

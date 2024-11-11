@@ -23,14 +23,31 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<TicketCategory?> GetCategoryByIdAsync(int id)
         {
-            return await _dbContext.TicketCategories.SingleOrDefaultAsync(c => c.Id == id && c.Status.Equals(StatusConstants.AVAILABLE));
+            return await _dbContext.TicketCategories
+                .SingleOrDefaultAsync(c => c.Id == id &&
+                c.Status.Equals(StatusConstants.AVAILABLE) &&
+                !EF.Functions.Collate(c.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals("Khiếu Nại Dịch Vụ"));
+        }
+
+        public async Task<int> GetOrderTicketCategoryIdAsync()
+        {
+            return await _dbContext.TicketCategories
+                .AsNoTracking()
+                .Where(c => EF.Functions
+                .Collate(c.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals("Khiếu Nại Dịch Vụ"))
+                .Select(c => c.Id)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<bool> IsNameExistedAsync(string name)
         {
             return await _dbContext.TicketCategories
                 .AsNoTracking()
-                .AnyAsync(c => EF.Functions.Collate(c.Name, "Vietnamese_CI_AS").Equals(name));
+                .AnyAsync(c => EF.Functions
+                .Collate(c.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals(name));
         }
 
         public async Task UpdateCategoryAsync(TicketCategory category)

@@ -34,11 +34,13 @@ namespace TP4SCS.Repository.Implements
                     Id = c.Id,
                     UserId = c.UserId,
                     FullName = _dbContext.Accounts
+                            .AsNoTracking()
                             .Where(a => a.Id == c.UserId)
                             .Select(a => a.FullName)
                             .FirstOrDefault()!,
                     CategoryId = c.CategoryId,
                     CategoryName = _dbContext.TicketCategories
+                            .AsNoTracking()
                             .Where(cn => cn.Id == c.CategoryId)
                             .Select(c => c.Name)
                             .FirstOrDefault()!,
@@ -46,6 +48,7 @@ namespace TP4SCS.Repository.Implements
                     Content = c.Content,
                     CreateTime = c.CreateTime,
                     Assets = _dbContext.AssetUrls
+                            .AsNoTracking()
                             .Where(a => a.TicketId == c.Id)
                             .Select(a => new FileResponse
                             {
@@ -54,6 +57,7 @@ namespace TP4SCS.Repository.Implements
                             })
                             .ToList(),
                 })
+                .OrderBy(c => c.CreateTime)
                 .ToListAsync();
 
             return await _dbContext.SupportTickets
@@ -62,20 +66,24 @@ namespace TP4SCS.Repository.Implements
                     Id = t.Id,
                     UserId = t.UserId,
                     FullName = _dbContext.Accounts
+                        .AsNoTracking()
                         .Where(a => a.Id == t.UserId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     ModeratorId = t.ModeratorId,
                     ModeratorName = _dbContext.Accounts
+                        .AsNoTracking()
                         .Where(a => a.Id == t.UserId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     CategoryId = t.CategoryId,
                     CategoryName = _dbContext.TicketCategories
+                        .AsNoTracking()
                         .Where(c => c.Id == t.CategoryId)
                         .Select(c => c.Name)
                         .FirstOrDefault()!,
                     Priority = _dbContext.TicketCategories
+                        .AsNoTracking()
                         .Where(c => c.Id == t.CategoryId)
                         .Select(c => c.Priority)
                         .FirstOrDefault()!,
@@ -85,6 +93,7 @@ namespace TP4SCS.Repository.Implements
                     CreateTime = t.CreateTime,
                     Status = t.Status,
                     Assets = _dbContext.AssetUrls
+                        .AsNoTracking()
                         .Where(a => a.TicketId == t.Id)
                         .Select(a => new FileResponse
                         {
@@ -101,25 +110,30 @@ namespace TP4SCS.Repository.Implements
         public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsAsync(GetTicketRequest getTicketRequest)
         {
             var tickets = _dbContext.SupportTickets
+                .Where(t => t.IsParentTicket == true)
                 .Select(t => new TicketsResponse
                 {
                     Id = t.Id,
                     UserId = t.UserId,
                     FullName = _dbContext.Accounts
+                        .AsNoTracking()
                         .Where(a => a.Id == t.UserId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     ModeratorId = t.ModeratorId,
                     ModeratorName = _dbContext.Accounts
+                        .AsNoTracking()
                         .Where(a => a.Id == t.UserId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     CategoryId = t.CategoryId,
                     CategoryName = _dbContext.TicketCategories
+                        .AsNoTracking()
                         .Where(c => c.Id == t.CategoryId)
                         .Select(c => c.Name)
                         .FirstOrDefault()!,
                     Priority = _dbContext.TicketCategories
+                        .AsNoTracking()
                         .Where(c => c.Id == t.CategoryId)
                         .Select(c => c.Priority)
                         .FirstOrDefault()!,
@@ -128,6 +142,11 @@ namespace TP4SCS.Repository.Implements
                     CreateTime = t.CreateTime,
                     Status = t.Status
                 })
+                .OrderByDescending(c => c.Priority)
+                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
+                            : 4)
                 .AsQueryable();
 
             //Search
@@ -190,6 +209,11 @@ namespace TP4SCS.Repository.Implements
             var pagination = new Pagination(totalData, getTicketRequest.PageSize, getTicketRequest.PageNum, totalPage);
 
             return (result, pagination);
+        }
+
+        public async Task<SupportTicket?> GetUpdateTicketByIdAsync(int id)
+        {
+            return await _dbContext.SupportTickets.SingleOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task UpdateTicketAsync(SupportTicket supportTicket)

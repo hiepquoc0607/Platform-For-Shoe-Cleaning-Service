@@ -1,0 +1,133 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using TP4SCS.Library.Models.Request.Ticket;
+using TP4SCS.Services.Interfaces;
+
+namespace TP4SCS.API.Controllers
+{
+    [Route("api/support-tickets")]
+    [ApiController]
+    public class TicketController : ControllerBase
+    {
+        private readonly ITicketService _ticketService;
+
+        public TicketController(ITicketService ticketService)
+        {
+            _ticketService = ticketService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTicketsAsync([FromQuery] GetTicketRequest getTicketRequest)
+        {
+            var result = await _ticketService.GetTicketsAsync(getTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTicketByIdAsync([FromRoute] int id)
+        {
+            var result = await _ticketService.GetTicketByIdAsync(id);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CreateTicketAsync([FromBody] CreateTicketRequest createTicketRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _ticketService.CreateTicketAsync(id, createTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("order-ticket")]
+        public async Task<IActionResult> CreateOrderTicketAsync([FromBody] CreateOrderTicketRequest createOrderTicketRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _ticketService.CreateOrderTicketAsync(id, createOrderTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("child-ticket")]
+        public async Task<IActionResult> CreateChildTicketAsync([FromBody] CreateChildTicketRequest createChildTicketRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _ticketService.CreateChildTicketAsync(id, createChildTicketRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Policy = "Moderator")]
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateTicketStatusAsync([FromRoute] int id, [FromBody] UpdateTicketStatusRequest updateTicketStatusRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int morderatorId);
+
+            var result = await _ticketService.UpdateTicketStatusAsync(morderatorId, id, updateTicketStatusRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("{id}/cancel")]
+        public async Task<IActionResult> CancelTicketAsync([FromRoute] int id)
+        {
+            var result = await _ticketService.CancelTicketAsync(id);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+    }
+}

@@ -94,6 +94,7 @@ builder.Services.AddScoped<IAssetUrlRepository, AssetUrlRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -114,8 +115,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
-
-//Register Firebase
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

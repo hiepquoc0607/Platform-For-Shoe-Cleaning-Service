@@ -20,6 +20,7 @@ namespace TP4SCS.Repository.Implements
             await _dbSet.AddRangeAsync(services);
             await _dbContext.SaveChangesAsync();
         }
+
         public async Task AddServiceAsync(int[] branchIds, int businessId, Service service)
         {
             // Kiểm tra trạng thái của service
@@ -70,7 +71,6 @@ namespace TP4SCS.Repository.Implements
             await _dbContext.SaveChangesAsync();
         }
 
-
         public async Task DeleteServiceAsync(int id)
         {
             var branchServices = await _dbContext.BranchServices
@@ -94,7 +94,6 @@ namespace TP4SCS.Repository.Implements
                 .Include(s => s.Category)
                 .SingleOrDefaultAsync(s => s.Id == id);
         }
-
 
         public async Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
@@ -202,17 +201,6 @@ namespace TP4SCS.Repository.Implements
                 .Where(b => b.BusinessId == getBranchServiceRequest.BusinessId)
                 .Select(b => b.Id)
                 .ToArrayAsync();
-
-            //var services = _dbContext.Services
-            //    .Include(s => s.BranchServices)
-            //    .ThenInclude(s => s.Branch)
-            //    .Where(bs => branchIds.Contains(bs.Id))
-            //    .Include(s => s.Category)
-            //    .Include(s => s.Promotion)
-            //    .Include(s => s.AssetUrls)
-            //    .OrderBy(s => s.OrderedNum)
-            //    .ThenBy(s => s.CreateTime)
-            //    .AsQueryable();
 
             var services = _dbContext.Services
                 .Include(s => s.Category)

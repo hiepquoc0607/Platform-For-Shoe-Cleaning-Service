@@ -288,5 +288,16 @@ namespace TP4SCS.Library.Utils.Utils
 
             return result.ToString();
         }
+
+        public bool CheckTicketStatus(string status)
+        {
+            return status.Trim().ToUpper() switch
+            {
+                StatusConstants.OPENING => true,
+                StatusConstants.PROCESSING => true,
+                StatusConstants.CLOSED => true,
+                _ => false,
+            };
+        }
     }
 }
