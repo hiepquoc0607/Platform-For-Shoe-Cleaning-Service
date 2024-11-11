@@ -31,6 +31,20 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
+        [Route("api/businesses/invalidate-businesses")]
+        public async Task<IActionResult> GetInValidateBusinessProfilesAsync([FromQuery] GetInvalidateBusinessRequest getInvalidateBusinessRequest)
+        {
+            var result = await _businessService.GetInvalidateBusinessesProfilesAsync(getInvalidateBusinessRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("api/businesses/{id}", Name = "GetBusinessProfileById")]
         public async Task<IActionResult> GetBusinessProfileByIdAsync([FromRoute] int id)
         {
@@ -43,24 +57,6 @@ namespace TP4SCS.API.Controllers
 
             return Ok(result);
         }
-
-        //[HttpPost]
-        //[Route("api/busineses")]
-        //public async Task<IActionResult> CreateBusinessProfileAsync([FromBody] OwnerRegisterRequest createBusinessRequest)
-        //{
-        //    string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //    var userId = int.TryParse(userIdClaim, out int id);
-
-        //    var result = await _businessService.CreateBusinessProfileAsync(id, createBusinessRequest);
-
-        //    if (result.StatusCode != 200 || result.Data == null)
-        //    {
-        //        return StatusCode(result.StatusCode, result);
-        //    }
-
-        //    return CreatedAtAction("GetBusinessProfileById", new { id = result.Data.Id }, result.Data);
-        //}
 
         [HttpPut]
         [Route("api/businesses/{id}")]
@@ -88,9 +84,24 @@ namespace TP4SCS.API.Controllers
         [Authorize(Policy = "Admin")]
         [HttpPut]
         [Route("api/admin/businesses/{id}")]
-        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync(int id, [FromBody] UpdateBusinessStatusRequest updateBusinessStatusRequest)
+        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync([FromRoute] int id, [FromBody] UpdateBusinessStatusRequest updateBusinessStatusRequest)
         {
             var result = await _businessService.UpdateBusinessStatusForAdminAsync(id, updateBusinessStatusRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Policy = "Moderator")]
+        [HttpPut]
+        [Route("api/businesses/{id}/validate-buisness")]
+        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync([FromRoute] int id, [FromBody] ValidateBusinessRequest validateBusinessRequest)
+        {
+            var result = await _businessService.ValidateBusinessAsync(id, validateBusinessRequest);
 
             if (result.StatusCode != 200)
             {

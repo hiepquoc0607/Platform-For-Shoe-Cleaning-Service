@@ -15,10 +15,10 @@
 
         public const string UNAVAILABLE = "UNAVAILABLE";
 
+        public const string PENDING = "PENDING";
+
         //ORDER STATUS
         public const string CANCELED = "CANCELED";
-
-        public const string PENDING = "PENDING";
 
         public const string APPROVED = "APPROVED";
         

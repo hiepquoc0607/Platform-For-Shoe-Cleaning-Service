@@ -275,5 +275,21 @@ namespace TP4SCS.Repository.Implements
 
             return (result, pagination);
         }
+
+        public async Task<string> GetAccountEmailByIdAsync(int id)
+        {
+            var email = await _dbContext.Accounts
+                .AsNoTracking()
+                .Where(a => a.Id == id)
+                .Select(a => a.Email)
+                .SingleOrDefaultAsync();
+
+            if (email == null)
+            {
+                throw new InvalidOperationException($"Email not found for Account ID {id}");
+            }
+
+            return email;
+        }
     }
 }
