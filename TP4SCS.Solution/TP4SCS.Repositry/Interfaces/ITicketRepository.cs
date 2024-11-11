@@ -9,9 +9,9 @@ namespace TP4SCS.Repository.Interfaces
     {
         Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsAsync(GetTicketRequest getTicketRequest);
 
-        Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBranchIdAsync(GetTicketRequest getTicketRequest);
+        Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBranchIdAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest);
 
-        Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBusinessIdAsync(GetTicketRequest getTicketRequest);
+        Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsByBusinessIdAsync(int id, GetBusinessTicketRequest getBusinessTicketRequest);
 
         Task<TicketResponse?> GetTicketByIdAsync(int id);
 
