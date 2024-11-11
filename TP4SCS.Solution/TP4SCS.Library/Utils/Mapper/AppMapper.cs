@@ -65,7 +65,9 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateBranchStatus(src.Status)));
             //Feedback Mapping
             CreateMap<FeedbackRequest, Feedback>();
+            CreateMap<FeedbackUpdateRequest, Feedback>();
             CreateMap<Feedback, FeedbackResponse>();
+            CreateMap<Feedback, FeedbackResponseForAdmin>();
             //Order Mapping
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderStatus(src.Status)))

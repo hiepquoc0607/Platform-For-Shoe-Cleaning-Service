@@ -1,13 +1,15 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 
 namespace TP4SCS.Services.Interfaces
 {
     public interface IFeedbackService
     {
+        Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnumV2 order);
         Task AddFeedbacksAsync(Feedback feedback);
         Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId);
         Task DeleteFeedbackAsync(int id);
-        Task UpdateFeedbackAsync(Feedback feedback, int existingFeedbackId);
+        Task UpdateFeedbackAsync(bool? isValidAsset, bool? IsValidContent, string? status, int existingFeedbackId);
         Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId);
     }
 }

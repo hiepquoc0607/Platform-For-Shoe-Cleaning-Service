@@ -10,7 +10,7 @@ namespace TP4SCS.Repository.Interfaces
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc);
+            OrderByEnumV2 orderBy = OrderByEnumV2.CreateDes);
         Task<IEnumerable<Feedback>?> GetFeedbacksByServiceIdAsync(
             int serviceId,
             string? status = null,

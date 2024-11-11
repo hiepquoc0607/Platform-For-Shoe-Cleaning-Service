@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -13,7 +14,10 @@ namespace TP4SCS.Services.Implements
         {
             _feedbackRepository = feedbackRepository;
         }
-
+        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status,OrderByEnumV2 order)
+        {
+            return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
+        }
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
             return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
@@ -41,7 +45,7 @@ namespace TP4SCS.Services.Implements
             }
             feedback.IsValidAsset = true;
             feedback.IsValidContent = true;
-            feedback.Status = StatusConstants.AVAILABLE;
+            feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;
             await _feedbackRepository.AddFeedbacksAsync(feedback);
         }
@@ -51,16 +55,27 @@ namespace TP4SCS.Services.Implements
             await _feedbackRepository.DeleteFeedbackAsync(id);
         }
 
-        public async Task UpdateFeedbackAsync(Feedback feedback, int existingFeedbackId)
+        public async Task UpdateFeedbackAsync(bool? isValidAsset, bool? IsValidContent, string? status, int existingFeedbackId)
         {
             var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
             if (existingFeedback == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy đánh giá với ID: {existingFeedbackId}.");
             }
-            existingFeedback.Status = feedback.Status;
-            existingFeedback.Content = feedback.Status;
-            await _feedbackRepository.UpdateFeedbackAsync(feedback);
+            if(status != null)
+            {
+                existingFeedback.Status = status;
+            }
+            if (IsValidContent.HasValue)
+            {
+                existingFeedback.IsValidContent = IsValidContent.Value;
+            }
+            if (isValidAsset.HasValue)
+            {
+                existingFeedback.IsValidAsset = isValidAsset.Value;
+            }
+
+            await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
         }
     }
 }
