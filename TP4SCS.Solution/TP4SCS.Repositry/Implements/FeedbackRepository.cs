@@ -42,7 +42,7 @@ namespace TP4SCS.Repository.Implements
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnumV2 orderBy = OrderByEnumV2.CreateAsc)
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
         {
             // Biểu thức lọc với cả keyword và status
             Expression<Func<Feedback, bool>> filter = s =>
@@ -50,9 +50,9 @@ namespace TP4SCS.Repository.Implements
 
             Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>> orderByExpression = q => orderBy switch
             {
-                OrderByEnumV2.CreateDes => q.OrderByDescending(c => c.CreatedTime),
-                OrderByEnumV2.CreateAsc => q.OrderBy(c => c.CreatedTime),
-                _ => q.OrderBy(c => c.CreatedTime)
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                OrderByEnum.IdAsc => q.OrderBy(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
             };
             return GetAsync(
                 filter: filter,
@@ -68,7 +68,7 @@ namespace TP4SCS.Repository.Implements
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc)
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
         {
             // Biểu thức lọc với cả keyword và status
             Expression<Func<Feedback, bool>> filter = s =>
@@ -93,7 +93,7 @@ namespace TP4SCS.Repository.Implements
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.IdAsc)
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
         {
             Expression<Func<Feedback, bool>> filter = s =>
                 (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
