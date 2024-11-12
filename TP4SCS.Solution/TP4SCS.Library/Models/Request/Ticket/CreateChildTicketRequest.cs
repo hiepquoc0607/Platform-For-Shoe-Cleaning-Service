@@ -6,9 +6,6 @@ namespace TP4SCS.Library.Models.Request.Ticket
     public class CreateChildTicketRequest
     {
         [Required]
-        public int ParentTicketId { get; set; }
-
-        [Required]
         public string Title { get; set; } = string.Empty;
 
         [Required]

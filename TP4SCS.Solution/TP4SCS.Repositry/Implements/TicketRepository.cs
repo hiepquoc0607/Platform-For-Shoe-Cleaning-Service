@@ -226,6 +226,7 @@ namespace TP4SCS.Repository.Implements
                 .ThenInclude(od => od.Service)
                 .ThenInclude(s => s.BranchServices)
                 .Where(t => t.IsParentTicket == true &&
+                            !t.Status.Equals(StatusConstants.PENDING) &&
                             t.Order!.OrderDetails
                                .Any(od => od.Service!.BranchServices
                                    .Any(bs => bs.Branch.Id == id)))
@@ -340,6 +341,7 @@ namespace TP4SCS.Repository.Implements
                 .ThenInclude(bs => bs.Branch)
                 .ThenInclude(b => b.Business)
                 .Where(t => t.IsParentTicket == true &&
+                            !t.Status.Equals(StatusConstants.PENDING) &&
                             t.Order!.OrderDetails
                                 .Any(od => od.Service!.BranchServices
                                     .Any(bs => bs.Branch.Business.Id == id)))

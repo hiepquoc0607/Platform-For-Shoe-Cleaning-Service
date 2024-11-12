@@ -18,7 +18,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<TicketResponse>> CreateOrderTicketAsync(int id, CreateOrderTicketRequest createOrderTicketRequest);
 
-        Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(int id, CreateChildTicketRequest createChildTicketRequest);
+        Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(int userid, int id, CreateChildTicketRequest createChildTicketRequest);
 
         Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int moderatorId, int id, UpdateTicketStatusRequest updateTicketStatusRequest);
 

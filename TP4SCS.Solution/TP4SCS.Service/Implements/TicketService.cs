@@ -62,9 +62,9 @@ namespace TP4SCS.Services.Implements
         }
 
         //Create Child Ticket
-        public async Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(int id, CreateChildTicketRequest createChildTicketRequest)
+        public async Task<ApiResponse<TicketResponse>> CreateChildTicketAsync(int userid, int id, CreateChildTicketRequest createChildTicketRequest)
         {
-            var parentTicket = await _ticketRepository.GetUpdateTicketByIdAsync(createChildTicketRequest.ParentTicketId);
+            var parentTicket = await _ticketRepository.GetUpdateTicketByIdAsync(id);
 
             if (parentTicket == null)
             {
@@ -72,7 +72,8 @@ namespace TP4SCS.Services.Implements
             }
 
             var newTicket = _mapper.Map<SupportTicket>(createChildTicketRequest);
-            newTicket.UserId = id;
+            newTicket.ParentTicketId = id;
+            newTicket.UserId = userid;
             newTicket.CategoryId = parentTicket.CategoryId;
 
             var newData = new TicketResponse();

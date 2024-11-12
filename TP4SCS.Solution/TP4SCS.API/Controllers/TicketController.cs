@@ -124,14 +124,14 @@ namespace TP4SCS.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("child-ticket")]
-        public async Task<IActionResult> CreateChildTicketAsync([FromBody] CreateChildTicketRequest createChildTicketRequest)
+        [HttpPost("{id}/child-ticket")]
+        public async Task<IActionResult> CreateChildTicketAsync([FromRoute] int id, [FromBody] CreateChildTicketRequest createChildTicketRequest)
         {
             string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var userId = int.TryParse(userIdClaim, out int id);
+            var accId = int.TryParse(userIdClaim, out int userid);
 
-            var result = await _ticketService.CreateChildTicketAsync(id, createChildTicketRequest);
+            var result = await _ticketService.CreateChildTicketAsync(userid, id, createChildTicketRequest);
 
             if (result.StatusCode != 200)
             {
