@@ -44,11 +44,6 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Nội dung feedback không được vượt quá 500 ký tự.", nameof(feedback.Content));
             }
 
-            if (string.IsNullOrWhiteSpace(feedback.Status))
-            {
-                throw new ArgumentException("Trạng thái của feedback không được để trống.", nameof(feedback.Status));
-            }
-
             feedback.IsValidAsset = true;
             feedback.IsValidContent = false;
             feedback.Status = StatusConstants.PENDING;

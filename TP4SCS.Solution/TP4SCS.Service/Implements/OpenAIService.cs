@@ -44,9 +44,10 @@ namespace TP4SCS.Services.Implements
             using HttpResponseMessage httpResponse = await httpClient.SendAsync(httpReq);
 
             var responseContent = await httpResponse.Content.ReadAsStringAsync();
-            var completionResponse = JsonSerializer.Deserialize<ChatCompletionResponse>(responseContent);
 
-            var analysisResult = completionResponse?.Choices?.FirstOrDefault()?.Message?.Content?.Trim() ?? string.Empty;
+            var completionResponse = httpResponse.IsSuccessStatusCode ? JsonSerializer.Deserialize<ChatCompletionResponse>(await httpResponse.Content.ReadAsStringAsync()) : null;
+
+            var analysisResult = completionResponse?.Choices?[0]?.Message?.Content;
 
             return string.Equals(analysisResult, "Valid", StringComparison.OrdinalIgnoreCase);
         }
