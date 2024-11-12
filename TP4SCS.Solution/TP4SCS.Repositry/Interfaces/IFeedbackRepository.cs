@@ -3,7 +3,7 @@ using TP4SCS.Library.Models.Request.General;
 
 namespace TP4SCS.Repository.Interfaces
 {
-    public interface IFeedbackRepository
+    public interface IFeedbackRepository : IGenericRepository<Feedback>
     {
         Task AddFeedbacksAsync(Feedback feedback);
         Task<IEnumerable<Feedback>?> GetFeedbacksAsync(

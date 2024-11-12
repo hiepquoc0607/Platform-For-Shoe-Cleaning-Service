@@ -6,10 +6,15 @@ namespace TP4SCS.Services.Interfaces
     public interface IFeedbackService
     {
         Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnumV2 order);
-        Task AddFeedbacksAsync(Feedback feedback);
+
+        Task AddFeedbacksAsync(HttpClient httpClient, Feedback feedback);
+
         Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId);
+
         Task DeleteFeedbackAsync(int id);
+
         Task UpdateFeedbackAsync(bool? isValidAsset, bool? IsValidContent, string? status, int existingFeedbackId);
+
         Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId);
     }
 }

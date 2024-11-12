@@ -9,15 +9,19 @@ namespace TP4SCS.Services.Implements
     public class FeedbackService : IFeedbackService
     {
         private readonly IFeedbackRepository _feedbackRepository;
+        private readonly IOpenAIService _openAIService;
 
-        public FeedbackService(IFeedbackRepository feedbackRepository)
+        public FeedbackService(IFeedbackRepository feedbackRepository, IOpenAIService openAIService)
         {
             _feedbackRepository = feedbackRepository;
+            _openAIService = openAIService;
         }
-        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status,OrderByEnumV2 order)
+
+        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnumV2 order)
         {
             return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
         }
+
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
             return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
@@ -28,7 +32,7 @@ namespace TP4SCS.Services.Implements
             return await _feedbackRepository.GetFeedbacksByAccountIdAsync(accountId);
         }
 
-        public async Task AddFeedbacksAsync(Feedback feedback)
+        public async Task AddFeedbacksAsync(HttpClient httpClient, Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)
             {
@@ -39,15 +43,28 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Nội dung feedback không được vượt quá 500 ký tự.", nameof(feedback.Content));
             }
+
             if (string.IsNullOrWhiteSpace(feedback.Status))
             {
                 throw new ArgumentException("Trạng thái của feedback không được để trống.", nameof(feedback.Status));
             }
+
             feedback.IsValidAsset = true;
-            feedback.IsValidContent = true;
+            feedback.IsValidContent = false;
             feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;
+
             await _feedbackRepository.AddFeedbacksAsync(feedback);
+
+            if (!string.IsNullOrEmpty(feedback.Content))
+            {
+                var isValidContent = await _openAIService.ValidateFeedbackContentAsync(httpClient, feedback.Content);
+
+                feedback.IsValidContent = isValidContent;
+
+                await _feedbackRepository.UpdateAsync(feedback);
+            }
+
         }
 
         public async Task DeleteFeedbackAsync(int id)
@@ -62,7 +79,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new KeyNotFoundException($"Không tìm thấy đánh giá với ID: {existingFeedbackId}.");
             }
-            if(status != null)
+            if (status != null)
             {
                 existingFeedback.Status = status;
             }

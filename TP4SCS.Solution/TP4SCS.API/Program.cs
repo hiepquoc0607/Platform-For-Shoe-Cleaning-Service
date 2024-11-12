@@ -68,15 +68,6 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-//Add HttpClient
-builder.Services.AddHttpClient();
-
-//Get EmailSettings
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-//Inject Util
-builder.Services.AddScoped<Util>();
-builder.Services.AddScoped<BusinessUtil>();
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
@@ -116,9 +107,26 @@ builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+
+//Inject Util
+builder.Services.AddScoped<Util>();
+builder.Services.AddScoped<BusinessUtil>();
+
+//Add HttpClient
+builder.Services.AddHttpClient();
+
+//Get EmailSettings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Cofigure OpenAI
+builder.Services.AddHttpClient("ChatGPT", client =>
+{
+    client.BaseAddress = new Uri("https://api.openai.com/");
+});
 
 //Configure Mapster
 var config = TypeAdapterConfig.GlobalSettings;

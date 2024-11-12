@@ -14,11 +14,13 @@ namespace TP4SCS.API.Controllers
     [ApiController]
     public class FeedbackController : ControllerBase
     {
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IFeedbackService _feedbackService;
         private readonly IMapper _mapper;
 
-        public FeedbackController(IFeedbackService feedbackService, IMapper mapper)
+        public FeedbackController(IHttpClientFactory httpClientFactory, IFeedbackService feedbackService, IMapper mapper)
         {
+            _httpClientFactory = httpClientFactory;
             _feedbackService = feedbackService;
             _mapper = mapper;
         }
@@ -30,7 +32,7 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                var feedbacks = await _feedbackService.GetFeedbacks(status,orderBy);
+                var feedbacks = await _feedbackService.GetFeedbacks(status, orderBy);
 
                 var response = _mapper.Map<IEnumerable<FeedbackResponseForAdmin>>(feedbacks);
 
@@ -84,8 +86,9 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                var httpClient = _httpClientFactory.CreateClient("ChatGPT");
                 var feedback = _mapper.Map<Feedback>(feedbackRequest);
-                await _feedbackService.AddFeedbacksAsync(feedback);
+                await _feedbackService.AddFeedbacksAsync(httpClient, feedback);
                 return Ok(new ResponseObject<string>("Tạo đánh giá thành công"));
             }
             catch (ArgumentOutOfRangeException ex)
