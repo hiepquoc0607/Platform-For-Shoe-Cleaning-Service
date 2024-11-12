@@ -17,7 +17,7 @@ namespace TP4SCS.Services.Implements
             _openAIService = openAIService;
         }
 
-        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnumV2 order)
+        public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnum order)
         {
             return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
         }

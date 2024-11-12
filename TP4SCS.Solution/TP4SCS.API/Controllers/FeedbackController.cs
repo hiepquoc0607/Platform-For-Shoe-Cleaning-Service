@@ -27,7 +27,7 @@ namespace TP4SCS.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetFeedbackss(string? status,
-            OrderByEnumV2 orderBy = OrderByEnumV2.CreateAsc,
+            OrderByEnum orderBy = OrderByEnum.IdDesc,
             int pageIndex = 1, int pageSize = 10)
         {
             try
