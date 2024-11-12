@@ -45,21 +45,21 @@ namespace TP4SCS.Services.Implements
             }
 
             feedback.IsValidAsset = true;
-            feedback.IsValidContent = false;
             feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;
-
-            await _feedbackRepository.AddFeedbacksAsync(feedback);
 
             if (!string.IsNullOrEmpty(feedback.Content))
             {
                 var isValidContent = await _openAIService.ValidateFeedbackContentAsync(httpClient, feedback.Content);
 
                 feedback.IsValidContent = isValidContent;
-
-                await _feedbackRepository.UpdateAsync(feedback);
+            }
+            else
+            {
+                feedback.IsValidContent = true;
             }
 
+            await _feedbackRepository.AddFeedbacksAsync(feedback);
         }
 
         public async Task DeleteFeedbackAsync(int id)

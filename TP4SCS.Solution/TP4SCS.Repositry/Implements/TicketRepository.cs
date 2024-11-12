@@ -27,7 +27,6 @@ namespace TP4SCS.Repository.Implements
         public async Task<TicketResponse?> GetTicketByIdAsync(int id)
         {
             var childTickets = await _dbContext.SupportTickets
-                .AsNoTracking()
                 .Where(c => c.ParentTicketId == id)
                 .Select(c => new TicketResponse
                 {
@@ -61,6 +60,7 @@ namespace TP4SCS.Repository.Implements
                 .ToListAsync();
 
             return await _dbContext.SupportTickets
+                .Where(t => t.Id == id)
                 .Select(t => new TicketResponse
                 {
                     Id = t.Id,
