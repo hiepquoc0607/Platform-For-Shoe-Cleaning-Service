@@ -28,7 +28,8 @@ namespace TP4SCS.API.Controllers
             var userId = int.TryParse(userIdClaim, out int id);
 
             if (userRole != null &&
-                (!userRole.Equals(RoleConstants.ADMIN) || !userRole.Equals(RoleConstants.MODERATOR)) &&
+                !userRole.Equals(RoleConstants.ADMIN) &&
+                !userRole.Equals(RoleConstants.MODERATOR) &&
                 getTicketRequest.AccountId.HasValue &&
                 id != getTicketRequest.AccountId)
             {

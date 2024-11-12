@@ -73,7 +73,7 @@ namespace TP4SCS.Repository.Implements
                     ModeratorId = t.ModeratorId,
                     ModeratorName = _dbContext.Accounts
                         .AsNoTracking()
-                        .Where(a => a.Id == t.UserId)
+                        .Where(a => a.Id == t.ModeratorId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     CategoryId = t.CategoryId,
@@ -123,7 +123,7 @@ namespace TP4SCS.Repository.Implements
                     ModeratorId = t.ModeratorId,
                     ModeratorName = _dbContext.Accounts
                         .AsNoTracking()
-                        .Where(a => a.Id == t.UserId)
+                        .Where(a => a.Id == t.ModeratorId)
                         .Select(a => a.FullName)
                         .FirstOrDefault()!,
                     CategoryId = t.CategoryId,
