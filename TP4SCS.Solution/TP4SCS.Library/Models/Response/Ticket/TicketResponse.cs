@@ -35,9 +35,9 @@ namespace TP4SCS.Library.Models.Response.Ticket
         public DateTime CreateTime { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<TicketResponse>? ChildTicket { get; set; } = null;
+        public List<FileResponse>? Assets { get; set; } = null;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<FileResponse>? Assets { get; set; } = null;
+        public List<TicketResponse>? ChildTicket { get; set; } = null;
     }
 }
