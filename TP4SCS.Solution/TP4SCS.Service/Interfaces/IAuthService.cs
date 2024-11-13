@@ -18,6 +18,8 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email);
 
+        Task<ApiResponse<AuthResponse>> ResendVerificationEmailAsync(int id);
+
         Task<ApiResponse<AuthResponse>> VerifyEmailAsync(VerifyEmailRequest verifyEmailRequest);
 
         Task<ApiResponse<AuthResponse>> ResetPasswordAsync(ResetPasswordQuery resetPasswordQuery, ResetPasswordRequest resetPasswordRequest);

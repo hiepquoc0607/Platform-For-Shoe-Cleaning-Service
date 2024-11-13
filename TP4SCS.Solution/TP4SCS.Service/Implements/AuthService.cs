@@ -351,7 +351,7 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
-                await SendVerificationEmailAsync(newAcc.Email);
+                _ = SendVerificationEmailAsync(newAcc.Email);
 
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
@@ -382,7 +382,7 @@ namespace TP4SCS.Services.Implements
             {
                 await _emailService.SendEmailAsync(email, "ShoeCareHub Reset Password Link", url);
 
-                await _accountRepository.UpdateAsync(account);
+                _ = _accountRepository.UpdateAsync(account);
 
                 return new ApiResponse<AuthResponse>("success", "Gửi Email Đặt Lại Mật Khẩu Thành Công!", null);
             }
@@ -461,7 +461,7 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
-                await SendVerificationEmailAsync(newAcc.Email);
+                _ = SendVerificationEmailAsync(newAcc.Email);
 
                 var data = _mapper.Map<AuthResponse>(newAcc);
 
@@ -482,11 +482,34 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
-            string body = $"Email: {email}/nPassword: {password}";
+            string body = $"Email: {email}\nPassword: {password}";
 
             try
             {
                 await _emailService.SendEmailAsync(email, "ShoeCareHub Moderator Account Info", body);
+
+                return new ApiResponse<AuthResponse>("success", "Gửi Email Xác Nhận Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Gửi Email Xác Nhận Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<AuthResponse>> ResendVerificationEmailAsync(int id)
+        {
+            var account = await _accountRepository.GetAccountByIdNoTrackingAsync(id);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            string url = $"https://shoecarehub.site/api/auth/verify-email?AccountId={account.Id}&Token={account.RefreshToken}";
+
+            try
+            {
+                await _emailService.SendEmailAsync(account.Email, "ShoeCareHub Email Verification", url);
 
                 return new ApiResponse<AuthResponse>("success", "Gửi Email Xác Nhận Thành Công!", null);
             }
