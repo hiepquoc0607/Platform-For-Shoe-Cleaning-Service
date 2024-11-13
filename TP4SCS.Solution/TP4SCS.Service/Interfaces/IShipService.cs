@@ -15,7 +15,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<string?> GetProvinceNameByIdAsync(HttpClient httpClient, int id);
 
-        Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest, int quantity);
+        Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest);
 
         Task<List<Ward>?> GetWardsByDistrictIdAsync(HttpClient httpClient, int id);
 

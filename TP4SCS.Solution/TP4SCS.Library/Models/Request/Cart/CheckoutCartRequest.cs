@@ -2,9 +2,9 @@
 
 namespace TP4SCS.Library.Models.Request.Cart
 {
-    public class CheckoutForCartItemRequest
+    public class CheckoutCartRequest
     {
-        public int[] CartItemIds { get; set; } = Array.Empty<int>();
+        public List<CartCheckout> Carts { get; set; } = new List<CartCheckout>();
 
         public int AccountId { get; set; }
 
@@ -12,9 +12,5 @@ namespace TP4SCS.Library.Models.Request.Cart
 
         [DefaultValue(false)]
         public bool IsAutoReject { get; set; }
-
-        public string? Note { get; set; }
-
-        public bool IsShip { get; set; } = false;
     }
 }

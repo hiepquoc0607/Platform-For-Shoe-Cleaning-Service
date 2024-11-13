@@ -59,7 +59,8 @@ namespace TP4SCS.API.Controllers
         [Route("branches/{id}")]
         public async Task<IActionResult> GetServicesByBranchIdAync(int id, [FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _serviceService.GetServicesByBranchIdAsync(
+            // Gọi service và lấy danh sách dịch vụ kèm theo tổng số lượng
+            var (services, totalCount) = await _serviceService.GetServicesByBranchIdAsync(
                 id,
                 pagedRequest.Keyword,
                 pagedRequest.Status,
@@ -68,23 +69,18 @@ namespace TP4SCS.API.Controllers
                 pagedRequest.OrderBy
             );
 
-            var totalCount = await _serviceService.GetTotalServiceCountAsync(
-                pagedRequest.Keyword,
-                pagedRequest.Status
-            );
+            // Chuyển đổi danh sách dịch vụ sang kiểu ServiceResponse
+            var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
 
+            // Tạo đối tượng PagedResponse để trả về
             var pagedResponse = new PagedResponse<ServiceResponse>(
-                services?.Select(s =>
-                {
-                    // Ánh xạ Service sang ServiceResponse
-                    var res = _mapper.Map<ServiceResponse>(s);
-                    return res;
-                }) ?? Enumerable.Empty<ServiceResponse>(),
+                serviceResponses,
                 totalCount,
                 pagedRequest.PageIndex,
                 pagedRequest.PageSize
             );
 
+            // Trả về kết quả thành công với thông báo và dữ liệu đã phân trang
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
         }
 

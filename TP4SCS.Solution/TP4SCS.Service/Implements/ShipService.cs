@@ -189,7 +189,7 @@ namespace TP4SCS.Services.Implements
         }
 
         //Get Shipping Fee
-        public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest, int quantity)
+        public async Task<decimal> GetShippingFeeAsync(HttpClient httpClient, GetShipFeeRequest getShipFeeRequest)
         {
             try
             {
@@ -202,15 +202,6 @@ namespace TP4SCS.Services.Implements
                 int lengthPerBox = 35;
                 int widthPerBox = 25;
                 int weightPerBox = 400;
-
-                int widthCount = Math.Min(quantity, 5);
-                int lengthCount = Math.Min((quantity + 4) / 5, 5);
-                int heightCount = (quantity + 24) / (5 * 5);
-
-                int totalWidth = widthPerBox * widthCount;
-                int totalLength = lengthPerBox * lengthCount;
-                int totalHeight = heightPerBox * heightCount;
-                int totalWeight = weightPerBox * quantity;
 
                 var availableServices = await GetAvailableServicesAsync(httpClient, getShipFeeRequest.FromDistricId, getShipFeeRequest.ToDistricId);
 
@@ -229,10 +220,10 @@ namespace TP4SCS.Services.Implements
                     from_ward_code = getShipFeeRequest.FromWardCode,
                     to_district_id = getShipFeeRequest.ToDistricId,
                     to_ward_code = getShipFeeRequest.ToWardCode,
-                    height = totalHeight,
-                    length = totalLength,
-                    weight = totalWeight,
-                    width = totalWidth,
+                    height = heightPerBox,
+                    length = lengthPerBox,
+                    weight = widthPerBox,
+                    width = weightPerBox,
                     insurance_value = 0,
                     coupon = (string?)null
                 };
