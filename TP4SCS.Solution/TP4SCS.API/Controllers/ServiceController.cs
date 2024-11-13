@@ -108,15 +108,12 @@ namespace TP4SCS.API.Controllers
 
 
         [HttpGet("discounted")]
-        public async Task<IActionResult> GetDiscountedServicesAsync(
-            int pageIndex = 1,
-            int pageSize = 5,
-            string? status = null
+        public async Task<IActionResult> GetDiscountedServicesAsync([FromQuery] PagedRequest request
         )
         {
             try
             {
-                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(status, pageIndex, pageSize);
+                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(request.Keyword,request.Status, request.PageIndex, request.PageSize);
 
                 if (discountedServices == null || !discountedServices.Any())
                 {
@@ -126,8 +123,8 @@ namespace TP4SCS.API.Controllers
                 var pagedResponse = new PagedResponse<ServiceResponse>(
                     discountedServices.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>(),
                     totalCount,
-                    pageIndex,
-                    pageSize
+                    request.PageIndex,
+                    request.PageSize
                 );
 
                 return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ giảm giá thành công.", pagedResponse));
