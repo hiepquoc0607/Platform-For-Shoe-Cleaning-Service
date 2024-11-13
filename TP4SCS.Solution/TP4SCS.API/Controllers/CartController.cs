@@ -78,7 +78,7 @@ namespace TP4SCS.API.Controllers
         //    return Ok(new { Total = total });
         //}
         [HttpPost("api/carts/cart/checkout")]
-        public async Task<IActionResult> CheckoutForCartItemAsync([FromBody] CheckoutForCartItemRequest request)
+        public async Task<IActionResult> CheckoutForCartItemAsync([FromBody] CheckoutCartRequest request)
         {
             if (request == null)
             {
@@ -87,7 +87,7 @@ namespace TP4SCS.API.Controllers
 
             try
             {
-                await _cartService.CheckoutForCartItemAsync(_httpClient, request);
+                await _cartService.CheckoutForCartAsync(_httpClient, request);
                 return Ok("Thanh toán thành công.");
             }
             catch (InvalidOperationException ex)

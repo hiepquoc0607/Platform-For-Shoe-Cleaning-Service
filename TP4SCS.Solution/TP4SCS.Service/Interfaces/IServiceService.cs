@@ -32,7 +32,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<decimal> GetServiceFinalPriceAsync(int serviceId);
 
-        Task<IEnumerable<Service>?> GetServicesByBranchIdAsync(
+        Task<(IEnumerable<Service>?, int)> GetServicesByBranchIdAsync(
             int branchId,
             string? keyword = null,
             string? status = null,
