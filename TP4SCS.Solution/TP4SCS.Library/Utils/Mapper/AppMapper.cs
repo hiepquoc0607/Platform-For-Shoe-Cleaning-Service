@@ -8,6 +8,7 @@ using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Request.Transaction;
 using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
@@ -20,6 +21,7 @@ using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
+using TP4SCS.Library.Models.Response.Transaction;
 using TP4SCS.Library.Utils.Utils;
 
 namespace TP4SCS.Library.Utils.Mapper
@@ -77,6 +79,9 @@ namespace TP4SCS.Library.Utils.Mapper
             //OrderDetail Mapping
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();
+            //Transaction Mapping
+            CreateMap<TransactionRequest, Transaction>();
+            CreateMap<Transaction, TransactionResponse>();
         }
 
         public void Register(TypeAdapterConfig config)

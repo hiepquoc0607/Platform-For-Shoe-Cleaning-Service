@@ -109,15 +109,15 @@ namespace TP4SCS.Repository.Implements
                 (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
-            // Sắp xếp theo OrderByEnum
-            Func<IQueryable<Service>, IOrderedQueryable<Service>> orderByExpression = q => orderBy switch
-            {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
-                _ => q.OrderBy(c => c.Id)
-            };
-
-            // Bắt đầu truy vấn với bộ lọc và sắp xếp
+            // Bắt đầu truy vấn với bộ lọc
             var query = _dbSet.Where(filter);
+
+            // Áp dụng sắp xếp
+            query = orderBy switch
+            {
+                OrderByEnum.IdDesc => query.OrderByDescending(c => c.Id),
+                _ => query.OrderBy(c => c.Id) // Mặc định sắp xếp theo Id tăng dần
+            };
 
             // Bao gồm các thuộc tính liên quan
             query = query
@@ -136,6 +136,7 @@ namespace TP4SCS.Repository.Implements
                 query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
             }
 
+            // Trả về kết quả
             return await query.ToListAsync();
         }
 
