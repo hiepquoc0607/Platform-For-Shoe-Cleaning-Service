@@ -19,7 +19,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<bool> ValidateFeedbackContentAsync(HttpClient httpClient, string content)
         {
-            var prompt = $"Please use all knowledge about Vietnamese of your to analyze if the following feedback is appropriate. Respond with 'Valid' if the content is appropriate, and 'Invalid' if it is inappropriate:\n\n\"{content}\"";
+            var prompt = $"Dùng tất cả kiến thức về tiếng Việt của bạn để phân tích nội dung đánh giá sau. Trả về 'Valid' nếu nội dung đánh giá phù hợp, và 'Invalid' nếu nội dung đánh giá thô tục, thiếu văn minh, phân biệt chủng tộc, ngôn ngữ đã kích,...:\n\n\"{content}\"";
 
             var completionRequest = new ChatCompletionRequest
             {
