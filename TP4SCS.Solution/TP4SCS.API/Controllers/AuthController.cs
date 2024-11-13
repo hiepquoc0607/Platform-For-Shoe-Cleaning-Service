@@ -71,10 +71,10 @@ namespace TP4SCS.API.Controllers
             return StatusCode(201, result.Data);
         }
 
-        [HttpPost("send-verification-email")]
-        public async Task<IActionResult> SendVerificationEmailAsync([FromBody] EmailRequest emailRequest)
+        [HttpPost("resend-verification-email/{id}")]
+        public async Task<IActionResult> ResendVerificationEmailAsync([FromRoute] int id)
         {
-            var result = await _authService.SendVerificationEmailAsync(emailRequest.Email);
+            var result = await _authService.ResendVerificationEmailAsync(id);
 
             if (result.StatusCode != 200)
             {
@@ -91,7 +91,7 @@ namespace TP4SCS.API.Controllers
 
             if (result.StatusCode != 200)
             {
-                return Redirect("https://www.shoecarehub.xyz/confirm-fail");
+                return Redirect($"https://www.shoecarehub.xyz/confirm-fail?{verifyEmailRequest.AccountId}");
             }
 
             return Redirect("https://www.shoecarehub.xyz/confirm-success");

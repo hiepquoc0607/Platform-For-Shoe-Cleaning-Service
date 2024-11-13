@@ -34,6 +34,18 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
+        public async Task<Account?> GetAccountByIdNoTrackingAsync(int id)
+        {
+            try
+            {
+                return await _dbContext.Accounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<(IEnumerable<Account>?, Pagination)> GetAccountsAsync(GetAccountRequest getAccountRequest)
         {
             var accounts = _dbContext.Accounts.AsQueryable();
