@@ -47,7 +47,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 400, "Đơn Hỗ Trợ Đã Vào Xử Lý!");
             }
 
-            oldTicket.Status = StatusConstants.CLOSED;
+            oldTicket.Status = StatusConstants.CANCELED;
 
             try
             {
