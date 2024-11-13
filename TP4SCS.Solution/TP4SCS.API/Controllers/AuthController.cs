@@ -91,10 +91,10 @@ namespace TP4SCS.API.Controllers
 
             if (result.StatusCode != 200)
             {
-                return StatusCode(result.StatusCode, result);
+                return Redirect("https://www.shoecarehub.xyz/confirm-fail");
             }
 
-            return Ok(result);
+            return Redirect("https://www.shoecarehub.xyz/confirm-success");
         }
 
         [HttpPost("request-reset-password")]
