@@ -258,12 +258,13 @@ namespace TP4SCS.Services.Implements
         }
 
         public async Task<(IEnumerable<Service>?, int)> GetDiscountedServicesAsync(
+            string? name = null,
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null)
         {
             // Lấy tất cả dịch vụ thỏa mãn điều kiện khuyến mãi trước khi phân trang
-            var allServices = await _serviceRepository.GetServicesAsync(null, status, null, null, OrderByEnum.IdAsc);
+            var allServices = await _serviceRepository.GetServicesAsync(name, status, null, null, OrderByEnum.IdAsc);
 
             // Lọc các dịch vụ có khuyến mãi và trạng thái khuyến mãi là "Available"
             var discountedServices = allServices?.Where(service =>
