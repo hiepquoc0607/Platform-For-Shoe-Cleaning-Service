@@ -30,5 +30,9 @@ namespace TP4SCS.Repository.Interfaces
             int branchId,
             string? status = null,
             OrderByEnum orderBy = OrderByEnum.IdDesc);
+        Task<IEnumerable<Feedback>?> GetFeedbacksByBusinessIdIdAsync(
+            int businessId,
+            string? status = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
     }
 }
