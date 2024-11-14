@@ -224,25 +224,20 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Doanh Nghiệp Đã Được Xác Nhận Trước Đó!");
             }
 
-            int businessId = oldBusiness.Id;
-
-            var emailBody = "";
+            string email = await _accountRepository.GetAccountEmailByIdAsync(oldBusiness.OwnerId); ;
+            string emailBody = "";
 
             try
             {
                 if (validateBusinessRequest.IsApprove)
                 {
-                    oldBusiness.Status = StatusConstants.ACTIVE;
+                    oldBusiness.Status = StatusConstants.EXPIRED;
 
                     await _businessRepository.RunInTransactionAsync(async () =>
                     {
                         await _businessRepository.UpdateAsync(oldBusiness);
 
-                        string email = await _accountRepository.GetAccountEmailByIdAsync(oldBusiness.OwnerId);
-
-                        emailBody = "Xác Nhận Doanh Nghiệp Bị Từ Chối!";
-
-                        await _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
+                        emailBody = "Xác Nhận Thông Tin Doanh Nghiệp Hợp Lệ, Bạn Có Thể Mua Gói Dịch Vụ Và Bắt Đầu Sử Dụng!";
                     });
                 }
                 else
@@ -251,13 +246,11 @@ namespace TP4SCS.Services.Implements
                     {
                         await _businessRepository.DeleteAsync(oldBusiness);
 
-                        string email = await _accountRepository.GetAccountEmailByIdAsync(businessId);
-
-                        emailBody = "Xác Nhận Doanh Nghiệp Thành Công!";
-
-                        await _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
+                        emailBody = "Xác Nhận Thông Tin Doanh Nghiệp Bị Từ Chối, Vui Lòng Kiểm Tra Lại CCCD Và Ảnh Cung Cấp!";
                     });
                 }
+
+                _ = _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
 
                 return new ApiResponse<BusinessResponse>("success", "Xác Nhận Doanh Nghiệp Thành Công!", null, 200);
             }

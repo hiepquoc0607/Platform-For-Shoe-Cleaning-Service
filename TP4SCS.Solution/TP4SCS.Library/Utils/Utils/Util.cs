@@ -296,7 +296,6 @@ namespace TP4SCS.Library.Utils.Utils
         {
             return status.Trim().ToUpper() switch
             {
-                StatusConstants.OPENING => true,
                 StatusConstants.PROCESSING => true,
                 StatusConstants.CLOSED => true,
                 _ => false,

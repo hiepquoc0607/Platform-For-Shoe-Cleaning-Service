@@ -15,19 +15,25 @@ namespace TP4SCS.Services.Implements
     {
         private readonly ITicketRepository _ticketRepository;
         private readonly ITicketCategoryRepository _ticketCategoryRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly IAssetUrlRepository _assetUrlRepository;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
         public TicketService(ITicketRepository ticketRepository,
             ITicketCategoryRepository ticketCategoryRepository,
+            IAccountRepository accountRepository,
             IAssetUrlRepository assetUrlRepository,
+            IEmailService emailService,
             IMapper mapper,
             Util util)
         {
             _ticketRepository = ticketRepository;
             _ticketCategoryRepository = ticketCategoryRepository;
+            _accountRepository = accountRepository;
             _assetUrlRepository = assetUrlRepository;
+            _emailService = emailService;
             _mapper = mapper;
             _util = util;
         }
@@ -260,16 +266,33 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 400, "Trạng Thái Không Hợp Lệ!");
             }
 
-            oldTicket.Status = updateTicketStatusRequest.Status.Trim().ToUpper();
+            var oldStatus = oldTicket.Status;
 
-            if (updateTicketStatusRequest.Status.Trim().ToUpper().Equals(StatusConstants.PROCESSING))
-            {
-                oldTicket.ModeratorId = moderatorId;
-            }
+            oldTicket.Status = updateTicketStatusRequest.Status.ToUpperInvariant();
+            oldTicket.ModeratorId = moderatorId;
 
             try
             {
                 await _ticketRepository.UpdateTicketAsync(oldTicket);
+
+                string userEmail = await _accountRepository.GetAccountEmailByIdAsync(oldTicket.UserId);
+                string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
+                string emailBody;
+
+                if (oldTicket.Status.Equals(StatusConstants.OPENING))
+                {
+                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
+                }
+                else if (oldStatus.Equals(StatusConstants.OPENING) && oldTicket.Status.Equals(StatusConstants.CLOSED))
+                {
+                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Bị Từ Chối Vui Lòng Kiểm Tra Lại Thông Tin Và Thử Lại!";
+                }
+                else
+                {
+                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Hoàn Tất Việc Xử Lý!";
+                }
+
+                _ = _emailService.SendEmailAsync(userEmail, emailSubject, emailBody);
 
                 return new ApiResponse<TicketResponse>("error", "Cập Nhập Trạng Thái Đơn Hỗ Trợ Thành Công!", null, 200);
             }

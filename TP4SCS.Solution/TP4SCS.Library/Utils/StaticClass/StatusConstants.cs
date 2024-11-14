@@ -23,6 +23,7 @@
         public const string APPROVED = "APPROVED";
 
         public const string STORAGE = "STORAGE";
+
         public const string DELIVERED = "DELIVERED";
 
         public const string SHIPPING = "SHIPPING";
@@ -39,5 +40,8 @@
         public const string OPENING = "OPENING";
 
         public const string CLOSED = "CLOSED";
+
+        //BUSINESS STATUS
+        public const string EXPIRED = "EXPIRED";
     }
 }
