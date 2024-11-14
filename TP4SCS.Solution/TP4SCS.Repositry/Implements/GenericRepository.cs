@@ -59,8 +59,13 @@ namespace TP4SCS.Repository.Implements
 
         public virtual async Task InsertAsync(T entity)
         {
+            _dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
+
             await _dbSet.AddAsync(entity); // Sử dụng AddAsync để thêm không đồng bộ
+
             await _dbContext.SaveChangesAsync(); // Lưu thay đổi không đồng bộ
+
+            _dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
         }
 
         public virtual async Task DeleteAsync(object id)

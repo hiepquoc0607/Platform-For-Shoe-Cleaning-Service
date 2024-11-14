@@ -86,6 +86,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -108,6 +109,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();

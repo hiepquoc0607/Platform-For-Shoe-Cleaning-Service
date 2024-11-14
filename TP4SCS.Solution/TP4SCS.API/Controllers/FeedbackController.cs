@@ -5,7 +5,6 @@ using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers

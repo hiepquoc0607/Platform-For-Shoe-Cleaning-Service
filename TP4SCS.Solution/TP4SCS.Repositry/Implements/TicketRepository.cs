@@ -142,12 +142,12 @@ namespace TP4SCS.Repository.Implements
                     CreateTime = t.CreateTime,
                     Status = t.Status
                 })
-                .OrderByDescending(c => c.Priority)
-                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 2
                             : c.Status.Equals(StatusConstants.CLOSED) ? 3
                             : 4)
                 .ThenBy(c => c.CreateTime)
+                .ThenByDescending(c => c.Priority)
                 .AsQueryable();
 
             //Search
@@ -174,6 +174,7 @@ namespace TP4SCS.Repository.Implements
                     TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
                     TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
                     TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    TicketStatus.CANCELED => tickets.Where(a => a.Status.Equals(StatusConstants.CANCELED)),
                     _ => tickets
                 };
             }
@@ -261,12 +262,12 @@ namespace TP4SCS.Repository.Implements
                     CreateTime = t.CreateTime,
                     Status = t.Status
                 })
-                .OrderByDescending(c => c.Priority)
-                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 2
                             : c.Status.Equals(StatusConstants.CLOSED) ? 3
                             : 4)
                 .ThenBy(c => c.CreateTime)
+                .ThenByDescending(c => c.Priority)
                 .AsQueryable();
 
             //Search
@@ -287,6 +288,7 @@ namespace TP4SCS.Repository.Implements
                     TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
                     TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
                     TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    TicketStatus.CANCELED => tickets.Where(a => a.Status.Equals(StatusConstants.CANCELED)),
                     _ => tickets
                 };
             }
@@ -376,12 +378,12 @@ namespace TP4SCS.Repository.Implements
                     CreateTime = t.CreateTime,
                     Status = t.Status
                 })
-                .OrderByDescending(c => c.Priority)
-                .ThenBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 2
                             : c.Status.Equals(StatusConstants.CLOSED) ? 3
                             : 4)
                 .ThenBy(c => c.CreateTime)
+                .ThenByDescending(c => c.Priority)
                 .AsQueryable();
 
             //Search
@@ -402,6 +404,7 @@ namespace TP4SCS.Repository.Implements
                     TicketStatus.OPENING => tickets.Where(a => a.Status.Equals(StatusConstants.OPENING)),
                     TicketStatus.PROCESSING => tickets.Where(a => a.Status.Equals(StatusConstants.PROCESSING)),
                     TicketStatus.CLOSED => tickets.Where(a => a.Status.Equals(StatusConstants.CLOSED)),
+                    TicketStatus.CANCELED => tickets.Where(a => a.Status.Equals(StatusConstants.CANCELED)),
                     _ => tickets
                 };
             }

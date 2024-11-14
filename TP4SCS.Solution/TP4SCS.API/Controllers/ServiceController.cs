@@ -113,7 +113,7 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(request.Keyword,request.Status, request.PageIndex, request.PageSize);
+                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(request.Keyword, request.Status, request.PageIndex, request.PageSize);
 
                 if (discountedServices == null || !discountedServices.Any())
                 {

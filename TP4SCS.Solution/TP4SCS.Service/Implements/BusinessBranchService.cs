@@ -63,7 +63,7 @@ namespace TP4SCS.Services.Implements
 
                 var newBr = await GetBranchByIdAsync(newId);
 
-                return new ApiResponse<BranchResponse>("success", "Tạo Chi Nhánh Thành Công!", newBr.Data);
+                return new ApiResponse<BranchResponse>("success", "Tạo Chi Nhánh Thành Công!", newBr.Data, 201);
             }
             catch (Exception)
             {

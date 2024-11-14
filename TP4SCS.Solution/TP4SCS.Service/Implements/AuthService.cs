@@ -85,7 +85,7 @@ namespace TP4SCS.Services.Implements
         //Login
         public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var email = loginRequest.Email.Trim().ToLower();
+            var email = loginRequest.Email.ToLowerInvariant();
 
             var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
 
@@ -109,25 +109,23 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 401, "Mật Khẩu Không Đúng!");
             }
 
-            var token = GenerateToken(account);
-            var refreshToken = GenerateRefreshToken();
             var expiredIn = CaculateSeccond(_time);
 
-            account.RefreshToken = token;
+            account.RefreshToken = GenerateRefreshToken();
             account.RefreshExpireTime = DateTime.UtcNow.AddDays(1);
 
             var data = _mapper.Map<AuthResponse>(account);
-            data.Token = token;
+            data.Token = GenerateToken(account);
             data.ExpiresIn = expiredIn;
 
-            if (data.Role.Equals("OWNER", StringComparison.OrdinalIgnoreCase))
+            switch (data.Role.ToUpperInvariant())
             {
-                data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
-            }
-
-            if (data.Role.Equals("EMPLOYEE", StringComparison.OrdinalIgnoreCase))
-            {
-                data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+                case "OWNER":
+                    data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+                    break;
+                case "EMPLOYEE":
+                    data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+                    break;
             }
 
             try

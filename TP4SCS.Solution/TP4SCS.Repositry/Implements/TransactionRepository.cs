@@ -5,7 +5,7 @@ using TP4SCS.Repository.Implements;
 
 namespace TP4SCS.Library.Repositories
 {
-    public class TransactionRepository : GenericRepository<Transaction> , ITransactionRepository
+    public class TransactionRepository : GenericRepository<Transaction>, ITransactionRepository
     {
         public TransactionRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
