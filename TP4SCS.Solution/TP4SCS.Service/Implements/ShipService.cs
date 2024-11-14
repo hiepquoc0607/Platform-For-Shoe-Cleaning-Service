@@ -222,8 +222,8 @@ namespace TP4SCS.Services.Implements
                     to_ward_code = getShipFeeRequest.ToWardCode,
                     height = heightPerBox,
                     length = lengthPerBox,
-                    weight = widthPerBox,
-                    width = weightPerBox,
+                    weight = weightPerBox, 
+                    width = widthPerBox,
                     insurance_value = 0,
                     coupon = (string?)null
                 };
