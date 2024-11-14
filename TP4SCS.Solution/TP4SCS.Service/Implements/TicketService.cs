@@ -77,6 +77,16 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Đơn Hỗ Trợ Chính!");
             }
 
+            if (parentTicket.Status.Equals(StatusConstants.CLOSED))
+            {
+                return new ApiResponse<TicketResponse>("error", 400, "Đơn Hỗ Trợ Đã Đóng!");
+            }
+
+            if (parentTicket.Status.Equals(StatusConstants.OPENING))
+            {
+                return new ApiResponse<TicketResponse>("error", 400, "Đơn Hỗ Trợ Chưa Được Xử Lý!");
+            }
+
             var newTicket = _mapper.Map<SupportTicket>(createChildTicketRequest);
             newTicket.ParentTicketId = id;
             newTicket.UserId = userid;
@@ -251,6 +261,30 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
         }
 
+        public async Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(int id)
+        {
+            var email = await _accountRepository.GetAccountEmailByIdAsync(id);
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email!");
+            }
+
+            string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
+            string emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Xử Lý, Vui Lòng Xem Xét Và Bổ Sung Thông Tin Nếu Chưa Thảo Mãn Trong Vòng 24h Tới!";
+
+            try
+            {
+                await _emailService.SendEmailAsync(email, emailSubject, emailBody);
+
+                return new ApiResponse<TicketResponse>("error", "Gửi Email Thông Báo Cho Người Dùng Thành Công!", null, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<TicketResponse>("error", 400, "Gửi Email Thông Báo Cho Người Dùng Thất Bại!");
+            }
+        }
+
         //Update Ticket Status
         public async Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int moderatorId, int id, UpdateTicketStatusRequest updateTicketStatusRequest)
         {
@@ -268,31 +302,48 @@ namespace TP4SCS.Services.Implements
 
             var oldStatus = oldTicket.Status;
 
-            oldTicket.Status = updateTicketStatusRequest.Status.ToUpperInvariant();
+            oldTicket.Status = updateTicketStatusRequest.Status.Trim().ToUpperInvariant();
             oldTicket.ModeratorId = moderatorId;
 
             try
             {
-                await _ticketRepository.UpdateTicketAsync(oldTicket);
-
-                string userEmail = await _accountRepository.GetAccountEmailByIdAsync(oldTicket.UserId);
-                string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
-                string emailBody;
-
-                if (oldTicket.Status.Equals(StatusConstants.OPENING))
+                await _ticketRepository.RunInTransactionAsync(async () =>
                 {
-                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
-                }
-                else if (oldStatus.Equals(StatusConstants.OPENING) && oldTicket.Status.Equals(StatusConstants.CLOSED))
-                {
-                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Bị Từ Chối Vui Lòng Kiểm Tra Lại Thông Tin Và Thử Lại!";
-                }
-                else
-                {
-                    emailBody = "Đơn Khiếu Nại Của Bạn Đã Hoàn Tất Việc Xử Lý!";
-                }
+                    await _ticketRepository.UpdateTicketAsync(oldTicket);
 
-                _ = _emailService.SendEmailAsync(userEmail, emailSubject, emailBody);
+                    string email = await _accountRepository.GetAccountEmailByIdAsync(oldTicket.UserId);
+                    string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
+                    string emailBody;
+
+                    if (oldTicket.Status.Equals(StatusConstants.OPENING) && !oldTicket.OrderId.HasValue)
+                    {
+                        emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
+
+                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                    }
+                    else if (oldTicket.Status.Equals(StatusConstants.OPENING) && oldTicket.OrderId.HasValue)
+                    {
+                        emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
+
+                        List<string> emails = (await _accountRepository.GetBranchEmailsByOrderIdAsync((int)oldTicket.OrderId))?.ToList() ?? new List<string>();
+
+                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
+
+                        _ = Task.Run(() => _emailService.SendBatchEmailAsync(emails, emailSubject, "Chi Nhánh Hiện Có Đơn Hàng Cần Được Xử Lý Khiếu Nại, Vui Lòng Kiểm Tra Trên Hệ Thống!"));
+                    }
+                    else if (oldStatus.Equals(StatusConstants.OPENING) && oldTicket.Status.Equals(StatusConstants.CLOSED))
+                    {
+                        emailBody = "Đơn Khiếu Nại Của Bạn Đã Bị Từ Chối Vui Lòng Kiểm Tra Lại Thông Tin Và Thử Lại!";
+
+                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                    }
+                    else
+                    {
+                        emailBody = "Đơn Khiếu Nại Của Bạn Đã Hoàn Tất Việc Xử Lý!";
+
+                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                    }
+                });
 
                 return new ApiResponse<TicketResponse>("error", "Cập Nhập Trạng Thái Đơn Hỗ Trợ Thành Công!", null, 200);
             }

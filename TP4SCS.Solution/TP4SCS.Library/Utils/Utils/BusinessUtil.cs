@@ -4,7 +4,7 @@
     {
         public bool CheckStatus(string status)
         {
-            bool result = status.ToUpper() switch
+            bool result = status.Trim().ToUpperInvariant() switch
             {
                 "ACTIVE" => true,
                 "INACTIVE" => true,
@@ -16,7 +16,7 @@
 
         public bool CheckStatusForAdmin(string status)
         {
-            bool result = status.ToUpper() switch
+            bool result = status.Trim().ToUpperInvariant() switch
             {
                 "ACTIVE" => true,
                 "INACTIVE" => true,

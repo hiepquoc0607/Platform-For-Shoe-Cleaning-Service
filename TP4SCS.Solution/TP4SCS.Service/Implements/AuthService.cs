@@ -118,7 +118,7 @@ namespace TP4SCS.Services.Implements
             data.Token = GenerateToken(account);
             data.ExpiresIn = expiredIn;
 
-            switch (data.Role.ToUpperInvariant())
+            switch (data.Role.Trim().ToUpperInvariant())
             {
                 case "OWNER":
                     data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
@@ -318,7 +318,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, message);
             }
 
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(customerRegisterRequest.Email.Trim().ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(customerRegisterRequest.Email.Trim().ToLowerInvariant());
 
             if (isEmailExisted == true)
             {
@@ -333,7 +333,8 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map<Account>(customerRegisterRequest);
-            newAccount.Gender = newAccount.Gender.Trim().ToUpper();
+            newAccount.FullName = _util.FormatStringName(newAccount.FullName);
+            newAccount.Gender = newAccount.Gender.Trim().ToUpperInvariant();
             newAccount.PasswordHash = _util.HashPassword(customerRegisterRequest.Password);
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.CUSTOMER;
@@ -411,7 +412,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, message);
             }
 
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(account.Email.Trim().ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(account.Email.Trim().ToLowerInvariant());
 
             if (isEmailExisted == true)
             {
@@ -426,12 +427,13 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map<Account>(account);
-            newAccount.Gender = newAccount.Gender.Trim().ToUpper();
+            newAccount.FullName = _util.FormatStringName(newAccount.FullName);
+            newAccount.Gender = newAccount.Gender.Trim().ToUpperInvariant();
             newAccount.PasswordHash = _util.HashPassword(account.Password);
             newAccount.RefreshToken = GenerateRefreshToken();
             newAccount.Role = RoleConstants.OWNER;
 
-            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLower());
+            var isNameExisted = await _businessRepository.IsNameExistedAsync(businessData.Name.Trim().ToLowerInvariant());
 
             if (isNameExisted)
             {

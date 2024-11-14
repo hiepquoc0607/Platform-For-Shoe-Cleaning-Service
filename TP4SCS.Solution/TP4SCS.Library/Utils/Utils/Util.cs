@@ -49,7 +49,7 @@ namespace TP4SCS.Library.Utils.Utils
         // String utility methods
         public static string UpperCaseStringStatic(string input)
         {
-            return input.ToUpper();
+            return input.Trim().ToUpperInvariant();
         }
 
         public static bool IsEqual(string s1, string s2)
@@ -67,7 +67,7 @@ namespace TP4SCS.Library.Utils.Utils
         {
             if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
-            var lowerStatus = status.ToLower();
+            var lowerStatus = status.Trim().ToLowerInvariant();
             return lowerStatus switch
             {
                 "unavailable" => "Ngưng Hoạt Động",
@@ -80,7 +80,7 @@ namespace TP4SCS.Library.Utils.Utils
         {
             if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
-            var lowerStatus = status.ToLower();
+            var lowerStatus = status.Trim().ToLowerInvariant();
             return lowerStatus switch
             {
                 "canceled" => "Đã hủy",
@@ -101,7 +101,7 @@ namespace TP4SCS.Library.Utils.Utils
         {
             if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
-            var lowerStatus = status.ToLower();
+            var lowerStatus = status.Trim().ToLowerInvariant();
             return lowerStatus switch
             {
                 "pending" => "Đang chờ",
@@ -115,7 +115,7 @@ namespace TP4SCS.Library.Utils.Utils
         {
             if (string.IsNullOrEmpty(status)) return "Trạng Thái Không Hợp Lệ";
 
-            var lowerStatus = status.ToLower();
+            var lowerStatus = status.Trim().ToLowerInvariant();
             return lowerStatus switch
             {
                 "active" => "Hoạt động",
@@ -185,7 +185,7 @@ namespace TP4SCS.Library.Utils.Utils
 
         public bool CheckAccountRole(string role)
         {
-            return role.ToUpper() switch
+            return role.Trim().ToUpperInvariant() switch
             {
                 "OWNER" => true,
                 "EMPLOYEE" => true,
@@ -199,7 +199,7 @@ namespace TP4SCS.Library.Utils.Utils
         // Branch-related methods
         public bool CheckBranchStatus(string status)
         {
-            return status.ToUpper() switch
+            return status.Trim().ToUpperInvariant() switch
             {
                 "ACTIVE" => true,
                 "INACTIVE" => true,
@@ -294,7 +294,7 @@ namespace TP4SCS.Library.Utils.Utils
 
         public bool CheckTicketStatus(string status)
         {
-            return status.Trim().ToUpper() switch
+            return status.Trim().ToUpperInvariant() switch
             {
                 StatusConstants.PROCESSING => true,
                 StatusConstants.CLOSED => true,

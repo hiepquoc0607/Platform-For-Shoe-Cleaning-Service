@@ -97,7 +97,7 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderedId}");
             }
 
-            order.Status = newStatus.ToUpper();
+            order.Status = newStatus.Trim().ToUpperInvariant();
 
             await _orderRepository.UpdateOrderAsync(order);
         }

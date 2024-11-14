@@ -144,7 +144,7 @@ namespace TP4SCS.API.Controllers
                 {
                     throw new ArgumentException("Trạng thái của dịch vụ không hợp lệ.", nameof(request.Status));
                 }
-                request.Status = request.Status.ToUpper();
+                request.Status = request.Status.Trim().ToUpperInvariant();
 
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int.TryParse(userIdClaim, out int id);

@@ -75,7 +75,7 @@ namespace TP4SCS.API.Controllers
                 {
                     throw new ArgumentException("Status của Service không hợp lệ.", nameof(material.Status));
                 }
-                material.Status = material.Status.ToUpper();
+                material.Status = material.Status.Trim().ToUpperInvariant();
                 await _materialService.AddMaterialAsync(serviceId, material);
                 return Ok(new ResponseObject<MaterialResponse>("Create material success", _mapper.Map<MaterialResponse>(material)));
             }
@@ -110,7 +110,7 @@ namespace TP4SCS.API.Controllers
             {
                 throw new ArgumentException("Status không được bỏ trống.", nameof(material.Status));
             }
-            material.Status = material.Status.ToUpper();
+            material.Status = material.Status.Trim().ToUpperInvariant();
             try
             {
                 await _materialService.UpdateMaterialAsync(id, material);
