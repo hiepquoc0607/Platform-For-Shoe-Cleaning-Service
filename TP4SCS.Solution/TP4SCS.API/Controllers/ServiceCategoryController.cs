@@ -12,12 +12,12 @@ namespace TP4SCS.API.Controllers
 {
     [Route("api/categories")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class ServiceCategoryController : ControllerBase
     {
         private IServiceCategoryService _categoryService;
         private IMapper _mapper;
 
-        public CategoryController(IServiceCategoryService categoryService, IMapper mapper)
+        public ServiceCategoryController(IServiceCategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
             _mapper = mapper;

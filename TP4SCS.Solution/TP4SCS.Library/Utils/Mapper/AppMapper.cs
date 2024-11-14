@@ -78,7 +78,7 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<Feedback, FeedbackResponse>()
             .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.OrderItem.Order));
             CreateMap<Feedback, FeedbackResponseForAdmin>();
-            
+
             //OrderDetail Mapping
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();

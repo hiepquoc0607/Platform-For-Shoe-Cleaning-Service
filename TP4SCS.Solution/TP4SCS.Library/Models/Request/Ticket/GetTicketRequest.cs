@@ -17,7 +17,8 @@ namespace TP4SCS.Library.Models.Request.Ticket
     {
         OPENING,
         PROCESSING,
-        CLOSED
+        CLOSED,
+        CANCELED
     }
 
     public class GetTicketRequest
