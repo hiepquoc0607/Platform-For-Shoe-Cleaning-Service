@@ -26,5 +26,9 @@ namespace TP4SCS.Repository.Interfaces
            int? pageIndex = null,
            int? pageSize = null,
            OrderByEnum orderBy = OrderByEnum.IdAsc);
+        Task<IEnumerable<Feedback>?> GetFeedbacksByBranchIdIdAsync(
+            int branchId,
+            string? status = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
     }
 }

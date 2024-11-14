@@ -16,5 +16,9 @@ namespace TP4SCS.Services.Interfaces
         Task UpdateFeedbackAsync(bool? isValidAsset, bool? IsValidContent, string? status, int existingFeedbackId);
 
         Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId);
+        Task<(IEnumerable<Feedback> Feedbacks, int TotalCount)> GetFeedbackByBranchIdIdAsync(
+            int branchId,
+            int pageIndex = 1,
+            int pageSize = 10);
     }
 }
