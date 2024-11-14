@@ -8,7 +8,13 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<SubscriptionPack?> GetPackByIdAsync(int id);
 
+        Task<decimal> GetPackPriceByPeriodAsync(int period);
+
         Task<int> GetPackMaxIdAsync();
+
+        Task<int> CountPackAsync();
+
+        Task<List<int>> GetPeriodArrayAsync();
 
         Task<bool> IsPackNameExistedAsync(string name);
 

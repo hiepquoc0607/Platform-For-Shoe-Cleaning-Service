@@ -12,6 +12,6 @@ namespace TP4SCS.Library.Models.Request.SubscriptionPack
         public int Period { get; set; }
 
         [Required]
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
     }
 }
