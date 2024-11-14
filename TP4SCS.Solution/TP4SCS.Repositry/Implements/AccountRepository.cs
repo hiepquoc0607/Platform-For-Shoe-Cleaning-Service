@@ -303,5 +303,42 @@ namespace TP4SCS.Repository.Implements
 
             return email;
         }
+
+        public async Task<List<string>?> GetBranchEmailsByOrderIdAsync(int id)
+        {
+            var branchInfo = await _dbContext.OrderDetails
+                .AsNoTracking()
+                .Where(od => od.OrderId == id)
+                .Select(od => new
+                {
+                    EmployeeIds = od.Branch.EmployeeIds,
+                    OwnerId = od.Branch.Business.OwnerId
+                })
+                .FirstOrDefaultAsync();
+
+            if (branchInfo == null)
+            {
+                return null;
+            }
+
+            var ids = branchInfo.EmployeeIds?
+                .Split(',')
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(int.Parse)
+                .Append(branchInfo.OwnerId)
+                .Distinct()
+                .ToArray();
+
+            if (ids == null || !ids.Any())
+            {
+                return null;
+            }
+
+            return await _dbContext.Accounts
+                .AsNoTracking()
+                .Where(a => ids.Contains(a.Id))
+                .Select(a => a.Email)
+                .ToListAsync();
+        }
     }
 }

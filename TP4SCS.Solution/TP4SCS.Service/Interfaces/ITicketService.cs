@@ -23,5 +23,7 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<TicketResponse>> UpdateTicketStatusAsync(int moderatorId, int id, UpdateTicketStatusRequest updateTicketStatusRequest);
 
         Task<ApiResponse<TicketResponse>> CancelTicketAsync(int id);
+
+        Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(int id);
     }
 }

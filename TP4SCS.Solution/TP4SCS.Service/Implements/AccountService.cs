@@ -47,7 +47,7 @@ namespace TP4SCS.Services.Implements
         //Create Employee Account
         public async Task<ApiResponse<AccountResponse>> CreateEmployeeAccountAsync(int id, CreateEmployeeRequest createEmployeeRequest)
         {
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createEmployeeRequest.Email.Trim().ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createEmployeeRequest.Email.Trim().ToLowerInvariant());
 
             if (isEmailExisted == true)
             {
@@ -102,7 +102,7 @@ namespace TP4SCS.Services.Implements
         //Create Moderator Account
         public async Task<ApiResponse<AccountResponse>> CreateModeratorAccountAsync(CreateModeratorRequest createModeratorRequest)
         {
-            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createModeratorRequest.Email.Trim().ToLower());
+            var isEmailExisted = await _accountRepository.IsEmailExistedAsync(createModeratorRequest.Email.Trim().ToLowerInvariant());
 
             if (isEmailExisted == true)
             {
@@ -298,7 +298,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
             }
 
-            account.Status = updateStatusRequest.Status.ToUpper().Trim() switch
+            account.Status = updateStatusRequest.Status.Trim().ToUpperInvariant() switch
             {
                 "INACTIVE" => "INACTIVE",
                 "SUSPENDED" => "SUSPENDED",

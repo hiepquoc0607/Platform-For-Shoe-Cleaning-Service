@@ -84,7 +84,7 @@ namespace TP4SCS.Services.Implements
                 {
                     NewPrice = serviceRequest.NewPrice.Value,
                     SaleOff = 100 - (int)Math.Round((serviceRequest.NewPrice.Value / serviceRequest.Price * 100), MidpointRounding.AwayFromZero),
-                    Status = StatusConstants.AVAILABLE.ToUpper()
+                    Status = StatusConstants.AVAILABLE
                 };
 
                 if (string.IsNullOrEmpty(service.Promotion.Status) || !Util.IsValidGeneralStatus(service.Promotion.Status))

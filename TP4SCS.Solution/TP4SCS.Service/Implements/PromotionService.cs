@@ -46,7 +46,7 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Dịch vụ này đã có khuyến mãi. Không thể thêm khuyến mãi mới.");
             }
 
-            promotion.Status = StatusConstants.AVAILABLE.ToUpper();
+            promotion.Status = StatusConstants.AVAILABLE;
             promotion.SaleOff = 100 - (int)Math.Round((promotion.NewPrice / service.Price * 100), MidpointRounding.AwayFromZero);
             await _promotionRepository.AddPromotionAsync(promotion);
         }
