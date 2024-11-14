@@ -330,7 +330,6 @@ namespace TP4SCS.Services.Implements
 
             var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);
             newBusiness.OwnerId = id;
-            newBusiness.Phone = account.Phone;
 
             try
             {

@@ -447,7 +447,6 @@ namespace TP4SCS.Services.Implements
                     await _accountRepository.CreateAccountAsync(newAccount);
 
                     newBusiness.OwnerId = newAccount.Id;
-                    newBusiness.Phone = newAccount.Phone;
 
                     await _businessRepository.CreateBusinessProfileAsync(newBusiness);
                 });

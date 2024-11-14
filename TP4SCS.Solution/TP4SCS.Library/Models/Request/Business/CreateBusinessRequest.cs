@@ -9,6 +9,12 @@ namespace TP4SCS.Library.Models.Request.BusinessProfile
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [Phone]
+        [StringLength(10, MinimumLength = 10)]
+        [DefaultValue("string")]
+        public string BusinessPhone { get; set; } = string.Empty;
+
+        [Required]
         [MinLength(12), MaxLength(12)]
         [DefaultValue("string")]
         public string CitizenIdnumber { get; set; } = string.Empty;
