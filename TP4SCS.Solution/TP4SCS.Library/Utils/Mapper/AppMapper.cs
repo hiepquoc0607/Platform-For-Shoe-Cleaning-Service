@@ -65,17 +65,20 @@ namespace TP4SCS.Library.Utils.Mapper
             //BusinessBranch Mapping
             CreateMap<BusinessBranch, BranchResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateBranchStatus(src.Status)));
-            //Feedback Mapping
-            CreateMap<FeedbackRequest, Feedback>();
-            CreateMap<FeedbackUpdateRequest, Feedback>();
-            CreateMap<Feedback, FeedbackResponse>();
-            CreateMap<Feedback, FeedbackResponseForAdmin>();
             //Order Mapping
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderStatus(src.Status)))
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
+            CreateMap<Order, OrderFeedbackResponse>();
+            //Feedback Mapping
+            CreateMap<FeedbackRequest, Feedback>();
+            CreateMap<FeedbackUpdateRequest, Feedback>();
+            CreateMap<Feedback, FeedbackResponse>()
+            .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.OrderItem.Order));
+            CreateMap<Feedback, FeedbackResponseForAdmin>();
+            
             //OrderDetail Mapping
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();

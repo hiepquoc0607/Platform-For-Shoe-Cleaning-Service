@@ -81,7 +81,7 @@ namespace TP4SCS.Repository.Implements
             };
             var feedbacks = await GetAsync(
                 filter: filter,
-                includeProperties: "AssetUrls,OrderItem",
+                includeProperties: "AssetUrls,OrderItem,OrderItem.Order",
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
                 pageSize: pageSize);
