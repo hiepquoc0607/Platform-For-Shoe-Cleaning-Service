@@ -53,7 +53,25 @@ namespace TP4SCS.Services.Implements
             return (pagedFeedbacks, totalCount);
         }
 
+        public async Task<(IEnumerable<Feedback> Feedbacks, int TotalCount)> GetFeedbackByBusinessIdIdAsync(
+            int businessId,
+            int pageIndex = 1,
+            int pageSize = 10)
+        {
+            var feedbacks = await _feedbackRepository.GetFeedbacksByBusinessIdIdAsync(businessId);
 
+            // Tính tổng số feedbacks trước khi phân trang
+            int totalCount = feedbacks?.Count() ?? 0;
+
+            // Áp dụng phân trang hoặc trả về danh sách trống nếu feedbacks là null
+            var pagedFeedbacks = feedbacks?
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList() ?? new List<Feedback>();
+
+            // Trả về danh sách phân trang và tổng số feedbacks
+            return (pagedFeedbacks, totalCount);
+        }
         public async Task AddFeedbacksAsync(HttpClient httpClient, Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)

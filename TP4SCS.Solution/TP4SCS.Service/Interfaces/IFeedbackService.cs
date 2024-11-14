@@ -20,5 +20,9 @@ namespace TP4SCS.Services.Interfaces
             int branchId,
             int pageIndex = 1,
             int pageSize = 10);
+        Task<(IEnumerable<Feedback> Feedbacks, int TotalCount)> GetFeedbackByBusinessIdIdAsync(
+            int businessId,
+            int pageIndex = 1,
+            int pageSize = 10);
     }
 }
