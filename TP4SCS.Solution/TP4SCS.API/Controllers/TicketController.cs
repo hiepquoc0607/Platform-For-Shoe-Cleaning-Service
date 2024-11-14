@@ -142,8 +142,8 @@ namespace TP4SCS.API.Controllers
         }
 
         [Authorize(Policy = "Moderator")]
-        [HttpPost("notify-for-customer")]
-        public async Task<IActionResult> NotifyForCustomerAsync([FromBody] int userId)
+        [HttpPost("{userId}/notify-for-customer")]
+        public async Task<IActionResult> NotifyForCustomerAsync([FromRoute] int userId)
         {
             var result = await _ticketService.NotifyForCustomerAsync(userId);
 

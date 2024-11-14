@@ -71,8 +71,8 @@ namespace TP4SCS.API.Controllers
             return StatusCode(201, result.Data);
         }
 
-        [HttpPost("resend-verification-email")]
-        public async Task<IActionResult> ResendVerificationEmailAsync([FromBody] int id)
+        [HttpPost("{id}/resend-verification-email")]
+        public async Task<IActionResult> ResendVerificationEmailAsync([FromRoute] int id)
         {
             var result = await _authService.ResendVerificationEmailAsync(id);
 
