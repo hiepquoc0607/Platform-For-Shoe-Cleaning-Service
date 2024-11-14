@@ -10,7 +10,7 @@ public partial class SubscriptionPack
 
     public int Period { get; set; }
 
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }
