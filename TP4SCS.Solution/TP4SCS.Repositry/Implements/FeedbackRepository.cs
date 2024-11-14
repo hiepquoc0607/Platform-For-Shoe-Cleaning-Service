@@ -112,7 +112,28 @@ namespace TP4SCS.Repository.Implements
                     .ThenInclude(od => od.Order);
             return await query.Where(f => f.OrderItem.Order.AccountId == accountId).ToListAsync();
         }
+        public async Task<IEnumerable<Feedback>?> GetFeedbacksByBranchIdIdAsync(
+            int branchId,
+            string? status = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            Expression<Func<Feedback, bool>> filter = s =>
+                (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
 
+            Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>> orderByExpression = q => orderBy switch
+            {
+                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
+                _ => q.OrderBy(c => c.Id)
+            };
+            var query = _dbSet.Where(filter);
+
+            // Bao gồm các thuộc tính liên quan
+            query = query
+                .Include(f => f.AssetUrls)
+                .Include(f => f.OrderItem)
+                    .ThenInclude(od => od.Order);
+            return await query.Where(f => f.OrderItem.BranchId == branchId).ToListAsync();
+        }
         public async Task DeleteFeedbackAsync(int id)
         {
             // Kiểm tra nếu Feedback tồn tại

@@ -66,6 +66,27 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+        [HttpGet("branches/{id}")]
+        public async Task<IActionResult> GetFeedbacksByBranchId(int id, int pageIndex = 1, int pageSize = 10)
+        {
+            try
+            {
+                // Gọi phương thức và lấy tuple kết quả từ service
+                var (feedbacks, totalCount) = await _feedbackService.GetFeedbackByBranchIdIdAsync(id, pageIndex, pageSize);
+
+                // Ánh xạ danh sách Feedbacks sang FeedbackResponse
+                var response = _mapper.Map<IEnumerable<FeedbackResponse>>(feedbacks);
+
+                // Tạo đối tượng phân trang
+                var pagedResponse = new PagedResponse<FeedbackResponse>(response, totalCount, pageIndex, pageSize);
+
+                return Ok(new ResponseObject<PagedResponse<FeedbackResponse>>("Lấy danh sách đánh giá thành công", pagedResponse));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
         [HttpGet("accounts/{id}")]
         public async Task<IActionResult> GetFeedbacksByAccountId(int id)
         {
