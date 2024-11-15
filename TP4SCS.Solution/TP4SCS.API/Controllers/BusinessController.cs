@@ -31,6 +31,20 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
+        [Route("api/businesses-by-ranking")]
+        public async Task<IActionResult> GetBusinessByRankAsync([FromQuery] GetBusinessRequest getBusinessRequest)
+        {
+            var result = await _businessService.GetBusinessesByRankAsync(getBusinessRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("api/businesses/invalidate-businesses")]
         public async Task<IActionResult> GetInValidateBusinessProfilesAsync([FromQuery] GetInvalidateBusinessRequest getInvalidateBusinessRequest)
         {

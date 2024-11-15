@@ -14,6 +14,8 @@
 
         public decimal Rating { get; set; }
 
+        public int Rank { get; set; }
+
         public int TotalOrder { get; set; }
 
         public int PendingAmount { get; set; }

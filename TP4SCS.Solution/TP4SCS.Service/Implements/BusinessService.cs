@@ -260,5 +260,19 @@ namespace TP4SCS.Services.Implements
             }
 
         }
+
+        public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesByRankAsync(GetBusinessRequest getBusinessRequest)
+        {
+            var (businesses, pagination) = await _businessRepository.GetBusinessesByRankingAsync(getBusinessRequest);
+
+            if (businesses == null)
+            {
+                return new ApiResponse<IEnumerable<BusinessResponse>?>("error", 404, "Không Tìm Thấy Doanh Nghiệp!");
+            }
+
+            var data = businesses.Adapt<IEnumerable<BusinessResponse>>();
+
+            return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, 200, pagination);
+        }
     }
 }

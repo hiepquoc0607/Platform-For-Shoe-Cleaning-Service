@@ -12,6 +12,8 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Repositories;
+using TP4SCS.Library.Services;
 using TP4SCS.Library.Utils.Email;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Implements;
@@ -87,6 +89,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -110,6 +113,8 @@ builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();

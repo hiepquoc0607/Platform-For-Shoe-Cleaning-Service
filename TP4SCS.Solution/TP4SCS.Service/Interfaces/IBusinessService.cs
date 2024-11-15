@@ -8,6 +8,8 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest);
 
+        Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesByRankAsync(GetBusinessRequest getBusinessRequest);
+
         Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetInvalidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest);
 
         Task<ApiResponse<BusinessResponse?>> GetBusinessProfileByIdAsync(int id);
