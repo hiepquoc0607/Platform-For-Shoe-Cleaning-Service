@@ -326,7 +326,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
-            account.Status = RoleConstants.OWNER;
+            account.Role = RoleConstants.OWNER;
 
             var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);
             newBusiness.OwnerId = id;
