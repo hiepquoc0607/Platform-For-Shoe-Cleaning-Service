@@ -2,9 +2,7 @@
 {
     public class UpdateOrderRequest
     {
-        public string? ShippingUnit { get; set; }
-
-        public string? ShippingCode { get; set; }
+        public bool? IsShip { get; set; }
         public decimal? DeliveredFee { get; set; }
         public DateTime? PendingTime { get; set; }
 

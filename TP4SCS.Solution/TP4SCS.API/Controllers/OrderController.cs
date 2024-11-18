@@ -109,7 +109,7 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpPost("{id}/sendEmailApproved")]
+        [HttpPost("{id}/send-email-approved")]
         public async Task<IActionResult> Approved(int id, string toEmail)
         {
             try

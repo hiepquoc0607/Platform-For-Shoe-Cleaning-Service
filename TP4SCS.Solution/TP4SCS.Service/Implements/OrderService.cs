@@ -111,23 +111,15 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderId}");
             }
 
-            // Cập nhật thông tin ShippingUnit và ShippingCode nếu có
-            if (request.ShippingUnit != null)
-            {
-                existingOrder.ShippingUnit = request.ShippingUnit;
-            }
-
-            if (request.ShippingCode != null)
-            {
-                existingOrder.ShippingCode = request.ShippingCode;
-            }
-
-            // Cập nhật DeliveredFee nếu có giá trị
-            if (request.DeliveredFee.HasValue)
+            if (request.IsShip.HasValue && request.IsShip.Value && request.DeliveredFee.HasValue)
             {
                 existingOrder.DeliveredFee = request.DeliveredFee.Value;
+                existingOrder.TotalPrice = existingOrder.OrderPrice + request.DeliveredFee.Value;
+            } else if (request.IsShip.HasValue && !request.IsShip.Value)
+            {
+                existingOrder.DeliveredFee = 0;
+                existingOrder.TotalPrice = existingOrder.OrderPrice;
             }
-
             // Cập nhật các thời gian nếu không phải null
             if (request.PendingTime.HasValue)
             {
