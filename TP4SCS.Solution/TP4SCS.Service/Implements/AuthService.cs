@@ -375,7 +375,8 @@ namespace TP4SCS.Services.Implements
             account.RefreshToken = GenerateRefreshToken();
             account.RefreshExpireTime = DateTime.Now.AddSeconds(150);
 
-            string url = $"https://shoecarehub.site/api/auth/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
+            //string url = $"https://shoecarehub.site/api/auth/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
+            string url = $"http://localhost:3000/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
 
             try
             {
