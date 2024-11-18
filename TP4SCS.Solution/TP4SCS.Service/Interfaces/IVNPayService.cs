@@ -4,9 +4,10 @@ using TP4SCS.Library.Models.Response.Payment;
 
 namespace TP4SCS.Services.Interfaces
 {
-    public interface IVNPayService
+    public interface IVnPayService
     {
-        string CreatePaymentUrl(VNPayRequest model, HttpContext context);
-        VNPayResponse PaymentExecute(IQueryCollection collections);
+        string CreatePaymentUrl(HttpContext httpContext, VnPayRequest vnPayRequest);
+
+        VnPayResponse PaymentExecue(IQueryCollection collection);
     }
 }

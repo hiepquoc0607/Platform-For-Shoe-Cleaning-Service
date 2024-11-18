@@ -2,15 +2,15 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks.Dataflow;
-using TP4SCS.Library.Utils.Email;
+using TP4SCS.Library.Utils.Healpers;
 using TP4SCS.Services.Interfaces;
 
 public class EmailService : IEmailService
 {
-    private readonly EmailSettings _emailSettings;
+    private readonly EmailOptions _emailSettings;
     private readonly SmtpClient _smtpClient;
 
-    public EmailService(IOptions<EmailSettings> emailSettings)
+    public EmailService(IOptions<EmailOptions> emailSettings)
     {
         _emailSettings = emailSettings.Value;
         _smtpClient = new SmtpClient(_emailSettings.SmtpServer)

@@ -1,6 +1,6 @@
-﻿namespace TP4SCS.Library.Utils.Email
+﻿namespace TP4SCS.Library.Utils.Healpers
 {
-    public class EmailSettings
+    public class EmailOptions
     {
         public string SmtpServer { get; set; } = null!;
 
