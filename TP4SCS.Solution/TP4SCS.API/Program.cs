@@ -14,7 +14,7 @@ using TP4SCS.API.Middleware;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Repositories;
 using TP4SCS.Library.Services;
-using TP4SCS.Library.Utils.Email;
+using TP4SCS.Library.Utils.Healpers;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
@@ -114,17 +114,20 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();
 builder.Services.AddScoped<BusinessUtil>();
 
+//Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
 //Add HttpClient
 builder.Services.AddHttpClient();
 
 //Get EmailSettings
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("EmailSettings"));
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

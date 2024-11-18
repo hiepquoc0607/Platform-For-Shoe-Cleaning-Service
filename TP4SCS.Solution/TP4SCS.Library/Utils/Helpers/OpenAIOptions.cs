@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Utils.OpenAi
+﻿namespace TP4SCS.Library.Utils.Helpers
 {
     public class OpenAIOptions
     {
