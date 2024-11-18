@@ -132,7 +132,7 @@ namespace TP4SCS.Library.Utils.Healpers
 
                     if (remoteIpAddress != null) ipAddress = remoteIpAddress.ToString();
 
-                    return ipAddress;
+                    return $"https://{ipAddress}";
                 }
             }
             catch (Exception ex)
@@ -140,7 +140,7 @@ namespace TP4SCS.Library.Utils.Healpers
                 return "Invalid IP:" + ex.Message;
             }
 
-            return "127.0.0.1";
+            return "https://127.0.0.1";
         }
     }
 

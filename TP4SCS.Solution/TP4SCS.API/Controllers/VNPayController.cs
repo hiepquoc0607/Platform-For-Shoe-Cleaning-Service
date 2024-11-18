@@ -20,6 +20,8 @@ namespace TP4SCS.API.Controllers
         [HttpPost]
         public IActionResult CreatePaymentUrlVnpay(VnPayRequest vnPayRequest)
         {
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+
             var url = _vnPayService.CreatePaymentUrl(_httpContext.HttpContext!, vnPayRequest);
 
             return Redirect(url);
