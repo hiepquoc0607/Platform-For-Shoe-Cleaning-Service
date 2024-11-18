@@ -271,7 +271,7 @@ namespace TP4SCS.Services.Implements
             }
 
             string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
-            string emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Xử Lý, Vui Lòng Xem Xét Và Bổ Sung Thông Tin Nếu Chưa Thảo Mãn Trong Vòng 24h Tới!";
+            string emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Xử Lý, Vui Lòng Xem Xét Và Bổ Sung Thông Tin Nếu Chưa Thoả Mãn Trong Vòng 24h Tới!";
 
             try
             {
