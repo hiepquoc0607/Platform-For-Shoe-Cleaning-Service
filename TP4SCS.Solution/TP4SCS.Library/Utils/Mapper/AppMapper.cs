@@ -76,12 +76,18 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<FeedbackRequest, Feedback>();
             CreateMap<FeedbackUpdateRequest, Feedback>();
             CreateMap<Feedback, FeedbackResponse>()
-            .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.OrderItem.Order));
+                .ForMember(dest => dest.OrderItem, opt => opt.MapFrom(src => src.OrderItem)) // OrderItem ánh xạ trực tiếp
+                .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.OrderItem.Order)) // Order ánh xạ qua OrderItem
+                .ForMember(dest => dest.AssetUrls, opt => opt.MapFrom(src => src.AssetUrls));
             CreateMap<Feedback, FeedbackResponseForAdmin>();
 
             //OrderDetail Mapping
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();
+            CreateMap<OrderDetail, OrderDetailResponseV3>()
+                .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch))
+                .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service))
+                .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material));
             //Transaction Mapping
             CreateMap<TransactionRequest, Transaction>();
             CreateMap<Transaction, TransactionResponse>();

@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Order;
+using TP4SCS.Library.Models.Response.OrderDetail;
 
 namespace TP4SCS.Library.Models.Response.Feedback
 {
@@ -7,7 +8,7 @@ namespace TP4SCS.Library.Models.Response.Feedback
     {
         public int Id { get; set; }
 
-        public int OrderItemId { get; set; }
+        public OrderDetailResponseV3 OrderItem { get; set; } = null!;
         public OrderFeedbackResponse Order { get; set; } = null!;
 
         public decimal Rating { get; set; }
