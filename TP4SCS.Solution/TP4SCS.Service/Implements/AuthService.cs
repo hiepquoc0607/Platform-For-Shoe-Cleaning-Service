@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Auth;
+using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
@@ -439,6 +440,13 @@ namespace TP4SCS.Services.Implements
             if (isNameExisted)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
+            }
+
+            var isBusinessPhoneExisted = await _businessRepository.IsPhoneExistedAsync(account.Phone.Trim());
+
+            if (isBusinessPhoneExisted)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Số Điện Thoại Đã Được Sử Dụng!");
             }
 
             var newBusiness = _mapper.Map<BusinessProfile>(businessData);

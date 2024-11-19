@@ -326,6 +326,13 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
+            var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(account.Phone.Trim());
+
+            if (isPhoneExisted)
+            {
+                return new ApiResponse<AccountResponse>("error", 404, "Số Điện Thoại Đã Được Sử Dụng!");
+            }
+
             account.Role = RoleConstants.OWNER;
 
             var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);

@@ -32,7 +32,7 @@ namespace TP4SCS.Services.Implements
                 vnpay.AddRequestData("vnp_OrderInfo", "Thanh Toán Cho Đơn:" + vnPayRequest.TransactionId);
                 vnpay.AddRequestData("vnp_OrderType", "other");
                 vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:ReturnUrl"]!);
-                vnpay.AddRequestData("vnp_TxnRef", vnPayRequest.TransactionId.ToString());
+                vnpay.AddRequestData("vnp_TxnRef", Guid.NewGuid().ToString());
 
                 return vnpay.CreateRequestUrl(_configuration["VnPay:BaseUrl"]!, _configuration["VnPay:HashSecret"]!);
             });
@@ -51,7 +51,10 @@ namespace TP4SCS.Services.Implements
                     }
                 }
 
-                int tranId = Convert.ToInt32(vnpay.GetResponseData("vnp_TxnRef"));
+                string vnpOrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
+                string transactionId = vnpOrderInfo.Split(':')[1].Trim();
+
+                int tranId = Convert.ToInt32(transactionId) - 1;
                 var vnpayTranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
                 var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
                 var vnp_SecureHash = collection.FirstOrDefault(p => p.Key.Equals("vnp_SecureHash")).Value;
