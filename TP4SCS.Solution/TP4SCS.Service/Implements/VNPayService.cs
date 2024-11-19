@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using TP4SCS.Library.Models.Request.Payment;
 using TP4SCS.Library.Models.Response.Payment;

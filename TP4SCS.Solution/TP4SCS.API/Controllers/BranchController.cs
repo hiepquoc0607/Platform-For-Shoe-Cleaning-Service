@@ -120,7 +120,7 @@ namespace TP4SCS.API.Controllers
 
         [Authorize(Policy = "Admin")]
         [HttpPut]
-        [Route("api/admin/branches/{id}/status")]
+        [Route("api/branches/{id}/status")]
         public async Task<IActionResult> UpdateBranchStatusAsync([FromRoute] int id, [FromBody] UpdateBranchStatusRequest updateBranchStatusRequest)
         {
             var result = await _branchService.UpdateBranchStatusForAdminAsync(id, updateBranchStatusRequest);

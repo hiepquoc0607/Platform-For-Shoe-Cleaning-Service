@@ -169,7 +169,7 @@ namespace TP4SCS.API.Controllers
 
         [Authorize(Policy = "Admin")]
         [HttpPut]
-        [Route("api/admin/accounts/{id}/status")]
+        [Route("api/accounts/{id}/status")]
         public async Task<IActionResult> UpdateAccountStatusForAdminAsync([FromRoute] int id, [FromBody] UpdateStatusRequest updateStatusRequest)
         {
             var result = await _accountService.UpdateAccountStatusForAdminAsync(id, updateStatusRequest);

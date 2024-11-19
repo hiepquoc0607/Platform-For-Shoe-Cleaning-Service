@@ -14,5 +14,6 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<SubscriptionPackResponse>> UpdatePackAsync(int id, SubscriptionPackRequest subscriptionPackRequest);
 
+        Task<ApiResponse<SubscriptionPackResponse>> PackRegisterAsync(int id, PackRegisterRequest packRegisterRequest);
     }
 }
