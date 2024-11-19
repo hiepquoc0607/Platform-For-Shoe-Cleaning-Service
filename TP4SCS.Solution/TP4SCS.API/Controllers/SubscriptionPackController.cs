@@ -8,9 +8,9 @@ namespace TP4SCS.API.Controllers
     [ApiController]
     public class SubscriptionPackController : ControllerBase
     {
-        private readonly ISubscriptionService _subscriptionService;
+        private readonly ISubscriptionPackService _subscriptionService;
 
-        public SubscriptionPackController(ISubscriptionService subscriptionService)
+        public SubscriptionPackController(ISubscriptionPackService subscriptionService)
         {
             _subscriptionService = subscriptionService;
         }

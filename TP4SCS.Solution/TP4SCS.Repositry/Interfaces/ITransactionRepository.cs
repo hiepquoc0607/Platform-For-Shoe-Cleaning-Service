@@ -1,9 +1,10 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Library.Repositories
 {
-    public interface ITransactionRepository
+    public interface ITransactionRepository : IGenericRepository<Transaction>
     {
         // Lấy tất cả giao dịch
         Task<IEnumerable<Transaction>> GetTransactionsAsync(OrderByEnum orderBy = OrderByEnum.IdDesc);

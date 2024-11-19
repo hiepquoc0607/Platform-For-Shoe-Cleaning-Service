@@ -2,7 +2,7 @@
 
 namespace TP4SCS.Repository.Interfaces
 {
-    public interface ISubscriptionRepository : IGenericRepository<SubscriptionPack>
+    public interface ISubscriptionPackRepository : IGenericRepository<SubscriptionPack>
     {
         Task<IEnumerable<SubscriptionPack>?> GetPacksAsync();
 

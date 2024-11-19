@@ -4,9 +4,9 @@ using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
 {
-    public class SubscriptionRepository : GenericRepository<SubscriptionPack>, ISubscriptionRepository
+    public class SubscriptionPackRepository : GenericRepository<SubscriptionPack>, ISubscriptionPackRepository
     {
-        public SubscriptionRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
+        public SubscriptionPackRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
         }
 

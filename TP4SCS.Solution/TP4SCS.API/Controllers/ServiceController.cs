@@ -149,7 +149,7 @@ namespace TP4SCS.API.Controllers
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int.TryParse(userIdClaim, out int id);
 
-                var businessId = await _businessService.GetBusinessIdByOwnerId(id);
+                var businessId = await _businessService.GetBusinessIdByOwnerIdAsync(id);
 
                 if (businessId == null)
                 {

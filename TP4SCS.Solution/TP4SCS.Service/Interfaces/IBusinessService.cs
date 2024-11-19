@@ -16,7 +16,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<bool> CheckOwnerOfBusiness(int ownerId, int businessId);
 
-        Task<int?> GetBusinessIdByOwnerId(int id);
+        Task<int?> GetBusinessIdByOwnerIdAsync(int id);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessProfileAsync(int id, UpdateBusinessRequest updateBusinessRequest);
 
