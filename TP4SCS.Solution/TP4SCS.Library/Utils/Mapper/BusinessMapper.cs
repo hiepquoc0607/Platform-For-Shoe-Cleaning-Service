@@ -25,9 +25,9 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CanceledAmount, otp => 0)
                 .Map(dest => dest.ToTalServiceNum, otp => 0)
                 .Map(dest => dest.CreatedDate, otp => DateOnly.FromDateTime(DateTime.Now))
-                .Map(dest => dest.RegisteredTime, otp => DateTime.Now)
-                .Map(dest => dest.ExpiredTime, otp => DateTime.Now)
-                .Map(dest => dest.Status, otp => StatusConstants.ACTIVE);
+                .Map(dest => dest.RegisteredTime, otp => otp == null)
+                .Map(dest => dest.ExpiredTime, otp => otp == null)
+                .Map(dest => dest.Status, otp => StatusConstants.EXPIRED);
 
             config.NewConfig<BusinessProfile, UpdateBusinessRequest>();
 

@@ -115,13 +115,11 @@ builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<ISubscriptionPackService, SubscriptionPackService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();
 builder.Services.AddScoped<BusinessUtil>();
-
-//Add HttpContextAccessor
-builder.Services.AddHttpContextAccessor();
 
 //Add HttpClient
 builder.Services.AddHttpClient();
