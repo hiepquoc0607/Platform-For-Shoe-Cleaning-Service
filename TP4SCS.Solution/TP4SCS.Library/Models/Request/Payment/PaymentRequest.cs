@@ -1,4 +1,4 @@
-﻿namespace TP4SCS.Library.Models.Request.SubscriptionPack
+﻿namespace TP4SCS.Library.Models.Request.Payment
 {
     public enum PaymentOptions
     {
@@ -6,7 +6,7 @@
         ZaloPay
     }
 
-    public class PackRegisterRequest
+    public class PaymentRequest
     {
         public int PackId { get; set; }
 

@@ -2,14 +2,12 @@
 {
     public class VnPayRequest
     {
-        public string FullName { get; set; } = string.Empty;
+        public int TransactionId { get; set; }
 
         public string Description { get; set; } = string.Empty;
 
-        public double Amount { get; set; }
+        public double Balance { get; set; }
 
         public DateTime CreatedDate { get; set; }
-
-        public int OrderId { get; set; }
     }
 }

@@ -17,6 +17,8 @@
 
         public const string PENDING = "PENDING";
 
+        public const string EXPIRED = "EXPIRED";
+
         //ORDER STATUS
         public const string CANCELED = "CANCELED";
 
@@ -41,7 +43,8 @@
 
         public const string CLOSED = "CLOSED";
 
-        //BUSINESS STATUS
-        public const string EXPIRED = "EXPIRED";
+        //TRANSACTION STATUS
+        public const string COMPLETED = "COMPLETED";
+        public const string FAILED = "FAILED";
     }
 }

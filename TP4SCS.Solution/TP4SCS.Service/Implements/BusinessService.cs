@@ -191,7 +191,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<int?> GetBusinessIdByOwnerId(int id)
+        public async Task<int?> GetBusinessIdByOwnerIdAsync(int id)
         {
             return await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
         }

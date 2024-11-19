@@ -6,8 +6,8 @@ namespace TP4SCS.Services.Interfaces
 {
     public interface IVnPayService
     {
-        string CreatePaymentUrl(HttpContext httpContext, VnPayRequest vnPayRequest);
+        Task<string> CreatePaymentUrlAsync(HttpContext httpContext, VnPayRequest vnPayRequest);
 
-        VnPayResponse PaymentExecue(IQueryCollection collection);
+        Task<PaymentResponse> PaymentExecuteAsync(IQueryCollection collection);
     }
 }

@@ -1,18 +1,14 @@
 ﻿namespace TP4SCS.Library.Models.Response.Payment
 {
-    public class VnPayResponse
+    public class PaymentResponse
     {
-        public string OrderId { get; set; } = string.Empty;
+        public int TransactionId { get; set; }
 
         public string PaymentId { get; set; } = string.Empty;
 
-        public string TransactionId { get; set; } = string.Empty;
-
         public string PaymentMethod { get; set; } = string.Empty;
 
-        public string OrderDescription { get; set; } = string.Empty;
-
-        public string Token { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         public bool IsSuccess { get; set; }
 
