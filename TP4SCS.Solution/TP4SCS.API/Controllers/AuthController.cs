@@ -120,7 +120,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result);
+            return Redirect("https://www.shoecarehub.xyz/reset-success");
         }
     }
 }
