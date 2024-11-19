@@ -13,10 +13,16 @@ namespace TP4SCS.Services.Implements
     public class SubscriptionService : ISubscriptionService
     {
         private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly IBusinessRepository _businessRepository;
+        private readonly IVnPayService _vnPayService;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public SubscriptionService(ISubscriptionRepository subscriptionRepository, IMapper mapper, Util util)
+        public SubscriptionService(ISubscriptionRepository subscriptionRepository,
+            IBusinessRepository businessRepository,
+            IVnPayService vnPayService,
+            IMapper mapper,
+            Util util)
         {
             _subscriptionRepository = subscriptionRepository;
             _mapper = mapper;
@@ -111,6 +117,25 @@ namespace TP4SCS.Services.Implements
             var data = packs.Adapt<IEnumerable<SubscriptionPackResponse>>();
 
             return new ApiResponse<IEnumerable<SubscriptionPackResponse>?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
+        }
+
+        public async Task<ApiResponse<SubscriptionPackResponse>> PackRegisterAsync(int id, PackRegisterRequest packRegisterRequest)
+        {
+            //var business = await _businessRepository.GetBusinessByOwnerIdAsync(id);
+
+            //if (business == null)
+            //{
+            //    return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+            //}
+
+            //var pack = await _subscriptionRepository.GetPackByIdAsync(id);
+
+            //if (pack == null)
+            //{
+            //    return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+            //}
+
+            throw new NotImplementedException();
         }
 
         public async Task<ApiResponse<SubscriptionPackResponse>> UpdatePackAsync(int id, SubscriptionPackRequest subscriptionPackRequest)

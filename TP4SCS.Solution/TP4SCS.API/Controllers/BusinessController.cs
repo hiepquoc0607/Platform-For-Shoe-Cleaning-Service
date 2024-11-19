@@ -97,7 +97,7 @@ namespace TP4SCS.API.Controllers
 
         [Authorize(Policy = "Admin")]
         [HttpPut]
-        [Route("api/admin/businesses/{id}")]
+        [Route("api/businesses/{id}/status")]
         public async Task<IActionResult> UpdateBusinessStatusForAdminAsync([FromRoute] int id, [FromBody] UpdateBusinessStatusRequest updateBusinessStatusRequest)
         {
             var result = await _businessService.UpdateBusinessStatusForAdminAsync(id, updateBusinessStatusRequest);
