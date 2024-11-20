@@ -142,11 +142,11 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 404, "Trạng Thái Không Khả Dụng!");
             }
 
-            var oldBusiness = await _businessRepository.GetBusinessByOwnerIdAsync(id);
+            var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);
 
             if (oldBusiness == null)
             {
-                return new ApiResponse<BusinessResponse>("error", 404, "Tài Khoản Chưa Sở Hữu Doanh Nghiệp!");
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
             oldBusiness.Status = updateBusinessStatusRequest.Status;
