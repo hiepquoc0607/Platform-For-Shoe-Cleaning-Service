@@ -28,6 +28,9 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.WriteIndented = false;
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -212,12 +215,19 @@ builder.Services.AddControllers()
 //Config Rate Limiting
 builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: "BasePolicy", options =>
 {
-    options.PermitLimit = 10;
-
-    options.Window = TimeSpan.FromMinutes(1);
-
+    options.PermitLimit = 20;
+    options.Window = TimeSpan.FromSeconds(30);
+    options.QueueLimit = 5;
     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
 }));
+
+//Addtion Logger
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+    logging.AddDebug();
+});
 
 var app = builder.Build();
 
@@ -228,19 +238,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 }
-app.UseSwagger();
-
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 
 app.UseMiddleware<ResponseMiddleware>();
 
-app.UseCors("MyAllowSpecificOrigins");
-
-app.UseRateLimiter();
-
 app.UseHttpsRedirection();
 
+app.UseCors("MyAllowSpecificOrigins");
+
 app.UseRouting();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 
