@@ -17,7 +17,7 @@ namespace TP4SCS.Library.Models.Request.BusinessProfile
         [Required]
         [MinLength(12), MaxLength(12)]
         [DefaultValue("string")]
-        public string CitizenIdnumber { get; set; } = string.Empty;
+        public string CitizenId { get; set; } = string.Empty;
 
         [Required]
         public string FrontCitizenImageUrl { get; set; } = string.Empty;

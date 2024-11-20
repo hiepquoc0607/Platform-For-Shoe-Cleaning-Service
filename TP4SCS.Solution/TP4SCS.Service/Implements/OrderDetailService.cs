@@ -35,7 +35,7 @@ namespace TP4SCS.Services.Implements
                     }
                 }
                 // Kiểm tra Service
-                var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId);
+                var service = await _serviceService.GetServiceByIdAsync((int)orderDetail.ServiceId);
                 if (service == null || service.Status != StatusConstants.AVAILABLE)
                 {
                     throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
@@ -68,7 +68,7 @@ namespace TP4SCS.Services.Implements
                     throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
                 }
             }
-            var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId);
+            var service = await _serviceService.GetServiceByIdAsync((int)orderDetail.ServiceId);
             if (service == null || service.Status != StatusConstants.AVAILABLE)
             {
                 throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
@@ -79,7 +79,7 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
             }
 
-            orderDetail.Price = await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId!);
+            orderDetail.Price = await _serviceService.GetServiceFinalPriceAsync((int)orderDetail.ServiceId!);
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
         }

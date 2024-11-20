@@ -52,7 +52,6 @@ namespace TP4SCS.Services.Implements
             var newTransaction = new Transaction
             {
                 AccountId = id,
-                MethodId = 1,
                 PackId = paymentRequest.PackId,
                 Balance = pack.Price,
                 ProcessTime = DateTime.Now,
