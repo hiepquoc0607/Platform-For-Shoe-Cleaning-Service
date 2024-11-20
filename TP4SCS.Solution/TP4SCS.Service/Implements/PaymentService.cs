@@ -56,6 +56,11 @@ namespace TP4SCS.Services.Implements
                 Balance = pack.Price,
                 ProcessTime = DateTime.Now,
                 Description = "Thanh Toán " + pack.Name + " Bằng " + paymentRequest.Payment,
+                PaymentMethod = paymentRequest.Payment switch
+                {
+                    PaymentOptions.VnPay => "VnPay",
+                    _ => "ZaloPay"
+                },
                 Status = StatusConstants.PENDING
             };
 
@@ -74,6 +79,14 @@ namespace TP4SCS.Services.Implements
                 await _subscriptionPackRepository.RunInTransactionAsync(async () =>
                 {
                     await _transactionRepository.CreateTransactionAsync(newTransaction);
+
+                    var vnpay = new VnPayRequest
+                    {
+                        TransactionId = newTransaction.Id,
+                        Balance = (double)newTransaction.Balance,
+                        CreatedDate = DateTime.Now,
+                        Description = newTransaction.Description,
+                    };
 
                     if (paymentRequest.Payment.Equals(PaymentOptions.VnPay))
                     {
@@ -122,12 +135,19 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
-            if (result.IsSuccess)
+            if (result.VnPayResponseCode.Equals("00"))
             {
                 transaction.Status = StatusConstants.COMPLETED;
 
                 business.RegisteredTime = DateTime.Now;
-                business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
+                if (business.ExpiredTime > DateTime.Now)
+                {
+                    business.ExpiredTime = business.ExpiredTime.AddMonths(pack.Period);
+                }
+                else
+                {
+                    business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
+                }
                 business.Status = StatusConstants.ACTIVE;
 
                 await _subscriptionPackRepository.RunInTransactionAsync(async () =>
@@ -135,6 +155,8 @@ namespace TP4SCS.Services.Implements
                     await _transactionRepository.UpdateTransactionAsync(transaction);
 
                     await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                    await _transactionRepository.SaveAsync();
                 });
 
                 return new ApiResponse<PaymentResponse>("success", "Thanh Toán Gói Đăng Kí Thành Công!", null, 200);
@@ -151,6 +173,8 @@ namespace TP4SCS.Services.Implements
                 }
 
                 await _transactionRepository.UpdateTransactionAsync(transaction);
+
+                await _transactionRepository.SaveAsync();
 
                 return new ApiResponse<PaymentResponse>("error", 400, "Thanh Toán Gói Đăng Kí Thất Bại!");
             }

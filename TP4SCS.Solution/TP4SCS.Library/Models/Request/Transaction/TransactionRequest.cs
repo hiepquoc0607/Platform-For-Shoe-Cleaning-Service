@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Request.Transaction
+﻿using TP4SCS.Library.Models.Request.Payment;
+
+namespace TP4SCS.Library.Models.Request.Transaction
 {
     public class TransactionRequest
     {
@@ -13,6 +15,8 @@
         public DateTime ProcessTime { get; set; }
 
         public string? Description { get; set; }
+
+        public PaymentOptions PaymentMethod { get; set; }
 
         public string Status { get; set; } = null!;
     }
