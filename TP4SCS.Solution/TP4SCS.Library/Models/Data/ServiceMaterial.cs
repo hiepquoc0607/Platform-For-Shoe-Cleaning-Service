@@ -6,9 +6,9 @@ public partial class ServiceMaterial
 
     public int ServiceId { get; set; }
 
-    public int? MaterialId { get; set; }
+    public int MaterialId { get; set; }
 
-    public virtual Material? Material { get; set; }
+    public virtual Material Material { get; set; } = null!;
 
     public virtual Service Service { get; set; } = null!;
 }

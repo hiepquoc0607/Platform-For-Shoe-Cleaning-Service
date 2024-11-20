@@ -8,7 +8,7 @@ public partial class OrderDetail
 
     public int BranchId { get; set; }
 
-    public int ServiceId { get; set; }
+    public int? ServiceId { get; set; }
 
     public int? MaterialId { get; set; }
 
@@ -24,5 +24,5 @@ public partial class OrderDetail
 
     public virtual Order Order { get; set; } = null!;
 
-    public virtual Service Service { get; set; } = null!;
+    public virtual Service? Service { get; set; }
 }

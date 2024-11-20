@@ -6,11 +6,15 @@ public partial class Feedback
 
     public int OrderItemId { get; set; }
 
+    public int? ParentFeedbackId { get; set; }
+
     public decimal Rating { get; set; }
 
     public string? Content { get; set; }
 
     public DateTime CreatedTime { get; set; }
+
+    public bool? IsParentFeedback { get; set; }
 
     public bool IsValidContent { get; set; }
 

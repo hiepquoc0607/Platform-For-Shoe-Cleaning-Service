@@ -10,13 +10,13 @@ public partial class BusinessProfile
 
     public string Phone { get; set; } = null!;
 
-    public string? CitizenIdnumber { get; set; }
+    public string CitizenId { get; set; } = null!;
+
+    public string FrontCitizenImageUrl { get; set; } = null!;
+
+    public string BackCitizenImageUrl { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
-
-    public string? FrontCitizenImageUrl { get; set; }
-
-    public string? BackCitizenImageUrl { get; set; }
 
     public decimal Rating { get; set; }
 
