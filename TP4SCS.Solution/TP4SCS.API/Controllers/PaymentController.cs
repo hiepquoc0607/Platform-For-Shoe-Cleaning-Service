@@ -31,7 +31,12 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result);
             }
 
-            return Ok(result);
+            if (!Uri.TryCreate(result.Data, UriKind.Absolute, out Uri? link))
+            {
+                return BadRequest("Invalid URL format");
+            }
+
+            return Ok(link.ToString());
         }
 
         [HttpGet("VnPay")]

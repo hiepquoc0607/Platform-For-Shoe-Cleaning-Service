@@ -21,6 +21,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task UpdateAsync(T entityToUpdate);
 
+        Task SaveAsync();
+
         Task RunInTransactionAsync(Func<Task> operations);
     }
 }
