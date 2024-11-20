@@ -10,6 +10,12 @@
 
         public string Phone { get; set; } = string.Empty;
 
+        public string CitizenId { get; set; } = string.Empty;
+
+        public string FrontCitizenImageUrl { get; set; } = string.Empty;
+
+        public string BackCitizenImageUrl { get; set; } = string.Empty;
+
         public string? ImageUrl { get; set; }
 
         public decimal Rating { get; set; }
