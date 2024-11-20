@@ -42,7 +42,7 @@ namespace TP4SCS.API.Controllers
         [HttpGet("VnPay")]
         public async Task<IActionResult> ExcuteVnPayAsync()
         {
-            var result = await _paymentService.VnPayExcuteAsync(Request.Query);
+            var result = await _paymentService.VnPayExcuteAsync(HttpContext.Request.Query);
 
             if (result.StatusCode != 200)
             {

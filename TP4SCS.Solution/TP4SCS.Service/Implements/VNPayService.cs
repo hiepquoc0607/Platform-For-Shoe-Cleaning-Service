@@ -54,8 +54,7 @@ namespace TP4SCS.Services.Implements
                 string vnpOrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
                 string transactionId = vnpOrderInfo.Split(':')[1].Trim();
 
-                int tranId = Convert.ToInt32(transactionId) - 1;
-                var vnpayTranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
+                int tranId = Convert.ToInt32(transactionId);
                 var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
                 var vnp_SecureHash = collection.FirstOrDefault(p => p.Key.Equals("vnp_SecureHash")).Value;
 
@@ -63,10 +62,10 @@ namespace TP4SCS.Services.Implements
 
                 if (!checkSignature)
                 {
-                    return new PaymentResponse { IsSuccess = false, TransactionId = tranId, VnPayResponseCode = vnp_ResponseCode };
+                    return new PaymentResponse { TransactionId = tranId, VnPayResponseCode = vnp_ResponseCode };
                 }
 
-                return new PaymentResponse { IsSuccess = true, TransactionId = tranId, VnPayResponseCode = vnp_ResponseCode };
+                return new PaymentResponse { TransactionId = tranId, VnPayResponseCode = vnp_ResponseCode };
             });
         }
     }

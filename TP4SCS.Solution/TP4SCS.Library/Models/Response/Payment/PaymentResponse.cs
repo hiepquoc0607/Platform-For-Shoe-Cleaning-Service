@@ -10,8 +10,6 @@
 
         public string Description { get; set; } = string.Empty;
 
-        public bool IsSuccess { get; set; }
-
         public string VnPayResponseCode { get; set; } = string.Empty;
     }
 }
