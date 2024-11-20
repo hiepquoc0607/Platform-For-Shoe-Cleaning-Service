@@ -112,5 +112,10 @@ namespace TP4SCS.Repository.Implements
                 }
             }
         }
+
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
