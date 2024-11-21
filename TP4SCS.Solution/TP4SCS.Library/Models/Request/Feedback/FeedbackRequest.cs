@@ -5,6 +5,7 @@ namespace TP4SCS.Library.Models.Request.Feedback
     public class FeedbackRequest
     {
         public int OrderItemId { get; set; }
+        public int? ParentFeedbackId { get; set; }
         public decimal Rating { get; set; }
 
         public string? Content { get; set; } = null;

@@ -120,6 +120,20 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFeedbackById(int id)
+        {
+            try
+            {
+                var feedback = await _feedbackService.GetFeedbackByIdAsync(id);
+                var response = _mapper.Map<FeedbackResponse>(feedback);
+                return Ok(new ResponseObject<FeedbackResponse>("Lấy danh sách đánh giá thành công", response));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateFeedback([FromBody] FeedbackRequest feedbackRequest)
         {

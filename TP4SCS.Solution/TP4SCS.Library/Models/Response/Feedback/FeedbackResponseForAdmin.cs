@@ -11,7 +11,7 @@ namespace TP4SCS.Library.Models.Response.Feedback
         public string? Content { get; set; }
 
         public DateTime CreatedTime { get; set; }
-
+        public int? ParentFeedbackId { get; set; }
         public bool IsValidContent { get; set; }
 
         public bool IsValidAsset { get; set; }

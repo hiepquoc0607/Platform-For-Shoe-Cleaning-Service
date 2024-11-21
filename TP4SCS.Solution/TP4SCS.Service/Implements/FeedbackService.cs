@@ -21,6 +21,10 @@ namespace TP4SCS.Services.Implements
         {
             return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
         }
+        public async Task<Feedback?> GetFeedbackByIdAsync(int id)
+        {
+            return await _feedbackRepository.GetByIDAsync(id);
+        }
 
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
@@ -125,6 +129,17 @@ namespace TP4SCS.Services.Implements
             if (isValidAsset.HasValue)
             {
                 existingFeedback.IsValidAsset = isValidAsset.Value;
+            }
+
+            await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
+        }
+
+        public async Task UpdateFeedbackAsync(string replyComment, int existingFeedbackId)
+        {
+            var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
+            if (existingFeedback == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy đánh giá với ID: {existingFeedbackId}.");
             }
 
             await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);

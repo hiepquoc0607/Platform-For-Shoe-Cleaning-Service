@@ -10,6 +10,7 @@ namespace TP4SCS.Services.Interfaces
         Task AddFeedbacksAsync(HttpClient httpClient, Feedback feedback);
 
         Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId);
+        Task<Feedback?> GetFeedbackByIdAsync(int id);
 
         Task DeleteFeedbackAsync(int id);
 
