@@ -94,7 +94,7 @@ namespace TP4SCS.Services.Implements
 
             var isNameExisted = await _ticketCategoryRepository.IsNameExistedAsync(newName);
 
-            if (isNameExisted && !newName.Equals(oldCategory.Name))
+            if (isNameExisted && newName.Equals(oldCategory.Name, StringComparison.CurrentCultureIgnoreCase) == false)
             {
                 return new ApiResponse<TicketCategoryResponse>("error", 400, "Tên Loại Phiếu Đã Tồn Tại!");
             }
