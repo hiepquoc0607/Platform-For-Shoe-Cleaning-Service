@@ -153,7 +153,7 @@ namespace TP4SCS.API.Controllers
 
                 if (businessId == null)
                 {
-                    throw new ArgumentException("Account này chưa có doanh nghiệp nào.", nameof(request.Status));
+                    throw new ArgumentException("Account này chưa có doanh nghiệp nào.");
                 }
 
                 await _serviceService.AddServiceAsync(request, businessId.Value);

@@ -13,94 +13,150 @@ namespace TP4SCS.Repository.Implements
         {
         }
 
-        public async Task AddMaterialAsync(int serviceId, Material material)
+        public async Task AddMaterialAsync(int[] branchIds, int businessId, Material material)
         {
-            Service? service = null;
+            // Lấy tất cả các branch từ businessId
+            var branches = await _dbContext.BusinessBranches
+                               .Where(b => b.BusinessId == businessId)
+                               .ToListAsync();
 
-            service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == serviceId);
-
-            if (service == null)
-            {
-                throw new KeyNotFoundException($"Service với ID {serviceId} không tìm thấy.");
-            }
-            if (service.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
-            {
-                throw new ArgumentException("Dịch vụ này đã ngưng hoạt động.");
-            }
-            var serviceMaterial = new ServiceMaterial { Service = service, Material = material };
-
-            await _dbContext.ServiceMaterials.AddAsync(serviceMaterial);
+            // Thêm material mới vào cơ sở dữ liệu
             await _dbContext.Materials.AddAsync(material);
+            await _dbContext.SaveChangesAsync();
+
+            // Kiểm tra trạng thái của material
+            if (material.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
+            {
+                // Tạo BranchMaterial cho mỗi branch với trạng thái UNAVAILABLE
+                foreach (var branch in branches)
+                {
+                    var branchMaterial = new BranchMaterial
+                    {
+                        MaterialId = material.Id,
+                        BranchId = branch.Id,
+                        Status = StatusConstants.UNAVAILABLE.ToUpper()
+                    };
+                    await _dbContext.BranchMaterials.AddAsync(branchMaterial);
+                }
+
+                // Lưu lại thay đổi vào cơ sở dữ liệu
+                await _dbContext.SaveChangesAsync();
+                return; // Kết thúc hàm nếu material là Unavailable
+            }
+
+            // Tạo BranchMaterial cho mỗi branch và liên kết với material vừa tạo
+            foreach (var branch in branches)
+            {
+                var branchMaterial = new BranchMaterial
+                {
+                    MaterialId = material.Id,
+                    BranchId = branch.Id,
+                    Status = StatusConstants.UNAVAILABLE.ToUpper()
+                };
+
+                if (branchIds.Contains(branch.Id) && material.Status.ToLower() == StatusConstants.AVAILABLE.ToLower())
+                {
+                    branchMaterial.Status = StatusConstants.AVAILABLE.ToUpper();
+                }
+
+                await _dbContext.BranchMaterials.AddAsync(branchMaterial);
+            }
+
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteMaterialAsync(int id)
         {
-            var serviceMaterials = await _dbContext.ServiceMaterials
-                                                 .Where(sm => sm.MaterialId == id)
-                                                 .ToListAsync();
+            // Lấy danh sách BranchMaterial liên quan đến MaterialId
+            var branchMaterials = await _dbContext.BranchMaterials
+                                   .Where(bm => bm.MaterialId == id)
+                                   .ToListAsync();
 
-            if (serviceMaterials.Any())
+            // Xóa tất cả các BranchMaterial nếu có
+            if (branchMaterials.Any())
             {
-                _dbContext.ServiceMaterials.RemoveRange(serviceMaterials);
+                _dbContext.BranchMaterials.RemoveRange(branchMaterials);
                 await _dbContext.SaveChangesAsync();
             }
+
+            // Gọi phương thức DeleteAsync để xóa Material
             await DeleteAsync(id);
         }
 
         public async Task<Material?> GetMaterialByIdAsync(int id)
         {
-            return await GetByIDAsync(id);
+            return await _dbContext.Materials// Bao gồm thông tin khuyến mãi nếu có
+                .Include(m => m.AssetUrls) // Bao gồm danh sách AssetUrls
+                .Include(m => m.BranchMaterials) // Bao gồm BranchMaterials
+                .ThenInclude(bm => bm.Branch) // Bao gồm Branch trong BranchMaterials
+                .SingleOrDefaultAsync(m => m.Id == id); // Lọc theo Id của Material
         }
 
-        public Task<IEnumerable<Material>?> GetMaterialsAsync(
+
+        public async Task<IEnumerable<Material>?> GetMaterialsAsync(
             string? keyword = null,
             string? status = null,
-            int pageIndex = 1,
-            int pageSize = 5,
-            OrderByEnum orderBy = OrderByEnum.IdAsc)
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
         {
+            // Xây dựng bộ lọc
             Expression<Func<Material, bool>> filter = m =>
-                (string.IsNullOrEmpty(keyword) || m.Name.ToLower().Trim().Contains(keyword.ToLower().Trim())) &&
+                (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
                 (string.IsNullOrEmpty(status) || m.Status.ToLower().Trim() == status.ToLower().Trim());
 
-            Func<IQueryable<Material>, IOrderedQueryable<Material>> orderByExpression = q => orderBy switch
+            // Bắt đầu truy vấn với bộ lọc
+            var query = _dbSet.Where(filter);
+
+            // Áp dụng sắp xếp
+            query = orderBy switch
             {
-                OrderByEnum.IdDesc => q.OrderByDescending(c => c.Id),
-                _ => q.OrderBy(c => c.Id)
+                OrderByEnum.IdDesc => query.OrderByDescending(m => m.Id),
+                _ => query.OrderBy(m => m.Id) // Mặc định sắp xếp theo Id tăng dần
             };
 
-            return GetAsync(
-                filter: filter,
-                orderBy: orderByExpression,
-                pageIndex: pageIndex,
-                pageSize: pageSize
-            );
+            // Bao gồm các thuộc tính liên quan
+            query = query
+                .Include(m => m.AssetUrls)  // Bao gồm AssetUrls
+                .Include(m => m.BranchMaterials) // Bao gồm BranchMaterials
+                    .ThenInclude(bm => bm.Branch); // Bao gồm Branch trong BranchMaterials
+            return await query.ToListAsync();
         }
-
-        public async Task<IEnumerable<Material>> GetMaterialsAsync(string? keyword = null, string? status = null)
+        public async Task UpdateMaterialAsync(Material material, int[] branchIds)
         {
-            Expression<Func<Material, bool>> filter = m =>
-                (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || m.Status.ToLower() == status.ToLower());
+            var existingBranchMaterials = await _dbContext.BranchMaterials
+                                    .Where(bm => bm.MaterialId == material.Id)
+                                    .ToListAsync();
 
-            return await _dbContext.Materials.AsNoTracking()
-                .Where(filter)
-                .ToListAsync();
-        }
+            if (material.Status.ToLower() == StatusConstants.UNAVAILABLE.ToLower())
+            {
+                // Cập nhật trạng thái của tất cả BranchMaterial thành Unavailable
+                foreach (var branchMaterial in existingBranchMaterials)
+                {
+                    branchMaterial.Status = StatusConstants.UNAVAILABLE.ToUpper();
+                }
 
-        public async Task<int> GetTotalMaterialCountAsync(string? keyword = null, string? status = null)
-        {
-            Expression<Func<Material, bool>> filter = m =>
-                (string.IsNullOrEmpty(keyword) || m.Name.Contains(keyword)) &&
-                (string.IsNullOrEmpty(status) || m.Status.ToLower() == status.ToLower());
+                // Lưu lại thay đổi vào cơ sở dữ liệu
+                _dbContext.BranchMaterials.UpdateRange(existingBranchMaterials);
+                await _dbContext.SaveChangesAsync();
+                return; // Kết thúc hàm nếu material là Unavailable
+            }
 
-            return await _dbContext.Materials.AsNoTracking().CountAsync(filter);
-        }
+            // Kiểm tra và cập nhật trạng thái của từng BranchMaterial
+            foreach (var branchMaterial in existingBranchMaterials)
+            {
+                // Kiểm tra xem BranchId có tồn tại trong branchIds hay không
+                if (branchIds.Contains(branchMaterial.BranchId))
+                {
+                    branchMaterial.Status = StatusConstants.AVAILABLE.ToUpper();
+                }
+                else
+                {
+                    branchMaterial.Status = StatusConstants.UNAVAILABLE.ToUpper();
+                }
+            }
 
-        public async Task UpdateMaterialAsync(Material material)
-        {
+            // Cập nhật lại Material trong cơ sở dữ liệu
             await UpdateAsync(material);
         }
+
     }
 }
