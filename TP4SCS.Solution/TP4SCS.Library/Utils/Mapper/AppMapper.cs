@@ -12,6 +12,7 @@ using TP4SCS.Library.Models.Request.Transaction;
 using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.BranchMaterial;
 using TP4SCS.Library.Models.Response.BranchService;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
@@ -70,6 +71,9 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<AssetUrlRequest, AssetUrl>();
             //BranchService Mapping
             CreateMap<BranchService, BranchServiceResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+            //BranchMaterial Mapping
+            CreateMap<BranchMaterial, BranchMaterialResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             //BusinessBranch Mapping
             CreateMap<BusinessBranch, BranchResponse>()

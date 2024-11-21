@@ -1,27 +1,42 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Material;
 
 namespace TP4SCS.Services.Interfaces
 {
     public interface IMaterialService
     {
-        Task AddMaterialAsync(int serviceId, Material material);
+        Task AddMaterialAsync(MaterialCreateRequest materialRequest, int businessId);
 
         Task DeleteMaterialAsync(int id);
 
         Task<Material?> GetMaterialByIdAsync(int id);
 
-        Task<IEnumerable<Material>?> GetMaterialsAsync(
+        Task<(IEnumerable<Material> materials, int total)> GetMaterialsAsync(
             string? keyword = null,
             string? status = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc,
             int pageIndex = 1,
-            int pageSize = 5,
-            OrderByEnum orderBy = OrderByEnum.IdAsc);
+            int pageSize = 10);
 
-        Task<IEnumerable<Material>> GetAllMaterialsAsync(string? keyword = null, string? status = null);
+        Task UpdateMaterialAsync(MaterialUpdateRequest materialUpdateRequest, int existingMaterialId);
 
-        Task<int> GetTotalMaterialCountAsync(string? keyword = null, string? status = null);
+        Task<(IEnumerable<Material>?, int)> GetMaterialsByBranchIdAsync(
+            int branchId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
 
-        Task UpdateMaterialAsync(int id, Material material);
+        Task<(IEnumerable<Material>?, int)> GetMaterialsByBusinessIdAsync(
+            int businessId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
+
+        Task UpdateMaterialAsync(int quantity, int branchId, int materialId);
     }
 }

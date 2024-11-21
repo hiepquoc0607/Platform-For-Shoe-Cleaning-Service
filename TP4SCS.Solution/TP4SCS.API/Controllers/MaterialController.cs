@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Data;
+using System.Security.Claims;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Response.General;
@@ -16,143 +16,240 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IMaterialService _materialService;
         private readonly IMapper _mapper;
+        private readonly IBusinessService _businessService;
 
-        public MaterialController(IMaterialService materialService, IMapper mapper)
+        public MaterialController(IMaterialService materialService, IMapper mapper, IBusinessService businessService)
         {
             _materialService = materialService;
             _mapper = mapper;
+            _businessService = businessService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMaterials([FromQuery] PagedRequest pagedRequest)
+        public async Task<IActionResult> GetMaterialsAsync(
+            [FromQuery] string? keyword = null,
+            [FromQuery] string? status = null,
+            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var materials = await _materialService.GetMaterialsAsync(pagedRequest.Keyword, pagedRequest.Status,
-                pagedRequest.PageIndex, pagedRequest.PageSize, pagedRequest.OrderBy);
-
-            var totalCount = await _materialService.GetTotalMaterialCountAsync(pagedRequest.Keyword, pagedRequest.Status);
-
-            var pagedResponse = new PagedResponse<MaterialResponse>(
-                materials?.Select(m =>
-                {
-                    var res = _mapper.Map<MaterialResponse>(m);
-                    res.Status = Util.TranslateGeneralStatus(m.Status);
-                    return res;
-                }) ?? Enumerable.Empty<MaterialResponse>(),
-                totalCount,
-                pagedRequest.PageIndex,
-                pagedRequest.PageSize
-            );
-
-            return Ok(new ResponseObject<PagedResponse<MaterialResponse>>("Fetch Material Success", pagedResponse));
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMaterialById(int id)
-        {
-            var material = await _materialService.GetMaterialByIdAsync(id);
-            if (material == null)
-            {
-                return NotFound(new ResponseObject<MaterialResponse>("Material not found.", null));
-            }
-            var res = _mapper.Map<MaterialResponse>(material);
-            res.Status = Util.TranslateGeneralStatus(res.Status);
-            return Ok(new ResponseObject<MaterialResponse>("Fetch Material Success", res));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddMaterial(int serviceId, [FromBody] MaterialCreateRequest materialCreateRequest)
-        {
-            if (materialCreateRequest == null)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>("Yêu cầu tạo Material không được null.", null));
-            }
-
-            var material = _mapper.Map<Material>(materialCreateRequest);
-
             try
             {
-                if (string.IsNullOrEmpty(material.Status) || !Util.IsValidGeneralStatus(material.Status))
+                var (materials, total) = await _materialService.GetMaterialsAsync(keyword, status, orderBy, pageIndex, pageSize);
+
+                if (materials == null || !materials.Any())
                 {
-                    throw new ArgumentException("Status của Service không hợp lệ.", nameof(material.Status));
+                    var emptyResponse = new PagedResponse<MaterialResponse>(new List<MaterialResponse>(), 0, pageIndex, pageSize);
+                    var response = new ResponseObject<PagedResponse<MaterialResponse>>("No materials found.", emptyResponse);
+                    return Ok(response);
                 }
-                material.Status = material.Status.Trim().ToUpperInvariant();
-                await _materialService.AddMaterialAsync(serviceId, material);
-                return Ok(new ResponseObject<MaterialResponse>("Create material success", _mapper.Map<MaterialResponse>(material)));
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
+
+                var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
+
+                var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
+
+                var successResponse = new ResponseObject<PagedResponse<MaterialResponse>>("Materials retrieved successfully.", pagedResponse);
+
+                return Ok(successResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<MaterialResponse>("Lỗi không xác định: " + ex.Message, null));
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMaterialsByBranchIdAsync(int id)
+        {
+            try
+            {
+                var material = await _materialService.GetMaterialByIdAsync(id);
+                var materialResponse = _mapper.Map<MaterialResponse>(material);
+
+                return Ok(new ResponseObject<MaterialResponse>("Material retrieved successfully.", materialResponse));
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
+        [HttpGet("branches/{branchId}")]
+        public async Task<IActionResult> GetMaterialsByBranchIdAsync(
+            int branchId,
+            [FromQuery] string? keyword = null,
+            [FromQuery] string? status = null,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            try
+            {
+                var (materials, total) = await _materialService.GetMaterialsByBranchIdAsync(branchId, keyword, status, pageIndex, pageSize, orderBy);
+
+                if (materials == null || !materials.Any())
+                {
+                    var emptyResponse = new PagedResponse<MaterialResponse>(new List<MaterialResponse>(), 0, pageIndex, pageSize);
+                    var response = new ResponseObject<PagedResponse<MaterialResponse>>("No materials found for this branch.", emptyResponse);
+                    return Ok(response);
+                }
+
+                var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
+
+                var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
+
+                var successResponse = new ResponseObject<PagedResponse<MaterialResponse>>("Materials retrieved successfully.", pagedResponse);
+
+                return Ok(successResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
+        [HttpGet("businesses/{businessId}")]
+        public async Task<IActionResult> GetMaterialsByBusinessIdAsync(
+            int businessId,
+            [FromQuery] string? keyword = null,
+            [FromQuery] string? status = null,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            try
+            {
+                var (materials, total) = await _materialService.GetMaterialsByBusinessIdAsync(businessId, keyword, status, pageIndex, pageSize, orderBy);
+
+                if (materials == null || !materials.Any())
+                {
+                    var emptyResponse = new PagedResponse<MaterialResponse>(new List<MaterialResponse>(), 0, pageIndex, pageSize);
+                    var response = new ResponseObject<PagedResponse<MaterialResponse>>("No materials found for this business.", emptyResponse);
+                    return Ok(response);
+                }
+
+                var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
+
+                var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
+
+                var successResponse = new ResponseObject<PagedResponse<MaterialResponse>>("Materials retrieved successfully.", pagedResponse);
+
+                return Ok(successResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMaterialAsync([FromBody] MaterialCreateRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.Status) || !Util.IsValidGeneralStatus(request.Status))
+                {
+                    throw new ArgumentException("Material status is invalid.", nameof(request.Status));
+                }
+                request.Status = request.Status.Trim().ToUpperInvariant();
+
+                string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int.TryParse(userIdClaim, out int id);
+
+                var businessId = await _businessService.GetBusinessIdByOwnerIdAsync(id);
+
+                if (businessId == null)
+                {
+                    throw new ArgumentException("This account has no business.");
+                }
+
+                await _materialService.AddMaterialAsync(request, businessId.Value);
+                return Ok(new ResponseObject<string>("Material created successfully"));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new ResponseObject<MaterialResponse>($"Error: {ex.Message}", null));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseObject<MaterialResponse>($"Validation error: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<MaterialResponse>($"Unexpected error: {ex.Message}", null));
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMaterial(int id, [FromBody] MaterialUpdateRequest materialUpdateRequest)
+        public async Task<IActionResult> UpdateMaterialAsync([FromBody] MaterialUpdateRequest materialUpdateRequest, int id)
         {
             if (materialUpdateRequest == null)
             {
-                return BadRequest(new ResponseObject<MaterialResponse>("Material không được null.", null));
+                return BadRequest("Material update request cannot be empty.");
             }
 
-            var material = _mapper.Map<Material>(materialUpdateRequest);
-            if (string.IsNullOrWhiteSpace(material.Status))
-            {
-                throw new ArgumentException("Status không được bỏ trống.", nameof(material.Status));
-            }
-            material.Status = material.Status.Trim().ToUpperInvariant();
             try
             {
-                await _materialService.UpdateMaterialAsync(id, material);
-                return NoContent();
+                await _materialService.UpdateMaterialAsync(materialUpdateRequest, id);
+                return Ok("Material updated successfully.");
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<MaterialResponse>(ex.Message, null));
+                return BadRequest(ex.Message);
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ResponseObject<MaterialResponse>(ex.Message, null));
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<MaterialResponse>("Lỗi không xác định: " + ex.Message, null));
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
+        [HttpPut("update-quantity")]
+        public async Task<IActionResult> UpdateMaterialQuantityAsync([FromBody] int quantity, [FromQuery] int branchId, [FromQuery] int materialId)
+        {
+            if (quantity <= 0)
+            {
+                return BadRequest("Quantity must be greater than zero.");
+            }
+
+            try
+            {
+                await _materialService.UpdateMaterialAsync(quantity, branchId, materialId);
+                return Ok(new ResponseObject<string>("Material quantity updated successfully."));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>($"Material not found: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Internal server error: {ex.Message}", null));
+            }
+        }
+
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMaterial(int id)
+        public async Task<IActionResult> DeleteMaterialAsync(int id)
         {
             try
             {
                 await _materialService.DeleteMaterialAsync(id);
                 return NoContent();
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ResponseObject<MaterialResponse>(ex.Message, null));
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<MaterialResponse>("Lỗi không xác định: " + ex.Message, null));
+                return NotFound(new ResponseObject<MaterialResponse>(ex.Message, null));
             }
         }
     }
