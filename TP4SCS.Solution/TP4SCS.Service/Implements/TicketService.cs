@@ -168,6 +168,14 @@ namespace TP4SCS.Services.Implements
         //Create Ticket
         public async Task<ApiResponse<TicketResponse>> CreateTicketAsync(int id, CreateTicketRequest createTicketRequest)
         {
+            var category = await _ticketCategoryRepository.GetCategoryByIdAsync(createTicketRequest.CategoryId);
+            var orderCateId = await _ticketCategoryRepository.GetOrderTicketCategoryIdAsync();
+
+            if (category == null || category.Status.Equals(StatusConstants.UNAVAILABLE) || createTicketRequest.CategoryId == orderCateId)
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Loại Đơn Hỗ Trợ!");
+            }
+
             var newTicket = _mapper.Map<SupportTicket>(createTicketRequest);
             newTicket.UserId = id;
 

@@ -317,6 +317,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        //Update Account To Owner
         public async Task<ApiResponse<AccountResponse>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest)
         {
             var account = await _accountRepository.GetAccountByIdForAdminAsync(id);
@@ -330,7 +331,14 @@ namespace TP4SCS.Services.Implements
 
             if (isPhoneExisted)
             {
-                return new ApiResponse<AccountResponse>("error", 404, "Số Điện Thoại Đã Được Sử Dụng!");
+                return new ApiResponse<AccountResponse>("error", 400, "Số Điện Thoại Đã Được Sử Dụng!");
+            }
+
+            var isCitizenIdExisted = await _businessRepository.IsCitizenIdExistedAsync(createBusinessRequest.CitizenId.Trim());
+
+            if (isCitizenIdExisted)
+            {
+                return new ApiResponse<AccountResponse>("error", 400, "Số CCCD Đã Được Sử Dụng!");
             }
 
             account.Role = RoleConstants.OWNER;

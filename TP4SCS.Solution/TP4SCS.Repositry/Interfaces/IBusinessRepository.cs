@@ -26,6 +26,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<bool> IsPhoneExistedAsync(string phone);
 
+        Task<bool> IsCitizenIdExistedAsync(string citizenId);
+
         Task CreateBusinessProfileAsync(BusinessProfile businessProfile);
 
         Task UpdateBusinessProfileAsync(BusinessProfile businessProfile);

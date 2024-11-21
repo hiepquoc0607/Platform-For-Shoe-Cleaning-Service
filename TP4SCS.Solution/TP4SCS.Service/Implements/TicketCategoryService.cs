@@ -83,18 +83,20 @@ namespace TP4SCS.Services.Implements
         //Update Ticket Category
         public async Task<ApiResponse<TicketCategoryResponse>> UpdateCategoryAsync(int id, UpdateTicketCategoryRequest updateTicketCategoryRequest)
         {
-            var isNameExisted = await _ticketCategoryRepository.IsNameExistedAsync(_util.FormatStringName(updateTicketCategoryRequest.Name));
-
-            if (isNameExisted)
-            {
-                return new ApiResponse<TicketCategoryResponse>("error", 400, "Tên Loại Phiếu Đã Tồn Tại!");
-            }
-
             var oldCategory = await _ticketCategoryRepository.GetCategoryByIdAsync(id);
 
             if (oldCategory == null)
             {
                 return new ApiResponse<TicketCategoryResponse>("error", 404, "Không Tìm Thấy Loại Phiếu!");
+            }
+
+            var newName = _util.FormatStringName(updateTicketCategoryRequest.Name);
+
+            var isNameExisted = await _ticketCategoryRepository.IsNameExistedAsync(newName);
+
+            if (isNameExisted && !newName.Equals(oldCategory.Name))
+            {
+                return new ApiResponse<TicketCategoryResponse>("error", 400, "Tên Loại Phiếu Đã Tồn Tại!");
             }
 
             var newCategory = _mapper.Map(updateTicketCategoryRequest, oldCategory);

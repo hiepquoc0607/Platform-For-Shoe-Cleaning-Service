@@ -23,11 +23,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<TicketCategory?> GetCategoryByIdAsync(int id)
         {
-            return await _dbContext.TicketCategories
-                .SingleOrDefaultAsync(c => c.Id == id &&
-                c.Status.Equals(StatusConstants.AVAILABLE) &&
-                !EF.Functions.Collate(c.Name, "SQL_Latin1_General_CP1_CI_AS")
-                .Equals("Khiếu Nại Dịch Vụ"));
+            return await _dbContext.TicketCategories.SingleOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<int> GetOrderTicketCategoryIdAsync()
