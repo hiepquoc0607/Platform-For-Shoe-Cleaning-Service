@@ -17,6 +17,7 @@ namespace TP4SCS.Library.Repositories
         {
             // Tạo truy vấn cơ bản
             var query = _dbContext.Transactions
+                .Include(t => t.Account)
                 .AsQueryable();
 
             // Áp dụng sắp xếp theo OrderByEnum
@@ -26,6 +27,7 @@ namespace TP4SCS.Library.Repositories
                 OrderByEnum.IdDesc => query.OrderByDescending(t => t.Id),
                 _ => query.OrderByDescending(t => t.Id)
             };
+
             return await query.ToListAsync();
         }
 
