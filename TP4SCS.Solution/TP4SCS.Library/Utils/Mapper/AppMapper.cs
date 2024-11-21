@@ -9,6 +9,7 @@ using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Request.Transaction;
+using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.BranchService;
@@ -21,6 +22,7 @@ using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
+using TP4SCS.Library.Models.Response.SubcriptionPack;
 using TP4SCS.Library.Models.Response.Transaction;
 using TP4SCS.Library.Utils.Utils;
 
@@ -30,6 +32,13 @@ namespace TP4SCS.Library.Utils.Mapper
     {
         public AppMapper()
         {
+            //Account Mapping
+            CreateMap<Account, AccountResponse>();
+
+            //Pack Mapping
+            CreateMap<SubscriptionPack, SubscriptionPackResponse>();
+
+            //Service Mapping
             CreateMap<Service, ServiceResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<Service, ServiceCreateResponse>()
