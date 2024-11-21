@@ -239,6 +239,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 }
 
+app.UseSwagger();
+
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
+
 app.UseMiddleware<ResponseMiddleware>();
 
 app.UseHttpsRedirection();
