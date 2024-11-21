@@ -34,7 +34,7 @@ namespace TP4SCS.Library.Services
         // Lấy giao dịch theo ID
         public async Task<Transaction?> GetTransactionByIdAsync(int id)
         {
-            return await _transactionRepository.GetTransactionByIdAsync(id);
+            return await _transactionRepository.GetTransactionByIdForViewAsync(id);
         }
 
         public async Task<PagedResponse<Transaction>> GetTransactionsByAccountIdAsync(int accountId, int pageIndex = 1, int pageSize = 10)

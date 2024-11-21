@@ -22,7 +22,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<SubscriptionPack?> GetPackByIdAsync(int id)
         {
-            return await _dbContext.SubscriptionPacks.FirstOrDefaultAsync(p => p.Id == id);
+            return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<decimal> GetPackPriceByPeriodAsync(int period)

@@ -21,6 +21,7 @@ namespace TP4SCS.Library.Repositories
                 {
                     Id = t.Id,
                     Account = _dbContext.Accounts
+                    .AsNoTracking()
                     .Where(a => a.Id == t.AccountId)
                     .Select(a => new Account
                     {
@@ -35,6 +36,7 @@ namespace TP4SCS.Library.Repositories
                     })
                     .SingleOrDefault()!,
                     Pack = _dbContext.SubscriptionPacks
+                    .AsNoTracking()
                     .Where(p => p.Id == t.PackId)
                     .Select(p => new SubscriptionPack
                     {
@@ -69,10 +71,20 @@ namespace TP4SCS.Library.Repositories
         public async Task<Transaction?> GetTransactionByIdAsync(int id)
         {
             return await _dbContext.Transactions
+                .SingleOrDefaultAsync(t => t.Id == id);
+        }
+
+        // Lấy tất cả giao dịch theo AccountId
+        public async Task<IEnumerable<Transaction>> GetTransactionsByAccountIdAsync(int accountId)
+        {
+            return await _dbContext.Transactions
+                .Where(t => t.AccountId == accountId)
                 .Select(t => new Transaction
                 {
                     Id = t.Id,
+                    AccountId = t.AccountId,
                     Account = _dbContext.Accounts
+                    .AsNoTracking()
                     .Where(a => a.Id == t.AccountId)
                     .Select(a => new Account
                     {
@@ -86,8 +98,10 @@ namespace TP4SCS.Library.Repositories
                         Status = a.Status,
                     })
                     .SingleOrDefault()!,
+                    PackId = t.PackId,
                     Pack = _dbContext.SubscriptionPacks
                     .Where(p => p.Id == t.PackId)
+                    .AsNoTracking()
                     .Select(p => new SubscriptionPack
                     {
                         Id = p.Id,
@@ -103,14 +117,6 @@ namespace TP4SCS.Library.Repositories
                     PaymentMethod = t.PaymentMethod,
                     Status = t.Status
                 })
-                .SingleOrDefaultAsync(t => t.Id == id);
-        }
-
-        // Lấy tất cả giao dịch theo AccountId
-        public async Task<IEnumerable<Transaction>> GetTransactionsByAccountIdAsync(int accountId)
-        {
-            return await _dbContext.Transactions
-                .Where(t => t.AccountId == accountId)
                 .ToListAsync();
         }
 
@@ -137,6 +143,50 @@ namespace TP4SCS.Library.Repositories
                 .FirstOrDefaultAsync(t => t.Id == id);
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             await DeleteAsync(id);
+        }
+
+        public async Task<Transaction?> GetTransactionByIdForViewAsync(int id)
+        {
+            return await _dbContext.Transactions
+                .Select(t => new Transaction
+                {
+                    Id = t.Id,
+                    AccountId = t.AccountId,
+                    Account = _dbContext.Accounts
+                    .AsNoTracking()
+                    .Where(a => a.Id == t.AccountId)
+                    .Select(a => new Account
+                    {
+                        Id = a.Id,
+                        Email = a.Email,
+                        FullName = a.FullName,
+                        Phone = a.Phone,
+                        Gender = a.Gender,
+                        Dob = a.Dob,
+                        ImageUrl = a.ImageUrl,
+                        Status = a.Status,
+                    })
+                    .SingleOrDefault()!,
+                    PackId = t.PackId,
+                    Pack = _dbContext.SubscriptionPacks
+                    .AsNoTracking()
+                    .Where(p => p.Id == t.PackId)
+                    .Select(p => new SubscriptionPack
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Period = p.Period,
+                        Description = p.Description,
+                        Price = p.Price,
+                    })
+                    .SingleOrDefault()!,
+                    Balance = t.Balance,
+                    ProcessTime = t.ProcessTime,
+                    Description = t.Description,
+                    PaymentMethod = t.PaymentMethod,
+                    Status = t.Status
+                })
+                .SingleOrDefaultAsync(t => t.Id == id);
         }
     }
 }
