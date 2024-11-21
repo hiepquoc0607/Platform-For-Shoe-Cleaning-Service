@@ -1,4 +1,7 @@
-﻿namespace TP4SCS.Library.Models.Response.SubcriptionPack
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Response.SubcriptionPack
 {
     public class SubscriptionPackResponse
     {
@@ -10,6 +13,8 @@
 
         public int Period { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DefaultValue(0)]
         public decimal? Price { get; set; }
     }
 }

@@ -17,7 +17,40 @@ namespace TP4SCS.Library.Repositories
         {
             // Tạo truy vấn cơ bản
             var query = _dbContext.Transactions
-                .Include(t => t.Account)
+                .Select(t => new Transaction
+                {
+                    Id = t.Id,
+                    Account = _dbContext.Accounts
+                    .Where(a => a.Id == t.AccountId)
+                    .Select(a => new Account
+                    {
+                        Id = a.Id,
+                        Email = a.Email,
+                        FullName = a.FullName,
+                        Phone = a.Phone,
+                        Gender = a.Gender,
+                        Dob = a.Dob,
+                        ImageUrl = a.ImageUrl,
+                        Status = a.Status,
+                    })
+                    .SingleOrDefault()!,
+                    Pack = _dbContext.SubscriptionPacks
+                    .Where(p => p.Id == t.PackId)
+                    .Select(p => new SubscriptionPack
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Period = p.Period,
+                        Description = p.Description,
+                        Price = p.Price,
+                    })
+                    .SingleOrDefault()!,
+                    Balance = t.Balance,
+                    ProcessTime = t.ProcessTime,
+                    Description = t.Description,
+                    PaymentMethod = t.PaymentMethod,
+                    Status = t.Status
+                })
                 .AsQueryable();
 
             // Áp dụng sắp xếp theo OrderByEnum
@@ -36,7 +69,41 @@ namespace TP4SCS.Library.Repositories
         public async Task<Transaction?> GetTransactionByIdAsync(int id)
         {
             return await _dbContext.Transactions
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .Select(t => new Transaction
+                {
+                    Id = t.Id,
+                    Account = _dbContext.Accounts
+                    .Where(a => a.Id == t.AccountId)
+                    .Select(a => new Account
+                    {
+                        Id = a.Id,
+                        Email = a.Email,
+                        FullName = a.FullName,
+                        Phone = a.Phone,
+                        Gender = a.Gender,
+                        Dob = a.Dob,
+                        ImageUrl = a.ImageUrl,
+                        Status = a.Status,
+                    })
+                    .SingleOrDefault()!,
+                    Pack = _dbContext.SubscriptionPacks
+                    .Where(p => p.Id == t.PackId)
+                    .Select(p => new SubscriptionPack
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Period = p.Period,
+                        Description = p.Description,
+                        Price = p.Price,
+                    })
+                    .SingleOrDefault()!,
+                    Balance = t.Balance,
+                    ProcessTime = t.ProcessTime,
+                    Description = t.Description,
+                    PaymentMethod = t.PaymentMethod,
+                    Status = t.Status
+                })
+                .SingleOrDefaultAsync(t => t.Id == id);
         }
 
         // Lấy tất cả giao dịch theo AccountId

@@ -39,7 +39,11 @@ namespace TP4SCS.WebAPI.Controllers
                 return Ok(new ResponseObject<PagedResponse<TransactionResponse>>(
                     "Lấy giao dịch thành công",
                     new PagedResponse<TransactionResponse>(
-                        pagedResponse.Items.Select(t => _mapper.Map<TransactionResponse>(t)),
+                        pagedResponse.Items.Select(t =>
+                        {
+                            var res = _mapper.Map<TransactionResponse>(t);
+                            return res;
+                        }) ?? Enumerable.Empty<TransactionResponse>(),
                         pagedResponse.TotalCount,
                         pagedRequest.PageIndex,
                         pagedRequest.PageSize
