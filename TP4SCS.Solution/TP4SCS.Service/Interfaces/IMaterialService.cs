@@ -36,5 +36,7 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdDesc);
+
+        Task UpdateMaterialAsync(int quantity, int branchId, int materialId);
     }
 }

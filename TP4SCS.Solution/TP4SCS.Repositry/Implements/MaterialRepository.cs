@@ -120,6 +120,21 @@ namespace TP4SCS.Repository.Implements
                     .ThenInclude(bm => bm.Branch); // Bao gồm Branch trong BranchMaterials
             return await query.ToListAsync();
         }
+        public async Task UpdateQuantityAsync(int quantity, int branchId, int materialId)
+        {
+            var branchMaterial = await _dbContext.BranchMaterials
+                                                  .Where(bm => bm.MaterialId == materialId && bm.BranchId == branchId)
+                                                  .SingleOrDefaultAsync();
+            if (branchMaterial == null)
+            {
+                throw new KeyNotFoundException($"BranchMaterial với MaterialId {materialId} and BranchId {branchId} không tìm thấy.");
+            }
+
+            branchMaterial.Storage = quantity;
+            _dbContext.BranchMaterials.Update(branchMaterial);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task UpdateMaterialAsync(Material material, int[] branchIds)
         {
             var existingBranchMaterials = await _dbContext.BranchMaterials

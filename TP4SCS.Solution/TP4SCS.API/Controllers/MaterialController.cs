@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Material;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -26,12 +26,12 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ResponseObject<PagedResponse<MaterialResponse>>>> GetMaterialsAsync(
-                    [FromQuery] string? keyword = null,
-                    [FromQuery] string? status = null,
-                    [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc,
-                    [FromQuery] int pageIndex = 1,
-                    [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetMaterialsAsync(
+            [FromQuery] string? keyword = null,
+            [FromQuery] string? status = null,
+            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -44,7 +44,6 @@ namespace TP4SCS.API.Controllers
                     return Ok(response);
                 }
 
-                // Chuyển đổi dữ liệu từ Material sang MaterialResponse
                 var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
 
                 var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
@@ -59,8 +58,26 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, errorResponse);
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMaterialsByBranchIdAsync(int id)
+        {
+            try
+            {
+                var material = await _materialService.GetMaterialByIdAsync(id);
+                var materialResponse = _mapper.Map<MaterialResponse>(material);
+
+                return Ok(new ResponseObject<MaterialResponse>("Material retrieved successfully.", materialResponse));
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
         [HttpGet("branches/{branchId}")]
-        public async Task<ActionResult<ResponseObject<PagedResponse<MaterialResponse>>>> GetMaterialsByBranchIdAsync(
+        public async Task<IActionResult> GetMaterialsByBranchIdAsync(
             int branchId,
             [FromQuery] string? keyword = null,
             [FromQuery] string? status = null,
@@ -70,7 +87,6 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                // Lấy dữ liệu từ service
                 var (materials, total) = await _materialService.GetMaterialsByBranchIdAsync(branchId, keyword, status, pageIndex, pageSize, orderBy);
 
                 if (materials == null || !materials.Any())
@@ -96,7 +112,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet("businesses/{businessId}")]
-        public async Task<ActionResult<ResponseObject<PagedResponse<MaterialResponse>>>> GetMaterialsByBusinessIdAsync(
+        public async Task<IActionResult> GetMaterialsByBusinessIdAsync(
             int businessId,
             [FromQuery] string? keyword = null,
             [FromQuery] string? status = null,
@@ -106,7 +122,6 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                // Lấy dữ liệu từ service
                 var (materials, total) = await _materialService.GetMaterialsByBusinessIdAsync(businessId, keyword, status, pageIndex, pageSize, orderBy);
 
                 if (materials == null || !materials.Any())
@@ -116,10 +131,10 @@ namespace TP4SCS.API.Controllers
                     return Ok(response);
                 }
 
-                // Chuyển đổi dữ liệu từ Material sang MaterialResponse
                 var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
 
                 var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
+
                 var successResponse = new ResponseObject<PagedResponse<MaterialResponse>>("Materials retrieved successfully.", pagedResponse);
 
                 return Ok(successResponse);
@@ -132,25 +147,15 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseObject<MaterialResponse>>> AddMaterialAsync(
-            [FromBody] MaterialCreateRequest materialRequest)
+        public async Task<IActionResult> CreateMaterialAsync([FromBody] MaterialCreateRequest request)
         {
             try
             {
-                if (materialRequest == null)
+                if (string.IsNullOrEmpty(request.Status) || !Util.IsValidGeneralStatus(request.Status))
                 {
-                    return BadRequest(new ResponseObject<MaterialResponse>("Yêu cầu thêm nguyên liệu không được để trống.", null));
+                    throw new ArgumentException("Material status is invalid.", nameof(request.Status));
                 }
-
-                if (materialRequest.Price <= 0)
-                {
-                    return BadRequest(new ResponseObject<MaterialResponse>("Giá phải lớn hơn 0.", null));
-                }
-
-                if (materialRequest.AssetUrls == null || !materialRequest.AssetUrls.Any())
-                {
-                    return BadRequest(new ResponseObject<MaterialResponse>("Hình ảnh không được để trống.", null));
-                }
+                request.Status = request.Status.Trim().ToUpperInvariant();
 
                 string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int.TryParse(userIdClaim, out int id);
@@ -159,36 +164,38 @@ namespace TP4SCS.API.Controllers
 
                 if (businessId == null)
                 {
-                    throw new ArgumentException("Account này chưa có doanh nghiệp nào.");
+                    throw new ArgumentException("This account has no business.");
                 }
-                await _materialService.AddMaterialAsync(materialRequest, businessId.Value);
 
-                // Chuyển đổi dữ liệu từ Material sang MaterialResponse
-                var materialResponse = _mapper.Map<MaterialResponse>(materialRequest);
-
-                var successResponse = new ResponseObject<MaterialResponse>("Thêm nguyên liệu thành công.", materialResponse);
-
-                return Ok(successResponse);
+                await _materialService.AddMaterialAsync(request, businessId.Value);
+                return Ok(new ResponseObject<string>("Material created successfully"));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new ResponseObject<MaterialResponse>($"Error: {ex.Message}", null));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseObject<MaterialResponse>($"Validation error: {ex.Message}", null));
             }
             catch (Exception ex)
             {
-                var errorResponse = new ResponseObject<MaterialResponse>($"Lỗi: {ex.Message}", null);
-                return StatusCode(500, errorResponse);
+                return StatusCode(500, new ResponseObject<MaterialResponse>($"Unexpected error: {ex.Message}", null));
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMaterialAsync([FromBody] MaterialUpdateRequest materialUpdateRequest, int id)
         {
             if (materialUpdateRequest == null)
             {
-                return BadRequest("Yêu cầu cập nhật nguyên liệu không được để trống.");
+                return BadRequest("Material update request cannot be empty.");
             }
 
             try
             {
-                // Gọi service để cập nhật nguyên liệu
                 await _materialService.UpdateMaterialAsync(materialUpdateRequest, id);
-                return Ok("Nguyên liệu đã được cập nhật thành công.");
+                return Ok("Material updated successfully.");
             }
             catch (ArgumentNullException ex)
             {
@@ -204,30 +211,46 @@ namespace TP4SCS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpPut("update-quantity")]
+        public async Task<IActionResult> UpdateMaterialQuantityAsync([FromBody] int quantity, [FromQuery] int branchId, [FromQuery] int materialId)
+        {
+            if (quantity <= 0)
+            {
+                return BadRequest("Quantity must be greater than zero.");
+            }
+
+            try
+            {
+                await _materialService.UpdateMaterialAsync(quantity, branchId, materialId);
+                return Ok(new ResponseObject<string>("Material quantity updated successfully."));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>($"Material not found: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Internal server error: {ex.Message}", null));
+            }
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterialAsync(int id)
         {
             try
             {
-                // Gọi service để xóa nguyên liệu
                 await _materialService.DeleteMaterialAsync(id);
-                return NoContent(); // Trả về 204 No Content nếu xóa thành công
-            }
-            catch (KeyNotFoundException ex)
-            {
-                // Trường hợp không tìm thấy nguyên liệu
-                return NotFound(new ResponseObject<MaterialResponse>(ex.Message, null));
+                return NoContent();
             }
             catch (Exception ex)
             {
-                // Trường hợp có lỗi khác
-                return StatusCode(500, new ResponseObject<string>("Lỗi máy chủ nội bộ", ex.Message));
+                return NotFound(new ResponseObject<MaterialResponse>(ex.Message, null));
             }
         }
-
     }
 }

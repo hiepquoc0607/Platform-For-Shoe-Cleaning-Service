@@ -217,6 +217,9 @@ namespace TP4SCS.Services.Implements
             return (filteredMaterials, totalCount);
         }
 
-
+        public async Task UpdateMaterialAsync(int quantity, int branchId, int materialId)
+        {
+            await _materialRepository.UpdateQuantityAsync(quantity, branchId, materialId);
+        }
     }
 }
