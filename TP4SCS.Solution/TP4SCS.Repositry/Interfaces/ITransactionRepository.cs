@@ -12,6 +12,8 @@ namespace TP4SCS.Library.Repositories
         // Lấy giao dịch theo ID
         Task<Transaction?> GetTransactionByIdAsync(int id);
 
+        Task<Transaction?> GetTransactionByIdForViewAsync(int id);
+
         // Lấy tất cả giao dịch theo AccountId
         Task<IEnumerable<Transaction>> GetTransactionsByAccountIdAsync(int accountId);
 

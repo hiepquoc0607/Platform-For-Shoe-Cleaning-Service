@@ -64,13 +64,13 @@ namespace TP4SCS.Services.Implements
                 Status = StatusConstants.PENDING
             };
 
-            var vnpay = new VnPayRequest
-            {
-                TransactionId = pack.Id,
-                Balance = (double)newTransaction.Balance,
-                CreatedDate = DateTime.Now,
-                Description = newTransaction.Description,
-            };
+            //var vnpay = new VnPayRequest
+            //{
+            //    TransactionId = pack.Id,
+            //    Balance = (double)newTransaction.Balance,
+            //    CreatedDate = DateTime.Now,
+            //    Description = newTransaction.Description,
+            //};
 
             string payUrl = "";
 
@@ -137,26 +137,26 @@ namespace TP4SCS.Services.Implements
 
             if (result.VnPayResponseCode.Equals("00"))
             {
-                transaction.Status = StatusConstants.COMPLETED;
+                await _transactionRepository.RunInTransactionAsync(async () =>
+                {
+                    transaction.Status = StatusConstants.COMPLETED;
 
-                business.RegisteredTime = DateTime.Now;
-                if (business.ExpiredTime > DateTime.Now)
-                {
-                    business.ExpiredTime = business.ExpiredTime.AddMonths(pack.Period);
-                }
-                else
-                {
-                    business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
-                }
-                business.Status = StatusConstants.ACTIVE;
-
-                await _subscriptionPackRepository.RunInTransactionAsync(async () =>
-                {
                     await _transactionRepository.UpdateTransactionAsync(transaction);
+
+                    business.RegisteredTime = DateTime.Now;
+                    if (business.ExpiredTime > DateTime.Now)
+                    {
+                        business.ExpiredTime = business.ExpiredTime.AddMonths(pack.Period);
+                    }
+                    else
+                    {
+                        business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
+                    }
+                    business.Status = StatusConstants.ACTIVE;
 
                     await _businessRepository.UpdateBusinessProfileAsync(business);
 
-                    await _transactionRepository.SaveAsync();
+                    await _businessRepository.SaveAsync();
                 });
 
                 return new ApiResponse<PaymentResponse>("success", "Thanh Toán Gói Đăng Kí Thành Công!", null, 200);
