@@ -2,12 +2,6 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
-using TP4SCS.Library.Models.Response.AssetUrl;
-using TP4SCS.Library.Models.Response.Branch;
-using TP4SCS.Library.Models.Response.BranchService;
-using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.Promotion;
-using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -347,52 +341,37 @@ namespace TP4SCS.Services.Implements
 
             return finalPrice;
         }
-
-        public async Task<ApiResponse<IEnumerable<ServiceResponse>?>> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBusinessServiceRequest)
+        public async Task<(IEnumerable<Service>?, int)> GetServicesByBusinessIdAsync(
+            int businessId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            var (services, pagination) = await _serviceRepository.GetServiceByBusinessIdAsync(getBusinessServiceRequest);
+            // Chỉ lấy danh sách dịch vụ theo keyword và status từ repository
+            var services = await _serviceRepository.GetServicesAsync(keyword, status, null, null, orderBy);
 
-            if (services == null)
+            // Lọc các dịch vụ theo branchId
+            var filteredServices = services?.Where(s => s.BranchServices.Any(bs => bs.Branch.BusinessId == businessId));
+
+            // Đếm tổng số dịch vụ sau khi lọc
+            int totalCount = filteredServices?.Count() ?? 0;
+
+            // Sắp xếp các dịch vụ dựa trên giá trị của orderBy
+            filteredServices = orderBy == OrderByEnum.IdAsc
+                ? filteredServices?.OrderBy(s => s.Id)
+                : filteredServices?.OrderByDescending(s => s.Id);
+
+            // Thực hiện phân trang nếu pageIndex và pageSize có giá trị
+            if (pageIndex.HasValue && pageSize.HasValue && pageSize > 0)
             {
-                return new ApiResponse<IEnumerable<ServiceResponse>?>("error", 404, "Doanh Nghiệp Chưa Có Dịch Vụ!");
+                filteredServices = filteredServices?
+                    .Skip((pageIndex.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value);
             }
 
-            var data = services.Select(s =>
-            {
-                var res = _mapper.Map<ServiceResponse>(s);
-                res.Status = Util.TranslateGeneralStatus(s.Status);
-
-                if (s.Promotion != null)
-                {
-                    var promotionRes = _mapper.Map<PromotionResponse>(s.Promotion);
-                    promotionRes.Status = Util.TranslateGeneralStatus(promotionRes.Status);
-                    res.Promotion = promotionRes;
-                }
-
-                if (s.AssetUrls != null && s.AssetUrls.Any())
-                {
-                    var assetRes = _mapper.Map<List<AssetUrlResponse>>(s.AssetUrls);
-                    res.AssetUrls = assetRes;
-                }
-
-                if (s.BranchServices != null && s.BranchServices.Any())
-                {
-                    var branchServiceResponses = s.BranchServices.Select(bs =>
-                    {
-                        var branchServiceResponse = _mapper.Map<BranchServiceResponse>(bs);
-
-                        branchServiceResponse.Branch = _mapper.Map<BranchResponse>(bs.Branch);
-
-                        return branchServiceResponse;
-                    }).ToList();
-
-                    res.BranchServices = branchServiceResponses;
-                }
-
-                return res;
-            });
-
-            return new ApiResponse<IEnumerable<ServiceResponse>?>("success", "Lấy Dữ Liệu Dịch Vụ Thành Công!", data, 200, pagination);
+            return (filteredServices, totalCount);
         }
     }
 }
