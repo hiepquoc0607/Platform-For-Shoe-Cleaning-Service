@@ -52,7 +52,9 @@ namespace TP4SCS.Library.Repositories
                 _ => query.OrderByDescending(t => t.Id)
             };
 
-            return await query.ToListAsync();
+            return await query
+                .OrderByDescending(t => t.ProcessTime)
+                .ToListAsync();
         }
 
 
@@ -94,6 +96,7 @@ namespace TP4SCS.Library.Repositories
                     PaymentMethod = t.PaymentMethod,
                     Status = t.Status
                 })
+                .OrderByDescending(t => t.ProcessTime)
                 .ToListAsync();
         }
 
