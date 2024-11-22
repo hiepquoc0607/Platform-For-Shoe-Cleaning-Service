@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MapsterMapper;
+using Microsoft.AspNetCore.Http;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Payment;
 using TP4SCS.Library.Models.Response.General;
@@ -16,16 +17,19 @@ namespace TP4SCS.Services.Implements
         private readonly ISubscriptionPackRepository _subscriptionPackRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IVnPayService _vnPayService;
+        private readonly IMapper _mapper;
 
         public PaymentService(IBusinessRepository businessRepository,
             ISubscriptionPackRepository subscriptionPackRepository,
             ITransactionRepository transactionRepository,
-            IVnPayService vnPayService)
+            IVnPayService vnPayService,
+            IMapper mapper)
         {
             _businessRepository = businessRepository;
             _subscriptionPackRepository = subscriptionPackRepository;
             _transactionRepository = transactionRepository;
             _vnPayService = vnPayService;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponse<string?>> CreatePaymentUrlAsync(HttpContext httpContext, int id, PaymentRequest paymentRequest)
@@ -121,6 +125,8 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Giao Dịch!");
             }
 
+            var newTransaction = _mapper.Map<Transaction>(transaction);
+
             var business = await _businessRepository.GetBusinessByOwnerIdAsync(transaction.AccountId);
 
             if (business == null)
@@ -139,9 +145,9 @@ namespace TP4SCS.Services.Implements
             {
                 await _transactionRepository.RunInTransactionAsync(async () =>
                 {
-                    transaction.Status = StatusConstants.COMPLETED;
+                    newTransaction.Status = StatusConstants.COMPLETED;
 
-                    await _transactionRepository.UpdateTransactionAsync(transaction);
+                    await _transactionRepository.UpdateTransactionAsync(newTransaction);
 
                     business.RegisteredTime = DateTime.Now;
                     if (business.ExpiredTime > DateTime.Now)
@@ -172,7 +178,7 @@ namespace TP4SCS.Services.Implements
                     transaction.Status = StatusConstants.FAILED;
                 }
 
-                await _transactionRepository.UpdateTransactionAsync(transaction);
+                await _transactionRepository.UpdateTransactionAsync(newTransaction);
 
                 await _transactionRepository.SaveAsync();
 

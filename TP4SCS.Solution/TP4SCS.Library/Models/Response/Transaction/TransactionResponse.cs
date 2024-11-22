@@ -7,9 +7,11 @@ namespace TP4SCS.Library.Models.Response.Transaction
     {
         public int Id { get; set; }
 
-        public AccountResponse Account { get; set; } = new AccountResponse();
+        public int AccountId { get; set; }
 
-        public SubscriptionPackResponse Pack { get; set; } = new SubscriptionPackResponse();
+        public string AccountName { get; set; } = string.Empty;
+
+        public string PackName { get; set; } = string.Empty;
 
         public decimal Balance { get; set; }
 

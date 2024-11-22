@@ -41,7 +41,9 @@ namespace TP4SCS.Services.Implements
             {
                 await _ticketCategoryRepository.CreateCategoryAsync(newCategory);
 
-                return new ApiResponse<TicketCategoryResponse>("success", "Tạo Loại Phiếu Mới Thành Công!", null, 200);
+                var newTck = await GetCategoryByIdAsync(newCategory.Id);
+
+                return new ApiResponse<TicketCategoryResponse>("success", "Tạo Loại Phiếu Mới Thành Công!", newTck.Data, 201);
             }
             catch (Exception)
             {

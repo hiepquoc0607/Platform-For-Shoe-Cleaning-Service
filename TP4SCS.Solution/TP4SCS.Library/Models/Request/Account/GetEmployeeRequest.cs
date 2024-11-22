@@ -9,7 +9,7 @@ namespace TP4SCS.Library.Models.Request.Account
         public string? SearchKey { get; set; }
 
         [DefaultValue(null)]
-        public AccountSearchOption? SortBy { get; set; }
+        public AccountSortOption? SortBy { get; set; }
 
         [DefaultValue(null)]
         public AccountStatus? Status { get; set; }

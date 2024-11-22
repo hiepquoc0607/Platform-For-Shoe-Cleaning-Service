@@ -76,13 +76,13 @@ namespace TP4SCS.Repository.Implements
             {
                 accounts = getAccountRequest.SortBy switch
                 {
-                    AccountSearchOption.EMAIL => getAccountRequest.IsDecsending
+                    AccountSortOption.EMAIL => getAccountRequest.IsDecsending
                                 ? accounts.OrderByDescending(a => a.Email)
                                 : accounts.OrderBy(a => a.Email),
-                    AccountSearchOption.FULLNAME => getAccountRequest.IsDecsending
+                    AccountSortOption.FULLNAME => getAccountRequest.IsDecsending
                                   ? accounts.OrderByDescending(a => a.FullName)
                                   : accounts.OrderBy(a => a.FullName),
-                    AccountSearchOption.STATUS => getAccountRequest.IsDecsending
+                    AccountSortOption.STATUS => getAccountRequest.IsDecsending
                                   ? accounts.OrderByDescending(a => a.Status)
                                   : accounts.OrderBy(a => a.Status),
                     _ => accounts
@@ -259,13 +259,13 @@ namespace TP4SCS.Repository.Implements
             {
                 accounts = getEmployeeRequest.SortBy switch
                 {
-                    AccountSearchOption.EMAIL => getEmployeeRequest.IsDecsending
+                    AccountSortOption.EMAIL => getEmployeeRequest.IsDecsending
                                 ? accounts.OrderByDescending(a => a.Email)
                                 : accounts.OrderBy(a => a.Email),
-                    AccountSearchOption.FULLNAME => getEmployeeRequest.IsDecsending
+                    AccountSortOption.FULLNAME => getEmployeeRequest.IsDecsending
                                   ? accounts.OrderByDescending(a => a.FullName)
                                   : accounts.OrderBy(a => a.FullName),
-                    AccountSearchOption.STATUS => getEmployeeRequest.IsDecsending
+                    AccountSortOption.STATUS => getEmployeeRequest.IsDecsending
                                   ? accounts.OrderByDescending(a => a.Status)
                                   : accounts.OrderBy(a => a.Status),
                     _ => accounts
