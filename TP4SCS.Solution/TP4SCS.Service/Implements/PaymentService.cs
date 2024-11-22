@@ -46,7 +46,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<string?>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByIdAsync(paymentRequest.PackId);
+            var pack = await _subscriptionPackRepository.GetPackByIdNoTrackingAsync(paymentRequest.PackId);
 
             if (pack == null)
             {
@@ -65,16 +65,8 @@ namespace TP4SCS.Services.Implements
                     PaymentOptions.VnPay => "VnPay",
                     _ => "ZaloPay"
                 },
-                Status = StatusConstants.PENDING
+                Status = StatusConstants.PROCESSING
             };
-
-            //var vnpay = new VnPayRequest
-            //{
-            //    TransactionId = pack.Id,
-            //    Balance = (double)newTransaction.Balance,
-            //    CreatedDate = DateTime.Now,
-            //    Description = newTransaction.Description,
-            //};
 
             string payUrl = "";
 

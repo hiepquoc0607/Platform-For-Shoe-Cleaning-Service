@@ -45,7 +45,7 @@ namespace TP4SCS.Library.Services
 
             var newTransaction = _mapper.Map<Transaction>(createTransactionRequest);
             newTransaction.PackName = pack.Name;
-            newTransaction.Description = $"Thanh Toán {pack.Name} Bằng {createTransactionRequest.PaymentMethod} Cho Tài Khoản {account.FullName}";
+            newTransaction.Description = $"Thanh Toán {pack.Name} Bằng {createTransactionRequest.PaymentMethod}";
 
             try
             {
@@ -122,13 +122,11 @@ namespace TP4SCS.Library.Services
                 return new ApiResponse<TransactionResponse>("error", 404, "Không Tìm Thấy Thông Tin Giao Dịch!");
             }
 
-            var account = await _accountRepository.GetAccountByIdNoTrackingAsync(oldTransaction.AccountId);
-
             var newData = _mapper.Map(updateTransactionRequest, oldTransaction);
 
             var newTransaction = _mapper.Map<Transaction>(newData);
             newTransaction.PackName = pack.Name;
-            newTransaction.Description = $"Thanh Toán {pack.Name} Bằng {updateTransactionRequest.PaymentMethod} Cho Tài Khoản {account!.FullName}";
+            newTransaction.Description = $"Thanh Toán {pack.Name} Bằng {updateTransactionRequest.PaymentMethod}";
 
             try
             {
