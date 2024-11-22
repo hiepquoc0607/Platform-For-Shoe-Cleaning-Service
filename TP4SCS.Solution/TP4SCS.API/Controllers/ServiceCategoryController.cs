@@ -58,7 +58,6 @@ namespace TP4SCS.API.Controllers
                     Ok(new ResponseObject<ServiceCategoryResponse>($"Category with ID {id} not found.", null));
                 }
                 var response = _mapper.Map<ServiceCategoryResponse>(category);
-                response.Status = Util.TranslateGeneralStatus(response.Status);
                 return Ok(new ResponseObject<ServiceCategoryResponse>("Fetch Category Success", response));
             }
             catch (Exception ex)
