@@ -89,6 +89,7 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Danh mục với ID {existingCategoryId} không tìm thấy.");
             }
             existingCategory.Name = category.Name;
+            existingCategory.Status = category.Status;
 
             await _categoryRepository.UpdateCategoryAsync(existingCategory);
         }

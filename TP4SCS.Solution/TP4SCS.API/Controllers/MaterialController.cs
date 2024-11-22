@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
+using TP4SCS.Library.Models.Request.ServiceMaterial;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Utils.Utils;
@@ -177,6 +178,24 @@ namespace TP4SCS.API.Controllers
             catch (ArgumentException ex)
             {
                 return BadRequest(new ResponseObject<MaterialResponse>($"Validation error: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<MaterialResponse>($"Unexpected error: {ex.Message}", null));
+            }
+        }
+        [HttpPost]
+        [Route("link")]
+        public async Task<IActionResult> LinkServiceAndMaterialAsync([FromBody] ServiceMaterialRequest request)
+        {
+            try
+            {
+                await _materialService.LinkServiceAndMaterialAsync(request.MaterialId, request.ServiceId);
+                return Ok(new ResponseObject<string>("Link successfully"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ResponseObject<MaterialResponse>($"Error: {ex.Message}", null));
             }
             catch (Exception ex)
             {

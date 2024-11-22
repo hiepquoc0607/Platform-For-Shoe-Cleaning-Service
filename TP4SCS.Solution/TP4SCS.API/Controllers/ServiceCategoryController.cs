@@ -112,26 +112,23 @@ namespace TP4SCS.API.Controllers
 
                 await _categoryService.UpdateServiceCategoryAsync(categoryToUpdate, existingCategoryId);
 
-                var updatedCategory = await _categoryService.GetServiceCategoryByIdAsync(existingCategoryId);
-                var response = _mapper.Map<ServiceCategoryResponse>(updatedCategory);
-
-                return Ok(new ResponseObject<ServiceCategoryResponse>("Update Category Success", response));
+                return Ok(new ResponseObject<string>("Update Category Success"));
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ResponseObject<ServiceCategoryResponse>(ex.Message));
+                return NotFound(new ResponseObject<string>(ex.Message));
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCategoryResponse>(ex.Message));
+                return BadRequest(new ResponseObject<string>(ex.Message));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCategoryResponse>(ex.Message));
+                return BadRequest(new ResponseObject<string>(ex.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<ServiceCategoryResponse>($"An error occurred: {ex.Message}"));
+                return StatusCode(500, new ResponseObject<string>($"An error occurred: {ex.Message}"));
             }
         }
         [HttpDelete("{id}")]

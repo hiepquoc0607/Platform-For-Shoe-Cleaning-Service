@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
+using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
 
@@ -66,6 +67,77 @@ namespace TP4SCS.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Đã xảy ra lỗi trong quá trình xử lý yêu cầu: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("api/user/{id}/carts")]
+        public async Task<IActionResult> GetCartByUserIdV2Async(int id)
+        {
+            try
+            {
+                // Fetch the user's cart
+                var cart = await _cartService.GetCartByUserIdAsync(id);
+                if (cart == null)
+                {
+                    await _cartService.CreateCartAsync(id);
+                    cart = await _cartService.GetCartByUserIdAsync(id);
+                }
+
+                // Map cart to response model and calculate total price
+                var cartResponse = cart.Adapt<CartResponse>();
+                cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
+
+                // Check if cart contains items
+                if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
+                {
+                    // Group items by BranchId
+                    var groupedCartItems = cartResponse.CartItems
+                        .GroupBy(item => item.BranchId)
+                        .Select(branchGroup => new GroupedCartItemResponse
+                        {
+                            BranchId = branchGroup.Key,
+                            CartItemResponse = branchGroup
+                                .Where(item => item.MaterialId == null) // Get only services (MaterialId == null)
+                                .Select(serviceItem => new GroupCartItemByServiceResponse
+                                {
+                                    ServiceId = serviceItem.ServiceId,
+                                    ServiceName = serviceItem.ServiceName,
+                                    ServiceStatus = serviceItem.ServiceStatus,
+                                    Price = serviceItem.Price,
+                                    Quantity = serviceItem.Quantity,
+                                    Materials = branchGroup
+                                        .Where(materialItem => materialItem.MaterialId.HasValue
+                                            && materialItem.ServiceId == serviceItem.ServiceId) // Match materials by ServiceId
+                                        .Select(materialItem => new CartItemResponse
+                                        {
+                                            Id = materialItem.Id,
+                                            CartId = materialItem.CartId,
+                                            BranchId = materialItem.BranchId,
+                                            ServiceId = materialItem.ServiceId,
+                                            MaterialId = materialItem.MaterialId,
+                                            ServiceName = materialItem.ServiceName,
+                                            ServiceStatus = materialItem.ServiceStatus,
+                                            Price = materialItem.Price,
+                                            Quantity = materialItem.Quantity
+                                        })
+                                        .ToList()
+                                })
+                                .ToList()
+                        })
+                        .ToList();
+
+                    return Ok(new ResponseObject<IEnumerable<GroupedCartItemResponse>>("Fetch success", groupedCartItems));
+                }
+
+                return Ok(new ResponseObject<string>("Cart is empty"));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = $"Error: {ex.Message}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
             }
         }
 

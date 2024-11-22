@@ -15,6 +15,13 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddMaterialAsync(int[] branchIds, int businessId, Material material)
         {
+            var existingService = await _dbContext.Materials
+                            .AnyAsync(s => s.Name.ToLower() == material.Name.ToLower() && s.BranchMaterials.Any(bs => bs.Branch.BusinessId == businessId));
+
+            if (existingService)
+            {
+                throw new InvalidOperationException($"Material with the name '{material.Name}' already exists for Business ID {businessId}.");
+            }
             // Lấy tất cả các branch từ businessId
             var branches = await _dbContext.BusinessBranches
                                .Where(b => b.BusinessId == businessId)
@@ -62,6 +69,44 @@ namespace TP4SCS.Repository.Implements
                 await _dbContext.BranchMaterials.AddAsync(branchMaterial);
             }
 
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task LinkServiceAndMaterialAsync(int materialId, int serviceId)
+        {
+            // Kiểm tra Material
+            var material = await _dbContext.Materials.FindAsync(materialId);
+            if (material == null)
+            {
+                throw new InvalidOperationException($"Material với ID {materialId} không tồn tại.");
+            }
+            if (material.Status.ToUpper() == StatusConstants.INACTIVE)
+            {
+                throw new InvalidOperationException($"Material với ID {materialId} đã ngừng hoạt động.");
+            }
+
+            var service = await _dbContext.Services.FindAsync(serviceId);
+            if (service == null)
+            {
+                throw new InvalidOperationException($"Service với ID {serviceId} không tồn tại.");
+            }
+            if (service.Status.ToUpper() == StatusConstants.INACTIVE)
+            {
+                throw new InvalidOperationException($"Service với ID {serviceId} đã ngừng hoạt động.");
+            }
+
+            // Kiểm tra liên kết đã tồn tại chưa
+            var existingLink = await _dbContext.ServiceMaterials
+                .FirstOrDefaultAsync(sm => sm.MaterialId == materialId && sm.ServiceId == serviceId);
+
+            if (existingLink == null)
+            {
+                var serviceMaterial = new ServiceMaterial
+                {
+                    MaterialId = materialId,
+                    ServiceId = serviceId
+                };
+                await _dbContext.ServiceMaterials.AddAsync(serviceMaterial);
+            }
             await _dbContext.SaveChangesAsync();
         }
 
