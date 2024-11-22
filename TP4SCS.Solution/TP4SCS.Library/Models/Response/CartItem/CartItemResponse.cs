@@ -7,6 +7,7 @@
         public int CartId { get; set; }
         public int BranchId { get; set; }
         public int ServiceId { get; set; }
+        public int? MaterialId { get; set; }
         public string ServiceName { get; set; } = null!;
         public string ServiceStatus { get; set; } = null!;
 

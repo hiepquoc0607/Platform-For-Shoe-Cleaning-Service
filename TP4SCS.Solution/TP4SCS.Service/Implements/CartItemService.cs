@@ -28,7 +28,20 @@ namespace TP4SCS.Services.Implements
 
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
+        public async Task AddItemsToCartAsync(int userId, List<CartItem> items)
+        {
+            if (!items.Any())
+            {
+                throw new ArgumentNullException("Mục trong giỏ hàng không được để trống.");
+            }
 
+            if (items.Any(i => i.Quantity<=0))
+            {
+                throw new ArgumentException("Số lượng phải lớn hơn 0.");
+            }
+
+            await _cartItemRepository.AddItemsToCartAsync(userId, items);
+        }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)
         {
             return await _cartItemRepository.GetCartItemByIdAsync(itemId);

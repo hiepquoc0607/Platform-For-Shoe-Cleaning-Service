@@ -24,7 +24,7 @@ namespace TP4SCS.Repository.Implements
         public async Task AddServiceAsync(int[] branchIds, int businessId, Service service)
         {
             var existingService = await _dbContext.Services
-                            .AnyAsync(s => s.Name.ToLower() == service.Name.ToLower());
+                            .AnyAsync(s => s.Name.ToLower() == service.Name.ToLower() && s.BranchServices.Any(bs => bs.Branch.BusinessId == businessId));
 
             if (existingService)
             {

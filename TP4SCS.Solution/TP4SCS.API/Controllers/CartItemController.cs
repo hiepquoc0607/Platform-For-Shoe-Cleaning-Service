@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
@@ -13,11 +14,13 @@ namespace TP4SCS.API.Controllers
     {
         private readonly ICartItemService _cartItemService;
         private readonly IServiceService _serviceService;
+        private readonly IMapper _mapper;
 
-        public CartItemController(ICartItemService cartItemService, IServiceService serviceService)
+        public CartItemController(ICartItemService cartItemService, IServiceService serviceService, IMapper mapper)
         {
             _cartItemService = cartItemService;
             _serviceService = serviceService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -36,9 +39,6 @@ namespace TP4SCS.API.Controllers
             }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
         }
-
-
-
 
         [HttpGet]
         [Route("api/cartitems/{id}")]
@@ -111,6 +111,37 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
+        [HttpPost]
+        [Route("api/cartitems/batch")]
+        public async Task<IActionResult> AddItemsToCart(int userId, [FromBody] IEnumerable<CartItemCreateRequest> request)
+        {
+            if (request == null || !request.Any())
+            {
+                return BadRequest("Danh sách sản phẩm không được rỗng.");
+            }
+
+            try
+            {
+                // Map danh sách yêu cầu thành CartItem
+                var items = _mapper.Map<IEnumerable<CartItem>>(request);
+
+                // Gọi service để thêm danh sách vào giỏ hàng
+                await _cartItemService.AddItemsToCartAsync(userId, items.ToList());
+
+                return Ok(new ResponseObject<string>("Thêm các sản phẩm vào giỏ hàng thành công."));
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Lỗi do logic không hợp lệ
+                return BadRequest(new ResponseObject<string>(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                // Lỗi không mong muốn
+                return StatusCode(500, new ResponseObject<string>($"Lỗi hệ thống: {ex.Message}"));
+            }
+        }
+
         [HttpPut]
         [Route("api/cartitems/{id}")]
         public async Task<IActionResult> UpdateCartItemQuantity(int id, [FromBody] int newQuantity)

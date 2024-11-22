@@ -3,6 +3,6 @@
     public class GroupedCartItemResponse
     {
         public int BranchId { get; set; }
-        public List<CartItemResponse>? CartItemResponse { get; set; }
+        public List<GroupCartItemByServiceResponse>? CartItemResponse { get; set; }
     }
 }
