@@ -269,10 +269,5 @@ namespace TP4SCS.Repository.Implements
 
             return (result, paging);
         }
-
-        public async Task<bool> IsCitizenIdExistedAsync(string citizenId)
-        {
-            return await _dbContext.BusinessProfiles.AsNoTracking().AnyAsync(b => b.CitizenId.Equals(citizenId));
-        }
     }
 }

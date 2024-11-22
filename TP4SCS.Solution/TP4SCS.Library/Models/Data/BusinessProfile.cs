@@ -10,12 +10,6 @@ public partial class BusinessProfile
 
     public string Phone { get; set; } = null!;
 
-    public string CitizenId { get; set; } = null!;
-
-    public string FrontCitizenImageUrl { get; set; } = null!;
-
-    public string BackCitizenImageUrl { get; set; } = null!;
-
     public string? ImageUrl { get; set; }
 
     public decimal Rating { get; set; }

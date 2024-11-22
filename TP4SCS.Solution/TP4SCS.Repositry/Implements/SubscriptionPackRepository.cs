@@ -20,9 +20,9 @@ namespace TP4SCS.Repository.Implements
             await InsertAsync(subscriptionPack);
         }
 
-        public async Task<SubscriptionPack?> GetPackByIdAsync(int id)
+        public async Task<SubscriptionPack?> GetPackByNameAsync(string name)
         {
-            return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id == id);
+            return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id.Equals(name));
         }
 
         public async Task<decimal> GetPackPriceByPeriodAsync(int period)
@@ -53,6 +53,11 @@ namespace TP4SCS.Repository.Implements
         public async Task UpdatePackAsync(SubscriptionPack subscriptionPack)
         {
             await UpdateAsync(subscriptionPack);
+        }
+
+        public async Task<SubscriptionPack?> GetPackByIdAsync(int id)
+        {
+            return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id == id);
         }
     }
 }
