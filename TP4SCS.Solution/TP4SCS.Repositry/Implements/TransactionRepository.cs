@@ -35,18 +35,7 @@ namespace TP4SCS.Library.Repositories
                         Status = a.Status,
                     })
                     .SingleOrDefault()!,
-                    Pack = _dbContext.SubscriptionPacks
-                    .AsNoTracking()
-                    .Where(p => p.Id == t.PackId)
-                    .Select(p => new SubscriptionPack
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Period = p.Period,
-                        Description = p.Description,
-                        Price = p.Price,
-                    })
-                    .SingleOrDefault()!,
+                    PackName = t.PackName,
                     Balance = t.Balance,
                     ProcessTime = t.ProcessTime,
                     Description = t.Description,
@@ -98,19 +87,7 @@ namespace TP4SCS.Library.Repositories
                         Status = a.Status,
                     })
                     .SingleOrDefault()!,
-                    PackId = t.PackId,
-                    Pack = _dbContext.SubscriptionPacks
-                    .Where(p => p.Id == t.PackId)
-                    .AsNoTracking()
-                    .Select(p => new SubscriptionPack
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Period = p.Period,
-                        Description = p.Description,
-                        Price = p.Price,
-                    })
-                    .SingleOrDefault()!,
+                    PackName = t.PackName,
                     Balance = t.Balance,
                     ProcessTime = t.ProcessTime,
                     Description = t.Description,
@@ -167,19 +144,7 @@ namespace TP4SCS.Library.Repositories
                         Status = a.Status,
                     })
                     .SingleOrDefault()!,
-                    PackId = t.PackId,
-                    Pack = _dbContext.SubscriptionPacks
-                    .AsNoTracking()
-                    .Where(p => p.Id == t.PackId)
-                    .Select(p => new SubscriptionPack
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Period = p.Period,
-                        Description = p.Description,
-                        Price = p.Price,
-                    })
-                    .SingleOrDefault()!,
+                    PackName = t.PackName,
                     Balance = t.Balance,
                     ProcessTime = t.ProcessTime,
                     Description = t.Description,

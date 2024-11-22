@@ -52,7 +52,7 @@ namespace TP4SCS.Services.Implements
             var newTransaction = new Transaction
             {
                 AccountId = id,
-                PackId = paymentRequest.PackId,
+                PackName = pack.Name,
                 Balance = pack.Price,
                 ProcessTime = DateTime.Now,
                 Description = "Thanh Toán " + pack.Name + " Bằng " + paymentRequest.Payment,
@@ -128,7 +128,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByIdAsync(transaction.PackId);
+            var pack = await _subscriptionPackRepository.GetPackByNameAsync(transaction.PackName);
 
             if (pack == null)
             {

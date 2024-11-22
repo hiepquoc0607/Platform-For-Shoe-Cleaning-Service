@@ -6,7 +6,7 @@ public partial class Transaction
 
     public int AccountId { get; set; }
 
-    public int PackId { get; set; }
+    public string PackName { get; set; } = null!;
 
     public decimal Balance { get; set; }
 
@@ -19,6 +19,4 @@ public partial class Transaction
     public string Status { get; set; } = null!;
 
     public virtual Account Account { get; set; } = null!;
-
-    public virtual SubscriptionPack Pack { get; set; } = null!;
 }

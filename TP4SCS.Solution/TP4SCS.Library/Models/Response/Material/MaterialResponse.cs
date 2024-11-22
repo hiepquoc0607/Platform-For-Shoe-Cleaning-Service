@@ -1,6 +1,5 @@
 ﻿using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.BranchMaterial;
-using TP4SCS.Library.Models.Response.BranchService;
 
 namespace TP4SCS.Library.Models.Response.Material
 {
