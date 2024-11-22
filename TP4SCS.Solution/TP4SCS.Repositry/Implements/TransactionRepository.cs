@@ -1,6 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Google.Apis.Storage.v1.Data;
+using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Ticket;
+using TP4SCS.Library.Models.Request.Transaction;
+using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Transaction;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Implements;
 
 namespace TP4SCS.Library.Repositories
@@ -11,150 +16,144 @@ namespace TP4SCS.Library.Repositories
         {
         }
 
-        // Lấy tất cả giao dịch
-        public async Task<IEnumerable<Transaction>> GetTransactionsAsync(
-            OrderByEnum orderBy = OrderByEnum.IdDesc)
-        {
-            // Tạo truy vấn cơ bản
-            var query = _dbContext.Transactions
-                .Select(t => new Transaction
-                {
-                    Id = t.Id,
-                    Account = _dbContext.Accounts
-                    .AsNoTracking()
-                    .Where(a => a.Id == t.AccountId)
-                    .Select(a => new Account
-                    {
-                        Id = a.Id,
-                        Email = a.Email,
-                        FullName = a.FullName,
-                        Phone = a.Phone,
-                        Gender = a.Gender,
-                        Dob = a.Dob,
-                        ImageUrl = a.ImageUrl,
-                        Status = a.Status,
-                    })
-                    .SingleOrDefault()!,
-                    PackName = t.PackName,
-                    Balance = t.Balance,
-                    ProcessTime = t.ProcessTime,
-                    Description = t.Description,
-                    PaymentMethod = t.PaymentMethod,
-                    Status = t.Status
-                })
-                .AsQueryable();
-
-            // Áp dụng sắp xếp theo OrderByEnum
-            query = orderBy switch
-            {
-                OrderByEnum.IdAsc => query.OrderBy(t => t.Id),
-                OrderByEnum.IdDesc => query.OrderByDescending(t => t.Id),
-                _ => query.OrderByDescending(t => t.Id)
-            };
-
-            return await query
-                .OrderByDescending(t => t.ProcessTime)
-                .ToListAsync();
-        }
-
-
-        // Lấy giao dịch theo ID
-        public async Task<Transaction?> GetTransactionByIdAsync(int id)
-        {
-            return await _dbContext.Transactions
-                .SingleOrDefaultAsync(t => t.Id == id);
-        }
-
-        // Lấy tất cả giao dịch theo AccountId
-        public async Task<IEnumerable<Transaction>> GetTransactionsByAccountIdAsync(int accountId)
-        {
-            return await _dbContext.Transactions
-                .Where(t => t.AccountId == accountId)
-                .Select(t => new Transaction
-                {
-                    Id = t.Id,
-                    AccountId = t.AccountId,
-                    Account = _dbContext.Accounts
-                    .AsNoTracking()
-                    .Where(a => a.Id == t.AccountId)
-                    .Select(a => new Account
-                    {
-                        Id = a.Id,
-                        Email = a.Email,
-                        FullName = a.FullName,
-                        Phone = a.Phone,
-                        Gender = a.Gender,
-                        Dob = a.Dob,
-                        ImageUrl = a.ImageUrl,
-                        Status = a.Status,
-                    })
-                    .SingleOrDefault()!,
-                    PackName = t.PackName,
-                    Balance = t.Balance,
-                    ProcessTime = t.ProcessTime,
-                    Description = t.Description,
-                    PaymentMethod = t.PaymentMethod,
-                    Status = t.Status
-                })
-                .OrderByDescending(t => t.ProcessTime)
-                .ToListAsync();
-        }
-
-        // Tạo mới giao dịch
         public async Task CreateTransactionAsync(Transaction transaction)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-
             await InsertAsync(transaction);
         }
 
-        // Cập nhật giao dịch
-        public async Task UpdateTransactionAsync(Transaction transaction)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-
-            await UpdateAsync(transaction);
-        }
-
-        // Xóa giao dịch theo ID
         public async Task DeleteTransactionAsync(int id)
         {
-            var transaction = await _dbContext.Transactions
-                .FirstOrDefaultAsync(t => t.Id == id);
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             await DeleteAsync(id);
         }
 
-        public async Task<Transaction?> GetTransactionByIdForViewAsync(int id)
+        public async Task<TransactionResponse?> GetTransactionByIdAsync(int id)
         {
             return await _dbContext.Transactions
-                .Select(t => new Transaction
+                .Where(t => t.Id == id)
+                .Join(
+                    _dbContext.Accounts.AsNoTracking(),
+                    transaction => transaction.AccountId,
+                    account => account.Id,
+                    (transaction, account) => new { transaction, account }
+                )
+                .Select(t => new TransactionResponse
                 {
-                    Id = t.Id,
-                    AccountId = t.AccountId,
-                    Account = _dbContext.Accounts
-                    .AsNoTracking()
-                    .Where(a => a.Id == t.AccountId)
-                    .Select(a => new Account
-                    {
-                        Id = a.Id,
-                        Email = a.Email,
-                        FullName = a.FullName,
-                        Phone = a.Phone,
-                        Gender = a.Gender,
-                        Dob = a.Dob,
-                        ImageUrl = a.ImageUrl,
-                        Status = a.Status,
-                    })
-                    .SingleOrDefault()!,
-                    PackName = t.PackName,
-                    Balance = t.Balance,
-                    ProcessTime = t.ProcessTime,
-                    Description = t.Description,
-                    PaymentMethod = t.PaymentMethod,
-                    Status = t.Status
+                    Id = t.transaction.Id,
+                    AccountId = t.transaction.AccountId,
+                    AccountName = t.account.FullName,
+                    PackName = t.transaction.PackName,
+                    Balance = t.transaction.Balance,
+                    ProcessTime = t.transaction.ProcessTime,
+                    Description = t.transaction.Description,
+                    PaymentMethod = t.transaction.PaymentMethod,
+                    Status = t.transaction.Status
                 })
-                .SingleOrDefaultAsync(t => t.Id == id);
+                .SingleOrDefaultAsync();
+
+        }
+
+        public async Task<Transaction?> GetTransactionByIdNoTrackingAsync(int id)
+        {
+            return await _dbContext.Transactions.AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<(IEnumerable<TransactionResponse>?, Pagination)> GetTransactionsAsync(GetTransactionRequest getTransactionRequest)
+        {
+            var transactions = _dbContext.Transactions
+                .AsNoTracking()
+                .Join(
+                    _dbContext.Accounts.AsNoTracking(),
+                    transaction => transaction.AccountId,
+                    account => account.Id,
+                    (transaction, account) => new { transaction, account }
+                )
+                .Select(t => new TransactionResponse
+                {
+                    Id = t.transaction.Id,
+                    AccountId = t.transaction.AccountId,
+                    AccountName = t.account.FullName,
+                    PackName = t.transaction.PackName,
+                    Balance = t.transaction.Balance,
+                    ProcessTime = t.transaction.ProcessTime,
+                    Description = t.transaction.Description,
+                    PaymentMethod = t.transaction.PaymentMethod,
+                    Status = t.transaction.Status
+                })
+                .OrderByDescending(t => t.ProcessTime)
+                .AsQueryable();
+
+            //Search
+            if (!string.IsNullOrEmpty(getTransactionRequest.SearchKey))
+            {
+                string searchKey = getTransactionRequest.SearchKey;
+                transactions = transactions.Where(t => EF.Functions.Like(t.AccountName, $"%{searchKey}%") ||
+                    EF.Functions.Like(t.PackName, $"%{searchKey}%") ||
+                    EF.Functions.Like(t.PaymentMethod, $"%{searchKey}%"));
+            }
+
+            //Account Sort
+            if (getTransactionRequest.AccountId.HasValue)
+            {
+                transactions = transactions.Where(t => t.AccountId == getTransactionRequest.AccountId);
+            }
+
+            //Status Sort
+            if (getTransactionRequest.Status.HasValue)
+            {
+                transactions = getTransactionRequest.Status switch
+                {
+                    TransactionStatus.PENDING => transactions.Where(t => t.Status.Equals(StatusConstants.PENDING)),
+                    TransactionStatus.PROCESSING => transactions.Where(t => t.Status.Equals(StatusConstants.PROCESSING)),
+                    TransactionStatus.COMPLETED => transactions.Where(t => t.Status.Equals(StatusConstants.COMPLETED)),
+                    TransactionStatus.EXPIRED => transactions.Where(t => t.Status.Equals(StatusConstants.EXPIRED)),
+                    TransactionStatus.FAILED => transactions.Where(t => t.Status.Equals(StatusConstants.FAILED)),
+                    _ => transactions
+                };
+            }
+
+            //Order Sort
+            if (getTransactionRequest.SortBy.HasValue)
+            {
+                transactions = getTransactionRequest.SortBy switch
+                {
+                    TransactionSortOption.ACCOUNTNAME => getTransactionRequest.IsDecsending
+                                ? transactions.OrderByDescending(t => t.AccountName)
+                                : transactions.OrderBy(t => t.AccountName),
+                    TransactionSortOption.PACKNAME => getTransactionRequest.IsDecsending
+                                  ? transactions.OrderByDescending(t => t.PackName)
+                                  : transactions.OrderBy(t => t.PackName),
+                    TransactionSortOption.BALANCE => getTransactionRequest.IsDecsending
+                                  ? transactions.OrderByDescending(t => t.Balance)
+                                  : transactions.OrderBy(t => t.Balance),
+                    TransactionSortOption.TIME => getTransactionRequest.IsDecsending
+                                  ? transactions.OrderByDescending(t => t.ProcessTime)
+                                  : transactions.OrderBy(t => t.ProcessTime),
+                    TransactionSortOption.PAYMENT => getTransactionRequest.IsDecsending
+                                  ? transactions.OrderByDescending(t => t.PaymentMethod)
+                                  : transactions.OrderBy(t => t.PaymentMethod),
+                    _ => transactions
+                };
+            }
+
+            //Count Total Data
+            int totalData = await transactions.AsNoTracking().CountAsync();
+
+            //Paging
+            int skipNum = (getTransactionRequest.PageNum - 1) * getTransactionRequest.PageSize;
+            transactions = transactions.Skip(skipNum).Take(getTransactionRequest.PageSize);
+
+            var result = await transactions.ToListAsync();
+
+            int totalPage = (int)Math.Ceiling((decimal)totalData / getTransactionRequest.PageSize);
+
+            var pagination = new Pagination(totalData, getTransactionRequest.PageSize, getTransactionRequest.PageNum, totalPage);
+
+            return (result, pagination);
+        }
+
+        public async Task UpdateTransactionAsync(Transaction transaction)
+        {
+            await UpdateAsync(transaction);
         }
     }
 }

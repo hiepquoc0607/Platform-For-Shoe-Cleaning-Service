@@ -154,8 +154,7 @@ namespace TP4SCS.Repository.Implements
             if (!string.IsNullOrEmpty(getTicketRequest.SearchKey))
             {
                 string searchKey = getTicketRequest.SearchKey;
-                tickets = tickets.Where(a =>
-                    EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
+                tickets = tickets.Where(a => EF.Functions.Like(a.FullName, $"%{searchKey}%") ||
                     EF.Functions.Like(a.Title, $"%{searchKey}%") ||
                     EF.Functions.Like(a.CategoryName, $"%{searchKey}%"));
             }
@@ -225,7 +224,7 @@ namespace TP4SCS.Repository.Implements
                 .Include(t => t.Order)
                 .ThenInclude(o => o!.OrderDetails)
                 .ThenInclude(od => od.Service)
-                .ThenInclude(s => s.BranchServices)
+                .ThenInclude(s => s!.BranchServices)
                 .Where(t => t.IsParentTicket == true &&
                             !t.Status.Equals(StatusConstants.PENDING) &&
                             t.Order!.OrderDetails
@@ -339,7 +338,7 @@ namespace TP4SCS.Repository.Implements
                 .Include(t => t.Order)
                 .ThenInclude(o => o!.OrderDetails)
                 .ThenInclude(od => od.Service)
-                .ThenInclude(s => s.BranchServices)
+                .ThenInclude(s => s!.BranchServices)
                 .ThenInclude(bs => bs.Branch)
                 .ThenInclude(b => b.Business)
                 .Where(t => t.IsParentTicket == true &&

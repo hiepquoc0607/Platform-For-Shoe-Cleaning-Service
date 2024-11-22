@@ -33,12 +33,6 @@ namespace TP4SCS.Library.Utils.Mapper
     {
         public AppMapper()
         {
-            //Account Mapping
-            CreateMap<Account, AccountResponse>();
-
-            //Pack Mapping
-            CreateMap<SubscriptionPack, SubscriptionPackResponse>();
-
             //Service Mapping
             CreateMap<Service, ServiceResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
@@ -51,33 +45,42 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<ServiceCategory, ServiceCategoryResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<ServiceCategoryRequest, ServiceCategory>();
+
             //Cart Mappings
             CreateMap<Cart, CartResponse>();
+
             //Cart Item Mappings
             CreateMap<CartItemCreateRequest, CartItem>();
             CreateMap<CartItem, CartItemResponse>();
+
             //Promotion Mappings
             CreateMap<Promotion, PromotionResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<PromotionCreateRequest, Promotion>();
             CreateMap<PromotionUpdateRequest, Promotion>();
+
             //Material Mappings
             CreateMap<MaterialCreateRequest, Material>();
             CreateMap<MaterialUpdateRequest, Material>();
             CreateMap<Material, MaterialResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+
             //AssetUrl Mapping
             CreateMap<AssetUrl, AssetUrlResponse>();
             CreateMap<AssetUrlRequest, AssetUrl>();
+
             //BranchService Mapping
             CreateMap<BranchService, BranchServiceResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+
             //BranchMaterial Mapping
             CreateMap<BranchMaterial, BranchMaterialResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+
             //BusinessBranch Mapping
             CreateMap<BusinessBranch, BranchResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateBranchStatus(src.Status)));
+
             //Order Mapping
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateOrderStatus(src.Status)))
@@ -85,6 +88,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
             CreateMap<Order, OrderFeedbackResponse>();
+
             //Feedback Mapping
             CreateMap<FeedbackRequest, Feedback>();
             CreateMap<FeedbackUpdateRequest, Feedback>();
@@ -101,9 +105,6 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch))
                 .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service))
                 .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material));
-            //Transaction Mapping
-            CreateMap<TransactionRequest, Transaction>();
-            CreateMap<Transaction, TransactionResponse>();
         }
 
         public void Register(TypeAdapterConfig config)

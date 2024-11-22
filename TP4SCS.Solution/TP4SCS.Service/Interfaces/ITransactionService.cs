@@ -1,27 +1,19 @@
-﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.General;
+﻿using TP4SCS.Library.Models.Request.Transaction;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Transaction;
 
 namespace TP4SCS.Library.Services
 {
     public interface ITransactionService
     {
-        // Lấy tất cả giao dịch
-        Task<PagedResponse<Transaction>> GetTransactionsAsync(int pageIndex = 1, int pageSize = 10, OrderByEnum orderBy = OrderByEnum.IdDesc);
+        Task<ApiResponse<IEnumerable<TransactionResponse>?>> GetTransactionsAsync(GetTransactionRequest getTransactionRequest);
 
-        // Lấy giao dịch theo ID
-        Task<Transaction?> GetTransactionByIdAsync(int id);
+        Task<ApiResponse<TransactionResponse?>> GetTransactionByIdAsync(int id);
 
-        // Lấy tất cả giao dịch theo AccountId
-        Task<PagedResponse<Transaction>> GetTransactionsByAccountIdAsync(int accountId, int pageIndex = 1, int pageSize = 10);
+        Task<ApiResponse<TransactionResponse>> CreateTransactionAsync(CreateTransactionRequest createTransactionRequest);
 
-        // Tạo mới giao dịch
-        Task CreateTransactionAsync(Transaction transaction);
+        Task<ApiResponse<TransactionResponse>> UpdateTransactionAsync(int id, UpdateTransactionRequest updateTransactionRequest);
 
-        // Cập nhật giao dịch
-        Task UpdateTransactionAsync(int existingTransactionId, Transaction transaction);
-
-        // Xóa giao dịch theo ID
-        Task DeleteTransactionAsync(int id);
+        Task<ApiResponse<TransactionResponse>> DeteleTransactionAsync(int id);
     }
 }
