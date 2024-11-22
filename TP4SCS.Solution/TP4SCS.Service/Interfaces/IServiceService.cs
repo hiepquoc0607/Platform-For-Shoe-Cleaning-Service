@@ -10,7 +10,13 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<Service?> GetServiceByIdAsync(int id);
 
-        Task<ApiResponse<IEnumerable<ServiceResponse>?>> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBusinessServiceRequest);
+        Task<(IEnumerable<Service>?, int)> GetServicesByBusinessIdAsync(
+            int businessId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc);
 
         Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,

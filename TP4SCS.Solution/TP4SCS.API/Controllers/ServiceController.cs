@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
@@ -106,10 +107,21 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-
+        [HttpGet("business/{id}")]
+        public async Task<IActionResult> GetServiceByBusinessId([FromQuery] PagedRequest request, int id)
+        {
+            var (services, total) = await _serviceService.GetServicesByBusinessIdAsync(id, request.Keyword, request.Status, request.PageIndex,request.PageSize,request.OrderBy);
+            var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
+            var pagedResponse = new PagedResponse<ServiceResponse>(
+                    serviceResponses,
+                    total,
+                    request.PageIndex,
+                    request.PageSize
+                );
+            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("", pagedResponse));
+        }
         [HttpGet("discounted")]
-        public async Task<IActionResult> GetDiscountedServicesAsync([FromQuery] PagedRequest request
-        )
+        public async Task<IActionResult> GetDiscountedServicesAsync([FromQuery] PagedRequest request)
         {
             try
             {
@@ -216,19 +228,6 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<ServiceResponse>(ex.Message, null));
             }
-        }
-
-        [HttpGet("business")]
-        public async Task<IActionResult> GetServiceByBusinessId([FromQuery] GetBusinessServiceRequest getBusinessServiceRequest)
-        {
-            var result = await _serviceService.GetServiceByBusinessIdAsync(getBusinessServiceRequest);
-
-            if (result.StatusCode != 200)
-            {
-                return StatusCode(result.StatusCode, result);
-            }
-
-            return Ok(result);
         }
     }
 }

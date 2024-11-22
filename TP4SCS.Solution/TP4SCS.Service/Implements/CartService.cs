@@ -173,7 +173,7 @@ namespace TP4SCS.Services.Implements
                         order.OrderDetails.Add(new OrderDetail
                         {
                             BranchId = item.BranchId,
-                            ServiceId = item.ServiceId.Value,
+                            ServiceId = item.ServiceId,
                             Quantity = item.Quantity,
                             Price = finalPrice,
                         });

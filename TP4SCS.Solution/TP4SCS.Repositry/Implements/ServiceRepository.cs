@@ -23,6 +23,13 @@ namespace TP4SCS.Repository.Implements
 
         public async Task AddServiceAsync(int[] branchIds, int businessId, Service service)
         {
+            var existingService = await _dbContext.Services
+                            .AnyAsync(s => s.Name.ToLower() == service.Name.ToLower());
+
+            if (existingService)
+            {
+                throw new InvalidOperationException($"Service with the name '{service.Name}' already exists for Business ID {businessId}.");
+            }
             // Lấy tất cả các branch từ businessId
             var branches = await _dbContext.BusinessBranches
                                .Where(b => b.BusinessId == businessId)
@@ -195,76 +202,6 @@ namespace TP4SCS.Repository.Implements
             }
 
             await UpdateAsync(service);
-        }
-
-        public async Task<(IEnumerable<Service>?, Pagination)> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBranchServiceRequest)
-        {
-            int[] branchIds = await _dbContext.BusinessBranches
-                .AsNoTracking()
-                .Where(b => b.BusinessId == getBranchServiceRequest.BusinessId)
-                .Select(b => b.Id)
-                .ToArrayAsync();
-
-            var services = _dbContext.Services
-                .Include(s => s.Category)
-                .Include(s => s.Promotion)
-                .Include(s => s.AssetUrls)
-                .Include(s => s.BranchServices)
-                    .ThenInclude(bs => bs.Branch)
-                .Where(s => s.BranchServices.Any(b => branchIds.Contains(b.BranchId)))
-                .OrderBy(s => s.OrderedNum)
-                .ThenBy(s => s.CreateTime)
-                .AsQueryable();
-
-            //Search
-            if (!string.IsNullOrEmpty(getBranchServiceRequest.SearchKey))
-            {
-                string searchKey = getBranchServiceRequest.SearchKey;
-                services = services.Where(s => EF.Functions.Like(s.Name, $"%{searchKey}%"));
-            }
-
-            //Category Sort
-            if (!string.IsNullOrEmpty(getBranchServiceRequest.Category))
-            {
-                string cateKey = getBranchServiceRequest.Category;
-                services = services
-                    .Where(s => EF.Functions
-                    .Collate(s.Category.Name, "SQL_Latin1_General_CP1_CI_AI")
-                    .Contains(cateKey));
-            }
-
-            //Order Sort
-            if (!string.IsNullOrEmpty(getBranchServiceRequest.SortBy))
-            {
-                services = getBranchServiceRequest.SortBy.ToUpper() switch
-                {
-                    "NAME" => getBranchServiceRequest.IsDecsending
-                                ? services.OrderByDescending(s => s.Name)
-                                : services.OrderBy(s => s.Name),
-                    "PRICE" => getBranchServiceRequest.IsDecsending
-                                  ? services.OrderByDescending(s => s.Price)
-                                  : services.OrderBy(s => s.Price),
-                    "CREATE" => getBranchServiceRequest.IsDecsending
-                                  ? services.OrderByDescending(s => s.CreateTime)
-                                  : services.OrderBy(s => s.CreateTime),
-                    _ => services
-                };
-            }
-
-            //Count Total Data
-            int totalData = await services.AsNoTracking().CountAsync();
-
-            //Paging
-            int skipNum = (getBranchServiceRequest.PageNum - 1) * getBranchServiceRequest.PageSize;
-            services = services.Skip(skipNum).Take(getBranchServiceRequest.PageSize);
-
-            //Paging Data Calulation
-            var result = await services.ToListAsync();
-            int totalPage = (int)Math.Ceiling((decimal)totalData / getBranchServiceRequest.PageSize);
-
-            var paging = new Pagination(totalData, getBranchServiceRequest.PageSize, getBranchServiceRequest.PageNum, totalPage);
-
-            return (result, paging);
         }
     }
 }

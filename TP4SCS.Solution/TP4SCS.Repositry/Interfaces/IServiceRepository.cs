@@ -14,8 +14,6 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Service?> GetServiceByIdAsync(int id);
 
-        Task<(IEnumerable<Service>?, Pagination)> GetServiceByBusinessIdAsync(GetBusinessServiceRequest getBranchServiceRequest);
-
         Task AddServicesAsync(List<Service> services);
 
         Task AddServiceAsync(int[] branchIds, int businessId, Service service);
