@@ -66,5 +66,18 @@ namespace TP4SCS.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePackAsync([FromRoute] int id)
+        {
+            var result = await _subscriptionService.DeletePackAsync(id);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
     }
 }

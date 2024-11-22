@@ -8,6 +8,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<SubscriptionPack?> GetPackByIdAsync(int id);
 
+        Task<SubscriptionPack?> GetPackByIdNoTrackingAsync(int id);
+
         Task<SubscriptionPack?> GetPackByNameAsync(string name);
 
         Task<decimal> GetPackPriceByPeriodAsync(int period);
@@ -23,5 +25,7 @@ namespace TP4SCS.Repository.Interfaces
         Task CreatePackAsync(SubscriptionPack subscriptionPack);
 
         Task UpdatePackAsync(SubscriptionPack subscriptionPack);
+
+        Task DeletePackAsync(int id);
     }
 }

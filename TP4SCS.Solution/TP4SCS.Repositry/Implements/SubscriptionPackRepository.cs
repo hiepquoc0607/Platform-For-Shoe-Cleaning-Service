@@ -22,7 +22,10 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<SubscriptionPack?> GetPackByNameAsync(string name)
         {
-            return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id.Equals(name));
+            return await _dbContext.SubscriptionPacks
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals(name));
         }
 
         public async Task<decimal> GetPackPriceByPeriodAsync(int period)
@@ -47,7 +50,11 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<bool> IsPackNameExistedAsync(string name)
         {
-            return await _dbContext.SubscriptionPacks.AsNoTracking().AnyAsync(p => p.Name.Equals(name) && p.Period != 0);
+            return await _dbContext.SubscriptionPacks
+                .AsNoTracking()
+                .AnyAsync(p => EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AS")
+                .Equals(name)
+                && p.Period != 0);
         }
 
         public async Task UpdatePackAsync(SubscriptionPack subscriptionPack)
@@ -58,6 +65,16 @@ namespace TP4SCS.Repository.Implements
         public async Task<SubscriptionPack?> GetPackByIdAsync(int id)
         {
             return await _dbContext.SubscriptionPacks.SingleOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<SubscriptionPack?> GetPackByIdNoTrackingAsync(int id)
+        {
+            return await _dbContext.SubscriptionPacks.AsNoTracking().SingleOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task DeletePackAsync(int id)
+        {
+            await DeleteAsync(id);
         }
     }
 }

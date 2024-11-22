@@ -86,6 +86,27 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        public async Task<ApiResponse<SubscriptionPackResponse>> DeletePackAsync(int id)
+        {
+            var pack = await _subscriptionRepository.GetPackByIdNoTrackingAsync(id);
+
+            if (pack == null)
+            {
+                return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+            }
+
+            try
+            {
+                await _subscriptionRepository.DeleteAsync(id);
+
+                return new ApiResponse<SubscriptionPackResponse>("success", "Xoá Gói Đăng Kí Thành Công!", null, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Xoá Gói Đăng Kí Thất Bại!");
+            }
+        }
+
         public async Task<ApiResponse<SubscriptionPackResponse?>> GetPackByIdAsync(int id)
         {
             var pack = await _subscriptionRepository.GetPackByIdAsync(id);
@@ -134,7 +155,7 @@ namespace TP4SCS.Services.Implements
 
             var isNameExisted = await _subscriptionRepository.IsPackNameExistedAsync(name);
 
-            if (!oldPack.Name.Equals(name) && isNameExisted)
+            if (oldPack.Name.Equals(name) == false && isNameExisted)
             {
                 return new ApiResponse<SubscriptionPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
             }
