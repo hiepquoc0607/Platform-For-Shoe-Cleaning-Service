@@ -13,16 +13,5 @@ namespace TP4SCS.Library.Models.Request.BusinessProfile
         [StringLength(10, MinimumLength = 10)]
         [DefaultValue("string")]
         public string BusinessPhone { get; set; } = string.Empty;
-
-        [Required]
-        [MinLength(12), MaxLength(12)]
-        [DefaultValue("string")]
-        public string CitizenId { get; set; } = string.Empty;
-
-        [Required]
-        public string FrontCitizenImageUrl { get; set; } = string.Empty;
-
-        [Required]
-        public string BackCitizenImageUrl { get; set; } = string.Empty;
     }
 }

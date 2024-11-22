@@ -110,19 +110,19 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Policy = "Moderator")]
-        [HttpPut]
-        [Route("api/businesses/{id}/validate-buisness")]
-        public async Task<IActionResult> UpdateBusinessStatusForAdminAsync([FromRoute] int id, [FromBody] ValidateBusinessRequest validateBusinessRequest)
-        {
-            var result = await _businessService.ValidateBusinessAsync(id, validateBusinessRequest);
+        //[Authorize(Policy = "Moderator")]
+        //[HttpPut]
+        //[Route("api/businesses/{id}/validate-buisness")]
+        //public async Task<IActionResult> UpdateBusinessStatusForAdminAsync([FromRoute] int id, [FromBody] ValidateBusinessRequest validateBusinessRequest)
+        //{
+        //    var result = await _businessService.ValidateBusinessAsync(id, validateBusinessRequest);
 
-            if (result.StatusCode != 200)
-            {
-                return StatusCode(result.StatusCode, result);
-            }
+        //    if (result.StatusCode != 200)
+        //    {
+        //        return StatusCode(result.StatusCode, result);
+        //    }
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
     }
 }

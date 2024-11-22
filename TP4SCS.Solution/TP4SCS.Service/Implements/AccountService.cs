@@ -334,13 +334,6 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 400, "Số Điện Thoại Đã Được Sử Dụng!");
             }
 
-            var isCitizenIdExisted = await _businessRepository.IsCitizenIdExistedAsync(createBusinessRequest.CitizenId.Trim());
-
-            if (isCitizenIdExisted)
-            {
-                return new ApiResponse<AccountResponse>("error", 400, "Số CCCD Đã Được Sử Dụng!");
-            }
-
             account.Role = RoleConstants.OWNER;
 
             var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);
