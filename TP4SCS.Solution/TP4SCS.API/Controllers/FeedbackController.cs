@@ -198,5 +198,26 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+        [HttpPut("{id}/reply")]
+        public async Task<IActionResult> ReplyFeedback(int id, [FromBody] string reply)
+        {
+            try
+            {
+                await _feedbackService.ReplyFeedbackAsync(reply, id);
+                return Ok(new ResponseObject<string>("Cập nhật đánh giá thành công"));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
+            }
+        }
     }
 }
