@@ -28,7 +28,7 @@ namespace TP4SCS.Services.Implements
         {
             int totalPack = await _subscriptionRepository.CountPackAsync();
 
-            if (totalPack > 4)
+            if (totalPack > 3)
             {
                 return new ApiResponse<SubscriptionPackResponse>("error", 400, "Đã Có Tối Đa 3 Gói Đăng Kí!");
             }
