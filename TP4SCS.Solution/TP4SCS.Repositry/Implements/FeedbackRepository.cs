@@ -14,7 +14,9 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<Feedback?> GetFeedbackByidAsync(int id)
         {
-            return await GetByIDAsync(id);
+            return await _dbContext.Feedbacks
+                .Include(f => f.AssetUrls)
+                .SingleOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task AddFeedbacksAsync(Feedback feedback)
