@@ -44,19 +44,19 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("api/businesses/invalidate-businesses")]
-        public async Task<IActionResult> GetInValidateBusinessProfilesAsync([FromQuery] GetInvalidateBusinessRequest getInvalidateBusinessRequest)
-        {
-            var result = await _businessService.GetInvalidateBusinessesProfilesAsync(getInvalidateBusinessRequest);
+        //[HttpGet]
+        //[Route("api/businesses/invalidate-businesses")]
+        //public async Task<IActionResult> GetInValidateBusinessProfilesAsync([FromQuery] GetInvalidateBusinessRequest getInvalidateBusinessRequest)
+        //{
+        //    var result = await _businessService.GetInvalidateBusinessesProfilesAsync(getInvalidateBusinessRequest);
 
-            if (result.StatusCode != 200)
-            {
-                return StatusCode(result.StatusCode, result);
-            }
+        //    if (result.StatusCode != 200)
+        //    {
+        //        return StatusCode(result.StatusCode, result);
+        //    }
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
         [HttpGet]
         [Route("api/businesses/{id}", Name = "GetBusinessProfileById")]

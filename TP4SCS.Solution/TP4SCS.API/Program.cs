@@ -122,7 +122,6 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();
-builder.Services.AddScoped<BusinessUtil>();
 
 //Add HttpClient
 builder.Services.AddHttpClient();

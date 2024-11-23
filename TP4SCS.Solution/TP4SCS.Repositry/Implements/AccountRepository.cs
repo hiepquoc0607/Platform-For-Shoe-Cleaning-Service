@@ -118,11 +118,11 @@ namespace TP4SCS.Repository.Implements
             return (result, pagination);
         }
 
-        public async Task<Account?> GetAccountLoginByEmailAsync(string email)
+        public async Task<Account?> GetAccountByEmailAsync(string email)
         {
             try
             {
-                return await _dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Email.Equals(email));
+                return await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Email.Equals(email));
             }
             catch (Exception)
             {
@@ -150,11 +150,11 @@ namespace TP4SCS.Repository.Implements
             return await _dbContext.Accounts.AsNoTracking().MaxAsync(a => a.Id);
         }
 
-        public async Task<Account?> GetAccountByEmailAsync(string email)
+        public async Task<Account?> GetAccountByEmailNoTrackingAsync(string email)
         {
             try
             {
-                return await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Email.Equals(email));
+                return await _dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Email.Equals(email));
             }
             catch (Exception)
             {
@@ -339,6 +339,11 @@ namespace TP4SCS.Repository.Implements
                 .Where(a => ids.Contains(a.Id))
                 .Select(a => a.Email)
                 .ToListAsync();
+        }
+
+        public async Task DeleteAccountAsync(int id)
+        {
+            await DeleteAsync(id);
         }
     }
 }

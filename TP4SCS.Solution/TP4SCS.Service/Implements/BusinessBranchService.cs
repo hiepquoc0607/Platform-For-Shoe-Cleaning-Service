@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -51,6 +52,8 @@ namespace TP4SCS.Services.Implements
 
             var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
             newBranch.BusinessId = id;
+            newBranch.Name = _util.FormatStringName(createBranchRequest.Name);
+            newBranch.Address = _util.FormatStringName(createBranchRequest.Address);
             newBranch.Ward = wardName;
             newBranch.District = districtName;
             newBranch.Province = provinceName;
@@ -87,6 +90,8 @@ namespace TP4SCS.Services.Implements
 
             var newBranch = _mapper.Map<BusinessBranch>(createBranchRequest);
             newBranch.BusinessId = (int)businessId;
+            newBranch.Name = _util.FormatStringName(createBranchRequest.Name);
+            newBranch.Address = _util.FormatStringName(createBranchRequest.Address);
             newBranch.Ward = wardName;
             newBranch.District = districtName;
             newBranch.Province = provinceName;
@@ -146,11 +151,6 @@ namespace TP4SCS.Services.Implements
         //Update Branch
         public async Task<ApiResponse<BranchResponse>> UpdateBranchAsync(int id, HttpClient httpClient, UpdateBranchRequest updateBranchRequest)
         {
-            if (!_util.CheckBranchStatus(updateBranchRequest.Status))
-            {
-                return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Không Tồn Tại!");
-            }
-
             var wardName = await _shipService.GetWardNameByWardCodeAsync(httpClient, updateBranchRequest.DistrictId, updateBranchRequest.WardCode) ?? string.Empty;
             var districtName = await _shipService.GetDistrictNamByIdAsync(httpClient, updateBranchRequest.DistrictId) ?? string.Empty;
             var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, updateBranchRequest.ProvinceId) ?? string.Empty;
@@ -163,9 +163,16 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBranch = _mapper.Map(updateBranchRequest, oldBranch);
+            newBranch.Name = _util.FormatStringName(updateBranchRequest.Name);
+            newBranch.Address = _util.FormatStringName(updateBranchRequest.Address);
             newBranch.Ward = wardName;
             newBranch.District = districtName;
             newBranch.Province = provinceName;
+            newBranch.Status = updateBranchRequest.Status switch
+            {
+                BranchStatus.INACTIVE => StatusConstants.INACTIVE,
+                _ => StatusConstants.ACTIVE
+            };
 
             try
             {
@@ -247,11 +254,6 @@ namespace TP4SCS.Services.Implements
         //Update Branch Status
         public async Task<ApiResponse<BranchResponse>> UpdateBranchStatusForAdminAsync(int id, UpdateBranchStatusRequest updateBranchStatusRequest)
         {
-            if (!_util.CheckBranchStatus(updateBranchStatusRequest.Status))
-            {
-                return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Không Tồn Tại!");
-            }
-
             var oldBranch = await _branchRepository.GetBranchByIdAsync(id);
 
             if (oldBranch == null)
@@ -259,13 +261,20 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
             }
 
-            if (!_util.CheckStatusForAdmin(oldBranch.Status, updateBranchStatusRequest.Status))
+            var newStatus = updateBranchStatusRequest.Status switch
+            {
+                BranchStatus.INACTIVE => StatusConstants.INACTIVE,
+                BranchStatus.ACTIVE => StatusConstants.ACTIVE,
+                _ => StatusConstants.SUSPENDED
+            };
+
+            if (!oldBranch.Status.Equals(newStatus))
             {
 
                 return new ApiResponse<BranchResponse>("error", 400, "Trạng Thái Chi Nhánh Trùng Lập!");
             }
 
-            oldBranch.Status = updateBranchStatusRequest.Status;
+            oldBranch.Status = newStatus;
 
             try
             {

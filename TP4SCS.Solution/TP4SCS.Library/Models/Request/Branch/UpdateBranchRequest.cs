@@ -3,14 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TP4SCS.Library.Models.Request.Branch
 {
+    public enum BranchStatus
+    {
+        ACTIVE,
+        INACTIVE,
+        SUSPENDED
+    }
+
     public class UpdateBranchRequest
     {
         [Required]
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        public string Address { get; set; } = string.Empty;
+
+        [Required]
         [RegularExpression(@"^\d{1,9}$")]
-        [MaxLength(10)]
         [DefaultValue("0")]
         public string WardCode { get; set; } = string.Empty;
 
@@ -25,6 +34,6 @@ namespace TP4SCS.Library.Models.Request.Branch
         public bool IsDeliverySupport { get; set; }
 
         [Required]
-        public string Status { get; set; } = string.Empty;
+        public BranchStatus Status { get; set; }
     }
 }

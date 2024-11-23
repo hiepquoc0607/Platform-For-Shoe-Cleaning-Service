@@ -22,9 +22,9 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Account?> GetAccountByIdForAdminAsync(int id);
 
-        Task<Account?> GetAccountLoginByEmailAsync(string email);
-
         Task<Account?> GetAccountByEmailAsync(string email);
+
+        Task<Account?> GetAccountByEmailNoTrackingAsync(string email);
 
         Task<bool> IsEmailExistedAsync(string email);
 
@@ -37,5 +37,7 @@ namespace TP4SCS.Repository.Interfaces
         Task CreateAccountAsync(Account account);
 
         Task UpdateAccountAsync(Account account);
+
+        Task DeleteAccountAsync(int id);
     }
 }

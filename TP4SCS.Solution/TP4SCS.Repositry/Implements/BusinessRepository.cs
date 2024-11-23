@@ -99,7 +99,8 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<int?> GetBusinessIdByOwnerIdAsync(int id)
         {
-            return await _dbContext.BusinessProfiles.AsNoTracking()
+            return await _dbContext.BusinessProfiles
+                .AsNoTracking()
                 .Where(p => p.OwnerId == id)
                 .Select(p => p.Id)
                 .FirstOrDefaultAsync();
@@ -196,26 +197,16 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesByRankingAsync(GetBusinessRequest getBusinessRequest)
         {
-            var businesses = _dbContext.BusinessProfiles.OrderBy(b => b.Rank).AsQueryable();
+            var businesses = _dbContext.BusinessProfiles
+                .Where(b => b.Status.Equals(StatusConstants.ACTIVE))
+                .OrderBy(b => b.Rank)
+                .AsQueryable();
 
             //Search
             if (!string.IsNullOrEmpty(getBusinessRequest.SearchKey))
             {
                 string searchKey = getBusinessRequest.SearchKey;
                 businesses = businesses.Where(b => EF.Functions.Like(b.Name, $"%{searchKey}%"));
-            }
-
-            //Status Filter
-            if (getBusinessRequest.Status != null)
-            {
-                //businesses = businesses.Where(b => b.Status.Equals(getBusinessRequest.Status));
-                businesses = getBusinessRequest.Status switch
-                {
-                    BusinessStatus.ACTIVE => businesses.Where(b => b.Status.Equals(StatusConstants.ACTIVE)),
-                    BusinessStatus.INACTIVE => businesses.Where(b => b.Status.Equals(StatusConstants.INACTIVE)),
-                    BusinessStatus.SUSPENDED => businesses.Where(b => b.Status.Equals(StatusConstants.SUSPENDED)),
-                    _ => businesses
-                };
             }
 
             //Order Sort
