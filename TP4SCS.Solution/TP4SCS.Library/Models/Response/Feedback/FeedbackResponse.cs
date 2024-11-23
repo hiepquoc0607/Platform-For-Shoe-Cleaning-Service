@@ -14,6 +14,7 @@ namespace TP4SCS.Library.Models.Response.Feedback
         public decimal Rating { get; set; }
 
         public string? Content { get; set; }
+        public string? Reply { get; set; }
         public int? ParentFeedbackId { get; set; }
         public DateTime CreatedTime { get; set; }
 
