@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Address;
 using TP4SCS.Library.Models.Response.Address;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -33,6 +34,7 @@ namespace TP4SCS.Services.Implements
             var provinceName = await _shipService.GetProvinceNameByIdAsync(httpClient, createAddressRequest.ProvinceId) ?? string.Empty;
 
             var newAddress = _mapper.Map<AccountAddress>(createAddressRequest);
+            newAddress.Address = _util.FormatStringName(createAddressRequest.Address);
             newAddress.Ward = wardName;
             newAddress.District = districtName;
             newAddress.Province = provinceName;
@@ -76,9 +78,11 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AddressResponse>("error", 404, "Địa Chỉ Không Tồn Tại!");
             }
 
+            address.Status = StatusConstants.UNAVAILABLE;
+
             try
             {
-                await _addressRepository.DeletAddressAsync(id);
+                await _addressRepository.UpdateAddressAsync(address);
 
                 return new ApiResponse<AddressResponse>("success", "Xoá Địa Chỉ Thành Công!", null);
             }
@@ -139,6 +143,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAddress = _mapper.Map(updateAddressRequest, oldAddress);
+            newAddress.Address = _util.FormatStringName(updateAddressRequest.Address);
             newAddress.Ward = wardName;
             newAddress.District = districtName;
             newAddress.Province = provinceName;

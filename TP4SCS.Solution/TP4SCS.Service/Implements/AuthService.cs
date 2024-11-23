@@ -88,7 +88,7 @@ namespace TP4SCS.Services.Implements
         {
             var email = loginRequest.Email.ToLowerInvariant();
 
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
 
             if (account == null)
             {
@@ -280,7 +280,7 @@ namespace TP4SCS.Services.Implements
         //Send Verification Email
         public async Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email)
         {
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+            var account = await _accountRepository.GetAccountByEmailNoTrackingAsync(email);
 
             if (account == null)
             {
@@ -366,7 +366,7 @@ namespace TP4SCS.Services.Implements
         //Request Reset Password
         public async Task<ApiResponse<AuthResponse>> RequestResetPasswordAsync(string email)
         {
-            var account = await _accountRepository.GetAccountByEmailAsync(email);
+            var account = await _accountRepository.GetAccountByEmailNoTrackingAsync(email);
 
             if (account == null)
             {
@@ -483,7 +483,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<ApiResponse<AuthResponse>> SendAccountInfoEmail(string email, string password)
         {
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+            var account = await _accountRepository.GetAccountByEmailNoTrackingAsync(email);
 
             if (account == null)
             {

@@ -17,14 +17,14 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessBranchService _branchService;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
-        private readonly BusinessUtil _util;
+        private readonly Util _util;
 
         public BusinessService(IBusinessRepository businessRepository,
             IAccountRepository accountRepository,
             IBusinessBranchService branchService,
             IEmailService emailService,
             IMapper mapper,
-            BusinessUtil util)
+            Util util)
         {
             _businessRepository = businessRepository;
             _accountRepository = accountRepository;
@@ -93,6 +93,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newBusiness = _mapper.Map(updateBusinessRequest, oldBusiness);
+            newBusiness.Name = _util.FormatStringName(updateBusinessRequest.Name);
 
             try
             {
@@ -137,11 +138,6 @@ namespace TP4SCS.Services.Implements
 
         public async Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest)
         {
-            if (!_util.CheckStatusForAdmin(updateBusinessStatusRequest.Status))
-            {
-                return new ApiResponse<BusinessResponse>("error", 404, "Trạng Thái Không Khả Dụng!");
-            }
-
             var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);
 
             if (oldBusiness == null)
@@ -149,7 +145,13 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            oldBusiness.Status = updateBusinessStatusRequest.Status;
+            oldBusiness.Status = updateBusinessStatusRequest.Status switch
+            {
+                BusinessStatus.INACTIVE => StatusConstants.INACTIVE,
+                BusinessStatus.SUSPENDED => StatusConstants.SUSPENDED,
+                BusinessStatus.EXPRIED => StatusConstants.EXPIRED,
+                _ => StatusConstants.ACTIVE,
+            };
 
             try
             {

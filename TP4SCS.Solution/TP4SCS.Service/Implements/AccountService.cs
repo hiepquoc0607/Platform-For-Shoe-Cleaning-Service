@@ -65,6 +65,7 @@ namespace TP4SCS.Services.Implements
 
             var newAccount = _mapper.Map<Account>(createEmployeeRequest);
             newAccount.PasswordHash = _util.HashPassword(password);
+            newAccount.FullName = _util.FormatStringName(createEmployeeRequest.FullName);
             newAccount.CreatedByOwnerId = id;
 
             var newBranchEmp = new UpdateBranchEmployeeRequest();
@@ -120,6 +121,7 @@ namespace TP4SCS.Services.Implements
 
             var newAccount = _mapper.Map<Account>(createModeratorRequest);
             newAccount.PasswordHash = _util.HashPassword(password);
+            newAccount.FullName = _util.FormatStringName(newAccount.FullName);
 
             try
             {
@@ -159,7 +161,7 @@ namespace TP4SCS.Services.Implements
             {
                 if (account.Role.Equals(RoleConstants.EMPLOYEE))
                 {
-                    await _accountRepository.DeleteAsync(account);
+                    await _accountRepository.DeleteAccountAsync(account.Id);
                 }
                 else
                 {
@@ -178,7 +180,7 @@ namespace TP4SCS.Services.Implements
         //Get Account By Email
         public async Task<ApiResponse<AccountResponse?>> GetAccountByEmailAsync(string email)
         {
-            var account = await _accountRepository.GetAccountLoginByEmailAsync(email);
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
 
             if (account == null)
             {
@@ -240,6 +242,7 @@ namespace TP4SCS.Services.Implements
             }
 
             var newAccount = _mapper.Map(updateAccountRequest, oldAccount);
+            newAccount.FullName = _util.FormatStringName(updateAccountRequest.FullName);
 
             try
             {
@@ -293,18 +296,6 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
-            if (!_util.CheckStatusForAdmin(account.Status, updateStatusRequest.Status))
-            {
-                return new ApiResponse<AccountResponse>("error", 400, "Trạng Thái Tài Khoản Trùng Lập!");
-            }
-
-            account.Status = updateStatusRequest.Status.Trim().ToUpperInvariant() switch
-            {
-                "INACTIVE" => "INACTIVE",
-                "SUSPENDED" => "SUSPENDED",
-                _ => "ACTIVE"
-            };
-
             try
             {
                 await _accountRepository.UpdateAccountAsync(account);
@@ -338,6 +329,7 @@ namespace TP4SCS.Services.Implements
 
             var newBusiness = _mapper.Map<BusinessProfile>(createBusinessRequest);
             newBusiness.OwnerId = id;
+            newBusiness.Name = _util.FormatStringName(createBusinessRequest.Name);
 
             try
             {
