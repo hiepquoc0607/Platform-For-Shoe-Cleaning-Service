@@ -71,7 +71,7 @@ namespace TP4SCS.API.Controllers
         }
         [HttpGet]
         [Route("api/user/{id}/carts")]
-        public async Task<IActionResult> GetCartByUserIdV2Async(int id)
+        public async Task<IActionResult> GetCartByUserIdAsyncV2(int id)
         {
             try
             {
@@ -170,6 +170,31 @@ namespace TP4SCS.API.Controllers
             {
                 return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
             }
+
+        }
+
+        [HttpPost("api/carts/cart/checkouts")]
+        public async Task<IActionResult> CheckoutForCartItemV2Async([FromBody] CheckoutCartRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp sản phẩm trong giỏ hàng.");
+            }
+
+            try
+            {
+                await _cartService.CheckoutForCartAsyncV2(_httpClient, request);
+                return Ok("Thanh toán thành công.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(400, new ResponseObject<string>(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
+            }
+
         }
         [HttpPost("api/services/service/checkout")]
         public async Task<IActionResult> CheckoutForServiceAsync([FromBody] CheckoutForServiceRequest request)
