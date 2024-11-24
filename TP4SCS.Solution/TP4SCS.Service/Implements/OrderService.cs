@@ -110,6 +110,11 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderedId}");
             }
 
+            if (Util.IsEqual(status, StatusConstants.CANCELED) && Util.IsEqual(order.Status, StatusConstants.APPROVED))
+            {
+                return;
+            }
+
             order.Status = status;
 
             await _orderRepository.UpdateOrderAsync(order);
