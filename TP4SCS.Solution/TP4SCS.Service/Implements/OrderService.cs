@@ -137,7 +137,6 @@ namespace TP4SCS.Services.Implements
                         service!.OrderedNum -= od.Quantity;
                         await _serviceRepository.UpdateServiceAsync(service!);
                     }
-
                 }
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED))
@@ -145,13 +144,13 @@ namespace TP4SCS.Services.Implements
                 var orderDetails = order.OrderDetails;
                 foreach (var od in orderDetails)
                 {
-                    if(od.ServiceId != null && od.MaterialId == null)
+                    if (od.ServiceId != null && od.MaterialId == null)
                     {
                         var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
                         service!.OrderedNum += od.Quantity;
                         await _serviceRepository.UpdateServiceAsync(service!);
                     }
-                    
+
                 }
             }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
