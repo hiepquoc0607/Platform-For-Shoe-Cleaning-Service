@@ -6,13 +6,19 @@ namespace TP4SCS.Repository.Interfaces
     public interface IOrderRepository
     {
         Task AddOrdersAsync(List<Order> orders);
+
         Task DeleteOrderAsync(int id);
+
         Task<Order?> GetOrderByIdAsync(int id);
+
         Task<IEnumerable<Order>?> GetOrdersAsync(
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
             OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
+
         Task UpdateOrderAsync(Order order);
+
+        Task<(int, int)> GetBranchIdAndBusinessIdByOrderId(int id);
     }
 }

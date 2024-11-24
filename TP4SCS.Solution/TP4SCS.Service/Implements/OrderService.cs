@@ -1,4 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Branch;
+using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
 using TP4SCS.Library.Utils.StaticClass;
@@ -11,10 +13,14 @@ namespace TP4SCS.Services.Implements
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IBusinessBranchService _businessBranchService;
+        private readonly IBusinessService _businessService;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, IBusinessBranchService businessBranchService, IBusinessService businessService)
         {
             _orderRepository = orderRepository;
+            _businessBranchService = businessBranchService;
+            _businessService = businessService;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -24,10 +30,12 @@ namespace TP4SCS.Services.Implements
         {
             return await _orderRepository.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
         }
+
         public async Task<Order?> GetOrderByOrderId(int orderId)
         {
             return await _orderRepository.GetOrderByIdAsync(orderId);
         }
+
         public async Task<IEnumerable<Order>?> GetOrdersByAccountIdAsync(
             int accountId,
             string? status = null,
@@ -66,6 +74,7 @@ namespace TP4SCS.Services.Implements
             }
             return orders.Where(o => o.OrderDetails.Any(od => od.Branch.BusinessId == businessId));
         }
+
         public async Task ApprovedOrder(int orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -90,6 +99,8 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Order status không hợp lệ");
             }
 
+            var status = newStatus.Trim().ToUpperInvariant();
+
             var order = await _orderRepository.GetOrderByIdAsync(existingOrderedId);
 
             if (order == null)
@@ -97,9 +108,48 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderedId}");
             }
 
-            order.Status = newStatus.Trim().ToUpperInvariant();
+            order.Status = status;
 
             await _orderRepository.UpdateOrderAsync(order);
+
+            var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
+
+            if (status.Equals(StatusConstants.CANCELED))
+            {
+                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                branch.Type = OrderStatistic.CANCELED;
+
+                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
+
+                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                business.Type = OrderStatistic.CANCELED;
+
+                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+            }
+            else if (status.Equals(StatusConstants.FINISHED))
+            {
+                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                branch.Type = OrderStatistic.FINISHED;
+
+                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
+
+                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                business.Type = OrderStatistic.FINISHED;
+
+                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+            }
+            else
+            {
+                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                branch.Type = OrderStatistic.PROCESSING;
+
+                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
+
+                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                business.Type = OrderStatistic.PROCESSING;
+
+                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+            }
         }
 
         public async Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request)
@@ -115,7 +165,8 @@ namespace TP4SCS.Services.Implements
             {
                 existingOrder.DeliveredFee = request.DeliveredFee.Value;
                 existingOrder.TotalPrice = existingOrder.OrderPrice + request.DeliveredFee.Value;
-            } else if (request.IsShip.HasValue && !request.IsShip.Value)
+            }
+            else if (request.IsShip.HasValue && !request.IsShip.Value)
             {
                 existingOrder.DeliveredFee = 0;
                 existingOrder.TotalPrice = existingOrder.OrderPrice;

@@ -23,6 +23,22 @@ namespace TP4SCS.Repository.Implements
             await DeleteAsync(id);
         }
 
+        public async Task<(int, int)> GetBranchIdAndBusinessIdByOrderId(int id)
+        {
+            var result = await _dbContext.OrderDetails
+                .AsNoTracking()
+                .Where(od => od.Id == id)
+                .Join(_dbContext.BusinessBranches.AsNoTracking(),
+                      od => od.BranchId,
+                      bb => bb.Id,
+                      (od, bb) => new { od.BranchId, bb.BusinessId })
+                .FirstOrDefaultAsync();
+
+            return result != null
+                ? (result.BranchId, result.BusinessId)
+                : (0, 0);
+        }
+
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _dbContext.Orders

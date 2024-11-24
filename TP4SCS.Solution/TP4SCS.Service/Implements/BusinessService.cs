@@ -131,9 +131,47 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public Task<ApiResponse<BusinessResponse>> UpdateBusinessStatisticAsync(int id, UpdateBusinessStatisticRequest updateBusinessStatisticRequest)
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessStatisticAsync(int id, UpdateBusinessStatisticRequest updateBusinessStatisticRequest)
         {
-            throw new NotImplementedException();
+            var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
+
+            if (business == null)
+            {
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+            }
+
+            switch (updateBusinessStatisticRequest.Type)
+            {
+                case OrderStatistic.PENDING:
+                    business.PendingAmount += 1;
+                    break;
+                case OrderStatistic.PROCESSING:
+                    business.PendingAmount = (business.PendingAmount - 1 < 0) ? 0 : business.PendingAmount - 1;
+                    business.ProcessingAmount += 1;
+                    break;
+                case OrderStatistic.FINISHED:
+                    business.ProcessingAmount = (business.ProcessingAmount - 1 < 0) ? 0 : business.ProcessingAmount - 1;
+                    business.FinishedAmount += 1;
+                    business.TotalOrder += 1;
+                    break;
+                case OrderStatistic.CANCELED:
+                    business.PendingAmount = (business.PendingAmount - 1 < 0) ? 0 : business.PendingAmount - 1;
+                    business.CanceledAmount += 1;
+                    break;
+                default:
+                    break;
+            }
+
+            try
+            {
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                return new ApiResponse<BusinessResponse>("success", "Cập Nhập Thống Kê Doanh Nghiệp Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Thống Kê Doanh Nghiệp Thất Bại!");
+            }
         }
 
         public async Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest)

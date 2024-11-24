@@ -18,6 +18,8 @@ namespace TP4SCS.Services.Implements
         private readonly IAddressRepository _addressRepository;
         private readonly IBranchRepository _branchRepository;
         private readonly IMaterialService _materialService;
+        private readonly IBusinessService _businessService;
+        private readonly IBusinessBranchService _businessBranchService;
 
         public CartService(ICartRepository cartRepository, IServiceService serviceService
             , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
@@ -25,7 +27,9 @@ namespace TP4SCS.Services.Implements
             IShipService shipService,
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
-            IMaterialService materialService)
+            IMaterialService materialService,
+            IBusinessService businessService,
+            IBusinessBranchService businessBranchService)
         {
             _cartRepository = cartRepository;
             _serviceService = serviceService;
@@ -36,6 +40,8 @@ namespace TP4SCS.Services.Implements
             _addressRepository = addressRepository;
             _branchRepository = branchRepository;
             _materialService = materialService;
+            _businessService = businessService;
+            _businessBranchService = businessBranchService;
         }
 
         public async Task ClearCartAsync(int cartId)
@@ -249,7 +255,7 @@ namespace TP4SCS.Services.Implements
                         {
                             // Tính giá dựa trên Material
                             var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-                            if(material == null)
+                            if (material == null)
                             {
                                 throw new InvalidOperationException("Không tìm thấy material.");
                             }
