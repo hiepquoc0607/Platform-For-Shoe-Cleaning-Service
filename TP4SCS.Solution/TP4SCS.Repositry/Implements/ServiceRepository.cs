@@ -203,5 +203,10 @@ namespace TP4SCS.Repository.Implements
 
             await UpdateAsync(service);
         }
+
+        public async Task UpdateServiceAsync(Service service)
+        {
+            await UpdateAsync(service);
+        }
     }
 }
