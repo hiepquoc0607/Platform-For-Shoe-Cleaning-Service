@@ -153,7 +153,7 @@ namespace TP4SCS.Services.Implements
 
             if (account.RefreshToken != resetPasswordQuery.Token || account.RefreshExpireTime <= DateTime.Now)
             {
-                return new ApiResponse<AuthResponse>("error", 400, "Token KhÔng Đúng Hoặc Hết Hạn!");
+                return new ApiResponse<AuthResponse>("error", 400, "Token Không Đúng Hoặc Hết Hạn!");
             }
 
             var passwordError = _util.CheckPasswordErrorType(resetPasswordRequest.NewPassword);
@@ -366,7 +366,7 @@ namespace TP4SCS.Services.Implements
         //Request Reset Password
         public async Task<ApiResponse<AuthResponse>> RequestResetPasswordAsync(string email)
         {
-            var account = await _accountRepository.GetAccountByEmailNoTrackingAsync(email);
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
 
             if (account == null)
             {

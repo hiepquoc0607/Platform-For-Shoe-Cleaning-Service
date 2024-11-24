@@ -1,7 +1,5 @@
-﻿using Google.Apis.Storage.v1.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Request.Transaction;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Transaction;
@@ -59,26 +57,34 @@ namespace TP4SCS.Library.Repositories
 
         public async Task<(IEnumerable<TransactionResponse>?, Pagination)> GetTransactionsAsync(GetTransactionRequest getTransactionRequest)
         {
-            var transactions = _dbContext.Transactions
+            var transactionsQuery = _dbContext.Transactions
                 .AsNoTracking()
                 .Join(
                     _dbContext.Accounts.AsNoTracking(),
                     transaction => transaction.AccountId,
                     account => account.Id,
-                    (transaction, account) => new { transaction, account }
-                )
-                .Select(t => new TransactionResponse
-                {
-                    Id = t.transaction.Id,
-                    AccountId = t.transaction.AccountId,
-                    AccountName = t.account.FullName,
-                    PackName = t.transaction.PackName,
-                    Balance = t.transaction.Balance,
-                    ProcessTime = t.transaction.ProcessTime,
-                    Description = t.transaction.Description,
-                    PaymentMethod = t.transaction.PaymentMethod,
-                    Status = t.transaction.Status
-                })
+                    (transaction, account) => new TransactionResponse
+                    {
+                        Id = transaction.Id,
+                        AccountId = transaction.AccountId,
+                        AccountName = account.FullName,
+                        PackName = transaction.PackName,
+                        Balance = transaction.Balance,
+                        ProcessTime = transaction.ProcessTime,
+                        Description = transaction.Description,
+                        PaymentMethod = transaction.PaymentMethod,
+                        Status = transaction.Status
+                    }
+                );
+
+            if (getTransactionRequest.AccountId.HasValue)
+            {
+                transactionsQuery = transactionsQuery
+                    .Where(t => t.AccountId == getTransactionRequest.AccountId)
+                    .OrderByDescending(t => t.ProcessTime);
+            }
+
+            var transactions = transactionsQuery
                 .OrderByDescending(t => t.ProcessTime)
                 .AsQueryable();
 
@@ -89,12 +95,6 @@ namespace TP4SCS.Library.Repositories
                 transactions = transactions.Where(t => EF.Functions.Like(t.AccountName, $"%{searchKey}%") ||
                     EF.Functions.Like(t.PackName, $"%{searchKey}%") ||
                     EF.Functions.Like(t.PaymentMethod, $"%{searchKey}%"));
-            }
-
-            //Account Sort
-            if (getTransactionRequest.AccountId.HasValue)
-            {
-                transactions = transactions.Where(t => t.AccountId == getTransactionRequest.AccountId);
             }
 
             //Status Sort
