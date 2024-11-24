@@ -1,6 +1,9 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Branch;
+using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Request.ShipFee;
+using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -126,8 +129,8 @@ namespace TP4SCS.Services.Implements
                 }
                 order.DeliveredFee = request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0;
                 order.OrderPrice = orderPrice;
-                order.PendingTime = DateTime.UtcNow;
-                order.CreateTime = DateTime.UtcNow;
+                order.PendingTime = DateTime.Now;
+                order.CreateTime = DateTime.Now;
                 order.TotalPrice = orderPrice +
                     (request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0);
                 orders.Add(order);
@@ -194,9 +197,20 @@ namespace TP4SCS.Services.Implements
                     order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
                     order.OrderPrice = orderPrice;
                     order.PendingTime = DateTime.Now;
+                    order.CreateTime = DateTime.Now;
                     order.TotalPrice = orderPrice + order.DeliveredFee;
 
                     orders.Add(order);
+
+                    UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                    branch.Type = OrderStatistic.PENDING;
+
+                    await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
+
+                    UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                    business.Type = OrderStatistic.PENDING;
+
+                    await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
                 }
             }
 
@@ -302,6 +316,15 @@ namespace TP4SCS.Services.Implements
                     order.TotalPrice = orderPrice + order.DeliveredFee;
 
                     orders.Add(order);
+                    UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                    branch.Type = OrderStatistic.PENDING;
+
+                    await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
+
+                    UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                    business.Type = OrderStatistic.PENDING;
+
+                    await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
                 }
             }
 

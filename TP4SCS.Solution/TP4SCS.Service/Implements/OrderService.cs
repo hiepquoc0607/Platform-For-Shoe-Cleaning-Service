@@ -15,12 +15,14 @@ namespace TP4SCS.Services.Implements
         private readonly IOrderRepository _orderRepository;
         private readonly IBusinessBranchService _businessBranchService;
         private readonly IBusinessService _businessService;
+        private readonly IServiceRepository _serviceRepository;
 
-        public OrderService(IOrderRepository orderRepository, IBusinessBranchService businessBranchService, IBusinessService businessService)
+        public OrderService(IOrderRepository orderRepository, IBusinessBranchService businessBranchService, IBusinessService businessService, IServiceRepository serviceRepository)
         {
             _orderRepository = orderRepository;
             _businessBranchService = businessBranchService;
             _businessService = businessService;
+            _serviceRepository = serviceRepository;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -114,7 +116,7 @@ namespace TP4SCS.Services.Implements
 
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
 
-            if (status.Equals(StatusConstants.CANCELED))
+            if (Util.IsEqual(status, StatusConstants.CANCELED))
             {
                 UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
                 branch.Type = OrderStatistic.CANCELED;
@@ -125,8 +127,34 @@ namespace TP4SCS.Services.Implements
                 business.Type = OrderStatistic.CANCELED;
 
                 await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+
+                var orderDetails = order.OrderDetails;
+                foreach (var od in orderDetails)
+                {
+                    if (od.ServiceId != null && od.MaterialId == null)
+                    {
+                        var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
+                        service!.OrderedNum -= od.Quantity;
+                        await _serviceRepository.UpdateServiceAsync(service!);
+                    }
+
+                }
             }
-            else if (status.Equals(StatusConstants.FINISHED))
+            else if (Util.IsEqual(status, StatusConstants.APPROVED))
+            {
+                var orderDetails = order.OrderDetails;
+                foreach (var od in orderDetails)
+                {
+                    if(od.ServiceId != null && od.MaterialId == null)
+                    {
+                        var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
+                        service!.OrderedNum += od.Quantity;
+                        await _serviceRepository.UpdateServiceAsync(service!);
+                    }
+                    
+                }
+            }
+            else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
                 UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
                 branch.Type = OrderStatistic.FINISHED;
