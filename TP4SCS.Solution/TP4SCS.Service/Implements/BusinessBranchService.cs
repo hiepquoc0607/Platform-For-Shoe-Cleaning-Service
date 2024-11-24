@@ -2,7 +2,9 @@
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Branch;
+using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.Branch;
+using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
@@ -246,9 +248,46 @@ namespace TP4SCS.Services.Implements
         }
 
         //Update Branch Statistic
-        public Task<ApiResponse<BranchResponse>> UpdateBranchStatisticAsync(int id, UpdateBranchStatisticRequest updateBranchStatisticRequest)
+        public async Task<ApiResponse<BranchResponse>> UpdateBranchStatisticAsync(int id, UpdateBranchStatisticRequest updateBranchStatisticRequest)
         {
-            throw new NotImplementedException();
+            var branch = await _branchRepository.GetBranchByIdAsync(id);
+
+            if (branch == null)
+            {
+                return new ApiResponse<BranchResponse>("error", 404, "Chi Nhánh Không Tồn Tại!");
+            }
+
+            switch (updateBranchStatisticRequest.Type)
+            {
+                case OrderStatistic.PENDING:
+                    branch.PendingAmount += 1;
+                    break;
+                case OrderStatistic.PROCESSING:
+                    branch.PendingAmount = (branch.PendingAmount - 1 < 0) ? 0 : branch.PendingAmount - 1;
+                    branch.ProcessingAmount += 1;
+                    break;
+                case OrderStatistic.FINISHED:
+                    branch.ProcessingAmount = (branch.ProcessingAmount - 1 < 0) ? 0 : branch.ProcessingAmount - 1;
+                    branch.FinishedAmount += 1;
+                    break;
+                case OrderStatistic.CANCELED:
+                    branch.PendingAmount = (branch.PendingAmount - 1 < 0) ? 0 : branch.PendingAmount - 1;
+                    branch.CanceledAmount += 1;
+                    break;
+                default:
+                    break;
+            }
+
+            try
+            {
+                await _branchRepository.UpdateBranchAsync(branch);
+
+                return new ApiResponse<BranchResponse>("success", "Cập Nhập Thống Kê Chi Nhánh Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BranchResponse>("error", 400, "Cập Nhập Thống Kê Chi Nhánh Thất Bại!");
+            }
         }
 
         //Update Branch Status
