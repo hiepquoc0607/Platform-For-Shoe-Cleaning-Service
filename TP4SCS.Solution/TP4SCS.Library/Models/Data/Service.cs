@@ -30,9 +30,11 @@ public partial class Service
 
     public virtual ServiceCategory Category { get; set; } = null!;
 
+    public virtual ICollection<Material> Materials { get; set; } = new List<Material>();
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual Promotion? Promotion { get; set; }
 
-    public virtual ICollection<ServiceMaterial> ServiceMaterials { get; set; } = new List<ServiceMaterial>();
+    public virtual ICollection<ServiceProcess> ServiceProcesses { get; set; } = new List<ServiceProcess>();
 }

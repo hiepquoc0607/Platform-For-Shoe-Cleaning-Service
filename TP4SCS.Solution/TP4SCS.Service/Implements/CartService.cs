@@ -76,7 +76,7 @@ namespace TP4SCS.Services.Implements
             {
                 decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
 
-                totalPrice += servicePrice * item.Quantity;
+                //totalPrice += servicePrice * item.Quantity;
             }
 
             return totalPrice;
@@ -102,7 +102,7 @@ namespace TP4SCS.Services.Implements
                     AddressId = request.AddressId,
                     CreateTime = DateTime.Now,
                     IsAutoReject = request.IsAutoReject,
-                    Note = request.Note,
+                    //Note = request.Note,
                     Status = StatusConstants.PENDING,
                     ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
                     ShippingCode = request.IsShip ? "" : null,
@@ -120,7 +120,7 @@ namespace TP4SCS.Services.Implements
                     {
                         BranchId = item.BranchId,
                         ServiceId = item.ServiceId,
-                        Quantity = item.Quantity,
+                        //Quantity = item.Quantity,
                         Price = finalPrice,
                     });
 
@@ -164,7 +164,7 @@ namespace TP4SCS.Services.Implements
                         AddressId = request.AddressId,
                         CreateTime = DateTime.Now,
                         IsAutoReject = request.IsAutoReject,
-                        Note = cart.Note,
+                        //Note = cart.Note,
                         Status = StatusConstants.PENDING,
                         ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
                         ShippingCode = cart.IsShip ? "" : null,
@@ -186,12 +186,12 @@ namespace TP4SCS.Services.Implements
                         {
                             BranchId = item.BranchId,
                             ServiceId = item.ServiceId,
-                            Quantity = item.Quantity,
+                            //Quantity = item.Quantity,
                             Price = finalPrice,
                         });
 
-                        orderPrice += finalPrice * item.Quantity;
-                        quantity += item.Quantity;
+                        //orderPrice += finalPrice * item.Quantity;
+                        //quantity += item.Quantity;
                     }
 
                     order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
@@ -250,7 +250,7 @@ namespace TP4SCS.Services.Implements
                         AddressId = request.AddressId,
                         CreateTime = DateTime.Now,
                         IsAutoReject = request.IsAutoReject,
-                        Note = cart.Note,
+                        //Note = cart.Note,
                         Status = StatusConstants.PENDING,
                         ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
                         ShippingCode = cart.IsShip ? "" : null,
@@ -280,7 +280,7 @@ namespace TP4SCS.Services.Implements
                                 BranchId = item.BranchId,
                                 ServiceId = item.ServiceId,
                                 MaterialId = item.MaterialId, // Thêm MaterialId vào OrderDetail
-                                Quantity = item.Quantity,
+                                //Quantity = item.Quantity,
                                 Price = finalPrice,
                             });
                         }
@@ -295,7 +295,7 @@ namespace TP4SCS.Services.Implements
                                 BranchId = item.BranchId,
                                 ServiceId = item.ServiceId,
                                 MaterialId = null, // Không có MaterialId
-                                Quantity = item.Quantity,
+                                //Quantity = item.Quantity,
                                 Price = finalPrice,
                             });
                         }
@@ -306,8 +306,8 @@ namespace TP4SCS.Services.Implements
                         }
 
                         // Cập nhật tổng giá và tổng số lượng
-                        orderPrice += finalPrice * item.Quantity;
-                        quantity += item.Quantity;
+                        //orderPrice += finalPrice * item.Quantity;
+                        //quantity += item.Quantity;
                     }
 
                     order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;

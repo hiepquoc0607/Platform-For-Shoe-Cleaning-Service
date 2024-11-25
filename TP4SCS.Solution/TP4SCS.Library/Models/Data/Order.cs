@@ -32,8 +32,6 @@ public partial class Order
 
     public bool IsAutoReject { get; set; }
 
-    public string? Note { get; set; }
-
     public decimal OrderPrice { get; set; }
 
     public decimal DeliveredFee { get; set; }

@@ -1,7 +1,4 @@
-﻿using TP4SCS.Library.Models.Response.Account;
-using TP4SCS.Library.Models.Response.SubcriptionPack;
-
-namespace TP4SCS.Library.Models.Response.Transaction
+﻿namespace TP4SCS.Library.Models.Response.Transaction
 {
     public class TransactionResponse
     {

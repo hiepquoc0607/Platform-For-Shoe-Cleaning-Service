@@ -12,9 +12,13 @@ public partial class OrderDetail
 
     public int? MaterialId { get; set; }
 
-    public int Quantity { get; set; }
-
     public decimal Price { get; set; }
+
+    public string? Note { get; set; }
+
+    public string? ProcessState { get; set; }
+
+    public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
 
     public virtual BusinessBranch Branch { get; set; } = null!;
 

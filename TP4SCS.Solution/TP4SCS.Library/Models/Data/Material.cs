@@ -4,9 +4,13 @@ public partial class Material
 {
     public int Id { get; set; }
 
+    public int ServiceId { get; set; }
+
     public string Name { get; set; } = null!;
 
     public decimal Price { get; set; }
+
+    public bool IsDefault { get; set; }
 
     public string Status { get; set; } = null!;
 
@@ -18,5 +22,5 @@ public partial class Material
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ICollection<ServiceMaterial> ServiceMaterials { get; set; } = new List<ServiceMaterial>();
+    public virtual Service Service { get; set; } = null!;
 }

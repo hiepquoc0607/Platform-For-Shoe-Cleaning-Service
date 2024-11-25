@@ -28,12 +28,12 @@ namespace TP4SCS.Repository.Implements
             }
             var existingOrderDetail = order.OrderDetails.FirstOrDefault(od => od.ServiceId == orderDetail.ServiceId
              && od.BranchId == orderDetail.BranchId);
-            if (existingOrderDetail != null)
-            {
-                existingOrderDetail.Quantity += orderDetail.Quantity;
-            }
-            else
-            {
+            //if (existingOrderDetail != null)
+            //{
+            //    existingOrderDetail.Quantity += orderDetail.Quantity;
+            //}
+            //else
+            //{
                 var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == orderDetail.ServiceId);
                 if (service == null)
                 {
@@ -44,10 +44,10 @@ namespace TP4SCS.Repository.Implements
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} đã ngừng hoạt động.");
                 }
                 order.OrderDetails.Add(orderDetail);
-            }
+            //}
             order.Status = StatusConstants.PROCESSING;
-            order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
-            order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
+            //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
+            //order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
             await _dbContext.SaveChangesAsync();
         }
 
@@ -76,7 +76,7 @@ namespace TP4SCS.Repository.Implements
                     throw new InvalidOperationException("Không thể xóa OrderDetail vì đơn hàng cần ít nhất một chi tiết.");
                 }
                 await DeleteAsync(id);
-                order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
+                //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
                 order.TotalPrice = order.OrderPrice + order.DeliveredFee;
                 await _dbContext.SaveChangesAsync();
             }
@@ -107,7 +107,7 @@ namespace TP4SCS.Repository.Implements
                     Branch = od.Branch,
                     Service = od.Service,
                     Material = od.Material,
-                    Quantity = od.Quantity,
+                    //Quantity = od.Quantity,
                     Price = od.Price,
                     //Status = od.Status
                 })
@@ -144,8 +144,8 @@ namespace TP4SCS.Repository.Implements
 
             if (order != null)
             {
-                order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
-                order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
+                //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
+                //order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
                 await _dbContext.SaveChangesAsync();
             }
         }

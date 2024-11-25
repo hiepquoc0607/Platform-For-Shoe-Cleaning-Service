@@ -41,10 +41,10 @@ namespace TP4SCS.Services.Implements
                     throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
                 }
                 // Kiểm tra quantity
-                if (orderDetail.Quantity <= 0)
-                {
-                    throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
-                }
+                //if (orderDetail.Quantity <= 0)
+                //{
+                //    throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
+                //}
 
                 // Kiểm tra price
                 if (orderDetail.Price <= 0)
@@ -74,10 +74,10 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
             }
             // Kiểm tra quantity
-            if (orderDetail.Quantity <= 0)
-            {
-                throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
-            }
+            //if (orderDetail.Quantity <= 0)
+            //{
+            //    throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
+            //}
 
             orderDetail.Price = await _serviceService.GetServiceFinalPriceAsync((int)orderDetail.ServiceId!);
 
@@ -118,10 +118,10 @@ namespace TP4SCS.Services.Implements
                 throw new InvalidOperationException("Số lượng phải lớn hơn 0.");
             }
 
-            if (request.Quantity.HasValue)
-            {
-                existingOrderDetail.Quantity = request.Quantity.Value;
-            }
+            //if (request.Quantity.HasValue)
+            //{
+            //    existingOrderDetail.Quantity = request.Quantity.Value;
+            //}
             await _orderDetailRepository.UpdateOrderDetailAsync(existingOrderDetail);
         }
 
