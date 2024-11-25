@@ -30,12 +30,12 @@ namespace TP4SCS.Repository.Implements
 
             // Kiểm tra xem item đã tồn tại trong giỏ hàng chưa
             var existingItem = cart.CartItems.FirstOrDefault(i => i.ServiceId == item.ServiceId && i.BranchId == item.BranchId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += item.Quantity; // Cập nhật số lượng
-            }
-            else
-            {
+            //if (existingItem != null)
+            //{
+            //    existingItem.Quantity += item.Quantity; // Cập nhật số lượng
+            //}
+            //else
+            //{
                 var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == item.ServiceId!.Value);
                 if (service == null)
                 {
@@ -49,7 +49,7 @@ namespace TP4SCS.Repository.Implements
                 // Thêm item vào giỏ hàng
                 item.CartId = cart.Id;
                 cart.CartItems.Add(item);
-            }
+            //}
 
             // Cập nhật giỏ hàng trong DbContext
             await _dbContext.SaveChangesAsync();
@@ -84,13 +84,13 @@ namespace TP4SCS.Repository.Implements
                     i.BranchId == item.BranchId &&
                     i.MaterialId == item.MaterialId);
 
-                if (existingItem != null)
-                {
-                    // Nếu tồn tại, cập nhật số lượng
-                    existingItem.Quantity += item.Quantity;
-                }
-                else
-                {
+                //if (existingItem != null)
+                //{
+                //    // Nếu tồn tại, cập nhật số lượng
+                //    existingItem.Quantity += item.Quantity;
+                //}
+                //else
+                //{
                     // Kiểm tra Service nếu chỉ có ServiceId
                     if (item.ServiceId.HasValue && !item.MaterialId.HasValue)
                     {
@@ -119,18 +119,18 @@ namespace TP4SCS.Repository.Implements
                         }
 
                         // Đảm bảo Material liên kết đúng với ServiceId
-                        var isLinked = await _dbContext.ServiceMaterials
-                            .AnyAsync(sm => sm.MaterialId == item.MaterialId && sm.ServiceId == item.ServiceId);
-                        if (!isLinked)
-                        {
-                            throw new InvalidOperationException($"Nguyên liệu với ID {item.MaterialId} không liên kết với Dịch vụ {item.ServiceId}.");
-                        }
+                        //var isLinked = await _dbContext.ServiceMaterials
+                        //    .AnyAsync(sm => sm.MaterialId == item.MaterialId && sm.ServiceId == item.ServiceId);
+                        //if (!isLinked)
+                        //{
+                        //    throw new InvalidOperationException($"Nguyên liệu với ID {item.MaterialId} không liên kết với Dịch vụ {item.ServiceId}.");
+                        //}
                     }
 
                     // Thêm item mới vào giỏ
                     item.CartId = cart.Id;
                     cart.CartItems.Add(item);
-                }
+                //}
             }
 
             // Lưu thay đổi
@@ -181,7 +181,7 @@ namespace TP4SCS.Repository.Implements
 
             if (itemToUpdate != null)
             {
-                itemToUpdate.Quantity = newQuantity;
+                //itemToUpdate.Quantity = newQuantity;
                 await UpdateAsync(itemToUpdate);
             }
             else

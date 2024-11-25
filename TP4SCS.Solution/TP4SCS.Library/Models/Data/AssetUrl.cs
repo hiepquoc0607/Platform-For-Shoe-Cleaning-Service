@@ -14,6 +14,8 @@ public partial class AssetUrl
 
     public int? TicketId { get; set; }
 
+    public int? OrderDetailId { get; set; }
+
     public string Url { get; set; } = null!;
 
     public string Type { get; set; } = null!;
@@ -23,6 +25,8 @@ public partial class AssetUrl
     public virtual Feedback? Feedback { get; set; }
 
     public virtual Material? Material { get; set; }
+
+    public virtual OrderDetail? OrderDetail { get; set; }
 
     public virtual Service? Service { get; set; }
 

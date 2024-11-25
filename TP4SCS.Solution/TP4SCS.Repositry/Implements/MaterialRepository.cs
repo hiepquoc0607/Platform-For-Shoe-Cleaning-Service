@@ -95,18 +95,18 @@ namespace TP4SCS.Repository.Implements
             }
 
             // Kiểm tra liên kết đã tồn tại chưa
-            var existingLink = await _dbContext.ServiceMaterials
-                .FirstOrDefaultAsync(sm => sm.MaterialId == materialId && sm.ServiceId == serviceId);
+            //var existingLink = await _dbContext.ServiceMaterials
+            //    .FirstOrDefaultAsync(sm => sm.MaterialId == materialId && sm.ServiceId == serviceId);
 
-            if (existingLink == null)
-            {
-                var serviceMaterial = new ServiceMaterial
-                {
-                    MaterialId = materialId,
-                    ServiceId = serviceId
-                };
-                await _dbContext.ServiceMaterials.AddAsync(serviceMaterial);
-            }
+            //if (existingLink == null)
+            //{
+            //    var serviceMaterial = new ServiceMaterial
+            //    {
+            //        MaterialId = materialId,
+            //        ServiceId = serviceId
+            //    };
+            //    await _dbContext.ServiceMaterials.AddAsync(serviceMaterial);
+            //}
             await _dbContext.SaveChangesAsync();
         }
 

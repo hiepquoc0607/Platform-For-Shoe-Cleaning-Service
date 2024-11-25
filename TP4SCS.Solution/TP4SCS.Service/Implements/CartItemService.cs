@@ -21,10 +21,10 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentNullException(nameof(item), "Mục trong giỏ hàng không được để trống.");
             }
 
-            if (item.Quantity <= 0)
-            {
-                throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(item.Quantity));
-            }
+            //if (item.Quantity <= 0)
+            //{
+            //    throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(item.Quantity));
+            //}
 
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
@@ -35,10 +35,10 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentNullException("Mục trong giỏ hàng không được để trống.");
             }
 
-            if (items.Any(i => i.Quantity<=0))
-            {
-                throw new ArgumentException("Số lượng phải lớn hơn 0.");
-            }
+            //if (items.Any(i => i.Quantity<=0))
+            //{
+            //    throw new ArgumentException("Số lượng phải lớn hơn 0.");
+            //}
 
             await _cartItemRepository.AddItemsToCartAsync(userId, items);
         }
@@ -89,7 +89,7 @@ namespace TP4SCS.Services.Implements
                     throw new InvalidOperationException($"Giá dịch vụ không hợp lệ cho serviceId {cartItem.ServiceId.Value}.");
                 }
 
-                totalPrice += servicePrice * cartItem.Quantity;
+                //totalPrice += servicePrice * cartItem.Quantity;
             }
 
             return totalPrice;
