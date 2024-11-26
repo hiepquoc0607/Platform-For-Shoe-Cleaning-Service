@@ -16,8 +16,6 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
 
         public virtual FeedbackResponse? Feedback { get; set; }
 
-        public int Quantity { get; set; }
-
         public decimal Price { get; set; }
     }
 }

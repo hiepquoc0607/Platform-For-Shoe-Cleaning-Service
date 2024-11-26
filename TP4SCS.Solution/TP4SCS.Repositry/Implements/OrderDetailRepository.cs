@@ -26,28 +26,32 @@ namespace TP4SCS.Repository.Implements
             {
                 throw new Exception($"Order với id: {orderDetail.OrderId} không tồn tại");
             }
-            var existingOrderDetail = order.OrderDetails.FirstOrDefault(od => od.ServiceId == orderDetail.ServiceId
-             && od.BranchId == orderDetail.BranchId);
-            //if (existingOrderDetail != null)
-            //{
-            //    existingOrderDetail.Quantity += orderDetail.Quantity;
-            //}
-            //else
-            //{
-                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == orderDetail.ServiceId);
+
+            if (orderDetail.ServiceId.HasValue)
+            {
+                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == orderDetail.ServiceId.Value);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} không tìm thấy.");
                 }
-                if (service.Status.ToUpper() == StatusConstants.INACTIVE)
+
+                if (service.Status.ToUpper() == StatusConstants.UNAVAILABLE)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} đã ngừng hoạt động.");
                 }
-                order.OrderDetails.Add(orderDetail);
-            //}
+            }
+            if (orderDetail.MaterialId.HasValue)
+            {
+                var material = await _dbContext.Materials.SingleOrDefaultAsync(m => m.Id == orderDetail.MaterialId.Value);
+                if (material == null)
+                {
+                    throw new InvalidOperationException($"Vật liệu với ID {orderDetail.MaterialId} không tìm thấy.");
+                }
+            }
+            order.OrderDetails.Add(orderDetail);
             order.Status = StatusConstants.PROCESSING;
-            //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
-            //order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
+            order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
+            order.TotalPrice = order.OrderDetails.Sum(od => od.Price) + order.DeliveredFee;
             await _dbContext.SaveChangesAsync();
         }
 
@@ -76,7 +80,7 @@ namespace TP4SCS.Repository.Implements
                     throw new InvalidOperationException("Không thể xóa OrderDetail vì đơn hàng cần ít nhất một chi tiết.");
                 }
                 await DeleteAsync(id);
-                //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
+                order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
                 order.TotalPrice = order.OrderPrice + order.DeliveredFee;
                 await _dbContext.SaveChangesAsync();
             }
@@ -107,20 +111,10 @@ namespace TP4SCS.Repository.Implements
                     Branch = od.Branch,
                     Service = od.Service,
                     Material = od.Material,
-                    //Quantity = od.Quantity,
-                    Price = od.Price,
-                    //Status = od.Status
+                    Price = od.Price
                 })
                 .ToListAsync();
         }
-
-        //return await _dbContext.Orders
-        //    .Where(o => o.Id == orderId)
-        //    .SelectMany(o => o.OrderDetails)
-        //    .Include(od => od.Branch)
-        //    .Include(od => od.Material)
-        //    .Include(od => od.Service)
-        //    .ToListAsync();
 
         public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
@@ -144,8 +138,8 @@ namespace TP4SCS.Repository.Implements
 
             if (order != null)
             {
-                //order.OrderPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price);
-                //order.TotalPrice = order.OrderDetails.Sum(od => od.Quantity * od.Price) + order.DeliveredFee;
+                order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
+                order.TotalPrice = order.OrderDetails.Sum(od => od.Price) + order.DeliveredFee;
                 await _dbContext.SaveChangesAsync();
             }
         }

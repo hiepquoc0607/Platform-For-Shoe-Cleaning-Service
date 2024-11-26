@@ -44,6 +44,7 @@ namespace TP4SCS.API.Controllers
                     var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
                     item.MaterialName = material!.Name;
                     item.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+                    item.Quantity = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Storage;
                 }
             }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
@@ -71,6 +72,7 @@ namespace TP4SCS.API.Controllers
                 var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
                 itemResponse.MaterialName = material!.Name;
                 itemResponse.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+                itemResponse.Quantity = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Storage;
             }
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
