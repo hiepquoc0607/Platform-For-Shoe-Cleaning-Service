@@ -193,6 +193,34 @@ namespace TP4SCS.Services.Implements
             return (filteredMaterials, totalCount);
         }
 
+        public async Task<(IEnumerable<Material>?, int)> GetMaterialsByServiceIdAsync(
+            int serviceId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            // Chỉ lấy danh sách vật liệu theo keyword và status từ repository
+            var materials = await _materialRepository.GetMaterialsAsync(keyword, status, orderBy);
+
+            // Lọc các vật liệu theo businessId thông qua BranchMaterials -> Branch -> Business
+            var filteredMaterials = materials?.Where(m => m.ServiceId == serviceId);
+
+            // Đếm tổng số vật liệu sau khi lọc
+            int totalCount = filteredMaterials?.Count() ?? 0;
+
+            // Thực hiện phân trang nếu pageIndex và pageSize có giá trị
+            if (pageIndex.HasValue && pageSize.HasValue && pageSize > 0)
+            {
+                filteredMaterials = filteredMaterials?
+                    .Skip((pageIndex.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value);
+            }
+
+            return (filteredMaterials, totalCount);
+        }
+
         public async Task<(IEnumerable<Material>?, int)> GetMaterialsByBusinessIdAsync(
             int businessId,
             string? keyword = null,

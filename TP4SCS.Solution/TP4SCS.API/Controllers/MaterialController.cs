@@ -147,6 +147,41 @@ namespace TP4SCS.API.Controllers
             }
         }
 
+        [HttpGet("services/{id}")]
+        public async Task<IActionResult> GetMaterialsByServiceIdAsync(
+            int id,
+            [FromQuery] string? keyword = null,
+            [FromQuery] string? status = null,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            try
+            {
+                var (materials, total) = await _materialService.GetMaterialsByServiceIdAsync(id, keyword, status, pageIndex, pageSize, orderBy);
+
+                if (materials == null || !materials.Any())
+                {
+                    var emptyResponse = new PagedResponse<MaterialResponse>(new List<MaterialResponse>(), 0, pageIndex, pageSize);
+                    var response = new ResponseObject<PagedResponse<MaterialResponse>>("No materials found for this business.", emptyResponse);
+                    return Ok(response);
+                }
+
+                var materialResponses = _mapper.Map<IEnumerable<MaterialResponse>>(materials);
+
+                var pagedResponse = new PagedResponse<MaterialResponse>(materialResponses, total, pageIndex, pageSize);
+
+                var successResponse = new ResponseObject<PagedResponse<MaterialResponse>>("Materials retrieved successfully.", pagedResponse);
+
+                return Ok(successResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ResponseObject<PagedResponse<MaterialResponse>>($"Error: {ex.Message}", null);
+                return StatusCode(500, errorResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateMaterialAsync([FromBody] MaterialCreateRequest request)
         {
@@ -178,24 +213,6 @@ namespace TP4SCS.API.Controllers
             catch (ArgumentException ex)
             {
                 return BadRequest(new ResponseObject<MaterialResponse>($"Validation error: {ex.Message}", null));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseObject<MaterialResponse>($"Unexpected error: {ex.Message}", null));
-            }
-        }
-        [HttpPost]
-        [Route("link")]
-        public async Task<IActionResult> LinkServiceAndMaterialAsync([FromBody] ServiceMaterialRequest request)
-        {
-            try
-            {
-                await _materialService.LinkServiceAndMaterialAsync(request.MaterialId, request.ServiceId);
-                return Ok(new ResponseObject<string>("Link successfully"));
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new ResponseObject<MaterialResponse>($"Error: {ex.Message}", null));
             }
             catch (Exception ex)
             {
