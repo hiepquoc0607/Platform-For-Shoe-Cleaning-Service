@@ -20,12 +20,6 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentNullException(nameof(item), "Mục trong giỏ hàng không được để trống.");
             }
-
-            //if (item.Quantity <= 0)
-            //{
-            //    throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(item.Quantity));
-            //}
-
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)

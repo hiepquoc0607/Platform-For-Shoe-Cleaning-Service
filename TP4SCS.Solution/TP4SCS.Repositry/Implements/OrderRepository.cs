@@ -62,7 +62,6 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
-                            .ThenInclude(f => f!.AssetUrls)
                 .SingleOrDefaultAsync(o => o.Id == id);
         }
 

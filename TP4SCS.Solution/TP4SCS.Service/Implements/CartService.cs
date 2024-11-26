@@ -5,7 +5,6 @@ using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.CartItem;
-using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -18,7 +17,6 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceService _serviceService;
         private readonly ICartItemRepository _cartItemRepository;
         private readonly IOrderRepository _orderRepository;
-        private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IShipService _shipService;
         private readonly IAddressRepository _addressRepository;
         private readonly IBranchRepository _branchRepository;
@@ -28,7 +26,6 @@ namespace TP4SCS.Services.Implements
 
         public CartService(ICartRepository cartRepository, IServiceService serviceService
             , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
-            IOrderDetailRepository orderDetailRepository,
             IShipService shipService,
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
@@ -40,7 +37,6 @@ namespace TP4SCS.Services.Implements
             _serviceService = serviceService;
             _cartItemRepository = cartItemRepository;
             _orderRepository = orderRepository;
-            _orderDetailRepository = orderDetailRepository;
             _shipService = shipService;
             _addressRepository = addressRepository;
             _branchRepository = branchRepository;
@@ -107,6 +103,9 @@ namespace TP4SCS.Services.Implements
             if (request.Item.ServiceId.HasValue)
             {
                 finalPrice = await _serviceService.GetServiceFinalPriceAsync(request.Item.ServiceId.Value);
+                var service = await _serviceService.GetServiceByIdAsync(request.Item.ServiceId.Value);
+                service!.OrderedNum++;
+                await _serviceService.UpdateServiceAsync(service);
             }
             if (request.Item.MaterialId.HasValue)
             {
@@ -171,10 +170,16 @@ namespace TP4SCS.Services.Implements
                     if (item.CartItem.ServiceId.HasValue)
                     {
                         finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.CartItem.ServiceId.Value);
+                        var service = await _serviceService.GetServiceByIdAsync(item.CartItem.ServiceId.Value);
+                        service!.OrderedNum++;
+                        await _serviceService.UpdateServiceAsync(service);
                     }
                     if (item.CartItem.MaterialId.HasValue)
                     {
-                        finalPrice += (await _materialService.GetMaterialByIdAsync(item.CartItem.MaterialId.Value))!.Price;
+                        var material = await _materialService.GetMaterialByIdAsync(item.CartItem.MaterialId.Value);
+                        finalPrice += material!.Price;
+                        material!.BranchMaterials.SingleOrDefault(m => m.BranchId == item.CartItem.BranchId)!.Storage--;
+                        await _materialService.UpdateMaterialAsync(material);
                     }
                     order.OrderDetails.Add(new OrderDetail
                     {
@@ -228,8 +233,8 @@ namespace TP4SCS.Services.Implements
             var response = new List<CartItemForCheckoutResponse>();
             foreach (var item in request)
             {
-                 var cartItem = await _cartItemRepository.GetCartItemByIdAsync(item.CartItemId);
-                if(cartItem == null)
+                var cartItem = await _cartItemRepository.GetCartItemByIdAsync(item.CartItemId);
+                if (cartItem == null)
                 {
                     throw new ArgumentException($"Không tìm thấy cart item với ID: {item.CartItemId}");
                 }

@@ -81,7 +81,24 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
-
+        [HttpPut("api/orderdetails/{id}")]
+        public async Task<IActionResult> UpdateOrderDetail(int id, [FromBody] OrderDetailUpdateRequest request)
+        {
+            try
+            {
+                var od = _mapper.Map<OrderDetail>(request);
+                await _orderDetailService.UpdateOrderDetailAsync(id, od);
+                return Ok(new ResponseObject<string>("Cập nhật thành công"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new ResponseObject<string>(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>(ex.Message));
+            }
+        }
         [HttpDelete]
         [Route("api/orderdetails/{id}")]
         public async Task<IActionResult> DeleteOrderDetailAsync(int id)

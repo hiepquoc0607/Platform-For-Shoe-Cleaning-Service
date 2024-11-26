@@ -160,6 +160,12 @@ namespace TP4SCS.Services.Implements
             // Cập nhật Material
             await _materialRepository.UpdateMaterialAsync(existingMaterial, materialUpdateRequest.BranchId);
         }
+
+        public async Task UpdateMaterialAsync(Material material)
+        {
+            await _materialRepository.UpdateMaterialAsync(material);
+        }
+
         public async Task<(IEnumerable<Material>?, int)> GetMaterialsByBranchIdAsync(
             int branchId,
             string? keyword = null,

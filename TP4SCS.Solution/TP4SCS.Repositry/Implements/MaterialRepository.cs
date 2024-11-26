@@ -141,7 +141,10 @@ namespace TP4SCS.Repository.Implements
             _dbContext.BranchMaterials.Update(branchMaterial);
             await _dbContext.SaveChangesAsync();
         }
-
+        public async Task UpdateMaterialAsync(Material material)
+        {
+            await UpdateAsync(material);
+        }
         public async Task UpdateMaterialAsync(Material material, int[] branchIds)
         {
             var existingBranchMaterials = await _dbContext.BranchMaterials

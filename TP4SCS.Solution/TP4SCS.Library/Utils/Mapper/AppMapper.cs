@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.Category;
 using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.Material;
+using TP4SCS.Library.Models.Request.OrderDetail;
 using TP4SCS.Library.Models.Request.Process;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
@@ -102,6 +103,7 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<Feedback, FeedbackResponseForAdmin>();
 
             //OrderDetail Mapping
+            CreateMap<OrderDetailUpdateRequest, OrderDetail>();
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();
             CreateMap<OrderDetail, OrderDetailResponseV3>()
