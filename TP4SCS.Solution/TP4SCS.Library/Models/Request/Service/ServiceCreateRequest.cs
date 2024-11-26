@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Request.AssetUrl;
+using TP4SCS.Library.Models.Request.Process;
 
 namespace TP4SCS.Library.Models.Request.Service
 {
@@ -19,5 +20,6 @@ namespace TP4SCS.Library.Models.Request.Service
         public decimal? NewPrice { get; set; }
 
         public List<AssetUrlRequest> AssetUrls { get; set; } = new List<AssetUrlRequest>();
+        public List<ProcessCreateRequest> ServiceProcesses { get; set; } = new List<ProcessCreateRequest>();
     }
 }
