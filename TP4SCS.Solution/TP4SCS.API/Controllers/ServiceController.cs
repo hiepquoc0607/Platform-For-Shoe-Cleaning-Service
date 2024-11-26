@@ -172,15 +172,15 @@ namespace TP4SCS.API.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Lỗi: {ex.Message}", null));
+                return BadRequest(new ResponseObject<string>($"Lỗi: {ex.Message}", null));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCreateResponse>($"Lỗi xác thực: {ex.Message}", null));
+                return BadRequest(new ResponseObject<string>($"Lỗi xác thực: {ex.Message}", null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<ServiceCreateResponse>($"Đã xảy ra lỗi không mong muốn: {ex.Message}", null));
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}", null));
             }
         }
 
