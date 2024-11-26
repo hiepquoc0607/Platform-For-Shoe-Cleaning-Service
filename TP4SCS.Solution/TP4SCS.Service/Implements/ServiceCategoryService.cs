@@ -29,6 +29,11 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Tên danh mục phải nằm trong khoảng từ 3 đến 100 ký tự.");
             }
+            if (!Util.IsValidGeneralStatus(category.Status))
+            {
+                throw new ArgumentException("Status không hợp lệ.");
+            }
+            category.Status = category.Status.ToUpper().Trim();
             await _categoryRepository.AddCategoryAsync(category);
         }
         public async Task<int> GetTotalServiceCategoriesCountAsync(string? keyword = null, string? status = null)

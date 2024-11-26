@@ -76,24 +76,21 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var category = _mapper.Map<ServiceCategory>(request);
-                category.Status = Util.UpperCaseStringStatic("active");
-                var response = _mapper.Map<ServiceCategoryResponse>(category);
-                response.Status = Util.TranslateGeneralStatus("active") ?? "Hoạt Động";
                 await _categoryService.AddServiceCategoryAsync(category);
                 return CreatedAtAction(nameof(GetCategoryByIdAync), new { id = category.Id },
-                    new ResponseObject<ServiceCategoryResponse>("Create Category Success", response));
+                    new ResponseObject<string>("Create Category Success"));
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCategoryResponse>(ex.Message));
+                return BadRequest(new ResponseObject<string>(ex.Message));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseObject<ServiceCategoryResponse>(ex.Message));
+                return BadRequest(new ResponseObject<string>(ex.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<ServiceCategoryResponse>($"An error occurred: {ex.Message}"));
+                return StatusCode(500, new ResponseObject<string>($"An error occurred: {ex.Message}"));
             }
         }
 

@@ -94,6 +94,7 @@ namespace TP4SCS.Repository.Implements
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
             return await _dbContext.Services
+                .Include(s => s.ServiceProcesses)
                 .Include(s => s.Promotion)
                 .Include(s => s.AssetUrls)
                 .Include(s => s.BranchServices)
@@ -126,6 +127,7 @@ namespace TP4SCS.Repository.Implements
 
             // Bao gồm các thuộc tính liên quan
             query = query
+                .Include(s => s.ServiceProcesses)
                 .Include(s => s.Promotion)
                 .Include(s => s.AssetUrls)
                 .Include(s => s.Category)
