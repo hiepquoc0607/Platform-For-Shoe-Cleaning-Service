@@ -2,7 +2,9 @@
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.Cart;
+using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.ShipFee;
+using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
@@ -74,26 +76,78 @@ namespace TP4SCS.Services.Implements
 
             foreach (var item in cart.CartItems)
             {
-                decimal servicePrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
-
-                //totalPrice += servicePrice * item.Quantity;
+                if (item.ServiceId.HasValue)
+                {
+                    totalPrice += await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
+                }
+                if (item.MaterialId.HasValue)
+                {
+                    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
+                    totalPrice += material!.Price;
+                }
             }
-
             return totalPrice;
         }
         public async Task CheckoutForServiceAsync(HttpClient httpClient, CheckoutForServiceRequest request)
         {
-            IEnumerable<dynamic> groupedItems = Enumerable.Empty<dynamic>();
+            List<Order> orders = new List<Order>();
+            Order order = new Order
+            {
+                AccountId = request.AccountId,
+                AddressId = request.AddressId,
+                CreateTime = DateTime.Now,
+                IsAutoReject = request.IsAutoReject,
+                Status = StatusConstants.PENDING,
+                ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
+                ShippingCode = request.IsShip ? "" : null,
+                OrderDetails = new List<OrderDetail>()
+            };
 
-            groupedItems = request.Items
-                    .GroupBy(item => item.BranchId)
-                    .Select(group => new
-                    {
-                        BranchId = group.Key,
-                        Items = group.ToList()
-                    });
+            decimal finalPrice = 0;
+            if (request.Item.ServiceId.HasValue)
+            {
+                finalPrice = await _serviceService.GetServiceFinalPriceAsync(request.Item.ServiceId.Value);
+            }
+            if (request.Item.MaterialId.HasValue)
+            {
+                finalPrice += (await _materialService.GetMaterialByIdAsync(request.Item.MaterialId.Value))!.Price;
+            }
+            order.OrderDetails.Add(new OrderDetail
+            {
+                BranchId = request.Item.BranchId,
+                ServiceId = request.Item.ServiceId,
+                MaterialId = request.Item.MaterialId,
+                Note = request.Note,
+                Price = finalPrice,
+            });
+            order.DeliveredFee = request.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, request.Item.BranchId, 1) : 0;
+            order.OrderPrice = finalPrice;
+            order.PendingTime = DateTime.Now;
+            order.CreateTime = DateTime.Now;
+            order.TotalPrice = finalPrice + order.DeliveredFee;
 
+            orders.Add(order);
+            await _orderRepository.AddOrdersAsync(orders);
+        }
+
+
+        public async Task CheckoutForCartAsync(HttpClient httpClient, CheckoutCartRequest request)
+        {
             var orders = new List<Order>();
+            var cart = request.Cart;
+
+            // Lấy các CartItems từ CartCheckout hiện tại
+            var cartItems = await toCartItemForCheckoutResponse(request.Cart.CartItems);
+
+            // Nhóm các CartItems theo BranchId
+            var groupedItems = cartItems
+                .GroupBy(item => item.CartItem.BranchId)
+                .Select(group => new
+                {
+                    BranchId = group.Key,
+                    Items = group.ToList()
+                });
+
             foreach (var group in groupedItems)
             {
                 var order = new Order
@@ -102,241 +156,206 @@ namespace TP4SCS.Services.Implements
                     AddressId = request.AddressId,
                     CreateTime = DateTime.Now,
                     IsAutoReject = request.IsAutoReject,
-                    //Note = request.Note,
                     Status = StatusConstants.PENDING,
-                    ShippingUnit = request.IsShip ? "Giao Hàng Nhanh" : null,
-                    ShippingCode = request.IsShip ? "" : null,
+                    ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
+                    ShippingCode = cart.IsShip ? "" : null,
                     OrderDetails = new List<OrderDetail>()
                 };
 
                 decimal orderPrice = 0;
-                int quantiy = 0;
+                int quantity = 0;
 
                 foreach (var item in group.Items)
                 {
-                    var finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId);
-
+                    decimal finalPrice = 0;
+                    if (item.CartItem.ServiceId.HasValue)
+                    {
+                        finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.CartItem.ServiceId.Value);
+                    }
+                    if (item.CartItem.MaterialId.HasValue)
+                    {
+                        finalPrice += (await _materialService.GetMaterialByIdAsync(item.CartItem.MaterialId.Value))!.Price;
+                    }
                     order.OrderDetails.Add(new OrderDetail
                     {
-                        BranchId = item.BranchId,
-                        ServiceId = item.ServiceId,
-                        //Quantity = item.Quantity,
+                        BranchId = item.CartItem.BranchId,
+                        ServiceId = item.CartItem.ServiceId,
+                        MaterialId = item.CartItem.MaterialId,
+                        Note = item.Note,
                         Price = finalPrice,
                     });
 
-                    orderPrice += finalPrice * item.Quantity;
-                    quantiy += item.Quantity;
+                    orderPrice += finalPrice;
+                    quantity++;
                 }
-                order.DeliveredFee = request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0;
+
+                order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
                 order.OrderPrice = orderPrice;
                 order.PendingTime = DateTime.Now;
                 order.CreateTime = DateTime.Now;
-                order.TotalPrice = orderPrice +
-                    (request.IsShip ? (await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantiy)) : 0);
+                order.TotalPrice = orderPrice + order.DeliveredFee;
+
                 orders.Add(order);
-            }
 
-            await _orderRepository.AddOrdersAsync(orders);
-        }
-        public async Task CheckoutForCartAsync(HttpClient httpClient, CheckoutCartRequest request)
-        {
-            var orders = new List<Order>();
+                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+                branch.Type = OrderStatistic.PENDING;
 
-            foreach (var cart in request.Carts)
-            {
-                // Lấy các CartItems từ CartCheckout hiện tại
-                var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(cart.CartItemIds);
+                await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
 
-                // Nhóm các CartItems theo BranchId
-                var groupedItems = cartItems
-                    .GroupBy(item => item.BranchId)
-                    .Select(group => new
-                    {
-                        BranchId = group.Key,
-                        Items = group.ToList()
-                    });
+                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+                business.Type = OrderStatistic.PENDING;
 
-                foreach (var group in groupedItems)
-                {
-                    var order = new Order
-                    {
-                        AccountId = request.AccountId,
-                        AddressId = request.AddressId,
-                        CreateTime = DateTime.Now,
-                        IsAutoReject = request.IsAutoReject,
-                        //Note = cart.Note,
-                        Status = StatusConstants.PENDING,
-                        ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
-                        ShippingCode = cart.IsShip ? "" : null,
-                        OrderDetails = new List<OrderDetail>()
-                    };
-
-                    decimal orderPrice = 0;
-                    int quantity = 0;
-
-                    foreach (var item in group.Items)
-                    {
-                        decimal finalPrice = 0;
-                        if (item.ServiceId.HasValue)
-                        {
-                            finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId.Value);
-                        }
-
-                        order.OrderDetails.Add(new OrderDetail
-                        {
-                            BranchId = item.BranchId,
-                            ServiceId = item.ServiceId,
-                            //Quantity = item.Quantity,
-                            Price = finalPrice,
-                        });
-
-                        //orderPrice += finalPrice * item.Quantity;
-                        //quantity += item.Quantity;
-                    }
-
-                    order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
-                    order.OrderPrice = orderPrice;
-                    order.PendingTime = DateTime.Now;
-                    order.CreateTime = DateTime.Now;
-                    order.TotalPrice = orderPrice + order.DeliveredFee;
-
-                    orders.Add(order);
-
-                    UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                    branch.Type = OrderStatistic.PENDING;
-
-                    await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
-
-                    UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                    business.Type = OrderStatistic.PENDING;
-
-                    await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
-                }
+                await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
             }
 
             await _orderRepository.AddOrdersAsync(orders);
 
             // Xóa các CartItem đã xử lý
-            var allCartItemIds = request.Carts.SelectMany(c => c.CartItemIds).ToArray();
+            List<int> allCartItemIds = new List<int>();
+            foreach (var item in request.Cart.CartItems)
+            {
+                allCartItemIds.Add(item.CartItemId);
+            }
             if (allCartItemIds.Any())
             {
                 await _cartItemRepository.RemoveItemsFromCartAsync(allCartItemIds);
             }
         }
 
-        public async Task CheckoutForCartAsyncV2(HttpClient httpClient, CheckoutCartRequest request)
+
+        private async Task<List<CartItemForCheckoutResponse>> toCartItemForCheckoutResponse(List<CartItemForCheckoutRequest> request)
         {
-            var orders = new List<Order>();
-
-            foreach (var cart in request.Carts)
+            var response = new List<CartItemForCheckoutResponse>();
+            foreach (var item in request)
             {
-                // Lấy các CartItems từ CartCheckout hiện tại
-                var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(cart.CartItemIds);
-
-                // Nhóm các CartItems theo BranchId
-                var groupedItems = cartItems
-                    .GroupBy(item => item.BranchId)
-                    .Select(group => new
-                    {
-                        BranchId = group.Key,
-                        Items = group.ToList()
-                    });
-
-                foreach (var group in groupedItems)
+                 var cartItem = await _cartItemRepository.GetCartItemByIdAsync(item.CartItemId);
+                if(cartItem == null)
                 {
-                    var order = new Order
-                    {
-                        AccountId = request.AccountId,
-                        AddressId = request.AddressId,
-                        CreateTime = DateTime.Now,
-                        IsAutoReject = request.IsAutoReject,
-                        //Note = cart.Note,
-                        Status = StatusConstants.PENDING,
-                        ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
-                        ShippingCode = cart.IsShip ? "" : null,
-                        OrderDetails = new List<OrderDetail>()
-                    };
-
-                    decimal orderPrice = 0;
-                    int quantity = 0;
-
-                    foreach (var item in group.Items)
-                    {
-                        decimal finalPrice = 0;
-
-                        // Kiểm tra nếu là Material (có cả ServiceId và MaterialId)
-                        if (item.ServiceId.HasValue && item.MaterialId.HasValue)
-                        {
-                            // Tính giá dựa trên Material
-                            var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-                            if (material == null)
-                            {
-                                throw new InvalidOperationException("Không tìm thấy material.");
-                            }
-                            finalPrice = material.Price;
-
-                            order.OrderDetails.Add(new OrderDetail
-                            {
-                                BranchId = item.BranchId,
-                                ServiceId = item.ServiceId,
-                                MaterialId = item.MaterialId, // Thêm MaterialId vào OrderDetail
-                                //Quantity = item.Quantity,
-                                Price = finalPrice,
-                            });
-                        }
-                        // Kiểm tra nếu là Service (chỉ có ServiceId)
-                        else if (item.ServiceId.HasValue && !item.MaterialId.HasValue)
-                        {
-                            // Tính giá dựa trên Service
-                            finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId.Value);
-
-                            order.OrderDetails.Add(new OrderDetail
-                            {
-                                BranchId = item.BranchId,
-                                ServiceId = item.ServiceId,
-                                MaterialId = null, // Không có MaterialId
-                                //Quantity = item.Quantity,
-                                Price = finalPrice,
-                            });
-                        }
-                        else
-                        {
-                            // Trường hợp không hợp lệ, ném exception
-                            throw new InvalidOperationException("CartItem không hợp lệ: phải có ServiceId hoặc cả ServiceId và MaterialId.");
-                        }
-
-                        // Cập nhật tổng giá và tổng số lượng
-                        //orderPrice += finalPrice * item.Quantity;
-                        //quantity += item.Quantity;
-                    }
-
-                    order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
-                    order.OrderPrice = orderPrice;
-                    order.PendingTime = DateTime.Now;
-                    order.TotalPrice = orderPrice + order.DeliveredFee;
-
-                    orders.Add(order);
-                    UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                    branch.Type = OrderStatistic.PENDING;
-
-                    await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
-
-                    UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                    business.Type = OrderStatistic.PENDING;
-
-                    await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
+                    throw new ArgumentException($"Không tìm thấy cart item với ID: {item.CartItemId}");
                 }
+                CartItemForCheckoutResponse itemResponse = new CartItemForCheckoutResponse
+                {
+                    CartItem = cartItem,
+                    Note = item.Note
+                };
+                response.Add(itemResponse);
             }
-
-            await _orderRepository.AddOrdersAsync(orders);
-
-            // Xóa các CartItem đã xử lý
-            var allCartItemIds = request.Carts.SelectMany(c => c.CartItemIds).ToArray();
-            if (allCartItemIds.Any())
-            {
-                await _cartItemRepository.RemoveItemsFromCartAsync(allCartItemIds);
-            }
+            return response;
         }
+
+        //public async Task CheckoutForCartAsyncV2(HttpClient httpClient, CheckoutCartRequest request)
+        //{
+        //    var orders = new List<Order>();
+
+        //    foreach (var cart in request.Carts)
+        //    {
+        //        // Lấy các CartItems từ CartCheckout hiện tại
+        //        var cartItems = await _cartItemRepository.GetCartItemsByIdsAsync(cart.CartItemIds);
+
+        //        // Nhóm các CartItems theo BranchId
+        //        var groupedItems = cartItems
+        //            .GroupBy(item => item.BranchId)
+        //            .Select(group => new
+        //            {
+        //                BranchId = group.Key,
+        //                Items = group.ToList()
+        //            });
+
+        //        foreach (var group in groupedItems)
+        //        {
+        //            var order = new Order
+        //            {
+        //                AccountId = request.AccountId,
+        //                AddressId = request.AddressId,
+        //                CreateTime = DateTime.Now,
+        //                IsAutoReject = request.IsAutoReject,
+        //                //Note = cart.Note,
+        //                Status = StatusConstants.PENDING,
+        //                ShippingUnit = cart.IsShip ? "Giao Hàng Nhanh" : null,
+        //                ShippingCode = cart.IsShip ? "" : null,
+        //                OrderDetails = new List<OrderDetail>()
+        //            };
+
+        //            decimal orderPrice = 0;
+        //            int quantity = 0;
+
+        //            foreach (var item in group.Items)
+        //            {
+        //                decimal finalPrice = 0;
+
+        //                // Kiểm tra nếu là Material (có cả ServiceId và MaterialId)
+        //                if (item.ServiceId.HasValue && item.MaterialId.HasValue)
+        //                {
+        //                    // Tính giá dựa trên Material
+        //                    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
+        //                    if (material == null)
+        //                    {
+        //                        throw new InvalidOperationException("Không tìm thấy material.");
+        //                    }
+        //                    finalPrice = material.Price;
+
+        //                    order.OrderDetails.Add(new OrderDetail
+        //                    {
+        //                        BranchId = item.BranchId,
+        //                        ServiceId = item.ServiceId,
+        //                        MaterialId = item.MaterialId, // Thêm MaterialId vào OrderDetail
+        //                        //Quantity = item.Quantity,
+        //                        Price = finalPrice,
+        //                    });
+        //                }
+        //                // Kiểm tra nếu là Service (chỉ có ServiceId)
+        //                else if (item.ServiceId.HasValue && !item.MaterialId.HasValue)
+        //                {
+        //                    // Tính giá dựa trên Service
+        //                    finalPrice = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId.Value);
+
+        //                    order.OrderDetails.Add(new OrderDetail
+        //                    {
+        //                        BranchId = item.BranchId,
+        //                        ServiceId = item.ServiceId,
+        //                        MaterialId = null, // Không có MaterialId
+        //                        //Quantity = item.Quantity,
+        //                        Price = finalPrice,
+        //                    });
+        //                }
+        //                else
+        //                {
+        //                    // Trường hợp không hợp lệ, ném exception
+        //                    throw new InvalidOperationException("CartItem không hợp lệ: phải có ServiceId hoặc cả ServiceId và MaterialId.");
+        //                }
+
+        //                // Cập nhật tổng giá và tổng số lượng
+        //                //orderPrice += finalPrice * item.Quantity;
+        //                //quantity += item.Quantity;
+        //            }
+
+        //            order.DeliveredFee = cart.IsShip ? await GetFeeShip(httpClient, request.AddressId!.Value, group.BranchId, quantity) : 0;
+        //            order.OrderPrice = orderPrice;
+        //            order.PendingTime = DateTime.Now;
+        //            order.TotalPrice = orderPrice + order.DeliveredFee;
+
+        //            orders.Add(order);
+        //            UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
+        //            branch.Type = OrderStatistic.PENDING;
+
+        //            await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
+
+        //            UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
+        //            business.Type = OrderStatistic.PENDING;
+
+        //            await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
+        //        }
+        //    }
+
+        //    await _orderRepository.AddOrdersAsync(orders);
+
+        //    // Xóa các CartItem đã xử lý
+        //    var allCartItemIds = request.Carts.SelectMany(c => c.CartItemIds).ToArray();
+        //    if (allCartItemIds.Any())
+        //    {
+        //        await _cartItemRepository.RemoveItemsFromCartAsync(allCartItemIds);
+        //    }
+        //}
 
 
         public async Task<decimal> GetFeeShip(HttpClient httpClient, int addressId, int branchId, int quantity)

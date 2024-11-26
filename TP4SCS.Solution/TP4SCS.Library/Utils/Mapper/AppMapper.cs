@@ -49,6 +49,7 @@ namespace TP4SCS.Library.Utils.Mapper
 
             //Cart Item Mappings
             CreateMap<CartItemCreateRequest, CartItem>();
+
             CreateMap<CartItem, CartItemResponse>();
 
             //Promotion Mappings

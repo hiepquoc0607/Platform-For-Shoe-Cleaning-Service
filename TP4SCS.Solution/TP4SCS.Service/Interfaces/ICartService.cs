@@ -12,7 +12,7 @@ namespace TP4SCS.Services.Interfaces
         Task CheckoutForCartAsync(HttpClient httpClient, CheckoutCartRequest request);
         Task CheckoutForServiceAsync(HttpClient httpClient, CheckoutForServiceRequest request);
         Task<decimal> GetFeeShip(HttpClient httpClient, int addressId, int branchId, int quantity);
-        Task CheckoutForCartAsyncV2(HttpClient httpClient, CheckoutCartRequest request);
+        //Task CheckoutForCartAsyncV2(HttpClient httpClient, CheckoutCartRequest request);
         //Task UpdateCartAsync(Cart cart, int existingCartId);
     }
 }

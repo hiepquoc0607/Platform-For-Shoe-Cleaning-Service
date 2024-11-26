@@ -44,11 +44,6 @@ namespace TP4SCS.Services.Implements
 
             await _materialRepository.AddMaterialAsync(materialRequest.BranchId, businessId, material);
         }
-
-        public async Task LinkServiceAndMaterialAsync(int materialId, int serviceId)
-        {
-            await _materialRepository.LinkServiceAndMaterialAsync(materialId, serviceId);
-        }
         public async Task DeleteMaterialAsync(int id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);

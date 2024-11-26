@@ -71,44 +71,6 @@ namespace TP4SCS.Repository.Implements
 
             await _dbContext.SaveChangesAsync();
         }
-        public async Task LinkServiceAndMaterialAsync(int materialId, int serviceId)
-        {
-            // Kiểm tra Material
-            var material = await _dbContext.Materials.FindAsync(materialId);
-            if (material == null)
-            {
-                throw new InvalidOperationException($"Material với ID {materialId} không tồn tại.");
-            }
-            if (material.Status.ToUpper() == StatusConstants.INACTIVE)
-            {
-                throw new InvalidOperationException($"Material với ID {materialId} đã ngừng hoạt động.");
-            }
-
-            var service = await _dbContext.Services.FindAsync(serviceId);
-            if (service == null)
-            {
-                throw new InvalidOperationException($"Service với ID {serviceId} không tồn tại.");
-            }
-            if (service.Status.ToUpper() == StatusConstants.INACTIVE)
-            {
-                throw new InvalidOperationException($"Service với ID {serviceId} đã ngừng hoạt động.");
-            }
-
-            // Kiểm tra liên kết đã tồn tại chưa
-            //var existingLink = await _dbContext.ServiceMaterials
-            //    .FirstOrDefaultAsync(sm => sm.MaterialId == materialId && sm.ServiceId == serviceId);
-
-            //if (existingLink == null)
-            //{
-            //    var serviceMaterial = new ServiceMaterial
-            //    {
-            //        MaterialId = materialId,
-            //        ServiceId = serviceId
-            //    };
-            //    await _dbContext.ServiceMaterials.AddAsync(serviceMaterial);
-            //}
-            await _dbContext.SaveChangesAsync();
-        }
 
         public async Task DeleteMaterialAsync(int id)
         {
