@@ -69,77 +69,6 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, $"Đã xảy ra lỗi trong quá trình xử lý yêu cầu: {ex.Message}");
             }
         }
-        [HttpGet]
-        [Route("api/user/{id}/carts")]
-        public async Task<IActionResult> GetCartByUserIdAsyncV2(int id)
-        {
-            try
-            {
-                // Fetch the user's cart
-                var cart = await _cartService.GetCartByUserIdAsync(id);
-                if (cart == null)
-                {
-                    await _cartService.CreateCartAsync(id);
-                    cart = await _cartService.GetCartByUserIdAsync(id);
-                }
-
-                // Map cart to response model and calculate total price
-                var cartResponse = cart.Adapt<CartResponse>();
-                cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
-
-                // Check if cart contains items
-                if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
-                {
-                    // Group items by BranchId
-                    var groupedCartItems = cartResponse.CartItems
-                        .GroupBy(item => item.BranchId)
-                        .Select(branchGroup => new GroupedCartItemResponse
-                        {
-                            BranchId = branchGroup.Key,
-                            CartItemResponse = branchGroup
-                                .Where(item => item.MaterialId == null) // Get only services (MaterialId == null)
-                                .Select(serviceItem => new GroupCartItemByServiceResponse
-                                {
-                                    ServiceId = serviceItem.ServiceId,
-                                    ServiceName = serviceItem.ServiceName,
-                                    ServiceStatus = serviceItem.ServiceStatus,
-                                    Price = serviceItem.Price,
-                                    Quantity = serviceItem.Quantity,
-                                    Materials = branchGroup
-                                        .Where(materialItem => materialItem.MaterialId.HasValue
-                                            && materialItem.ServiceId == serviceItem.ServiceId) // Match materials by ServiceId
-                                        .Select(materialItem => new CartItemResponse
-                                        {
-                                            Id = materialItem.Id,
-                                            CartId = materialItem.CartId,
-                                            BranchId = materialItem.BranchId,
-                                            ServiceId = materialItem.ServiceId,
-                                            MaterialId = materialItem.MaterialId,
-                                            ServiceName = materialItem.ServiceName,
-                                            ServiceStatus = materialItem.ServiceStatus,
-                                            Price = materialItem.Price,
-                                            Quantity = materialItem.Quantity
-                                        })
-                                        .ToList()
-                                })
-                                .ToList()
-                        })
-                        .ToList();
-
-                    return Ok(new ResponseObject<IEnumerable<GroupedCartItemResponse>>("Fetch success", groupedCartItems));
-                }
-
-                return Ok(new ResponseObject<string>("Cart is empty"));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = $"Error: {ex.Message}" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
-            }
-        }
 
 
         //[HttpGet]
@@ -173,29 +102,6 @@ namespace TP4SCS.API.Controllers
 
         }
 
-        [HttpPost("api/carts/cart/checkouts")]
-        public async Task<IActionResult> CheckoutForCartItemV2Async([FromBody] CheckoutCartRequest request)
-        {
-            if (request == null)
-            {
-                return BadRequest("Yêu cầu không hợp lệ. Vui lòng cung cấp sản phẩm trong giỏ hàng.");
-            }
-
-            try
-            {
-                await _cartService.CheckoutForCartAsyncV2(_httpClient, request);
-                return Ok("Thanh toán thành công.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return StatusCode(400, new ResponseObject<string>(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
-            }
-
-        }
         [HttpPost("api/services/service/checkout")]
         public async Task<IActionResult> CheckoutForServiceAsync([FromBody] CheckoutForServiceRequest request)
         {

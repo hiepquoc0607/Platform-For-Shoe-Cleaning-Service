@@ -4,7 +4,7 @@ namespace TP4SCS.Library.Models.Request.Cart
 {
     public class CheckoutCartRequest
     {
-        public List<CartCheckout> Carts { get; set; } = new List<CartCheckout>();
+        public CartCheckout Cart { get; set; } = null!;
 
         public int AccountId { get; set; }
 

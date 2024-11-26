@@ -45,6 +45,5 @@ namespace TP4SCS.Services.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdDesc);
 
         Task UpdateMaterialAsync(int quantity, int branchId, int materialId);
-        Task LinkServiceAndMaterialAsync(int materialId, int serviceId);
     }
 }

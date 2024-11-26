@@ -28,20 +28,6 @@ namespace TP4SCS.Services.Implements
 
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
-        public async Task AddItemsToCartAsync(int userId, List<CartItem> items)
-        {
-            if (!items.Any())
-            {
-                throw new ArgumentNullException("Mục trong giỏ hàng không được để trống.");
-            }
-
-            //if (items.Any(i => i.Quantity<=0))
-            //{
-            //    throw new ArgumentException("Số lượng phải lớn hơn 0.");
-            //}
-
-            await _cartItemRepository.AddItemsToCartAsync(userId, items);
-        }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)
         {
             return await _cartItemRepository.GetCartItemByIdAsync(itemId);
@@ -52,18 +38,9 @@ namespace TP4SCS.Services.Implements
             return await _cartItemRepository.GetCartItemsAsync(cartId);
         }
 
-        public async Task RemoveItemsFromCartAsync(int[] itemIds)
+        public async Task RemoveItemsFromCartAsync(List<int> itemIds)
         {
             await _cartItemRepository.RemoveItemsFromCartAsync(itemIds);
-        }
-
-        public async Task UpdateCartItemQuantityAsync(int itemId, int newQuantity)
-        {
-            if (newQuantity <= 0)
-            {
-                throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(newQuantity));
-            }
-            await _cartItemRepository.UpdateCartItemQuantityAsync(itemId, newQuantity);
         }
 
         public async Task<decimal> CalculateCartItemsTotal(List<int> cartItemIds)

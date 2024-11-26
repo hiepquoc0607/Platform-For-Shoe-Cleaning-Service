@@ -14,13 +14,15 @@ namespace TP4SCS.API.Controllers
     {
         private readonly ICartItemService _cartItemService;
         private readonly IServiceService _serviceService;
+        private readonly IMaterialService _materialService;
         private readonly IMapper _mapper;
 
-        public CartItemController(ICartItemService cartItemService, IServiceService serviceService, IMapper mapper)
+        public CartItemController(ICartItemService cartItemService, IServiceService serviceService, IMaterialService materialService, IMapper mapper)
         {
             _cartItemService = cartItemService;
             _serviceService = serviceService;
             _mapper = mapper;
+            _materialService = materialService;
         }
 
         [HttpGet]
@@ -36,6 +38,13 @@ namespace TP4SCS.API.Controllers
                 var service = await _serviceService.GetServiceByIdAsync(item.ServiceId);
                 item.ServiceName = service!.Name;
                 item.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
+
+                if (item.MaterialId.HasValue)
+                {
+                    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
+                    item.MaterialName = material!.Name;
+                    item.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+                }
             }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
         }
@@ -57,6 +66,12 @@ namespace TP4SCS.API.Controllers
             itemResponse.ServiceName = service!.Name;
             itemResponse.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
 
+            if (item.MaterialId.HasValue)
+            {
+                var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
+                itemResponse.MaterialName = material!.Name;
+                itemResponse.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+            }
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
 
@@ -111,67 +126,14 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
-        [HttpPost]
-        [Route("api/cartitems/batch")]
-        public async Task<IActionResult> AddItemsToCart(int userId, [FromBody] IEnumerable<CartItemCreateRequest> request)
-        {
-            if (request == null || !request.Any())
-            {
-                return BadRequest("Danh sách sản phẩm không được rỗng.");
-            }
-
-            try
-            {
-                // Map danh sách yêu cầu thành CartItem
-                var items = _mapper.Map<IEnumerable<CartItem>>(request);
-
-                // Gọi service để thêm danh sách vào giỏ hàng
-                await _cartItemService.AddItemsToCartAsync(userId, items.ToList());
-
-                return Ok(new ResponseObject<string>("Thêm các sản phẩm vào giỏ hàng thành công."));
-            }
-            catch (InvalidOperationException ex)
-            {
-                // Lỗi do logic không hợp lệ
-                return BadRequest(new ResponseObject<string>(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                // Lỗi không mong muốn
-                return StatusCode(500, new ResponseObject<string>($"Lỗi hệ thống: {ex.Message}"));
-            }
-        }
-
-        [HttpPut]
-        [Route("api/cartitems/{id}")]
-        public async Task<IActionResult> UpdateCartItemQuantity(int id, [FromBody] int newQuantity)
-        {
-            try
-            {
-                await _cartItemService.UpdateCartItemQuantityAsync(id, newQuantity);
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
-        }
 
         [HttpDelete]
         [Route("api/cartitems")]
-        public async Task<IActionResult> RemoveItemsFromCart([FromBody] int[] itemIds)
+        public async Task<IActionResult> RemoveItemsFromCart([FromBody] List<int> itemIds)
         {
             try
             {
-                if (itemIds == null || itemIds.Length == 0)
+                if (itemIds == null || itemIds.Count == 0)
                 {
                     return BadRequest("Danh sách ID của các mục không được để trống.");
                 }
