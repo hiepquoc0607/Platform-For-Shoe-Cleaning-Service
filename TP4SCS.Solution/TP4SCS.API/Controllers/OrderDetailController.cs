@@ -82,33 +82,6 @@ namespace TP4SCS.API.Controllers
             }
         }
 
-        [HttpPut]
-        [Route("api/orderdetails/{id}")]
-        public async Task<IActionResult> UpdateOrderDetailAsync(int id, [FromBody] OrderDetailRequest request)
-        {
-            try
-            {
-                await _orderDetailService.UpdateOrderDetailAsync(request, id);
-                return Ok(new ResponseObject<string>("Cập nhật chi tiết đơn hàng thành công."));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ResponseObject<string>(ex.Message));
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new ResponseObject<string>($"Lỗi hợp lệ: {ex.Message}"));
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new ResponseObject<string>(ex.Message));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
-            }
-        }
-
         [HttpDelete]
         [Route("api/orderdetails/{id}")]
         public async Task<IActionResult> DeleteOrderDetailAsync(int id)

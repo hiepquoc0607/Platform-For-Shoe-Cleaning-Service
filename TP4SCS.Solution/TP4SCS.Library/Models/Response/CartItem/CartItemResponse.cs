@@ -12,6 +12,7 @@
         public string ServiceStatus { get; set; } = null!;
         public string? MaterialName { get; set; }
         public string? MaterialStatus { get; set; }
+        public int? Quantity { get; set; }
 
         public decimal Price { get; set; }
     }

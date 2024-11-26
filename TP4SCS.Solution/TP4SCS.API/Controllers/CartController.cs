@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
-using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
 
@@ -13,12 +12,14 @@ namespace TP4SCS.API.Controllers
     {
         private readonly ICartService _cartService;
         private readonly IServiceService _serviceService;
+        private readonly IMaterialService _materialService;
         private readonly HttpClient _httpClient;
-        public CartController(ICartService cartService, IServiceService serviceService, IHttpClientFactory httpClientFactory)
+        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, IHttpClientFactory httpClientFactory)
         {
             _cartService = cartService;
             _serviceService = serviceService;
             _httpClient = httpClientFactory.CreateClient();
+            _materialService = materialService;
         }
 
         [HttpGet]
@@ -45,6 +46,13 @@ namespace TP4SCS.API.Controllers
                         cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
                         cartItem.ServiceName = service!.Name;
                         cartItem.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == cartItem.BranchId)!.Status;
+                        if (cartItem.MaterialId.HasValue)
+                        {
+                            var material = await _materialService.GetMaterialByIdAsync(cartItem.MaterialId.Value);
+                            cartItem.MaterialName = material!.Name;
+                            cartItem.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == cartItem.BranchId)!.Status;
+                            cartItem.Quantity = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == cartItem.BranchId)!.Storage;
+                        }
                     }
                     var groupedCartItems = cartResponse.CartItems
                         .GroupBy(item => item.BranchId)
