@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.General;
@@ -110,7 +109,7 @@ namespace TP4SCS.API.Controllers
         [HttpGet("business/{id}")]
         public async Task<IActionResult> GetServiceByBusinessId([FromQuery] PagedRequest request, int id)
         {
-            var (services, total) = await _serviceService.GetServicesByBusinessIdAsync(id, request.Keyword, request.Status, request.PageIndex,request.PageSize,request.OrderBy);
+            var (services, total) = await _serviceService.GetServicesByBusinessIdAsync(id, request.Keyword, request.Status, request.PageIndex, request.PageSize, request.OrderBy);
             var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
             var pagedResponse = new PagedResponse<ServiceResponse>(
                     serviceResponses,

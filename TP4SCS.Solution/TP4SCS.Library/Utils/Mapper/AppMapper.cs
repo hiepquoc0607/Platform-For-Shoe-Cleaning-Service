@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.Category;
 using TP4SCS.Library.Models.Request.Feedback;
 using TP4SCS.Library.Models.Request.Material;
+using TP4SCS.Library.Models.Request.Process;
 using TP4SCS.Library.Models.Request.Promotion;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Models.Response.AssetUrl;
@@ -19,6 +20,7 @@ using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
+using TP4SCS.Library.Models.Response.Process;
 using TP4SCS.Library.Models.Response.Promotion;
 using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.Utils;
@@ -68,6 +70,10 @@ namespace TP4SCS.Library.Utils.Mapper
             //BranchService Mapping
             CreateMap<BranchService, BranchServiceResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+            //Process Mapping
+            CreateMap<ServiceProcess, ProcessResponse>();
+            CreateMap<ProcessCreateRequest, ServiceProcess>();
+            CreateMap<ProcessUpdateRequest, ServiceProcess>();
 
             //BranchMaterial Mapping
             CreateMap<BranchMaterial, BranchMaterialResponse>()
