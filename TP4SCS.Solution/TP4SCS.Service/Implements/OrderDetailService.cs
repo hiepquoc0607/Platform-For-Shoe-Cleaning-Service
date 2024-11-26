@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.OrderDetail;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -95,6 +94,17 @@ namespace TP4SCS.Services.Implements
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
         {
             return await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(orderId);
+        }
+
+        public async Task UpdateOrderDetailAsync(int existingOrderDetailId, OrderDetail orderDetail)
+        {
+            var existingOrderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(existingOrderDetailId);
+            if (existingOrderDetail == null)
+            {
+                throw new InvalidOperationException($"Không tìm thấy Order Detail với id: {existingOrderDetailId}");
+            }
+            existingOrderDetail.ProcessState = orderDetail.ProcessState;
+            existingOrderDetail.AssetUrls = orderDetail.AssetUrls;
         }
 
     }

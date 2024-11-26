@@ -10,5 +10,6 @@ namespace TP4SCS.Services.Interfaces
         Task<OrderDetail?> GetOrderDetailByIdAsync(int id);
         Task<IEnumerable<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId);
         Task DeleteOrderDetailAsync(int id);
+        Task UpdateOrderDetailAsync(int existingOrderDetailId, OrderDetail orderDetail);
     }
 }

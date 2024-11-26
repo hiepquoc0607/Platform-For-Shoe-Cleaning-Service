@@ -118,30 +118,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
-            // Lấy OrderDetail hiện tại từ database
-            var existingOrderDetail = await _dbContext.OrderDetails
-                .SingleOrDefaultAsync(od => od.Id == orderDetail.Id);
-
-            if (existingOrderDetail == null)
-            {
-                throw new KeyNotFoundException($"Không tìm thấy OrderDetail với ID {orderDetail.Id}.");
-            }
-
-            // Cập nhật OrderDetail
-            _dbContext.Entry(existingOrderDetail).CurrentValues.SetValues(orderDetail);
-            await _dbContext.SaveChangesAsync();
-
-            // Lấy Order liên quan
-            var order = await _dbContext.Orders
-                .Include(o => o.OrderDetails)
-                .SingleOrDefaultAsync(o => o.Id == orderDetail.OrderId);
-
-            if (order != null)
-            {
-                order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
-                order.TotalPrice = order.OrderDetails.Sum(od => od.Price) + order.DeliveredFee;
-                await _dbContext.SaveChangesAsync();
-            }
+            await UpdateAsync(orderDetail);
         }
 
     }

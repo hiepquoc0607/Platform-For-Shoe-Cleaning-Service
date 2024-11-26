@@ -3,6 +3,7 @@ using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
+using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -16,13 +17,20 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessBranchService _businessBranchService;
         private readonly IBusinessService _businessService;
         private readonly IServiceRepository _serviceRepository;
+        private readonly IMaterialService _materialService;
 
-        public OrderService(IOrderRepository orderRepository, IBusinessBranchService businessBranchService, IBusinessService businessService, IServiceRepository serviceRepository)
+        public OrderService(
+            IOrderRepository orderRepository,
+            IBusinessBranchService businessBranchService,
+            IBusinessService businessService,
+            IServiceRepository serviceRepository,
+            IMaterialService materialService)
         {
             _orderRepository = orderRepository;
             _businessBranchService = businessBranchService;
             _businessService = businessService;
             _serviceRepository = serviceRepository;
+            _materialService = materialService;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -136,11 +144,17 @@ namespace TP4SCS.Services.Implements
                 var orderDetails = order.OrderDetails;
                 foreach (var od in orderDetails)
                 {
-                    if (od.ServiceId != null && od.MaterialId == null)
+                    if (od.ServiceId.HasValue)
                     {
                         var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
-                        //service!.OrderedNum -= od.Quantity;
-                        await _serviceRepository.UpdateServiceAsync(service!);
+                        service!.OrderedNum --;
+                        await _serviceRepository.UpdateServiceAsync(service);
+                    }
+                    if ( od.MaterialId.HasValue)
+                    {
+                        var material = await _materialService.GetMaterialByIdAsync(od.MaterialId.Value);
+                        material!.BranchMaterials.SingleOrDefault(m => m.BranchId == od.BranchId)!.Storage++;
+                        await _materialService.UpdateMaterialAsync(material);
                     }
                 }
             }
@@ -152,7 +166,6 @@ namespace TP4SCS.Services.Implements
                     if (od.ServiceId != null && od.MaterialId == null)
                     {
                         var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
-                        //service!.OrderedNum += od.Quantity;
                         await _serviceRepository.UpdateServiceAsync(service!);
                     }
 

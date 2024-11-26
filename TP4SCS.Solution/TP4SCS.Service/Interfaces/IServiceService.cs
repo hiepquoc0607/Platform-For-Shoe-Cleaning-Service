@@ -1,8 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
-using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.Service;
 
 namespace TP4SCS.Services.Interfaces
 {
@@ -48,6 +46,7 @@ namespace TP4SCS.Services.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdAsc);
 
         Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId);
+        Task UpdateServiceAsync(Service service);
 
     }
 }

@@ -51,7 +51,6 @@ namespace TP4SCS.API.Controllers
                             var material = await _materialService.GetMaterialByIdAsync(cartItem.MaterialId.Value);
                             cartItem.MaterialName = material!.Name;
                             cartItem.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == cartItem.BranchId)!.Status;
-                            cartItem.Quantity = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == cartItem.BranchId)!.Storage;
                         }
                     }
                     var groupedCartItems = cartResponse.CartItems

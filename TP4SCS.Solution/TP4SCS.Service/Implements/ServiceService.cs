@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Diagnostics;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -361,7 +360,10 @@ namespace TP4SCS.Services.Implements
         {
             return _serviceRepository.GetTotalServiceCountAsync(keyword, status);
         }
-
+        public async Task UpdateServiceAsync(Service service)
+        {
+            await _serviceRepository.UpdateServiceAsync(service);
+        }
         public async Task<decimal> GetServiceFinalPriceAsync(int serviceId)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(serviceId);
