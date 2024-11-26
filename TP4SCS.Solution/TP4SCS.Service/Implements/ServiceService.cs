@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Diagnostics;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -16,18 +17,21 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceCategoryRepository _categoryRepository;
         private readonly IPromotionService _promotionService;
         private readonly IAssetUrlService _assetUrlService;
+        private readonly IProcessService _processService;
 
         public ServiceService(IServiceRepository serviceRepository,
             IMapper mapper,
             IServiceCategoryRepository categoryRepository,
             IPromotionService promotionService,
-            IAssetUrlService assetUrlService)
+            IAssetUrlService assetUrlService,
+            IProcessService processService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _categoryRepository = categoryRepository;
             _promotionService = promotionService;
             _assetUrlService = assetUrlService;
+            _processService = processService;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest, int businessId)
@@ -247,6 +251,46 @@ namespace TP4SCS.Services.Implements
                     existingService.AssetUrls.Add(newAssetUrl);
                 }
             }
+
+            var existingProcesses = existingService.ServiceProcesses.ToList();
+            var newProcesses = serviceUpdateRequest.ServiceProcesses;
+
+            // Các Process mới cần thêm vào
+            var processesToAdd = newProcesses.Where(newProcess =>
+                !existingProcesses.Any(existingProcess =>
+                    existingProcess.Process == newProcess.Process &&
+                    existingProcess.ProcessOrder == newProcess.ProcessOrder)
+            ).ToList();
+
+            // Các Process cần xóa
+            var processesToRemove = existingProcesses.Where(existingProcess =>
+                !newProcesses.Any(newProcess =>
+                    newProcess.Process == existingProcess.Process &&
+                    newProcess.ProcessOrder == existingProcess.ProcessOrder)
+            ).ToList();
+
+            // Xử lý thêm mới các Process
+            if (processesToAdd.Any())
+            {
+                foreach (var newProcess in processesToAdd)
+                {
+                    existingService.ServiceProcesses.Add(new ServiceProcess
+                    {
+                        Process = newProcess.Process,
+                        ProcessOrder = newProcess.ProcessOrder
+                    });
+                }
+            }
+
+            // Xử lý xóa các Process
+            if (processesToRemove.Any())
+            {
+                foreach (var processToRemove in processesToRemove)
+                {
+                    await _processService.DeleteProcessAsync(processToRemove.Id);
+                }
+            }
+
             await _serviceRepository.UpdateServiceAsync(existingService, serviceUpdateRequest.BranchId);
 
         }
