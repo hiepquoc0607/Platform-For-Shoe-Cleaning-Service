@@ -36,6 +36,13 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdDesc);
+        Task<(IEnumerable<Material>?, int)> GetMaterialsByServiceIdAsync(
+            int serviceId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
 
         Task UpdateMaterialAsync(int quantity, int branchId, int materialId);
         Task LinkServiceAndMaterialAsync(int materialId, int serviceId);
