@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TP4SCS.Library.Models.Request.ShipFee;
+using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -70,6 +72,61 @@ namespace TP4SCS.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("api/order-ship/status")]
+        public async Task<IActionResult> GetOrderStatusAsync([FromQuery] string orderCode)
+        {
+            // Gọi hàm GetOrderStatusAsync từ service
+            var (status, logs) = await _shipService.GetOrderStatusAsync(_httpClient, orderCode);
+
+            // Nếu không tìm thấy kết quả
+            if (status == null || logs == null || !logs.Any())
+            {
+                return NotFound(new
+                {
+                    status = "error",
+                    statusCode = 404,
+                    message = "Không tìm thấy thông tin trạng thái đơn hàng!"
+                });
+            }
+
+            // Trả về kết quả thành công
+            return Ok(new
+            {
+                status = "success",
+                statusCode = 200,
+                message = "Lấy trạng thái đơn hàng thành công!",
+                data = new
+                {
+                    Status = status,
+                    Logs = logs.Select(log => new // Chuyển logs thành các đối tượng rõ ràng
+                    {
+                        Status = log.Status,
+                        UpdatedDate = log.UpdatedDate
+                    }).ToList() // Đảm bảo logs là một danh sách các đối tượng JSON hợp lệ
+                }
+            });
+        }
+
+        [HttpPost]
+        [Route("api/order-ship")]
+        public async Task<IActionResult> CreateShippingOrderAsync([FromBody] ShippingOrderRequest request)
+        {
+            var result = await _shipService.CreateShippingOrderAsync(_httpClient, request);
+
+            if (result == null)
+            {
+                return NotFound(new
+                {
+                    status = "error",
+                    statusCode = 404,
+                    message = "Không Tìm Thấy Dữ Liệu Phường!"
+                });
+            }
+
+            return Ok(new ResponseObject<string>(result));
         }
     }
 }

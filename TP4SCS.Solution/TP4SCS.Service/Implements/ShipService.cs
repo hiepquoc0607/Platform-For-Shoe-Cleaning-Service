@@ -322,5 +322,130 @@ namespace TP4SCS.Services.Implements
                 return null;
             }
         }
+
+        public async Task<string?> CreateShippingOrderAsync(HttpClient httpClient, ShippingOrderRequest request)
+        {
+            try
+            {
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                if (!httpClient.DefaultRequestHeaders.Contains("ShopId"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("ShopId", _configuration["GHN_API:ShopId"]);
+                }
+
+                // Tạo nội dung body
+                var body = new
+                {
+                    payment_type_id = 2,
+                    required_note = "KHONGCHOXEMHANG",
+                    from_name = request.FromName,
+                    from_phone = request.FromPhone,
+                    from_address = request.FromAddress,
+                    from_ward_name = request.FromWardName,
+                    from_district_name = request.FromDistrictName,
+                    from_province_name = request.FromProvinceName,
+                    to_name = request.ToName,
+                    to_phone = request.ToPhone,
+                    to_address = request.ToAddress,
+                    to_ward_code = request.ToWardCode,
+                    to_district_id = request.ToDistrictId,
+                    cod_amount = request.CODAmount,
+                    content = "Giao hàng cho ShoeCareHub",
+                    weight = 30,
+                    length = 30,
+                    width = 40,
+                    height = 20,
+                    service_id = 0,
+                    service_type_id = 2,
+                    pick_shift = new[] { 2 }
+                };
+
+                // Convert body thành JSON
+                var jsonBody = JsonSerializer.Serialize(body);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                // Gửi request POST
+                var response = await httpClient.PostAsync(_configuration["GHN_API:CreateOrder"], content);
+
+                // Kiểm tra response
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException($"Request failed with status code {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
+                }
+
+                // Lấy response content
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Parse JSON để lấy order_code
+                using var document = JsonDocument.Parse(responseContent);
+                var orderCode = document.RootElement
+                    .GetProperty("data")
+                    .GetProperty("order_code")
+                    .GetString();
+
+                return orderCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi tạo đơn hàng: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<(string? Status, List<(string Status, string UpdatedDate)> Logs)> GetOrderStatusAsync(HttpClient httpClient, string orderCode)
+        {
+            try
+            {
+                // Thiết lập headers nếu chưa có
+                if (!httpClient.DefaultRequestHeaders.Contains("Token"))
+                {
+                    httpClient.DefaultRequestHeaders.Add("Token", _configuration["GHN_API:ApiToken"]);
+                }
+
+                // Body của request
+                var body = new { order_code = orderCode };
+                var jsonBody = JsonSerializer.Serialize(body);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                // Gửi request POST
+                var response = await httpClient.PostAsync(_configuration["GHN_API:GetOrderDetail"], content);
+
+                // Kiểm tra trạng thái
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException($"Request failed with status code {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
+                }
+
+                // Parse response
+                var responseContent = await response.Content.ReadAsStringAsync();
+                using var document = JsonDocument.Parse(responseContent);
+
+                // Lấy đối tượng data từ JSON response
+                var dataElement = document.RootElement.GetProperty("data");
+
+                // Lấy giá trị `status`
+                var status = dataElement.GetProperty("status").GetString();
+
+                // Lấy giá trị `log` (nếu có) và chuyển đổi thành danh sách
+                var logs = dataElement.GetProperty("log")
+                    .EnumerateArray()
+                    .Select(log => (
+                        Status: log.GetProperty("status").GetString() ?? "", // Thay thế giá trị null bằng "Unknown"
+                        UpdatedDate: log.GetProperty("updated_date").GetString() ?? "" // Thay thế giá trị null bằng "Unknown"
+                    ))
+                    .ToList();
+
+                return (status, logs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi lấy trạng thái đơn hàng: {ex.Message}");
+                return (null, new List<(string, string)>());
+            }
+        }
     }
 }

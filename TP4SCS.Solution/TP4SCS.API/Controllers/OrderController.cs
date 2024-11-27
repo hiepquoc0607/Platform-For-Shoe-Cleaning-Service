@@ -14,12 +14,14 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IEmailService _emailService;
+        private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IEmailService emailService, IMapper mapper)
+        public OrderController(IOrderService orderService, IEmailService emailService, IMapper mapper, IHttpClientFactory httpClientFactory)
         {
             _orderService = orderService;
             _emailService = emailService;
+            _httpClient = httpClientFactory.CreateClient();
             _mapper = mapper;
         }
 
@@ -142,11 +144,25 @@ namespace TP4SCS.API.Controllers
                 await _orderService.UpdateOrderStatusAsync(id, status);
 
                 // Trả về thông báo thành công dưới dạng ResponseObject
-                return Ok(new ResponseObject<string>("Đơn hàng đã được duyệt thành công!", null));
+                return Ok(new ResponseObject<string>("Cập nhật trạng thái đơn hàng thành công!", null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseObject<string>($"Lỗi khi duyệt đơn hàng: {ex.Message}"));
+                return StatusCode(500, new ResponseObject<string>($"Lỗi khi cập nhật trạng thái đơn hàng: {ex.Message}"));
+            }
+        }
+        [HttpPut("{id}/ship-code")]
+        public async Task<IActionResult> UpdateShipCode(int id)
+        {
+            try
+            {
+                await _orderService.CreateShipOrder(_httpClient, id);
+
+                return Ok(new ResponseObject<string>("Cập nhật mã vận đơn của đơn hàng thành công!", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Lỗi khi cập nhật mã vận đơn của đơn hàng: {ex.Message}"));
             }
         }
         [HttpPatch("{id}")]
