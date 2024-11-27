@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
+using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.Business;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
@@ -324,6 +325,13 @@ namespace TP4SCS.Services.Implements
             if (isPhoneExisted)
             {
                 return new ApiResponse<BusinessResponseV2>("error", 400, "Số Điện Thoại Đã Được Sử Dụng!");
+            }
+
+            var isNameExisted = await _businessRepository.IsNameExistedAsync(createBusinessRequest.Name.Trim().ToLowerInvariant());
+
+            if (isNameExisted)
+            {
+                return new ApiResponse<BusinessResponseV2>("error", 400, "Tên Doanh Nghiệp Đã Được Sử Dụng!");
             }
 
             account.Role = RoleConstants.OWNER;

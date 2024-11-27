@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Payment;
 using TP4SCS.Library.Models.Request.SubscriptionPack;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.SubcriptionPack;
@@ -54,31 +53,66 @@ namespace TP4SCS.Services.Implements
 
             int newIndex = periods.IndexOf(subscriptionPackRequest.Period);
 
-            string description = "";
-
-            if (newIndex != 0)
-            {
-                decimal basePrice = await _subscriptionRepository.GetPackPriceByPeriodAsync(periods[0]);
-                decimal savePrice = (basePrice / periods[0]) - (subscriptionPackRequest.Price / subscriptionPackRequest.Period);
-                string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
-
-                if (savePrice > 0)
-                {
-                    description = $"Tiết Kiệm " + save + "đ/Tháng";
-                }
-            }
-
-            var newPack = _mapper.Map<SubscriptionPack>(subscriptionPackRequest);
-            newPack.Name = name;
-            newPack.Description = description;
-
             try
             {
-                await _subscriptionRepository.CreatePackAsync(newPack);
+                var newPack = _mapper.Map<SubscriptionPack>(subscriptionPackRequest);
+                newPack.Name = name;
+                newPack.Description = "";
 
-                var newPck = await GetPackByIdAsync(newPack.Id);
+                var secondPack = new SubscriptionPack();
+                var thirdPack = new SubscriptionPack();
 
-                return new ApiResponse<SubscriptionPackResponse>("success", "Tạo Gói Đăng Kí Mới Thất Bại!", newPck.Data, 201);
+                if (newIndex != 0)
+                {
+                    decimal basePrice = await _subscriptionRepository.GetPackPriceByPeriodAsync(periods[0]);
+                    decimal savePrice = (basePrice / periods[0]) - (subscriptionPackRequest.Price / subscriptionPackRequest.Period);
+                    string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+
+                    if (savePrice > 0)
+                    {
+                        newPack.Description = $"Tiết Kiệm {save}đ/Tháng";
+                    }
+
+                    await _subscriptionRepository.CreatePackAsync(newPack);
+                }
+                else
+                {
+                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
+                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new SubscriptionPack();
+
+                    decimal savePriceOfSecond = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (secondPack.Price / secondPack.Period);
+                    string saveOfSeccond = savePriceOfSecond.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+                    if (savePriceOfSecond > 0)
+                    {
+                        secondPack.Description = $"Tiết Kiệm {saveOfSeccond}đ/Tháng";
+                    }
+                    else
+                    {
+                        secondPack.Description = "";
+                    }
+
+                    decimal savePriceOfThird = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (thirdPack.Price / thirdPack.Period);
+                    string saveOfthird = savePriceOfThird.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+                    if (savePriceOfThird > 0)
+                    {
+                        thirdPack.Description = $"Tiết Kiệm {saveOfthird}đ/Tháng";
+                    }
+                    else
+                    {
+                        thirdPack.Description = "";
+                    }
+
+                    await _subscriptionRepository.RunInTransactionAsync(async () =>
+                    {
+                        await _subscriptionRepository.CreatePackAsync(newPack);
+
+                        await _subscriptionRepository.UpdatePackAsync(secondPack);
+
+                        await _subscriptionRepository.UpdatePackAsync(thirdPack);
+                    });
+                }
+
+                return new ApiResponse<SubscriptionPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
             }
             catch (Exception)
             {
@@ -95,9 +129,37 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
+            List<int> periods = await _subscriptionRepository.GetPeriodArrayAsync();
+            periods.Remove(pack.Period);
+            periods.Sort();
+
+            var basePack = await _subscriptionRepository.GetPackByPeriodAsync(periods[0]) ?? new SubscriptionPack();
+            var remainPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
+
+            decimal savePrice = (basePack.Price / periods[0]) - (remainPack.Price / remainPack.Period);
+            string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+
+            if (savePrice > 0)
+            {
+                remainPack.Description = $"Tiết Kiệm {save}đ/Tháng";
+            }
+            else
+            {
+                remainPack.Description = "";
+            }
+
+            basePack.Description = "";
+
             try
             {
-                await _subscriptionRepository.DeleteAsync(id);
+                await _subscriptionRepository.RunInTransactionAsync(async () =>
+                {
+                    await _subscriptionRepository.UpdatePackAsync(basePack);
+
+                    await _subscriptionRepository.UpdatePackAsync(remainPack);
+
+                    await _subscriptionRepository.DeletePackAsync(id);
+                });
 
                 return new ApiResponse<SubscriptionPackResponse>("success", "Xoá Gói Đăng Kí Thành Công!", null, 200);
             }
@@ -160,32 +222,70 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<SubscriptionPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
             }
 
+            periods.Remove(oldPack.Period);
             periods.Add(subscriptionPackRequest.Period);
             periods.Sort();
 
             int newIndex = periods.IndexOf(subscriptionPackRequest.Period);
 
-            string description = "";
-
-            if (newIndex != 0)
-            {
-                decimal basePrice = await _subscriptionRepository.GetPackPriceByPeriodAsync(periods[0]);
-                decimal savePrice = (basePrice / periods[0]) - (subscriptionPackRequest.Price / subscriptionPackRequest.Period);
-                string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
-
-                if (savePrice > 0)
-                {
-                    description = $"Tiết Kiệm " + save + "đ/Tháng";
-                }
-            }
-
-            var newPack = _mapper.Map(subscriptionPackRequest, oldPack);
-            newPack.Name = name;
-            newPack.Description = description;
-
             try
             {
-                await _subscriptionRepository.UpdateAsync(newPack);
+                var newPack = _mapper.Map(subscriptionPackRequest, oldPack);
+                var secondPack = new SubscriptionPack();
+                var thirdPack = new SubscriptionPack();
+
+                if (newIndex != 0)
+                {
+                    newPack.Name = name;
+                    newPack.Description = "";
+
+                    decimal basePrice = await _subscriptionRepository.GetPackPriceByPeriodAsync(periods[0]);
+                    decimal savePrice = (basePrice / periods[0]) - (subscriptionPackRequest.Price / subscriptionPackRequest.Period);
+                    string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+
+                    if (savePrice > 0)
+                    {
+                        newPack.Description = $"Tiết Kiệm {save}đ/Tháng";
+                    }
+
+                    await _subscriptionRepository.UpdatePackAsync(newPack);
+                }
+                else
+                {
+                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
+                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new SubscriptionPack();
+
+                    decimal savePriceOfSecond = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (secondPack.Price / secondPack.Period);
+                    string saveOfSeccond = savePriceOfSecond.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+                    if (savePriceOfSecond > 0)
+                    {
+                        secondPack.Description = $"Tiết Kiệm {saveOfSeccond}đ/Tháng";
+                    }
+                    else
+                    {
+                        secondPack.Description = "";
+                    }
+
+                    decimal savePriceOfThird = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (thirdPack.Price / thirdPack.Period);
+                    string saveOfthird = savePriceOfThird.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+                    if (savePriceOfThird > 0)
+                    {
+                        thirdPack.Description = $"Tiết Kiệm {saveOfthird}đ/Tháng";
+                    }
+                    else
+                    {
+                        thirdPack.Description = "";
+                    }
+
+                    await _subscriptionRepository.RunInTransactionAsync(async () =>
+                    {
+                        await _subscriptionRepository.UpdatePackAsync(secondPack);
+
+                        await _subscriptionRepository.UpdatePackAsync(thirdPack);
+
+                        await _subscriptionRepository.UpdatePackAsync(newPack);
+                    });
+                }
 
                 return new ApiResponse<SubscriptionPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
             }
