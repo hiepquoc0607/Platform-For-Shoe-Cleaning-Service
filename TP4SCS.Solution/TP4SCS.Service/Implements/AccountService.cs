@@ -342,7 +342,7 @@ namespace TP4SCS.Services.Implements
                 });
 
                 var result = new BusinessResponseV2();
-                result.Id = newBusiness.Id;
+                result.BusinessId = newBusiness.Id;
 
                 return new ApiResponse<BusinessResponseV2>("success", "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thành Công!", result, 200);
             }

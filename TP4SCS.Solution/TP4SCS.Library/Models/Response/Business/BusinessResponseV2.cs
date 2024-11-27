@@ -2,6 +2,6 @@
 {
     public class BusinessResponseV2
     {
-        public int Id { get; set; }
+        public int BusinessId { get; set; }
     }
 }
