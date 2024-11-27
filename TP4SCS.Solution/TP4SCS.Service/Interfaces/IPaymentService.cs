@@ -9,8 +9,8 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<string?>> CreatePaymentUrlAsync(HttpContext httpContext, int id, PaymentRequest paymentRequest);
 
-        Task<ApiResponse<PaymentResponse>> VnPayExcuteAsync(IQueryCollection collection);
+        Task<ApiResponse<VnPayResponse>> VnPayExcuteAsync(IQueryCollection collection);
 
-        Task<ApiResponse<PaymentResponse>> ZaloPayExcuteAsync(IQueryCollection collection);
+        Task<ApiResponse<MoMoResponse>> MoMoExcuteAsync(IQueryCollection collection);
     }
 }
