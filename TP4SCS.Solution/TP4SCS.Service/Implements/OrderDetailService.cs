@@ -103,8 +103,14 @@ namespace TP4SCS.Services.Implements
             {
                 throw new InvalidOperationException($"Không tìm thấy Order Detail với id: {existingOrderDetailId}");
             }
-            existingOrderDetail.ProcessState = orderDetail.ProcessState;
-            existingOrderDetail.AssetUrls = orderDetail.AssetUrls;
+            if(orderDetail.ProcessState != null)
+            {
+                existingOrderDetail.ProcessState = orderDetail.ProcessState;
+            }
+            if(orderDetail.AssetUrls != null)
+            {
+                existingOrderDetail.AssetUrls = orderDetail.AssetUrls;
+            }
         }
 
     }

@@ -81,7 +81,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
-        [HttpPut("api/orderdetails/{id}")]
+        [HttpPatch("api/orderdetails/{id}")]
         public async Task<IActionResult> UpdateOrderDetail(int id, [FromBody] OrderDetailUpdateRequest request)
         {
             try
