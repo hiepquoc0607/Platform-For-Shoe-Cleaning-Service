@@ -1,0 +1,15 @@
+﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Notification;
+using TP4SCS.Library.Models.Response.General;
+
+namespace TP4SCS.Repository.Interfaces
+{
+    public interface IOrderNotificationRepository : IGenericRepository<OrderNotification>
+    {
+        Task<(IEnumerable<OrderNotification>?, Pagination)> GetOrderNotificationsAsync(GetOrderNotificationRequest getOrderNotificationRequest);
+
+        Task CreateOrderNotificationAsync();
+
+        Task DeleteOrderNotificationAsync(int id);
+    }
+}

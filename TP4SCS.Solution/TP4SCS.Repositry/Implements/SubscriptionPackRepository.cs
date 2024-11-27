@@ -30,7 +30,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<decimal> GetPackPriceByPeriodAsync(int period)
         {
-            return await _dbContext.SubscriptionPacks.Where(p => p.Period == period).Select(p => p.Price).SingleOrDefaultAsync();
+            return await _dbContext.SubscriptionPacks.AsNoTracking().Where(p => p.Period == period).Select(p => p.Price).SingleOrDefaultAsync();
         }
 
         public async Task<int> GetPackMaxIdAsync()
@@ -40,7 +40,10 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<IEnumerable<SubscriptionPack>?> GetPacksAsync()
         {
-            return await _dbContext.SubscriptionPacks.AsNoTracking().Where(p => p.Period != 0).ToListAsync();
+            return await _dbContext.SubscriptionPacks
+                .AsNoTracking()
+                .OrderBy(p => p.Period)
+                .ToListAsync();
         }
 
         public async Task<List<int>> GetPeriodArrayAsync()
@@ -75,6 +78,11 @@ namespace TP4SCS.Repository.Implements
         public async Task DeletePackAsync(int id)
         {
             await DeleteAsync(id);
+        }
+
+        public async Task<SubscriptionPack?> GetPackByPeriodAsync(int period)
+        {
+            return await _dbContext.SubscriptionPacks.FirstOrDefaultAsync(p => p.Period == period);
         }
     }
 }
