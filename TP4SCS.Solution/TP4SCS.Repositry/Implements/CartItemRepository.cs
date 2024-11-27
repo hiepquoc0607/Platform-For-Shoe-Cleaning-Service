@@ -30,7 +30,9 @@ namespace TP4SCS.Repository.Implements
 
             if (item.ServiceId.HasValue)
             {
-                var service = await _dbContext.Services.SingleOrDefaultAsync(s => s.Id == item.ServiceId.Value);
+                var service = await _dbContext.Services
+                    .Include(s => s.BranchServices)
+                    .SingleOrDefaultAsync(s => s.Id == item.ServiceId.Value);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");
@@ -40,6 +42,11 @@ namespace TP4SCS.Repository.Implements
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }
+                if (!service.BranchServices.Any(bs => bs.BranchId == item.BranchId))
+                {
+                    throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không được cung cấp tại chi nhánh với ID {item.BranchId}.");
+                }
+
             }
             if (item.MaterialId.HasValue)
             {
