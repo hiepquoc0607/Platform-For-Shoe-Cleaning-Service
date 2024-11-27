@@ -2,6 +2,7 @@
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
+using TP4SCS.Library.Models.Response.Business;
 using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Services.Interfaces
@@ -24,7 +25,7 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<AccountResponse>> UpdateAccountAsync(int id, UpdateAccountRequest updateAccountRequest);
 
-        Task<ApiResponse<AccountResponse>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest);
+        Task<ApiResponse<BusinessResponseV2>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest);
 
         Task<ApiResponse<AccountResponse>> UpdateAccountPasswordAsync(int id, UpdateAccountPasswordRequest updateAccountPasswordRequest);
 

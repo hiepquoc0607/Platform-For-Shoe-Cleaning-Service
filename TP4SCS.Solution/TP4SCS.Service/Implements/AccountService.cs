@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
+using TP4SCS.Library.Models.Response.Business;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
@@ -309,20 +310,20 @@ namespace TP4SCS.Services.Implements
         }
 
         //Update Account To Owner
-        public async Task<ApiResponse<AccountResponse>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest)
+        public async Task<ApiResponse<BusinessResponseV2>> UpdateAccountToOwnerAsync(int id, CreateBusinessRequest createBusinessRequest)
         {
             var account = await _accountRepository.GetAccountByIdForAdminAsync(id);
 
             if (account == null)
             {
-                return new ApiResponse<AccountResponse>("error", 404, "Tài Khoản Không Tồn Tại!");
+                return new ApiResponse<BusinessResponseV2>("error", 404, "Tài Khoản Không Tồn Tại!");
             }
 
             var isPhoneExisted = await _businessRepository.IsPhoneExistedAsync(account.Phone.Trim());
 
             if (isPhoneExisted)
             {
-                return new ApiResponse<AccountResponse>("error", 400, "Số Điện Thoại Đã Được Sử Dụng!");
+                return new ApiResponse<BusinessResponseV2>("error", 400, "Số Điện Thoại Đã Được Sử Dụng!");
             }
 
             account.Role = RoleConstants.OWNER;
@@ -340,11 +341,14 @@ namespace TP4SCS.Services.Implements
                     await _businessRepository.CreateBusinessProfileAsync(newBusiness);
                 });
 
-                return new ApiResponse<AccountResponse>("success", "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thành Công!", null, 200);
+                var result = new BusinessResponseV2();
+                result.Id = newBusiness.Id;
+
+                return new ApiResponse<BusinessResponseV2>("success", "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thành Công!", result, 200);
             }
             catch (Exception)
             {
-                return new ApiResponse<AccountResponse>("error", 400, "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thất Bại!");
+                return new ApiResponse<BusinessResponseV2>("error", 400, "Cập Nhập Tài Khoản Thành Chủ Nhà Cung Thất Bại!");
             }
         }
 
