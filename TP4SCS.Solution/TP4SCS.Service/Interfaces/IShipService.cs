@@ -20,5 +20,7 @@ namespace TP4SCS.Services.Interfaces
         Task<List<Ward>?> GetWardsByDistrictIdAsync(HttpClient httpClient, int id);
 
         Task<string?> GetWardNameByWardCodeAsync(HttpClient httpClient, int districtId, string code);
+        Task<string?> CreateShippingOrderAsync(HttpClient httpClient, ShippingOrderRequest request);
+        Task<(string? Status, List<(string Status, string UpdatedDate)> Logs)> GetOrderStatusAsync(HttpClient httpClient, string orderCode);
     }
 }

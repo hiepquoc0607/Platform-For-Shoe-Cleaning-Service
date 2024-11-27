@@ -27,5 +27,6 @@ namespace TP4SCS.Services.Interfaces
         Task ApprovedOrder(int orderId);
         Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request);
         Task<Order?> GetOrderByOrderId(int orderId);
+        Task CreateShipOrder(HttpClient httpClient, int orderId);
     }
 }

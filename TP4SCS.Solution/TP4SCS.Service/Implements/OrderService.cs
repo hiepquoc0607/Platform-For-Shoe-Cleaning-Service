@@ -3,7 +3,7 @@ using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
-using TP4SCS.Library.Models.Response.Location;
+using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -17,20 +17,32 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessBranchService _businessBranchService;
         private readonly IBusinessService _businessService;
         private readonly IServiceRepository _serviceRepository;
+        private readonly IBranchRepository _branchRepository;
+        private readonly IAddressRepository _addressRepository;
         private readonly IMaterialService _materialService;
+        private readonly IAccountRepository _accountRepository;
+        private readonly IShipService _shipService;
 
         public OrderService(
             IOrderRepository orderRepository,
             IBusinessBranchService businessBranchService,
             IBusinessService businessService,
             IServiceRepository serviceRepository,
-            IMaterialService materialService)
+            IMaterialService materialService,
+            IAddressRepository addressRepository,
+            IBranchRepository branchRepository,
+            IAccountRepository accountRepository,
+            IShipService shipService)
         {
             _orderRepository = orderRepository;
             _businessBranchService = businessBranchService;
             _businessService = businessService;
             _serviceRepository = serviceRepository;
             _materialService = materialService;
+            _addressRepository = addressRepository;
+            _branchRepository = branchRepository;
+            _accountRepository = accountRepository;
+            _shipService = shipService;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -101,7 +113,55 @@ namespace TP4SCS.Services.Implements
 
             await UpdateOrderStatusAsync(orderId, StatusConstants.APPROVED);
         }
+        public async Task CreateShipOrder(HttpClient httpClient, int orderId)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
 
+            if (order == null)
+            {
+                throw new InvalidOperationException($"Đơn hàng với ID {orderId} không tồn tại.");
+            }
+            var address = await _addressRepository.GetByIDAsync(order.AddressId!);
+            var branch = await _branchRepository.GetByIDAsync(order.OrderDetails.FirstOrDefault()!.BranchId);
+            var account = await _accountRepository.GetByIDAsync(order.AccountId);
+            if (branch == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy chi nhánh với ID: {order.OrderDetails.FirstOrDefault()!.BranchId}");
+            }
+            if (address == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy địa chỉ của tài khoản với ID: {order.AddressId!}");
+            }
+            if (account == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy tài khoản với ID: {order.AccountId}");
+            }
+            ShippingOrderRequest shippingOrder = new ShippingOrderRequest
+            {
+                FromName = branch.Name,
+                FromPhone = "0901515646",
+                FromAddress = branch.Address,
+                FromDistrictName = branch.District,
+                FromProvinceName = branch.Province,
+                FromWardName = branch.Ward,
+
+                ToAddress = address.Address,
+                ToPhone = "0907514561",
+                ToDistrictId = address.DistrictId,
+                ToName = account.FullName,
+                ToWardCode = address.WardCode,
+                
+                CODAmount = order.OrderPrice
+
+            };
+            var code = await _shipService.CreateShippingOrderAsync(httpClient, shippingOrder);
+            if(code == null)
+            {
+                throw new KeyNotFoundException("Tạo mã vận đơn thất bại.");
+            }
+            order.ShippingCode = code;
+            await _orderRepository.UpdateOrderAsync(order);
+        }
         public async Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus)
         {
             if (!Util.IsValidOrderStatus(newStatus))
@@ -147,10 +207,10 @@ namespace TP4SCS.Services.Implements
                     if (od.ServiceId.HasValue)
                     {
                         var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
-                        service!.OrderedNum --;
+                        service!.OrderedNum--;
                         await _serviceRepository.UpdateServiceAsync(service);
                     }
-                    if ( od.MaterialId.HasValue)
+                    if (od.MaterialId.HasValue)
                     {
                         var material = await _materialService.GetMaterialByIdAsync(od.MaterialId.Value);
                         material!.BranchMaterials.SingleOrDefault(m => m.BranchId == od.BranchId)!.Storage++;
