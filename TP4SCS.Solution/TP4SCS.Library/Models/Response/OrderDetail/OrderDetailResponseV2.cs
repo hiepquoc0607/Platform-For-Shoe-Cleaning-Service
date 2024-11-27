@@ -15,6 +15,7 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
         public MaterialResponse? Material { get; set; }
 
         public virtual FeedbackResponse? Feedback { get; set; }
+        public string? Note { get; set; }
 
         public decimal Price { get; set; }
     }
