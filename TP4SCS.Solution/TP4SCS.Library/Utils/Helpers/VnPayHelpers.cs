@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TP4SCS.Library.Utils.Healpers
 {
-    public class VnPayLibrary
+    public class VnPayHelpers
     {
         private readonly SortedList<string, string> _requestData = new SortedList<string, string>(new VnPayCompare());
         private readonly SortedList<string, string> _responseData = new SortedList<string, string>(new VnPayCompare());
@@ -52,7 +52,7 @@ namespace TP4SCS.Library.Utils.Healpers
                 signData = signData.Remove(data.Length - 1, 1);
             }
 
-            var vnpSecureHash = Utils.HmacSHA512(vnpHashSecret, signData);
+            var vnpSecureHash = VnPayUtils.HmacSHA512(vnpHashSecret, signData);
             baseUrl += "vnp_SecureHash=" + vnpSecureHash;
 
             return baseUrl;
@@ -63,7 +63,7 @@ namespace TP4SCS.Library.Utils.Healpers
         public bool ValidateSignature(string inputHash, string secretKey)
         {
             var rspRaw = GetResponseData();
-            var myChecksum = Utils.HmacSHA512(secretKey, rspRaw);
+            var myChecksum = VnPayUtils.HmacSHA512(secretKey, rspRaw);
             return myChecksum.Equals(inputHash, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -96,7 +96,7 @@ namespace TP4SCS.Library.Utils.Healpers
         #endregion
     }
 
-    public class Utils
+    public class VnPayUtils
     {
         public static string HmacSHA512(string key, string inputData)
         {

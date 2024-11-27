@@ -51,5 +51,18 @@ namespace TP4SCS.API.Controllers
 
             return Redirect("https://www.shoecarehub.xyz/owner/payments/success");
         }
+
+        [HttpGet("MoMo")]
+        public async Task<IActionResult> ExcuteMoMoAsync()
+        {
+            var result = await _paymentService.MoMoExcuteAsync(HttpContext.Request.Query);
+
+            if (result.StatusCode != 200)
+            {
+                return Redirect("https://www.shoecarehub.xyz/owner/payments/fail");
+            }
+
+            return Redirect("https://www.shoecarehub.xyz/owner/payments/success");
+        }
     }
 }

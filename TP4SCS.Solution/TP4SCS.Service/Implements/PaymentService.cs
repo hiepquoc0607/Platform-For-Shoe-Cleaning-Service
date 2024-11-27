@@ -17,24 +17,27 @@ namespace TP4SCS.Services.Implements
         private readonly ISubscriptionPackRepository _subscriptionPackRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IVnPayService _vnPayService;
+        private readonly IMoMoService _moMoService;
         private readonly IMapper _mapper;
 
         public PaymentService(IBusinessRepository businessRepository,
             ISubscriptionPackRepository subscriptionPackRepository,
             ITransactionRepository transactionRepository,
             IVnPayService vnPayService,
+            IMoMoService moMoService,
             IMapper mapper)
         {
             _businessRepository = businessRepository;
             _subscriptionPackRepository = subscriptionPackRepository;
             _transactionRepository = transactionRepository;
             _vnPayService = vnPayService;
+            _moMoService = moMoService;
             _mapper = mapper;
         }
 
         public async Task<ApiResponse<string?>> CreatePaymentUrlAsync(HttpContext httpContext, int id, PaymentRequest paymentRequest)
         {
-            if (!paymentRequest.Payment.ToString().Equals(PaymentOptions.VnPay.ToString()) && !paymentRequest.Payment.ToString().Equals(PaymentOptions.ZaloPay.ToString()))
+            if (!paymentRequest.Payment.ToString().Equals(PaymentOptions.VnPay.ToString()) && !paymentRequest.Payment.ToString().Equals(PaymentOptions.MoMo.ToString()))
             {
                 return new ApiResponse<string?>("error", 400, "Phương Thức Thanh Toán Không Hợp Lệ!");
             }
@@ -59,11 +62,11 @@ namespace TP4SCS.Services.Implements
                 PackName = pack.Name,
                 Balance = pack.Price,
                 ProcessTime = DateTime.Now,
-                Description = "Thanh Toán " + pack.Name + " Bằng " + paymentRequest.Payment,
+                Description = $"Thanh Toán {pack.Name} Bằng {paymentRequest.Payment}",
                 PaymentMethod = paymentRequest.Payment switch
                 {
                     PaymentOptions.VnPay => "VnPay",
-                    _ => "ZaloPay"
+                    _ => "MoMo"
                 },
                 Status = StatusConstants.PROCESSING
             };
@@ -76,21 +79,29 @@ namespace TP4SCS.Services.Implements
                 {
                     await _transactionRepository.CreateTransactionAsync(newTransaction);
 
-                    var vnpay = new VnPayRequest
-                    {
-                        TransactionId = newTransaction.Id,
-                        Balance = (double)newTransaction.Balance,
-                        CreatedDate = DateTime.Now,
-                        Description = newTransaction.Description,
-                    };
-
                     if (paymentRequest.Payment.Equals(PaymentOptions.VnPay))
                     {
+
+                        var vnpay = new VnPayRequest
+                        {
+                            TransactionId = newTransaction.Id,
+                            Balance = (double)newTransaction.Balance,
+                            CreatedDate = DateTime.Now,
+                            Description = newTransaction.Description,
+                        };
+
                         payUrl = await _vnPayService.CreatePaymentUrlAsync(httpContext, vnpay);
                     }
                     else
                     {
-                        payUrl = await _vnPayService.CreatePaymentUrlAsync(httpContext, vnpay);
+                        var momo = new MoMoRequest
+                        {
+                            TransactionId = newTransaction.Id,
+                            Balance = (long)newTransaction.Balance,
+                            Description = "",
+                        };
+
+                        payUrl = await _moMoService.CreatePaymentUrlAsync(momo);
                     }
 
                     newTransaction.Status = StatusConstants.PROCESSING;
@@ -106,15 +117,15 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<PaymentResponse>> VnPayExcuteAsync(IQueryCollection collection)
+        public async Task<ApiResponse<MoMoResponse>> MoMoExcuteAsync(IQueryCollection collection)
         {
-            var result = await _vnPayService.PaymentExecuteAsync(collection);
+            var result = await _moMoService.PaymentExecuteAsync(collection);
 
             var transaction = await _transactionRepository.GetTransactionByIdAsync(result.TransactionId);
 
             if (transaction == null)
             {
-                return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Giao Dịch!");
+                return new ApiResponse<MoMoResponse>("error", 404, "Không Tìm Thấy Thông Tin Giao Dịch!");
             }
 
             var newTransaction = _mapper.Map<Transaction>(transaction);
@@ -123,14 +134,79 @@ namespace TP4SCS.Services.Implements
 
             if (business == null)
             {
-                return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+                return new ApiResponse<MoMoResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
             var pack = await _subscriptionPackRepository.GetPackByNameAsync(transaction.PackName);
 
             if (pack == null)
             {
-                return new ApiResponse<PaymentResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+                return new ApiResponse<MoMoResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+            }
+
+            if (result.MoMoResponseCode == 0)
+            {
+                await _transactionRepository.RunInTransactionAsync(async () =>
+                {
+                    newTransaction.Status = StatusConstants.COMPLETED;
+
+                    await _transactionRepository.UpdateTransactionAsync(newTransaction);
+
+                    business.RegisteredTime = DateTime.Now;
+                    if (business.ExpiredTime > DateTime.Now)
+                    {
+                        business.ExpiredTime = business.ExpiredTime.AddMonths(pack.Period);
+                    }
+                    else
+                    {
+                        business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
+                    }
+                    business.Status = StatusConstants.ACTIVE;
+
+                    await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                    await _businessRepository.SaveAsync();
+                });
+
+                return new ApiResponse<MoMoResponse>("success", "Thanh Toán Gói Đăng Kí Thành Công!", null, 200);
+            }
+            else
+            {
+                transaction.Status = StatusConstants.FAILED;
+
+                await _transactionRepository.UpdateTransactionAsync(newTransaction);
+
+                await _transactionRepository.SaveAsync();
+
+                return new ApiResponse<MoMoResponse>("error", 400, "Thanh Toán Gói Đăng Kí Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<VnPayResponse>> VnPayExcuteAsync(IQueryCollection collection)
+        {
+            var result = await _vnPayService.PaymentExecuteAsync(collection);
+
+            var transaction = await _transactionRepository.GetTransactionByIdAsync(result.TransactionId);
+
+            if (transaction == null)
+            {
+                return new ApiResponse<VnPayResponse>("error", 404, "Không Tìm Thấy Thông Tin Giao Dịch!");
+            }
+
+            var newTransaction = _mapper.Map<Transaction>(transaction);
+
+            var business = await _businessRepository.GetBusinessByOwnerIdAsync(transaction.AccountId);
+
+            if (business == null)
+            {
+                return new ApiResponse<VnPayResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+            }
+
+            var pack = await _subscriptionPackRepository.GetPackByNameAsync(transaction.PackName);
+
+            if (pack == null)
+            {
+                return new ApiResponse<VnPayResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
             if (result.VnPayResponseCode.Equals("00"))
@@ -157,7 +233,7 @@ namespace TP4SCS.Services.Implements
                     await _businessRepository.SaveAsync();
                 });
 
-                return new ApiResponse<PaymentResponse>("success", "Thanh Toán Gói Đăng Kí Thành Công!", null, 200);
+                return new ApiResponse<VnPayResponse>("success", "Thanh Toán Gói Đăng Kí Thành Công!", null, 200);
             }
             else
             {
@@ -174,13 +250,8 @@ namespace TP4SCS.Services.Implements
 
                 await _transactionRepository.SaveAsync();
 
-                return new ApiResponse<PaymentResponse>("error", 400, "Thanh Toán Gói Đăng Kí Thất Bại!");
+                return new ApiResponse<VnPayResponse>("error", 400, "Thanh Toán Gói Đăng Kí Thất Bại!");
             }
-        }
-
-        public Task<ApiResponse<PaymentResponse>> ZaloPayExcuteAsync(IQueryCollection collection)
-        {
-            throw new NotImplementedException();
         }
     }
 }

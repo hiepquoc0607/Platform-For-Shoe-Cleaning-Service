@@ -8,6 +8,6 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<string> CreatePaymentUrlAsync(HttpContext httpContext, VnPayRequest vnPayRequest);
 
-        Task<PaymentResponse> PaymentExecuteAsync(IQueryCollection collection);
+        Task<VnPayResponse> PaymentExecuteAsync(IQueryCollection collection);
     }
 }

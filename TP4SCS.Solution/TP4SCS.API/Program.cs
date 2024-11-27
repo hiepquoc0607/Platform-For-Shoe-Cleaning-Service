@@ -35,7 +35,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 
-//Config authentication ui for Swagger
+#region Authentication UI For Swagger
 builder.Services.AddSwaggerGen(swagger =>
 {
     swagger.SwaggerDoc("v1", new OpenApiInfo
@@ -67,12 +67,14 @@ builder.Services.AddSwaggerGen(swagger =>
         }
     });
 });
+#endregion
 
-//Add DBContext
+#region DBContext
 builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+#endregion
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
@@ -119,6 +121,7 @@ builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<ISubscriptionPackService, SubscriptionPackService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IMoMoService, MoMoService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProcessService, ProcessService>();
 
@@ -128,18 +131,27 @@ builder.Services.AddScoped<Util>();
 //Add HttpClient
 builder.Services.AddHttpClient();
 
+//Add MoMo HttpClient
+builder.Services.AddHttpClient("MoMoClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["MoMo:MomoApiUrl"]!);
+    client.DefaultRequestHeaders.Add("Content-Type", "application/json; charset=UTF-8");
+});
+
 //Get EmailSettings
 builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("EmailSettings"));
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-//Cofigure OpenAI
+#region OpenAI
 builder.Services.AddHttpClient("ChatGPT", client =>
 {
     client.BaseAddress = new Uri("https://api.openai.com/");
 });
+#endregion
 
+#region Mapster
 //Configure Mapster
 var config = TypeAdapterConfig.GlobalSettings;
 config.Scan(AppDomain.CurrentDomain.GetAssemblies());
@@ -147,8 +159,9 @@ config.Scan(AppDomain.CurrentDomain.GetAssemblies());
 //Register Mapster Service 
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IMapper, ServiceMapper>();
+#endregion
 
-//Config Authentication
+#region Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -166,8 +179,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
+#endregion
 
-//Config Authorization
+#region Authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("ADMIN"));
@@ -176,14 +190,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Owner", policy => policy.RequireRole("ADMIN", "OWNER"));
     options.AddPolicy("Employee", policy => policy.RequireRole("ADMIN", "OWNER", "EMPLOYEE"));
 });
+#endregion
 
-//Config CORS
+#region CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "MyAllowSpecificOrigins", policy => { policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 });
+#endregion
 
-//Config Model State Error Response
+#region Model State Error Response
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(apiBehaviorOptions =>
     {
@@ -212,8 +228,9 @@ builder.Services.AddControllers()
             return result;
         };
     });
+#endregion
 
-//Config Rate Limiting
+#region Rate Limiting
 builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: "BasePolicy", options =>
 {
     options.PermitLimit = 20;
@@ -221,14 +238,16 @@ builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyN
     options.QueueLimit = 5;
     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
 }));
+#endregion
 
-//Addtion Logger
+#region Logger
 builder.Services.AddLogging(logging =>
 {
     logging.ClearProviders();
     logging.AddConsole();
     logging.AddDebug();
 });
+#endregion
 
 var app = builder.Build();
 

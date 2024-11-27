@@ -3,7 +3,7 @@
     public enum PaymentOptions
     {
         VnPay,
-        ZaloPay
+        MoMo
     }
 
     public class PaymentRequest

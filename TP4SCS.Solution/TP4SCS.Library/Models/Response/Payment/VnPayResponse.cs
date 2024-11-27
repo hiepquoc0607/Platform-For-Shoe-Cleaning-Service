@@ -1,6 +1,6 @@
 ﻿namespace TP4SCS.Library.Models.Response.Payment
 {
-    public class PaymentResponse
+    public class VnPayResponse
     {
         public int TransactionId { get; set; }
 
