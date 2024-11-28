@@ -52,7 +52,7 @@ namespace TP4SCS.API.Controllers
                 var orderResponses = new List<OrderResponse>();
                 if( orders == null || !orders.Any())
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng",null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", orderResponses));
                 }
                 foreach (var order in orders)
                 {
@@ -105,7 +105,7 @@ namespace TP4SCS.API.Controllers
                 var orderResponses = new List<OrderResponse>();
                 if (orders == null || !orders.Any())
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", orderResponses));
                 }
                 foreach (var order in orders)
                 {
@@ -198,7 +198,7 @@ namespace TP4SCS.API.Controllers
                 var orderResponses = new List<OrderResponse>();
                 if (orders == null || !orders.Any())
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", orderResponses));
                 }
                 foreach (var order in orders)
                 {
@@ -208,7 +208,7 @@ namespace TP4SCS.API.Controllers
                     var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
                     if (orderDetails == null || !orderDetails.Any())
                     {
-                        return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", null));
+                        return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", orderResponses));
                     }
 
                     var responseList = new List<OrderDetailResponseV2>();
@@ -250,7 +250,7 @@ namespace TP4SCS.API.Controllers
                 var orderResponses = new List<OrderResponse>();
                 if (orders == null || !orders.Any())
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", orderResponses));
                 }
                 foreach (var order in orders)
                 {
@@ -260,7 +260,7 @@ namespace TP4SCS.API.Controllers
                     var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
                     if (orderDetails == null || !orderDetails.Any())
                     {
-                        return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", null));
+                        return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", orderResponses));
                     }
 
                     var responseList = new List<OrderDetailResponseV2>();
