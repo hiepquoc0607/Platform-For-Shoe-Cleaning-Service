@@ -97,22 +97,22 @@ namespace TP4SCS.Services.Implements
             return orders.Where(o => o.OrderDetails.Any(od => od.Branch.BusinessId == businessId));
         }
 
-        public async Task ApprovedOrder(int orderId)
-        {
-            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+        //public async Task ApprovedOrder(int orderId)
+        //{
+        //    var order = await _orderRepository.GetOrderByIdAsync(orderId);
 
-            if (order == null)
-            {
-                throw new InvalidOperationException($"Đơn hàng với ID {orderId} không tồn tại.");
-            }
+        //    if (order == null)
+        //    {
+        //        throw new InvalidOperationException($"Đơn hàng với ID {orderId} không tồn tại.");
+        //    }
 
-            if (!Util.IsEqual(order.Status, StatusConstants.PENDING))
-            {
-                throw new InvalidOperationException($"Đơn hàng với ID {orderId} không ở trạng thái chờ duyệt.");
-            }
+        //    if (!Util.IsEqual(order.Status, StatusConstants.PENDING))
+        //    {
+        //        throw new InvalidOperationException($"Đơn hàng với ID {orderId} không ở trạng thái chờ duyệt.");
+        //    }
 
-            await UpdateOrderStatusAsync(orderId, StatusConstants.APPROVED);
-        }
+        //    await UpdateOrderStatusAsync(orderId, StatusConstants.APPROVED);
+        //}
         public async Task CreateShipOrder(HttpClient httpClient, int orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -161,7 +161,7 @@ namespace TP4SCS.Services.Implements
             order.ShippingCode = code;
             await _orderRepository.UpdateOrderAsync(order);
         }
-        public async Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus)
+        public async Task UpdateOrderStatusAsync(HttpClient httpClient, int existingOrderedId, string newStatus)
         {
             if (!Util.IsValidOrderStatus(newStatus))
             {
@@ -243,8 +243,9 @@ namespace TP4SCS.Services.Implements
 
                 await _businessService.UpdateBusinessStatisticAsync(businessId, business);
             }
-            else
+            else if(Util.IsEqual(status, StatusConstants.PROCESSING))
             {
+                
                 UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
                 branch.Type = OrderStatistic.PROCESSING;
 
@@ -254,6 +255,10 @@ namespace TP4SCS.Services.Implements
                 business.Type = OrderStatistic.PROCESSING;
 
                 await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+            }
+            else if (Util.IsEqual(status, StatusConstants.SHIPPING))
+            {
+                await CreateShipOrder(httpClient, existingOrderedId);
             }
         }
 

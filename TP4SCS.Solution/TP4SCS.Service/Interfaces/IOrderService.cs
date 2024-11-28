@@ -23,8 +23,8 @@ namespace TP4SCS.Services.Interfaces
             int businessId,
             string? status = null,
             OrderedOrderByEnum orderBy = OrderedOrderByEnum.CreateDateAsc);
-        Task UpdateOrderStatusAsync(int existingOrderedId, string newStatus);
-        Task ApprovedOrder(int orderId);
+        Task UpdateOrderStatusAsync(HttpClient httpClient, int existingOrderedId, string newStatus);
+//        Task ApprovedOrder(int orderId);
         Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request);
         Task<Order?> GetOrderByOrderId(int orderId);
         Task CreateShipOrder(HttpClient httpClient, int orderId);
