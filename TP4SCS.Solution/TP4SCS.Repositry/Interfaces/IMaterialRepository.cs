@@ -24,5 +24,6 @@ namespace TP4SCS.Repository.Interfaces
         Task UpdateMaterialAsync(Material material, int[] branchIds);
         Task UpdateQuantityAsync(int quantity, int branchId, int materialId);
         Task UpdateMaterialAsync(Material material);
+        Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids);
     }
 }

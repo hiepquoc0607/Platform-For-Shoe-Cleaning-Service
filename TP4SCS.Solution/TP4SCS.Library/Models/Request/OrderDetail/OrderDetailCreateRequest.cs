@@ -5,8 +5,8 @@
         public int OrderId { get; set; }
         public int BranchId { get; set; }
 
-        public int? ServiceId { get; set; }
+        public int ServiceId { get; set; }
 
-        public int? MaterialId { get; set; }
+        public List<int> MaterialIds { get; set; } = new List<int>();
     }
 }

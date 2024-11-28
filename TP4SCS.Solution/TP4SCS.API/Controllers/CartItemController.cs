@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
@@ -34,7 +31,7 @@ namespace TP4SCS.API.Controllers
         {
             var items = await _cartItemService.GetCartItemsAsync(id);
 
-            if(items == null || !items.Any())
+            if (items == null || !items.Any())
             {
                 return Ok(new ResponseObject<string>("Cart items retrieved successfully"));
             }
