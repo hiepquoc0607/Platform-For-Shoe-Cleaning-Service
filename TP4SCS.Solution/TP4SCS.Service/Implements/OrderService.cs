@@ -209,12 +209,12 @@ namespace TP4SCS.Services.Implements
                         service!.OrderedNum--;
                         await _serviceRepository.UpdateServiceAsync(service);
                     }
-                    if (od.MaterialId.HasValue)
-                    {
-                        var material = await _materialService.GetMaterialByIdAsync(od.MaterialId.Value);
-                        material!.BranchMaterials.SingleOrDefault(m => m.BranchId == od.BranchId)!.Storage++;
-                        await _materialService.UpdateMaterialAsync(material);
-                    }
+                    //if (od.MaterialId.HasValue)
+                    //{
+                    //    var material = await _materialService.GetMaterialByIdAsync(od.MaterialId.Value);
+                    //    material!.BranchMaterials.SingleOrDefault(m => m.BranchId == od.BranchId)!.Storage++;
+                    //    await _materialService.UpdateMaterialAsync(material);
+                    //}
                 }
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED))
@@ -222,7 +222,8 @@ namespace TP4SCS.Services.Implements
                 var orderDetails = order.OrderDetails;
                 foreach (var od in orderDetails)
                 {
-                    if (od.ServiceId != null && od.MaterialId == null)
+                    //if (od.ServiceId != null && od.MaterialId == null)
+                    if (od.ServiceId != null)
                     {
                         var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
                         await _serviceRepository.UpdateServiceAsync(service!);

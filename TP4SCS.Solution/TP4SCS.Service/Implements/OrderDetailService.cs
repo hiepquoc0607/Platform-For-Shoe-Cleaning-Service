@@ -59,15 +59,15 @@ namespace TP4SCS.Services.Implements
         {
 
             // Kiểm tra Material
-            if (orderDetail.MaterialId.HasValue)
-            {
-                var material = await _materialRepository.GetMaterialByIdAsync(orderDetail.MaterialId.Value);
-                if (material == null || material.Status != StatusConstants.AVAILABLE)
-                {
-                    throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
-                }
-                orderDetail.Price += material.Price;
-            }
+            //if (orderDetail.MaterialId.HasValue)
+            //{
+            //    var material = await _materialRepository.GetMaterialByIdAsync(orderDetail.MaterialId.Value);
+            //    if (material == null || material.Status != StatusConstants.AVAILABLE)
+            //    {
+            //        throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
+            //    }
+            //    orderDetail.Price += material.Price;
+            //}
             if (orderDetail.ServiceId.HasValue)
             {
                 var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId.Value);

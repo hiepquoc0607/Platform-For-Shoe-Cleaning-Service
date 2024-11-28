@@ -10,7 +10,7 @@ public partial class OrderDetail
 
     public int? ServiceId { get; set; }
 
-    public int? MaterialId { get; set; }
+    public string? MaterialIds { get; set; }
 
     public decimal Price { get; set; }
 
@@ -23,8 +23,6 @@ public partial class OrderDetail
     public virtual BusinessBranch Branch { get; set; } = null!;
 
     public virtual Feedback? Feedback { get; set; }
-
-    public virtual Material? Material { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

@@ -107,9 +107,9 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<OrderDetail, OrderDetailResponse>();
             CreateMap<OrderDetail, OrderDetailResponseV2>();
             CreateMap<OrderDetail, OrderDetailResponseV3>()
-                .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch))
-                .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service))
-                .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material));
+                .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.Branch));
+            //.ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+            //.ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material));
         }
 
         public void Register(TypeAdapterConfig config)
