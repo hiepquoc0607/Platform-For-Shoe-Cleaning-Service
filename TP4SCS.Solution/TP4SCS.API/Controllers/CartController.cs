@@ -1,13 +1,12 @@
-﻿using Mapster;
+﻿using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Utils.Utils;
-using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -20,14 +19,16 @@ namespace TP4SCS.API.Controllers
         private readonly IMaterialService _materialService;
         private readonly HttpClient _httpClient;
         private readonly ICartItemService _cartItemService;
+        private readonly IMapper _mapper;
 
-        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, ICartItemService cartItemService, IHttpClientFactory httpClientFactory)
+        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, ICartItemService cartItemService, IHttpClientFactory httpClientFactory, IMapper mapper)
         {
             _cartService = cartService;
             _serviceService = serviceService;
             _httpClient = httpClientFactory.CreateClient();
             _materialService = materialService;
             _cartItemService = cartItemService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -67,25 +68,18 @@ namespace TP4SCS.API.Controllers
                             CartId = cart.Id
 
                         };
-                        List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
 
                         if (!string.IsNullOrEmpty(item.MaterialIds))
                         {
-                            List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
-                            foreach (var materialId in materialIds)
+                            if (!string.IsNullOrEmpty(item.MaterialIds))
                             {
-                                var material = await _materialService.GetMaterialByIdAsync(materialId);
-                                materialResponseV2s.Add(new MaterialResponseV2
-                                {
-                                    Id = materialId,
-                                    Name = material!.Name,
-                                    Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
-                                    Price = material!.Price
-                                });
+                                List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                                var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                                List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
+                                cartItemResponse.Materials = materialResponse;
                             }
                         }
                         cartItemsResponse.Add(cartItemResponse);
-                        cartItemResponse.Materials = materialResponseV2s;
                     }
                     cartResponse.CartItems = cartItemsResponse;
                     var groupedCartItems = cartResponse.CartItems

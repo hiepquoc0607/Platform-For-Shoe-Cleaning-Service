@@ -50,24 +50,16 @@ namespace TP4SCS.API.Controllers
                     CartId = item.CartId
 
                 };
-                List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
-
                 if (!string.IsNullOrEmpty(item.MaterialIds))
                 {
-                    List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
-                    foreach (var materialId in materialIds)
+                    if (!string.IsNullOrEmpty(item.MaterialIds))
                     {
-                        var material = await _materialService.GetMaterialByIdAsync(materialId);
-                        materialResponseV2s.Add(new MaterialResponseV2
-                        {
-                            Id = materialId,
-                            Name = material!.Name,
-                            Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
-                            Price = material!.Price
-                        });
+                        List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                        var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                        List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
+                        cartItemResponse.Materials = materialResponse;
                     }
                 }
-                cartItemResponse.Materials = materialResponseV2s;
                 itemsResponse.Add(cartItemResponse);
             }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
@@ -93,24 +85,16 @@ namespace TP4SCS.API.Controllers
                 Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value),
                 CartId = item.CartId
             };
-            List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
-
             if (!string.IsNullOrEmpty(item.MaterialIds))
             {
-                List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
-                foreach (var materialId in materialIds)
+                if (!string.IsNullOrEmpty(item.MaterialIds))
                 {
-                    var material = await _materialService.GetMaterialByIdAsync(materialId);
-                    materialResponseV2s.Add(new MaterialResponseV2
-                    {
-                        Id = materialId,
-                        Name = material!.Name,
-                        Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
-                        Price = material!.Price
-                    });
+                    List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                    var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                    List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
+                    cartItemResponse.Materials = materialResponse;
                 }
             }
-            cartItemResponse.Materials = materialResponseV2s;
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", cartItemResponse));
         }
 
