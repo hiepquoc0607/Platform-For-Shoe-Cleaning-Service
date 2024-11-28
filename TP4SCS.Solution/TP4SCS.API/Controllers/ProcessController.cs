@@ -55,7 +55,7 @@ namespace TP4SCS.API.Controllers
 
             if (processes == null || !processes.Any())
             {
-                return NotFound(new ResponseObject<string>("Không tìm thấy quá trình nào cho dịch vụ này."));
+                return Ok(new ResponseObject<IEnumerable<ProcessResponse>>("Không tìm thấy quá trình nào cho dịch vụ này.", new List<ProcessResponse>()));
             }
             var processResponse = _mapper.Map<IEnumerable<ProcessResponse>>(processes);
 
