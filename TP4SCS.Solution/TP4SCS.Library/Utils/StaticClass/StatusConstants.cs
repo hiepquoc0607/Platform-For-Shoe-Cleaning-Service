@@ -19,6 +19,9 @@
 
         public const string EXPIRED = "EXPIRED";
 
+        //ACCOUNT STATUS
+        public const string UNREGISTERED = "UNREGISTERED";
+
         //ORDER STATUS
         public const string CANCELED = "CANCELED";
 
