@@ -5,7 +5,6 @@ using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Process;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Process;
-using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -35,7 +34,7 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<string>("Không tìm thấy quá trình nào."));
             }
-            var processResponse = _mapper.Map<IEnumerable<ProcessResponse>> (processes);
+            var processResponse = _mapper.Map<IEnumerable<ProcessResponse>>(processes);
 
             PagedResponse<ProcessResponse> pagedResponse = new PagedResponse<ProcessResponse>(
                 processResponse,

@@ -1,15 +1,12 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Payment;
 using TP4SCS.Library.Models.Response.Payment;
 using TP4SCS.Library.Utils.Helpers;
 using TP4SCS.Services.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TP4SCS.Services.Implements
 {

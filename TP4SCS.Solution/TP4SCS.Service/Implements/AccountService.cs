@@ -6,7 +6,6 @@ using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.BusinessProfile;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Response.Account;
-using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.Business;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;

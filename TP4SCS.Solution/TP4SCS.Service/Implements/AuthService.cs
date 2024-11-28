@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Auth;
-using TP4SCS.Library.Models.Response.Account;
 using TP4SCS.Library.Models.Response.Auth;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;

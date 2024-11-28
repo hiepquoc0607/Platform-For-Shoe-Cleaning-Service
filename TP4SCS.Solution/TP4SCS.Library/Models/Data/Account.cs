@@ -26,6 +26,10 @@ public partial class Account
 
     public DateTime? RefreshExpireTime { get; set; }
 
+    public int? Otp { get; set; }
+
+    public DateTime? OtpexpiredTime { get; set; }
+
     public string? Fcmtoken { get; set; }
 
     public int? CreatedByOwnerId { get; set; }

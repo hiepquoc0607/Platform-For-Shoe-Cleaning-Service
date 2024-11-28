@@ -115,7 +115,7 @@ namespace TP4SCS.Services.Implements
                 {
                     var material = await _materialService.GetMaterialByIdAsync(materialId);
                     finalPrice += material!.Price;
-                    material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == request.Item.BranchId)!.Storage --;
+                    material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == request.Item.BranchId)!.Storage--;
                     await _materialService.UpdateMaterialAsync(material);
                 }
             }
