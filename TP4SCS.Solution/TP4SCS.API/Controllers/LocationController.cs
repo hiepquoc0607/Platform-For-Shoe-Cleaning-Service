@@ -82,7 +82,7 @@ namespace TP4SCS.API.Controllers
             var (status, logs) = await _shipService.GetOrderStatusAsync(_httpClient, orderCode);
 
             // Nếu không tìm thấy kết quả
-            if (status == null || logs == null || !logs.Any())
+            if (status == null)
             {
                 return NotFound(new
                 {

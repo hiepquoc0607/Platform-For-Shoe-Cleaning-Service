@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -64,7 +65,13 @@ namespace TP4SCS.Repository.Implements
                         .ThenInclude(od => od.Feedback)
                 .SingleOrDefaultAsync(o => o.Id == id);
         }
-
+        public async Task<Order?> GetOrderByCodeAsync(string code)
+        {
+            var order = await _dbContext.Orders
+                .Where(o => o.ShippingCode != null && o.ShippingCode.Contains(code))
+                .SingleOrDefaultAsync();
+            return order;
+        }
         public async Task<IEnumerable<Order>?> GetOrdersAsync(
             string? status = null,
             int? pageIndex = null,
