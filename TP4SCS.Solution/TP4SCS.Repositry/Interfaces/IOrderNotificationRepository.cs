@@ -8,7 +8,7 @@ namespace TP4SCS.Repository.Interfaces
     {
         Task<(IEnumerable<OrderNotification>?, Pagination)> GetOrderNotificationsAsync(GetOrderNotificationRequest getOrderNotificationRequest);
 
-        Task CreateOrderNotificationAsync();
+        Task CreateOrderNotificationAsync(OrderNotification orderNotification);
 
         Task DeleteOrderNotificationAsync(int id);
     }

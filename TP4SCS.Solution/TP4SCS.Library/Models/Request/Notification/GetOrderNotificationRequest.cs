@@ -16,7 +16,7 @@ namespace TP4SCS.Library.Models.Request.Notification
         public int Id { get; set; }
 
         [DefaultValue(null)]
-        public IdOption GetByIdType { get; set; }
+        public IdOption IdType { get; set; }
 
         [Required]
         [DefaultValue(10)]
