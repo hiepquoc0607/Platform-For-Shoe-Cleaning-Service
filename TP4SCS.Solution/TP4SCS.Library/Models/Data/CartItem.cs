@@ -10,15 +10,13 @@ public partial class CartItem
 
     public int? ServiceId { get; set; }
 
-    public int? MaterialId { get; set; }
+    public string? MaterialIds { get; set; }
 
     public decimal Price { get; set; }
 
     public virtual BusinessBranch Branch { get; set; } = null!;
 
     public virtual Cart Cart { get; set; } = null!;
-
-    public virtual Material? Material { get; set; }
 
     public virtual Service? Service { get; set; }
 }

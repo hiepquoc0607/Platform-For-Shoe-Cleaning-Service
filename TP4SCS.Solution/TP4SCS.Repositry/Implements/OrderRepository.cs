@@ -60,7 +60,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Material)
+                        //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                 .SingleOrDefaultAsync(o => o.Id == id);
@@ -112,7 +112,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Material)
+                        //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                             .ThenInclude(f => f!.AssetUrls);

@@ -22,6 +22,8 @@ public partial class SupportTicket
 
     public bool IsParentTicket { get; set; }
 
+    public DateTime? AutoClosedTime { get; set; }
+
     public string Status { get; set; } = null!;
 
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();

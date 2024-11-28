@@ -66,12 +66,12 @@ namespace TP4SCS.API.Controllers
             itemResponse.ServiceName = service!.Name;
             itemResponse.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
 
-            if (item.MaterialId.HasValue)
-            {
-                var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-                itemResponse.MaterialName = material!.Name;
-                itemResponse.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
-            }
+            //if (item.MaterialId.HasValue)
+            //{
+            //    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
+            //    itemResponse.MaterialName = material!.Name;
+            //    itemResponse.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+            //}
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
         }
 

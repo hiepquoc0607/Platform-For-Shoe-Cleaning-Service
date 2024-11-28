@@ -18,9 +18,5 @@ public partial class Material
 
     public virtual ICollection<BranchMaterial> BranchMaterials { get; set; } = new List<BranchMaterial>();
 
-    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
-    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-
     public virtual Service Service { get; set; } = null!;
 }

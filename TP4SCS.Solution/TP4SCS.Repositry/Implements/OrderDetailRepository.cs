@@ -40,14 +40,14 @@ namespace TP4SCS.Repository.Implements
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} đã ngừng hoạt động.");
                 }
             }
-            if (orderDetail.MaterialId.HasValue)
-            {
-                var material = await _dbContext.Materials.SingleOrDefaultAsync(m => m.Id == orderDetail.MaterialId.Value);
-                if (material == null)
-                {
-                    throw new InvalidOperationException($"Vật liệu với ID {orderDetail.MaterialId} không tìm thấy.");
-                }
-            }
+            //if (orderDetail.MaterialId.HasValue)
+            //{
+            //    var material = await _dbContext.Materials.SingleOrDefaultAsync(m => m.Id == orderDetail.MaterialId.Value);
+            //    if (material == null)
+            //    {
+            //        throw new InvalidOperationException($"Vật liệu với ID {orderDetail.MaterialId} không tìm thấy.");
+            //    }
+            //}
             order.OrderDetails.Add(orderDetail);
             order.Status = StatusConstants.PROCESSING;
             order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
@@ -90,7 +90,7 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.OrderDetails
                 .Include(od => od.Branch)
-                .Include(od => od.Material)
+                //.Include(od => od.Material)
                 .Include(od => od.Service)
                 .ThenInclude(s => s!.Promotion)
                 .SingleOrDefaultAsync(od => od.Id == id);
@@ -102,7 +102,7 @@ namespace TP4SCS.Repository.Implements
                 .Where(od => od.OrderId == orderId)
                 .Include(od => od.Order)
                 .Include(od => od.Branch)
-                .Include(od => od.Material)
+                //.Include(od => od.Material)
                 .Include(od => od.Service)
                 .Select(od => new OrderDetail
                 {
@@ -110,7 +110,7 @@ namespace TP4SCS.Repository.Implements
                     Order = od.Order,
                     Branch = od.Branch,
                     Service = od.Service,
-                    Material = od.Material,
+                    //Material = od.Material,
                     Price = od.Price
                 })
                 .ToListAsync();
