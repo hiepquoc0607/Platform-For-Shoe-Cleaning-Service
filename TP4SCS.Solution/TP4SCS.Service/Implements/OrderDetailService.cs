@@ -111,6 +111,7 @@ namespace TP4SCS.Services.Implements
             {
                 existingOrderDetail.AssetUrls = orderDetail.AssetUrls;
             }
+            await _orderDetailRepository.UpdateOrderDetailAsync(existingOrderDetail);
         }
 
     }
