@@ -152,14 +152,14 @@ namespace TP4SCS.API.Controllers
                 var order = await _orderService.GetOrderByOrderId(id);
                 if (order == null)
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", new List<OrderResponse>()));
                 }
                 var orderResponse = _mapper.Map<OrderResponse>(order);
 
                 var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
                 if (orderDetails == null || !orderDetails.Any())
                 {
-                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", null));
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", new List<OrderResponse>()));
                 }
 
                 var responseList = new List<OrderDetailResponseV2>();
