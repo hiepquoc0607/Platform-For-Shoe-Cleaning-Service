@@ -433,16 +433,27 @@ namespace TP4SCS.Services.Implements
 
                 // Lấy giá trị `status`
                 var status = dataElement.GetProperty("status").GetString();
+                List<(string Status, string UpdatedDate)> logs = new List<(string, string)>(); // Khởi tạo danh sách logs rỗng mặc định
 
-                // Lấy giá trị `log` (nếu có) và chuyển đổi thành danh sách
-                var logs = dataElement.GetProperty("log")
-                    .EnumerateArray()
-                    .Select(log => (
-                        Status: log.GetProperty("status").GetString() ?? "", // Thay thế giá trị null bằng "Unknown"
-                        UpdatedDate: log.GetProperty("updated_date").GetString() ?? "" // Thay thế giá trị null bằng "Unknown"
-                    ))
-                    .ToList();
-                if (logs.Any(log => log.Status == "delivered"))
+                if (status != null && status.Equals("ready_to_pick"))
+                {
+                    // Nếu trạng thái là "ready_to_pick", trả về logs rỗng
+                    logs = new List<(string, string)>();
+                }
+                else
+                {
+                    // Lấy giá trị `log` và chuyển đổi thành danh sách
+                    logs = dataElement.GetProperty("log")
+                        .EnumerateArray()
+                        .Select(log => (
+                            Status: log.GetProperty("status").GetString() ?? "", // Thay thế giá trị null bằng "Unknown"
+                            UpdatedDate: log.GetProperty("updated_date").GetString() ?? "" // Thay thế giá trị null bằng "Unknown"
+                        ))
+                        .ToList();
+                }
+
+                // Kiểm tra xem có bất kỳ log nào có status là "delivered" và logs không rỗng
+                if (logs.Any(log => log.Status == "delivered") && logs.Count > 0)
                 {
                     var order = await _orderRepository.GetOrderByCodeAsync(orderCode);
                     if (order != null && order.Status == StatusConstants.SHIPPING)
@@ -451,6 +462,7 @@ namespace TP4SCS.Services.Implements
                         await _orderRepository.UpdateOrderAsync(order);
                     }
                 }
+
                 return (status, logs);
             }
             catch (Exception ex)
