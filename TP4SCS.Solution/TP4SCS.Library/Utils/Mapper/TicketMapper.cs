@@ -29,6 +29,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.OrderId, otp => (int?)null)
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => false)
+                .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.CLOSED);
         }
     }
