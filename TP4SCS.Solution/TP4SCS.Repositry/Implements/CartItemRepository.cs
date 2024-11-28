@@ -48,14 +48,6 @@ namespace TP4SCS.Repository.Implements
                 }
 
             }
-            //if (item.MaterialId.HasValue)
-            //{
-            //    var material = await _dbContext.Materials.SingleOrDefaultAsync(m => m.Id == item.MaterialId.Value);
-            //    if (material == null)
-            //    {
-            //        throw new InvalidOperationException($"Vật liệu với ID {item.MaterialId} không tìm thấy.");
-            //    }
-            //}
             item.CartId = cart.Id;
 
             cart.CartItems.Add(item);
@@ -68,7 +60,6 @@ namespace TP4SCS.Repository.Implements
             return await _dbContext.CartItems
                 .Where(item => cartItemIds.Contains(item.Id))
                 .Include(item => item.Service)
-                //.Include(item => item.Material)
                 .ToListAsync();
         }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)
@@ -80,7 +71,7 @@ namespace TP4SCS.Repository.Implements
         {
             return await GetAsync(
                 filter: item => item.CartId == cartId,
-                includeProperties: "Service,Material"
+                includeProperties: "Service"
             );
         }
 

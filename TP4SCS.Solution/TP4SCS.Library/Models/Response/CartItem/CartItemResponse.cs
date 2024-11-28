@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.CartItem
+﻿using TP4SCS.Library.Models.Response.Material;
+
+namespace TP4SCS.Library.Models.Response.CartItem
 {
     public class CartItemResponse
     {
@@ -7,11 +9,9 @@
         public int CartId { get; set; }
         public int BranchId { get; set; }
         public int ServiceId { get; set; }
-        public int? MaterialId { get; set; }
+        public List<MaterialResponseV2> Materials { get; set; } = new List<MaterialResponseV2>();
         public string ServiceName { get; set; } = null!;
         public string ServiceStatus { get; set; } = null!;
-        public string? MaterialName { get; set; }
-        public string? MaterialStatus { get; set; }
         public decimal Price { get; set; }
     }
 }

@@ -225,6 +225,16 @@ namespace TP4SCS.Library.Utils.Utils
             }
             return "None";
         }
+        public static List<int> ConvertStringToList(string str)
+        {
+            return str.Split(',')
+                      .Select(int.Parse)
+                      .ToList();
+        }
+        public static string ConvertListToString(List<int> numbers)
+        {
+            return string.Join(",", numbers);
+        }
 
         public string CheckAddEmployeesErrorType(string? old, List<int> input)
         {

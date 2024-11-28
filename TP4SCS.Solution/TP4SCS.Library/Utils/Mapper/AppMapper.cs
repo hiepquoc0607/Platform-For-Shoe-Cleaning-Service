@@ -49,7 +49,8 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<Cart, CartResponse>();
 
             //Cart Item Mappings
-            CreateMap<CartItemCreateRequest, CartItem>();
+            CreateMap<CartItemCreateRequest, CartItem>()
+                .ForMember(dest => dest.MaterialIds, opt => opt.MapFrom(src => Util.ConvertListToString(src.MaterialIds)));
 
             CreateMap<CartItem, CartItemResponse>();
 
