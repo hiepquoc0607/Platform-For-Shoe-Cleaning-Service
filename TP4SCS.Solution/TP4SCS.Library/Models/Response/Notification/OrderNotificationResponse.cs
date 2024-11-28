@@ -1,6 +1,6 @@
 ﻿namespace TP4SCS.Library.Models.Response.Notification
 {
-    public class OrderNotificationRequest
+    public class OrderNotificationResponse
     {
         public int Id { get; set; }
 
@@ -8,8 +8,8 @@
 
         public DateTime NotificationTime { get; set; }
 
-        public string Title { get; set; } = null!;
+        public string Title { get; set; } = string.Empty;
 
-        public string Content { get; set; } = null!;
+        public string Content { get; set; } = string.Empty;
     }
 }

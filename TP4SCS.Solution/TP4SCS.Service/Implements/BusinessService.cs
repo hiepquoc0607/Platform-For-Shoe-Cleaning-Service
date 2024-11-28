@@ -94,6 +94,13 @@ namespace TP4SCS.Services.Implements
 
             var newBusiness = _mapper.Map(updateBusinessRequest, oldBusiness);
             newBusiness.Name = _util.FormatStringName(updateBusinessRequest.Name);
+            newBusiness.Status = oldBusiness.Status switch
+            {
+                StatusConstants.UNREGISTERED => StatusConstants.UNREGISTERED,
+                StatusConstants.EXPIRED => StatusConstants.EXPIRED,
+                StatusConstants.SUSPENDED => StatusConstants.SUSPENDED,
+                _ => updateBusinessRequest.Status,
+            };
 
             try
             {

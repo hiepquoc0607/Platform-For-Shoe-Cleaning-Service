@@ -23,7 +23,6 @@ namespace TP4SCS.Library.Models.Request.Notification
         [Range(1, int.MaxValue)]
         public int PageSize { get; set; } = 10;
 
-
         [Required]
         [DefaultValue(1)]
         [Range(1, int.MaxValue)]
