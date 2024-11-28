@@ -37,7 +37,9 @@ namespace TP4SCS.Library.Utils.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<Service, ServiceCreateResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
-            CreateMap<Service, ServiceResponseV2>();
+            CreateMap<Service, ServiceResponseV2>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)))
+            .ForMember(dest => dest.AssetUrls, opt => opt.MapFrom(src => src.AssetUrls));
             CreateMap<ServiceRequest, Service>();
             CreateMap<ServiceCreateRequest, Service>();
 
@@ -66,7 +68,9 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<MaterialUpdateRequest, Material>();
             CreateMap<Material, MaterialResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
-            CreateMap<Material, MaterialResponseV2>();
+            CreateMap<Material, MaterialResponseV2>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)))
+                .ForMember(dest => dest.AssetUrls, opt => opt.MapFrom(src => src.AssetUrls));
             //AssetUrl Mapping
             CreateMap<AssetUrl, AssetUrlResponse>();
             CreateMap<AssetUrlRequest, AssetUrl>();
