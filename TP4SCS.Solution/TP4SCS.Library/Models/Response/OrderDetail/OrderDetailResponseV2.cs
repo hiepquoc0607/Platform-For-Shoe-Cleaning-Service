@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Response.Branch;
+﻿using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Branch;
 using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Service;
@@ -15,6 +16,7 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
         public MaterialResponse? Material { get; set; }
 
         public virtual FeedbackResponse? Feedback { get; set; }
+        public virtual ICollection<AssetUrlResponse> AssetUrls { get; set; } = new List<AssetUrlResponse>();
         public string? ProcessState { get; set; }
         public string? Note { get; set; }
 
