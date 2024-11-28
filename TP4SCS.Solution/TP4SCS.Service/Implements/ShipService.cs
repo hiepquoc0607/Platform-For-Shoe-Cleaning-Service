@@ -4,6 +4,8 @@ using System.Text;
 using System.Text.Json;
 using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.Location;
+using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
@@ -11,10 +13,12 @@ namespace TP4SCS.Services.Implements
     public class ShipService : IShipService
     {
         private readonly IConfiguration _configuration;
+        private readonly IOrderRepository _orderRepository;
 
-        public ShipService(IConfiguration configuration)
+        public ShipService(IConfiguration configuration, IOrderRepository orderRepository)
         {
             _configuration = configuration;
+            _orderRepository = orderRepository;
         }
 
         //Get Available Services
@@ -438,7 +442,15 @@ namespace TP4SCS.Services.Implements
                         UpdatedDate: log.GetProperty("updated_date").GetString() ?? "" // Thay thế giá trị null bằng "Unknown"
                     ))
                     .ToList();
-
+                if (logs.Any(log => log.Status == "delivered"))
+                {
+                    var order = await _orderRepository.GetOrderByCodeAsync(orderCode);
+                    if (order != null && order.Status == StatusConstants.SHIPPING)
+                    {
+                        order.Status = StatusConstants.DELIVERED;
+                        await _orderRepository.UpdateOrderAsync(order);
+                    }
+                }
                 return (status, logs);
             }
             catch (Exception ex)

@@ -20,5 +20,6 @@ namespace TP4SCS.Repository.Interfaces
         Task UpdateOrderAsync(Order order);
 
         Task<(int, int)> GetBranchIdAndBusinessIdByOrderId(int id);
+        Task<Order?> GetOrderByCodeAsync(string code);
     }
 }
