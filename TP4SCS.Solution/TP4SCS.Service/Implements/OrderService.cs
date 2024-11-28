@@ -150,9 +150,8 @@ namespace TP4SCS.Services.Implements
                 ToDistrictId = address.DistrictId,
                 ToName = account.FullName,
                 ToWardCode = address.WardCode,
-                
-                CODAmount = order.OrderPrice
 
+                CODAmount = Convert.ToInt32(order.OrderPrice)
             };
             var code = await _shipService.CreateShippingOrderAsync(httpClient, shippingOrder);
             if(code == null)
