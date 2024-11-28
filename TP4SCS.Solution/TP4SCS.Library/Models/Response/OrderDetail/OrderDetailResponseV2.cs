@@ -11,9 +11,9 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
         public int Id { get; set; }
         public BranchResponse Branch { get; set; } = null!;
 
-        public ServiceResponse? Service { get; set; }
+        public ServiceResponse Service { get; set; } = null!;
 
-        public MaterialResponse? Material { get; set; }
+        public List<MaterialResponse> Materials { get; set; } = new List<MaterialResponse>();
 
         public virtual FeedbackResponse? Feedback { get; set; }
         public virtual ICollection<AssetUrlResponse> AssetUrls { get; set; } = new List<AssetUrlResponse>();

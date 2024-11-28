@@ -7,7 +7,7 @@ namespace TP4SCS.Services.Interfaces
     public interface IMaterialService
     {
         Task AddMaterialAsync(MaterialCreateRequest materialRequest, int businessId);
-
+        Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids);
         Task DeleteMaterialAsync(int id);
 
         Task<Material?> GetMaterialByIdAsync(int id);

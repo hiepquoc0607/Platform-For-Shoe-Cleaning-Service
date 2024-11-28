@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.OrderDetail;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.OrderDetail;
+using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -13,10 +16,12 @@ namespace TP4SCS.API.Controllers
     public class OrderDetailController : ControllerBase
     {
         private readonly IOrderDetailService _orderDetailService;
+        private readonly IMaterialService _materialService;
         private readonly IMapper _mapper;
-        public OrderDetailController(IOrderDetailService orderDetailService, IMapper mapper)
+        public OrderDetailController(IOrderDetailService orderDetailService, IMapper mapper, IMaterialService materialService)
         {
             _orderDetailService = orderDetailService;
+            _materialService = materialService;
             _mapper = mapper;
         }
 
@@ -31,8 +36,16 @@ namespace TP4SCS.API.Controllers
                 {
                     return NotFound(new ResponseObject<OrderDetailResponseV2>($"Không tìm thấy chi tiết đơn hàng với ID {id}.", null));
                 }
-
+                
                 var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+                if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                {
+                    List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                    var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                    List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                    response.Materials = materialResponse;
+                }
+                
                 return Ok(new ResponseObject<OrderDetailResponseV2>("Lấy chi tiết đơn hàng thành công.", response));
             }
             catch (Exception ex)
@@ -53,8 +66,24 @@ namespace TP4SCS.API.Controllers
                     return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
                 }
 
-                var response = _mapper.Map<IEnumerable<OrderDetailResponseV2>>(orderDetails);
-                return Ok(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Lấy danh sách chi tiết đơn hàng thành công.", response));
+                var responseList = new List<OrderDetailResponseV2>();
+
+                foreach (var orderDetail in orderDetails)
+                {
+                    var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                    if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                    {
+                        List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                        var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                        List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                        response.Materials = materialResponse;
+                    }
+
+                    responseList.Add(response);
+                }
+
+                return Ok(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Lấy danh sách chi tiết đơn hàng thành công.", responseList));
             }
             catch (Exception ex)
             {
@@ -68,8 +97,7 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                var orderDetail = request.Adapt<OrderDetail>();
-                await _orderDetailService.AddOrderDetailAsync(orderDetail);
+                await _orderDetailService.AddOrderDetailAsync(request.OrderId,request.BranchId,request.ServiceId,request.MaterialIds);
                 return Ok(new ResponseObject<string>("Thêm chi tiết đơn hàng thành công."));
             }
             catch (InvalidOperationException ex)

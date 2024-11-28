@@ -40,14 +40,6 @@ namespace TP4SCS.Repository.Implements
                     throw new InvalidOperationException($"Dịch vụ với ID {orderDetail.ServiceId} đã ngừng hoạt động.");
                 }
             }
-            //if (orderDetail.MaterialId.HasValue)
-            //{
-            //    var material = await _dbContext.Materials.SingleOrDefaultAsync(m => m.Id == orderDetail.MaterialId.Value);
-            //    if (material == null)
-            //    {
-            //        throw new InvalidOperationException($"Vật liệu với ID {orderDetail.MaterialId} không tìm thấy.");
-            //    }
-            //}
             order.OrderDetails.Add(orderDetail);
             order.Status = StatusConstants.PROCESSING;
             order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
@@ -90,7 +82,6 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.OrderDetails
                 .Include(od => od.Branch)
-                //.Include(od => od.Material)
                 .Include(od => od.Service)
                 .ThenInclude(s => s!.Promotion)
                 .Include(od => od.AssetUrls)
@@ -103,19 +94,8 @@ namespace TP4SCS.Repository.Implements
                 .Include(od => od.Order)
                 .Include(od => od.AssetUrls)
                 .Include(od => od.Branch)
-                //.Include(od => od.Material) // Bỏ đi nếu không cần
                 .Include(od => od.Service)
-                .Where(od => od.OrderId == orderId) // Đặt điều kiện lọc sớm
-                .Select(od => new OrderDetail
-                {
-                    Id = od.Id,
-                    Order = od.Order,
-                    Branch = od.Branch,
-                    Service = od.Service,
-                    AssetUrls = od.AssetUrls,
-                    //Material = od.Material, // Bỏ nếu không cần
-                    Price = od.Price
-                })
+                .Where(od => od.OrderId == orderId)
                 .ToListAsync(); // Chạy truy vấn và lấy kết quả
         }
 

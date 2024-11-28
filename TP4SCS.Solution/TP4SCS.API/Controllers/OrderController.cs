@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Order;
+using TP4SCS.Library.Models.Response.OrderDetail;
+using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -14,15 +18,24 @@ namespace TP4SCS.API.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IEmailService _emailService;
+        private readonly IOrderDetailService _orderDetailService;
+        private readonly IMaterialService _materialService;
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IEmailService emailService, IMapper mapper, IHttpClientFactory httpClientFactory)
+        public OrderController(IOrderService orderService,
+            IEmailService emailService,
+            IMapper mapper,
+            IHttpClientFactory httpClientFactory,
+            IOrderDetailService orderDetailService,
+            IMaterialService materialService)
         {
             _orderService = orderService;
             _emailService = emailService;
             _httpClient = httpClientFactory.CreateClient();
             _mapper = mapper;
+            _orderDetailService = orderDetailService;
+            _materialService = materialService;
         }
 
         [HttpGet]
@@ -34,9 +47,45 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                // Lấy danh sách orders từ service
                 var orders = await _orderService.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
-                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng thành công.", response));
+                var orderResponses = new List<OrderResponse>();
+                if( orders == null || !orders.Any())
+                {
+                    return Ok(new ResponseObject<string>("Không tìm thấy danh sách đơn đặt hàng"));
+                }
+                foreach (var order in orders)
+                {
+                    // Ánh xạ thông tin cơ bản của Order
+                    var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                    var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                    if (orderDetails == null || !orderDetails.Any())
+                    {
+                        return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                    }
+
+                    var responseList = new List<OrderDetailResponseV2>();
+
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                        if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                        {
+                            List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                            var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            response.Materials = materialResponse;
+                        }
+
+                        responseList.Add(response);
+                    }
+                    orderResponse.OrderDetails = responseList;
+                    orderResponses.Add(orderResponse);
+                }
+
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng thành công.", orderResponses));
             }
             catch (Exception ex)
             {
@@ -53,8 +102,42 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByAccountIdAsync(accountId, status, orderBy);
-                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy đơn hàng theo tài khoản thành công.", response));
+                var orderResponses = new List<OrderResponse>();
+                if (orders == null || !orders.Any())
+                {
+                    return Ok(new ResponseObject<string>("Không tìm thấy danh sách đơn đặt hàng"));
+                }
+                foreach (var order in orders)
+                {
+                    // Ánh xạ thông tin cơ bản của Order
+                    var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                    var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                    if (orderDetails == null || !orderDetails.Any())
+                    {
+                        return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                    }
+
+                    var responseList = new List<OrderDetailResponseV2>();
+
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                        if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                        {
+                            List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                            var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            response.Materials = materialResponse;
+                        }
+
+                        responseList.Add(response);
+                    }
+                    orderResponse.OrderDetails = responseList;
+                    orderResponses.Add(orderResponse);
+                }
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy đơn hàng theo tài khoản thành công.", orderResponses));
             }
             catch (Exception ex)
             {
@@ -66,9 +149,37 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                var orders = await _orderService.GetOrderByOrderId(id);
-                var response = _mapper.Map<OrderResponse>(orders);
-                return Ok(new ResponseObject<OrderResponse>("Lấy danh sách đơn hàng theo id thành công.", response));
+                var order = await _orderService.GetOrderByOrderId(id);
+                if (order == null)
+                {
+                    return Ok(new ResponseObject<string>("Không tìm thấy danh sách đơn đặt hàng"));
+                }
+                var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                if (orderDetails == null || !orderDetails.Any())
+                {
+                    return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                }
+
+                var responseList = new List<OrderDetailResponseV2>();
+
+                foreach (var orderDetail in orderDetails)
+                {
+                    var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                    if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                    {
+                        List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                        var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                        List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                        response.Materials = materialResponse;
+                    }
+
+                    responseList.Add(response);
+                }
+                orderResponse.OrderDetails = responseList;
+                return Ok(new ResponseObject<OrderResponse>("Lấy danh sách đơn hàng theo id thành công.", orderResponse));
             }
             catch (Exception ex)
             {
@@ -84,8 +195,42 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByBranchIdAsync(id, status, orderBy);
-                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo chi nhánh thành công.", response));
+                var orderResponses = new List<OrderResponse>();
+                if (orders == null || !orders.Any())
+                {
+                    return Ok(new ResponseObject<string>("Không tìm thấy danh sách đơn đặt hàng"));
+                }
+                foreach (var order in orders)
+                {
+                    // Ánh xạ thông tin cơ bản của Order
+                    var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                    var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                    if (orderDetails == null || !orderDetails.Any())
+                    {
+                        return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                    }
+
+                    var responseList = new List<OrderDetailResponseV2>();
+
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                        if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                        {
+                            List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                            var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            response.Materials = materialResponse;
+                        }
+
+                        responseList.Add(response);
+                    }
+                    orderResponse.OrderDetails = responseList;
+                    orderResponses.Add(orderResponse);
+                }
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo chi nhánh thành công.", orderResponses));
             }
             catch (Exception ex)
             {
@@ -102,8 +247,42 @@ namespace TP4SCS.API.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByBusinessIdAsync(id, status, orderBy);
-                var response = _mapper.Map<IEnumerable<OrderResponse>>(orders);
-                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo doanh nghiệp thành công.", response));
+                var orderResponses = new List<OrderResponse>();
+                if (orders == null || !orders.Any())
+                {
+                    return Ok(new ResponseObject<string>("Không tìm thấy danh sách đơn đặt hàng"));
+                }
+                foreach (var order in orders)
+                {
+                    // Ánh xạ thông tin cơ bản của Order
+                    var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                    var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                    if (orderDetails == null || !orderDetails.Any())
+                    {
+                        return NotFound(new ResponseObject<IEnumerable<OrderDetailResponseV2>>("Không tìm thấy chi tiết đơn hàng cho đơn hàng này."));
+                    }
+
+                    var responseList = new List<OrderDetailResponseV2>();
+
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                        if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                        {
+                            List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                            var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            response.Materials = materialResponse;
+                        }
+
+                        responseList.Add(response);
+                    }
+                    orderResponse.OrderDetails = responseList;
+                    orderResponses.Add(orderResponse);
+                }
+                return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Lấy danh sách đơn hàng theo doanh nghiệp thành công.", orderResponses));
             }
             catch (Exception ex)
             {

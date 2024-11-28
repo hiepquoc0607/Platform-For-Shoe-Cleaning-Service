@@ -1,6 +1,7 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -58,28 +59,32 @@ namespace TP4SCS.Services.Implements
         //    await _orderDetailRepository.AddOrderDetailsAsync(orderDetails);
         //}
 
-        public async Task AddOrderDetailAsync(OrderDetail orderDetail)
+        public async Task AddOrderDetailAsync(int orderId, int branchId, int serviceId, List<int> materialIds)
         {
-
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.OrderId = orderId;
+            orderDetail.BranchId = branchId;
+            orderDetail.ServiceId = serviceId;
             // Kiểm tra Material
-            //if (orderDetail.MaterialId.HasValue)
-            //{
-            //    var material = await _materialRepository.GetMaterialByIdAsync(orderDetail.MaterialId.Value);
-            //    if (material == null || material.Status != StatusConstants.AVAILABLE)
-            //    {
-            //        throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
-            //    }
-            //    orderDetail.Price += material.Price;
-            //}
-            if (orderDetail.ServiceId.HasValue)
+            if (materialIds != null && materialIds.Any())
             {
-                var service = await _serviceService.GetServiceByIdAsync(orderDetail.ServiceId.Value);
-                if (service == null || service.Status != StatusConstants.AVAILABLE)
+                foreach (int materialId in materialIds)
                 {
-                    throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+                    var material = await _materialRepository.GetMaterialByIdAsync(materialId);
+                    if (material == null || material.Status != StatusConstants.AVAILABLE)
+                    {
+                        throw new InvalidOperationException("Vật liệu được chỉ định không có sẵn hoặc không hoạt động.");
+                    }
+                    orderDetail.Price += material.Price;
                 }
-                orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);
+                orderDetail.MaterialIds = Util.ConvertListToString(materialIds);
             }
+            var service = await _serviceService.GetServiceByIdAsync(serviceId);
+            if (service == null || service.Status != StatusConstants.AVAILABLE)
+            {
+                throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
+            }
+            orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
         }

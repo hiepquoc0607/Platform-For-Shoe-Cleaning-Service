@@ -127,6 +127,19 @@ namespace TP4SCS.Repository.Implements
                     .ThenInclude(bm => bm.Branch); // Bao gồm Branch trong BranchMaterials
             return await query.ToListAsync();
         }
+        public async Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return null; // Trả về null nếu danh sách ids rỗng hoặc null
+            }
+
+            return await _dbContext.Materials
+                .Where(m => ids.Contains(m.Id))
+                .Include(m => m.AssetUrls)
+                .Include(m => m.BranchMaterials)
+                .ToListAsync(); // Truy xuất danh sách kết quả
+        }
         public async Task UpdateQuantityAsync(int quantity, int branchId, int materialId)
         {
             var branchMaterial = await _dbContext.BranchMaterials

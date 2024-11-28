@@ -98,6 +98,10 @@ namespace TP4SCS.Services.Implements
 
             return (paginatedMaterials, total);
         }
+        public async Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids)
+        {
+            return await _materialRepository.GetMaterialsByIdsAsync(ids);
+        }
         public async Task UpdateMaterialAsync(MaterialUpdateRequest materialUpdateRequest, int existingMaterialId)
         {
             if (materialUpdateRequest == null)
