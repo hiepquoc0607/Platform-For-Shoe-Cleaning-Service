@@ -4,6 +4,7 @@ using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Order;
 using TP4SCS.Library.Models.Request.ShipFee;
+using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -209,12 +210,16 @@ namespace TP4SCS.Services.Implements
                         service!.OrderedNum--;
                         await _serviceRepository.UpdateServiceAsync(service);
                     }
-                    //if (od.MaterialId.HasValue)
-                    //{
-                    //    var material = await _materialService.GetMaterialByIdAsync(od.MaterialId.Value);
-                    //    material!.BranchMaterials.SingleOrDefault(m => m.BranchId == od.BranchId)!.Storage++;
-                    //    await _materialService.UpdateMaterialAsync(material);
-                    //}
+                    if (!string.IsNullOrEmpty(od.MaterialIds))
+                    {
+                        var materialIds = Util.ConvertStringToList(od.MaterialIds);
+                        foreach (var materialId in materialIds)
+                        {
+                            var material = await _materialService.GetMaterialByIdAsync(materialId);
+                            material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == od.BranchId)!.Storage--;
+                            await _materialService.UpdateMaterialAsync(material);
+                        }
+                    }
                 }
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED))
