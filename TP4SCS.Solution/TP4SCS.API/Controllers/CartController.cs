@@ -102,7 +102,7 @@ namespace TP4SCS.API.Controllers
                         Id = cartResponse.Id,
                         AccountId = cartResponse.AccountId,
                         TotalPrice = cartResponse.TotalPrice,
-                        GroupedCartItems = groupedCartItems
+                        CartItems = groupedCartItems
                     };
 
                     return Ok(new ResponseObject<CartWithGroupedItemsResponse>("Fetch success", response));
