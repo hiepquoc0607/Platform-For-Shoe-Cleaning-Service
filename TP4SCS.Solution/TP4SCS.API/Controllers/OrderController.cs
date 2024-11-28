@@ -75,7 +75,7 @@ namespace TP4SCS.API.Controllers
                         {
                             List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
                             var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                             response.Materials = materialResponse;
                         }
 
@@ -128,7 +128,7 @@ namespace TP4SCS.API.Controllers
                         {
                             List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
                             var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                             response.Materials = materialResponse;
                         }
 
@@ -172,7 +172,7 @@ namespace TP4SCS.API.Controllers
                     {
                         List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
                         var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                        List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                        List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                         response.Materials = materialResponse;
                     }
 
@@ -221,7 +221,7 @@ namespace TP4SCS.API.Controllers
                         {
                             List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
                             var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                             response.Materials = materialResponse;
                         }
 
@@ -273,7 +273,7 @@ namespace TP4SCS.API.Controllers
                         {
                             List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
                             var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                            List<MaterialResponse> materialResponse = _mapper.Map<IEnumerable<MaterialResponse>>(materials).ToList();
+                            List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                             response.Materials = materialResponse;
                         }
 
