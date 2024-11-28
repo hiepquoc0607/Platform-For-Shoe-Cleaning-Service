@@ -318,6 +318,8 @@ namespace TP4SCS.Library.Utils.Utils
             {
                 "ACTIVE" => true,
                 "INACTIVE" => true,
+                "UNREGISTERED" => true,
+                "EXPIRED" => true,
                 _ => false
             };
 
