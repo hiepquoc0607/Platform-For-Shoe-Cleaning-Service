@@ -12,7 +12,7 @@ using TP4SCS.Library.Models.Data;
 namespace TP4SCS.Library.Migrations
 {
     [DbContext(typeof(Tp4scsDevDatabaseContext))]
-    [Migration("20241128214153_InitialDB")]
+    [Migration("20241128224551_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
@@ -108,12 +108,12 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Account__3214EC07A3BDAAF4");
+                        .HasName("PK__Account__3214EC0770E0D6DA");
 
-                    b.HasIndex(new[] { "Phone" }, "UQ__Account__5C7E359E2130D900")
+                    b.HasIndex(new[] { "Phone" }, "UQ__Account__5C7E359E23AECA46")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Email" }, "UQ__Account__A9D10534778ECF67")
+                    b.HasIndex(new[] { "Email" }, "UQ__Account__A9D1053477E1BF0B")
                         .IsUnique();
 
                     b.ToTable("Account", (string)null);
@@ -172,7 +172,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__AccountA__3214EC07090C2748");
+                        .HasName("PK__AccountA__3214EC07FB73C6B6");
 
                     b.HasIndex("AccountId");
 
@@ -216,7 +216,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id")
-                        .HasName("PK__AssetURL__3214EC07D5D86C9E");
+                        .HasName("PK__AssetURL__3214EC07FA85CCE7");
 
                     b.HasIndex("BusinessId");
 
@@ -257,7 +257,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__BranchMa__3214EC07941173C0");
+                        .HasName("PK__BranchMa__3214EC07B97E8A3F");
 
                     b.HasIndex("BranchId");
 
@@ -287,7 +287,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__BranchSe__3214EC07261523B4");
+                        .HasName("PK__BranchSe__3214EC07716B5253");
 
                     b.HasIndex("BranchId");
 
@@ -371,7 +371,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Business__3214EC07F4D38654");
+                        .HasName("PK__Business__3214EC07AC25614A");
 
                     b.HasIndex("BusinessId");
 
@@ -443,15 +443,15 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Business__3214EC07779728A8");
+                        .HasName("PK__Business__3214EC077603EEF7");
 
-                    b.HasIndex(new[] { "Phone" }, "UQ__Business__5C7E359ECFD7E8D7")
+                    b.HasIndex(new[] { "Phone" }, "UQ__Business__5C7E359EB674E9E9")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Business__737584F622E6EFFF")
+                    b.HasIndex(new[] { "Name" }, "UQ__Business__737584F6C104F18F")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "OwnerId" }, "UQ__Business__819385B965229EC1")
+                    b.HasIndex(new[] { "OwnerId" }, "UQ__Business__819385B9643CBCBA")
                         .IsUnique();
 
                     b.ToTable("BusinessProfile", (string)null);
@@ -487,7 +487,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Business__3214EC0799E33537");
+                        .HasName("PK__Business__3214EC0771C002E4");
 
                     b.HasIndex("BusinessId");
 
@@ -509,9 +509,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Cart__3214EC0737FF7D09");
+                        .HasName("PK__Cart__3214EC0795405A6B");
 
-                    b.HasIndex(new[] { "AccountId" }, "UQ__Cart__349DA5A7C9B45605")
+                    b.HasIndex(new[] { "AccountId" }, "UQ__Cart__349DA5A72E58B93C")
                         .IsUnique();
 
                     b.ToTable("Cart", (string)null);
@@ -541,7 +541,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__CartItem__3214EC079A8904C2");
+                        .HasName("PK__CartItem__3214EC07D688C4C6");
 
                     b.HasIndex("BranchId");
 
@@ -588,9 +588,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Feedback__3214EC078CF4D83A");
+                        .HasName("PK__Feedback__3214EC07BB4CF31F");
 
-                    b.HasIndex(new[] { "OrderItemId" }, "UQ__Feedback__57ED0680F0BA1B6E")
+                    b.HasIndex(new[] { "OrderItemId" }, "UQ__Feedback__57ED068011673F48")
                         .IsUnique();
 
                     b.ToTable("Feedback", (string)null);
@@ -604,25 +604,24 @@ namespace TP4SCS.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BusinessId")
-                        .HasColumnType("int");
+                    b.Property<string>("BusinessIds")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsMonth")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsYear")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Leaderbo__3214EC07E835E7A4");
-
-                    b.HasIndex("BusinessId");
+                        .HasName("PK__Leaderbo__3214EC079DC65B14");
 
                     b.ToTable("Leaderboard", (string)null);
                 });
@@ -656,7 +655,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Material__3214EC073DECBCBB");
+                        .HasName("PK__Material__3214EC07EAB229C0");
 
                     b.HasIndex("ServiceId");
 
@@ -736,7 +735,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Order__3214EC077B27831D");
+                        .HasName("PK__Order__3214EC0745BC6AC9");
 
                     b.HasIndex("AccountId");
 
@@ -776,7 +775,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderDet__3214EC071575E202");
+                        .HasName("PK__OrderDet__3214EC07BCEF2DFE");
 
                     b.HasIndex("BranchId");
 
@@ -814,7 +813,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderNot__3214EC07F08DB65A");
+                        .HasName("PK__OrderNot__3214EC07CBA2C999");
 
                     b.HasIndex("OrderId");
 
@@ -848,7 +847,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Platform__3214EC07A64D21F8");
+                        .HasName("PK__Platform__3214EC071613A28C");
 
                     b.ToTable("PlatformStatistic", (string)null);
                 });
@@ -877,9 +876,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Promotio__3214EC07FF99AA03");
+                        .HasName("PK__Promotio__3214EC07D713764C");
 
-                    b.HasIndex(new[] { "ServiceId" }, "UQ__Promotio__C51BB00BFE265CBE")
+                    b.HasIndex(new[] { "ServiceId" }, "UQ__Promotio__C51BB00BFA7DC882")
                         .IsUnique();
 
                     b.ToTable("Promotion", (string)null);
@@ -927,7 +926,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Service__3214EC07B76B8824");
+                        .HasName("PK__Service__3214EC07BC32246A");
 
                     b.HasIndex("CategoryId");
 
@@ -954,9 +953,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__ServiceC__3214EC07E80EE639");
+                        .HasName("PK__ServiceC__3214EC07F387B084");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__ServiceC__737584F6E5C8FB4B")
+                    b.HasIndex(new[] { "Name" }, "UQ__ServiceC__737584F68346D265")
                         .IsUnique();
 
                     b.ToTable("ServiceCategory", (string)null);
@@ -982,7 +981,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__ServiceP__3214EC07FBC9D5AA");
+                        .HasName("PK__ServiceP__3214EC07140644E3");
 
                     b.HasIndex("ServiceId");
 
@@ -1013,9 +1012,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Subscrip__3214EC07FDC304B4");
+                        .HasName("PK__Subscrip__3214EC078980A5C2");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Subscrip__737584F660146B9D")
+                    b.HasIndex(new[] { "Name" }, "UQ__Subscrip__737584F63173AB58")
                         .IsUnique();
 
                     b.ToTable("SubscriptionPack", (string)null);
@@ -1069,7 +1068,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__SupportT__3214EC078B031D33");
+                        .HasName("PK__SupportT__3214EC0705D06273");
 
                     b.HasIndex("CategoryId");
 
@@ -1105,9 +1104,9 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__TicketCa__3214EC07AB08D384");
+                        .HasName("PK__TicketCa__3214EC073A6A13C5");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__TicketCa__737584F63543A7B2")
+                    b.HasIndex(new[] { "Name" }, "UQ__TicketCa__737584F6D9A92F26")
                         .IsUnique();
 
                     b.ToTable("TicketCategory", (string)null);
@@ -1151,7 +1150,7 @@ namespace TP4SCS.Library.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Transact__3214EC0733A96B93");
+                        .HasName("PK__Transact__3214EC079B517EC8");
 
                     b.HasIndex("AccountId");
 
@@ -1331,17 +1330,6 @@ namespace TP4SCS.Library.Migrations
                         .HasConstraintName("FK__Feedback__OrderI__00200768");
 
                     b.Navigation("OrderItem");
-                });
-
-            modelBuilder.Entity("TP4SCS.Library.Models.Data.Leaderboard", b =>
-                {
-                    b.HasOne("TP4SCS.Library.Models.Data.BusinessProfile", "Business")
-                        .WithMany("Leaderboards")
-                        .HasForeignKey("BusinessId")
-                        .IsRequired()
-                        .HasConstraintName("FK__Leaderboa__Busin__282DF8C2");
-
-                    b.Navigation("Business");
                 });
 
             modelBuilder.Entity("TP4SCS.Library.Models.Data.Material", b =>
@@ -1527,8 +1515,6 @@ namespace TP4SCS.Library.Migrations
                     b.Navigation("BusinessBranches");
 
                     b.Navigation("BusinessStatistics");
-
-                    b.Navigation("Leaderboards");
                 });
 
             modelBuilder.Entity("TP4SCS.Library.Models.Data.Cart", b =>

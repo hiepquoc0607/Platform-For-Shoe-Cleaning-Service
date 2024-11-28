@@ -4,15 +4,13 @@ public partial class Leaderboard
 {
     public int Id { get; set; }
 
-    public int BusinessId { get; set; }
-
-    public int Rank { get; set; }
-
-    public int Date { get; set; }
+    public string BusinessIds { get; set; } = null!;
 
     public int Month { get; set; }
 
     public int Year { get; set; }
 
-    public virtual BusinessProfile Business { get; set; } = null!;
+    public bool IsMonth { get; set; }
+
+    public bool IsYear { get; set; }
 }
