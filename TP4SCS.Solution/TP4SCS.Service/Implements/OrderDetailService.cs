@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -10,13 +11,15 @@ namespace TP4SCS.Services.Implements
         private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IServiceService _serviceService;
         private readonly IMaterialRepository _materialRepository;
+        private readonly IAssetUrlService _assetUrlService;
 
         public OrderDetailService(IOrderDetailRepository orderDetailRepository, IServiceService serviceService,
-            IMaterialRepository materialRepository)
+            IMaterialRepository materialRepository, IAssetUrlService assetUrlService)
         {
             _orderDetailRepository = orderDetailRepository;
             _serviceService = serviceService;
             _materialRepository = materialRepository;
+            _assetUrlService = assetUrlService;
         }
 
         //public async Task AddOrderDetailsAsync(List<OrderDetail> orderDetails)
@@ -109,7 +112,35 @@ namespace TP4SCS.Services.Implements
             }
             if(orderDetail.AssetUrls != null)
             {
-                existingOrderDetail.AssetUrls = orderDetail.AssetUrls;
+                var existingAssetUrls = existingOrderDetail.AssetUrls.ToList();
+                var newAssetUrls = orderDetail.AssetUrls;
+
+                var newUrls = newAssetUrls.Select(a => a.Url).ToList();
+
+                var urlsToRemove = existingOrderDetail.AssetUrls.Where(a => !newUrls.Contains(a.Url)).ToList();
+                if (urlsToRemove.Any())
+                {
+                    foreach (var assetUrl in urlsToRemove)
+                    {
+                        await _assetUrlService.DeleteAssetUrlAsync(assetUrl.Id);
+                        existingOrderDetail.AssetUrls.Remove(assetUrl);
+                    }
+                }
+
+                var urlsToAdd = newAssetUrls.Where(a => !existingAssetUrls.Any(e => e.Url == a.Url)).ToList();
+                if (urlsToAdd.Any())
+                {
+                    foreach (var newAsset in urlsToAdd)
+                    {
+                        var newAssetUrl = new AssetUrl
+                        {
+                            Url = newAsset.Url,
+                            //IsImage = newAsset.IsImage,
+                            Type = newAsset.Type
+                        };
+                        existingOrderDetail.AssetUrls.Add(newAssetUrl);
+                    }
+                }
             }
             await _orderDetailRepository.UpdateOrderDetailAsync(existingOrderDetail);
         }

@@ -93,28 +93,32 @@ namespace TP4SCS.Repository.Implements
                 //.Include(od => od.Material)
                 .Include(od => od.Service)
                 .ThenInclude(s => s!.Promotion)
+                .Include(od => od.AssetUrls)
                 .SingleOrDefaultAsync(od => od.Id == id);
         }
 
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByOrderIdAsync(int orderId)
         {
             return await _dbContext.OrderDetails
-                .Where(od => od.OrderId == orderId)
                 .Include(od => od.Order)
+                .Include(od => od.AssetUrls)
                 .Include(od => od.Branch)
-                //.Include(od => od.Material)
+                //.Include(od => od.Material) // Bỏ đi nếu không cần
                 .Include(od => od.Service)
+                .Where(od => od.OrderId == orderId) // Đặt điều kiện lọc sớm
                 .Select(od => new OrderDetail
                 {
                     Id = od.Id,
                     Order = od.Order,
                     Branch = od.Branch,
                     Service = od.Service,
-                    //Material = od.Material,
+                    AssetUrls = od.AssetUrls,
+                    //Material = od.Material, // Bỏ nếu không cần
                     Price = od.Price
                 })
-                .ToListAsync();
+                .ToListAsync(); // Chạy truy vấn và lấy kết quả
         }
+
 
         public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
