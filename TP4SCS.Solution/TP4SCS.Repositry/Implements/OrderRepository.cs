@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
-using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -60,7 +59,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        //.ThenInclude(od => od.Material)
+                    //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                 .SingleOrDefaultAsync(o => o.Id == id);
@@ -112,7 +111,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        //.ThenInclude(od => od.Material)
+                    //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                             .ThenInclude(f => f!.AssetUrls);

@@ -28,11 +28,15 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
     public virtual DbSet<BusinessProfile> BusinessProfiles { get; set; }
 
+    public virtual DbSet<BusinessStatistic> BusinessStatistics { get; set; }
+
     public virtual DbSet<Cart> Carts { get; set; }
 
     public virtual DbSet<CartItem> CartItems { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
+
+    public virtual DbSet<Leaderboard> Leaderboards { get; set; }
 
     public virtual DbSet<Material> Materials { get; set; }
 
@@ -41,6 +45,8 @@ public partial class Tp4scsDevDatabaseContext : DbContext
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
 
     public virtual DbSet<OrderNotification> OrderNotifications { get; set; }
+
+    public virtual DbSet<PlatformStatistic> PlatformStatistics { get; set; }
 
     public virtual DbSet<Promotion> Promotions { get; set; }
 
@@ -71,13 +77,13 @@ public partial class Tp4scsDevDatabaseContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07014D1807");
+            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07A3BDAAF4");
 
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.Phone, "UQ__Account__5C7E359EF868533D").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Account__5C7E359E2130D900").IsUnique();
 
-            entity.HasIndex(e => e.Email, "UQ__Account__A9D10534254E5ED3").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Account__A9D10534778ECF67").IsUnique();
 
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
@@ -91,6 +97,10 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.ImageUrl).HasColumnType("text");
             entity.Property(e => e.IsVerified).HasDefaultValue(true);
+            entity.Property(e => e.Otp).HasColumnName("OTP");
+            entity.Property(e => e.OtpexpiredTime)
+                .HasColumnType("datetime")
+                .HasColumnName("OTPExpiredTime");
             entity.Property(e => e.PasswordHash).HasColumnType("text");
             entity.Property(e => e.Phone)
                 .HasMaxLength(10)
@@ -107,7 +117,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<AccountAddress>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__AccountA__3214EC0714255CD2");
+            entity.HasKey(e => e.Id).HasName("PK__AccountA__3214EC07090C2748");
 
             entity.ToTable("AccountAddress");
 
@@ -130,7 +140,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<AssetUrl>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__AssetURL__3214EC0709BC0994");
+            entity.HasKey(e => e.Id).HasName("PK__AssetURL__3214EC07D5D86C9E");
 
             entity.ToTable("AssetURL");
 
@@ -166,7 +176,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<BranchMaterial>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BranchMa__3214EC07F87362A6");
+            entity.HasKey(e => e.Id).HasName("PK__BranchMa__3214EC07941173C0");
 
             entity.ToTable("BranchMaterial");
 
@@ -187,7 +197,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<BranchService>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BranchSe__3214EC07487517EA");
+            entity.HasKey(e => e.Id).HasName("PK__BranchSe__3214EC07261523B4");
 
             entity.ToTable("BranchService");
 
@@ -208,7 +218,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<BusinessBranch>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07836FD681");
+            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07F4D38654");
 
             entity.ToTable("BusinessBranch");
 
@@ -235,15 +245,15 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<BusinessProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC073A983690");
+            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC07779728A8");
 
             entity.ToTable("BusinessProfile");
 
-            entity.HasIndex(e => e.Phone, "UQ__Business__5C7E359E11FA41FC").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Business__5C7E359ECFD7E8D7").IsUnique();
 
-            entity.HasIndex(e => e.Name, "UQ__Business__737584F628A24569").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Business__737584F622E6EFFF").IsUnique();
 
-            entity.HasIndex(e => e.OwnerId, "UQ__Business__819385B9901BBB08").IsUnique();
+            entity.HasIndex(e => e.OwnerId, "UQ__Business__819385B965229EC1").IsUnique();
 
             entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
             entity.Property(e => e.ImageUrl).HasColumnType("text");
@@ -263,13 +273,29 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasConstraintName("FK__BusinessP__Owner__47DBAE45");
         });
 
+        modelBuilder.Entity<BusinessStatistic>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Business__3214EC0799E33537");
+
+            entity.ToTable("BusinessStatistic");
+
+            entity.Property(e => e.Type)
+                .HasMaxLength(15)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Business).WithMany(p => p.BusinessStatistics)
+                .HasForeignKey(d => d.BusinessId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BusinessS__Busin__22751F6C");
+        });
+
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Cart__3214EC07D623F596");
+            entity.HasKey(e => e.Id).HasName("PK__Cart__3214EC0737FF7D09");
 
             entity.ToTable("Cart");
 
-            entity.HasIndex(e => e.AccountId, "UQ__Cart__349DA5A79C40D88A").IsUnique();
+            entity.HasIndex(e => e.AccountId, "UQ__Cart__349DA5A7C9B45605").IsUnique();
 
             entity.Property(e => e.TotalPrice).HasColumnType("decimal(10, 2)");
 
@@ -281,7 +307,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<CartItem>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__CartItem__3214EC0796C36CB6");
+            entity.HasKey(e => e.Id).HasName("PK__CartItem__3214EC079A8904C2");
 
             entity.ToTable("CartItem");
 
@@ -305,11 +331,11 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Feedback__3214EC07611CA292");
+            entity.HasKey(e => e.Id).HasName("PK__Feedback__3214EC078CF4D83A");
 
             entity.ToTable("Feedback");
 
-            entity.HasIndex(e => e.OrderItemId, "UQ__Feedback__57ED0680CCEC3DC4").IsUnique();
+            entity.HasIndex(e => e.OrderItemId, "UQ__Feedback__57ED0680F0BA1B6E").IsUnique();
 
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Rating).HasColumnType("decimal(3, 1)");
@@ -323,9 +349,21 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasConstraintName("FK__Feedback__OrderI__00200768");
         });
 
+        modelBuilder.Entity<Leaderboard>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Leaderbo__3214EC07E835E7A4");
+
+            entity.ToTable("Leaderboard");
+
+            entity.HasOne(d => d.Business).WithMany(p => p.Leaderboards)
+                .HasForeignKey(d => d.BusinessId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Leaderboa__Busin__282DF8C2");
+        });
+
         modelBuilder.Entity<Material>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Material__3214EC07B17079DC");
+            entity.HasKey(e => e.Id).HasName("PK__Material__3214EC073DECBCBB");
 
             entity.ToTable("Material");
 
@@ -343,7 +381,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07BC5B599D");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC077B27831D");
 
             entity.ToTable("Order");
 
@@ -379,7 +417,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC0766BD610A");
+            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC071575E202");
 
             entity.ToTable("OrderDetail");
 
@@ -404,7 +442,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<OrderNotification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OrderNot__3214EC0744CBD852");
+            entity.HasKey(e => e.Id).HasName("PK__OrderNot__3214EC07F08DB65A");
 
             entity.ToTable("OrderNotification");
 
@@ -417,13 +455,25 @@ public partial class Tp4scsDevDatabaseContext : DbContext
                 .HasConstraintName("FK__OrderNoti__Order__1EA48E88");
         });
 
+        modelBuilder.Entity<PlatformStatistic>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Platform__3214EC07A64D21F8");
+
+            entity.ToTable("PlatformStatistic");
+
+            entity.Property(e => e.Type)
+                .HasMaxLength(15)
+                .IsUnicode(false);
+            entity.Property(e => e.Value).HasColumnType("decimal(13, 1)");
+        });
+
         modelBuilder.Entity<Promotion>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Promotio__3214EC079E458F19");
+            entity.HasKey(e => e.Id).HasName("PK__Promotio__3214EC07FF99AA03");
 
             entity.ToTable("Promotion");
 
-            entity.HasIndex(e => e.ServiceId, "UQ__Promotio__C51BB00B5F7F58D0").IsUnique();
+            entity.HasIndex(e => e.ServiceId, "UQ__Promotio__C51BB00BFE265CBE").IsUnique();
 
             entity.Property(e => e.NewPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Status)
@@ -438,7 +488,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Service__3214EC07C4947931");
+            entity.HasKey(e => e.Id).HasName("PK__Service__3214EC07B76B8824");
 
             entity.ToTable("Service");
 
@@ -458,11 +508,11 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<ServiceCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ServiceC__3214EC07D011A737");
+            entity.HasKey(e => e.Id).HasName("PK__ServiceC__3214EC07E80EE639");
 
             entity.ToTable("ServiceCategory");
 
-            entity.HasIndex(e => e.Name, "UQ__ServiceC__737584F6CB291252").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__ServiceC__737584F6E5C8FB4B").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Status)
@@ -472,7 +522,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<ServiceProcess>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ServiceP__3214EC07A782143A");
+            entity.HasKey(e => e.Id).HasName("PK__ServiceP__3214EC07FBC9D5AA");
 
             entity.ToTable("ServiceProcess");
 
@@ -486,11 +536,11 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<SubscriptionPack>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subscrip__3214EC07C1064E1B");
+            entity.HasKey(e => e.Id).HasName("PK__Subscrip__3214EC07FDC304B4");
 
             entity.ToTable("SubscriptionPack");
 
-            entity.HasIndex(e => e.Name, "UQ__Subscrip__737584F67C762959").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Subscrip__737584F660146B9D").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
@@ -498,7 +548,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<SupportTicket>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__SupportT__3214EC07D2BC8F52");
+            entity.HasKey(e => e.Id).HasName("PK__SupportT__3214EC078B031D33");
 
             entity.ToTable("SupportTicket");
 
@@ -530,11 +580,11 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<TicketCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TicketCa__3214EC07AFF8A486");
+            entity.HasKey(e => e.Id).HasName("PK__TicketCa__3214EC07AB08D384");
 
             entity.ToTable("TicketCategory");
 
-            entity.HasIndex(e => e.Name, "UQ__TicketCa__737584F6C5E14393").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__TicketCa__737584F63543A7B2").IsUnique();
 
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Status)
@@ -544,7 +594,7 @@ public partial class Tp4scsDevDatabaseContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC076C86F4FF");
+            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC0733A96B93");
 
             entity.ToTable("Transaction");
 

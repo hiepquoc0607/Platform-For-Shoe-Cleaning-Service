@@ -1,5 +1,4 @@
-﻿using TP4SCS.Library.Models.Request.Payment;
-using TP4SCS.Library.Models.Request.SubscriptionPack;
+﻿using TP4SCS.Library.Models.Request.SubscriptionPack;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.SubcriptionPack;
 

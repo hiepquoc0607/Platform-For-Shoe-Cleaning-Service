@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Notification;
-using TP4SCS.Library.Models.Request.Transaction;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Repository.Interfaces;
 

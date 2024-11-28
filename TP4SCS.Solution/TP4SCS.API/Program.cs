@@ -96,6 +96,7 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ISubscriptionPackRepository, SubscriptionPackRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
+builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -124,6 +125,7 @@ builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IMoMoService, MoMoService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProcessService, ProcessService>();
+builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>();
 
 //Inject Util
 builder.Services.AddScoped<Util>();

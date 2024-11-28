@@ -1,7 +1,5 @@
-﻿using Azure.Core;
-using TP4SCS.Library.Models.Data;
+﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
-using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 

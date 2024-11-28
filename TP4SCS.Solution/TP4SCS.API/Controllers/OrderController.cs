@@ -7,7 +7,6 @@ using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.Order;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Utils.Utils;
-using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -50,7 +49,7 @@ namespace TP4SCS.API.Controllers
                 // Lấy danh sách orders từ service
                 var orders = await _orderService.GetOrdersAsync(status, pageIndex, pageSize, orderBy);
                 var orderResponses = new List<OrderResponse>();
-                if( orders == null || !orders.Any())
+                if (orders == null || !orders.Any())
                 {
                     return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", orderResponses));
                 }
@@ -320,7 +319,7 @@ namespace TP4SCS.API.Controllers
             try
             {
                 // Cập nhật trạng thái đơn hàng
-                await _orderService.UpdateOrderStatusAsync(_httpClient,id, status);
+                await _orderService.UpdateOrderStatusAsync(_httpClient, id, status);
 
                 // Trả về thông báo thành công dưới dạng ResponseObject
                 return Ok(new ResponseObject<string>("Cập nhật trạng thái đơn hàng thành công!", null));
