@@ -19,6 +19,8 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.IsGoogle, opt => false)
                 .Map(dest => dest.RefreshToken, opt => string.Empty)
                 .Map(dest => dest.RefreshExpireTime, opt => DateTime.Now)
+                .Map(dest => dest.Otp, opt => (int?)null)
+                .Map(dest => dest.OtpexpiredTime, opt => DateTime.Now)
                 .Map(dest => dest.Fcmtoken, opt => string.Empty)
                 .Map(dest => dest.CreatedByOwnerId, opt => (int?)null)
                 .Map(dest => dest.Status, opt => StatusConstants.ACTIVE);

@@ -1,6 +1,7 @@
 ﻿using MapsterMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -80,6 +81,14 @@ namespace TP4SCS.Services.Implements
         private string GenerateRefreshToken()
         {
             return Guid.NewGuid().ToString();
+        }
+
+        //Generate OTP Code
+        private int GenerateOTPCode()
+        {
+            Random random = new Random();
+
+            return random.Next(100000, 1000000);
         }
 
         //Login
@@ -235,9 +244,30 @@ namespace TP4SCS.Services.Implements
         }
 
         //Send OTP
-        public Task<ApiResponse<AuthResponse>> SendOTPAsync(RefreshToken refeshToken)
+        public async Task<ApiResponse<AuthResponse>> SendOTPAsync(string email)
         {
-            throw new NotImplementedException();
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            account.Otp = GenerateOTPCode();
+            account.OtpexpiredTime = DateTime.Now.AddSeconds(150);
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                await _emailService.SendEmailAsync(email, "ShoeCareHub OTP Code", account.Otp.ToString()!);
+
+                return new ApiResponse<AuthResponse>("success", "Gửi OTP Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Gửi OTP Thất Bại!");
+            }
         }
 
         //Verify Email
@@ -523,6 +553,64 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Gửi Email Xác Nhận Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<AuthResponse>> LoginOTPAsync(LoginOTPRequest loginOTPRequest)
+        {
+            var email = loginOTPRequest.Email.ToLowerInvariant();
+
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            if (account.Status.Equals("SUSPENDED"))
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Tài Khoản Đã Bị Khoá!");
+            }
+
+            if (!account.IsVerified)
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Email Tài Khoản Chưa Được Xác Nhận!");
+            }
+
+            if (loginOTPRequest.OTP != account.Otp || account.OtpexpiredTime <= DateTime.Now)
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "OTP Hết Hạn Hoặc Không Đúng!");
+            }
+
+            var expiredIn = CaculateSeccond(_time);
+
+            account.RefreshToken = GenerateRefreshToken();
+            account.RefreshExpireTime = DateTime.UtcNow.AddDays(1);
+            account.Otp = null;
+
+            var data = _mapper.Map<AuthResponse>(account);
+            data.Token = GenerateToken(account);
+            data.ExpiresIn = expiredIn;
+
+            switch (data.Role.Trim().ToUpperInvariant())
+            {
+                case "OWNER":
+                    data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+                    break;
+                case "EMPLOYEE":
+                    data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+                    break;
+            }
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
     }

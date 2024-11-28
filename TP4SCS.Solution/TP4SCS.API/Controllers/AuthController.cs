@@ -32,6 +32,19 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("login-by-otp")]
+        public async Task<IActionResult> LoginOTPAsync([FromBody] LoginOTPRequest loginOTPRequest)
+        {
+            var result = await _authService.LoginOTPAsync(loginOTPRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshToken refreshToken)
         {
@@ -101,6 +114,19 @@ namespace TP4SCS.API.Controllers
         public async Task<IActionResult> RequestResetPasswordAsync([FromBody] EmailRequest emailRequest)
         {
             var result = await _authService.RequestResetPasswordAsync(emailRequest.Email);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost("request-otp-code")]
+        public async Task<IActionResult> RequestOTPCodeAsync([FromBody] EmailRequest emailRequest)
+        {
+            var result = await _authService.SendOTPAsync(emailRequest.Email);
 
             if (result.StatusCode != 200)
             {
