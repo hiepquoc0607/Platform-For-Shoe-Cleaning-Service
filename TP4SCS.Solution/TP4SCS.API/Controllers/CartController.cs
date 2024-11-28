@@ -97,7 +97,15 @@ namespace TP4SCS.API.Controllers
                         })
                         .ToList();
 
-                    return Ok(new ResponseObject<IEnumerable<dynamic>>("Fetch success", groupedCartItems));
+                    var response = new CartWithGroupedItemsResponse
+                    {
+                        Id = cartResponse.Id,
+                        AccountId = cartResponse.AccountId,
+                        TotalPrice = cartResponse.TotalPrice,
+                        GroupedCartItems = groupedCartItems
+                    };
+
+                    return Ok(new ResponseObject<CartWithGroupedItemsResponse>("Fetch success", response));
                 }
 
                 return Ok(new ResponseObject<CartResponse>("Fetch success", cartResponse));
