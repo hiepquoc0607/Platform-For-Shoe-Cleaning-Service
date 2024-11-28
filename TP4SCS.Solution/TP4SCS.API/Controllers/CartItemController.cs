@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Material;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -31,20 +34,44 @@ namespace TP4SCS.API.Controllers
         {
             var items = await _cartItemService.GetCartItemsAsync(id);
 
-            var itemsResponse = items.Adapt<List<CartItemResponse>>();
-
-            foreach (var item in itemsResponse)
+            if(items == null || !items.Any())
             {
-                var service = await _serviceService.GetServiceByIdAsync(item.ServiceId);
-                item.ServiceName = service!.Name;
-                item.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
-
-                if (item.MaterialId.HasValue)
+                return Ok(new ResponseObject<string>("Cart items retrieved successfully"));
+            }
+            List<CartItemResponse> itemsResponse = new List<CartItemResponse>();
+            foreach (var item in items)
+            {
+                var service = await _serviceService.GetServiceByIdAsync(item.ServiceId!.Value);
+                CartItemResponse cartItemResponse = new CartItemResponse
                 {
-                    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-                    item.MaterialName = material!.Name;
-                    item.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
+                    Id = item.Id,
+                    BranchId = item.BranchId,
+                    ServiceId = item.ServiceId!.Value,
+                    ServiceName = service!.Name,
+                    ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status,
+                    Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value),
+                    CartId = item.CartId
+
+                };
+                List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
+
+                if (!string.IsNullOrEmpty(item.MaterialIds))
+                {
+                    List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                    foreach (var materialId in materialIds)
+                    {
+                        var material = await _materialService.GetMaterialByIdAsync(materialId);
+                        materialResponseV2s.Add(new MaterialResponseV2
+                        {
+                            Id = materialId,
+                            Name = material!.Name,
+                            Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
+                            Price = material!.Price
+                        });
+                    }
                 }
+                cartItemResponse.Materials = materialResponseV2s;
+                itemsResponse.Add(cartItemResponse);
             }
             return Ok(new ResponseObject<List<CartItemResponse>>("Cart items retrieved successfully", itemsResponse));
         }
@@ -58,21 +85,36 @@ namespace TP4SCS.API.Controllers
             {
                 return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {id} không tìm thấy.", null));
             }
+            var service = await _serviceService.GetServiceByIdAsync(item.ServiceId!.Value);
+            CartItemResponse cartItemResponse = new CartItemResponse
+            {
+                Id = item.Id,
+                BranchId = item.BranchId,
+                ServiceId = item.ServiceId!.Value,
+                ServiceName = service!.Name,
+                ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status,
+                Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value),
+                CartId = item.CartId
+            };
+            List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
 
-            var itemResponse = item.Adapt<CartItemResponse>();
-
-
-            var service = await _serviceService.GetServiceByIdAsync(itemResponse.ServiceId);
-            itemResponse.ServiceName = service!.Name;
-            itemResponse.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status;
-
-            //if (item.MaterialId.HasValue)
-            //{
-            //    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-            //    itemResponse.MaterialName = material!.Name;
-            //    itemResponse.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status;
-            //}
-            return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", itemResponse));
+            if (!string.IsNullOrEmpty(item.MaterialIds))
+            {
+                List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                foreach (var materialId in materialIds)
+                {
+                    var material = await _materialService.GetMaterialByIdAsync(materialId);
+                    materialResponseV2s.Add(new MaterialResponseV2
+                    {
+                        Id = materialId,
+                        Name = material!.Name,
+                        Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
+                        Price = material!.Price
+                    });
+                }
+            }
+            cartItemResponse.Materials = materialResponseV2s;
+            return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", cartItemResponse));
         }
 
         //[HttpGet]
@@ -100,12 +142,11 @@ namespace TP4SCS.API.Controllers
         //}
         [HttpPost]
         [Route("api/cartitems")]
-        public async Task<IActionResult> AddItemToCart(int userId, [FromBody] CartItemCreateRequest request)
+        public async Task<IActionResult> AddItemToCart([FromBody] CartItemCreateRequest request)
         {
-            var item = request.Adapt<CartItem>();
             try
             {
-                await _cartItemService.AddItemToCartAsync(userId, item);
+                await _cartItemService.AddItemToCartAsync(request.AccountId, request.ServiceId, request.MaterialIds, request.BranchId);
 
                 return Ok(new ResponseObject<string>("Add to cart success"));
             }

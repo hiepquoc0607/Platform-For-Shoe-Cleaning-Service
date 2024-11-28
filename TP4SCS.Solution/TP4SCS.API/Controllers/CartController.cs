@@ -1,8 +1,13 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Response.Cart;
+using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.Material;
+using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -14,12 +19,15 @@ namespace TP4SCS.API.Controllers
         private readonly IServiceService _serviceService;
         private readonly IMaterialService _materialService;
         private readonly HttpClient _httpClient;
-        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, IHttpClientFactory httpClientFactory)
+        private readonly ICartItemService _cartItemService;
+
+        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, ICartItemService cartItemService, IHttpClientFactory httpClientFactory)
         {
             _cartService = cartService;
             _serviceService = serviceService;
             _httpClient = httpClientFactory.CreateClient();
             _materialService = materialService;
+            _cartItemService = cartItemService;
         }
 
         [HttpGet]
@@ -37,22 +45,49 @@ namespace TP4SCS.API.Controllers
 
                 var cartResponse = cart.Adapt<CartResponse>();
                 cartResponse.TotalPrice = await _cartService.GetCartTotalAsync(cart!.Id);
-
-                if (cartResponse.CartItems != null && cartResponse.CartItems.Any())
+                List<CartItemResponse> cartItemsResponse = new List<CartItemResponse>();
+                if (cart.CartItems != null && cart.CartItems.Any())
                 {
-                    foreach (var cartItem in cartResponse.CartItems)
+                    foreach (var cartItem in cart.CartItems)
                     {
-                        var service = await _serviceService.GetServiceByIdAsync(cartItem.ServiceId);
-                        cartItem.Price = await _serviceService.GetServiceFinalPriceAsync(cartItem.ServiceId);
-                        cartItem.ServiceName = service!.Name;
-                        cartItem.ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == cartItem.BranchId)!.Status;
-                        if (cartItem.MaterialId.HasValue)
+                        var item = await _cartItemService.GetCartItemByIdAsync(cartItem.Id);
+                        if (item == null)
                         {
-                            var material = await _materialService.GetMaterialByIdAsync(cartItem.MaterialId.Value);
-                            cartItem.MaterialName = material!.Name;
-                            cartItem.MaterialStatus = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == cartItem.BranchId)!.Status;
+                            return NotFound(new ResponseObject<CartItemResponse>($"Mục có ID {id} không tìm thấy.", null));
                         }
+                        var service = await _serviceService.GetServiceByIdAsync(item.ServiceId!.Value);
+                        CartItemResponse cartItemResponse = new CartItemResponse
+                        {
+                            Id = item.Id,
+                            BranchId = item.BranchId,
+                            ServiceId = item.ServiceId!.Value,
+                            ServiceName = service!.Name,
+                            ServiceStatus = service!.BranchServices.SingleOrDefault(bs => bs.BranchId == item.BranchId)!.Status,
+                            Price = await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value),
+                            CartId = cart.Id
+
+                        };
+                        List<MaterialResponseV2> materialResponseV2s = new List<MaterialResponseV2>();
+
+                        if (!string.IsNullOrEmpty(item.MaterialIds))
+                        {
+                            List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                            foreach (var materialId in materialIds)
+                            {
+                                var material = await _materialService.GetMaterialByIdAsync(materialId);
+                                materialResponseV2s.Add(new MaterialResponseV2
+                                {
+                                    Id = materialId,
+                                    Name = material!.Name,
+                                    Status = material!.BranchMaterials.SingleOrDefault(ms => ms.BranchId == item.BranchId)!.Status,
+                                    Price = material!.Price
+                                });
+                            }
+                        }
+                        cartItemsResponse.Add(cartItemResponse);
+                        cartItemResponse.Materials = materialResponseV2s;
                     }
+                    cartResponse.CartItems = cartItemsResponse;
                     var groupedCartItems = cartResponse.CartItems
                         .GroupBy(item => item.BranchId)
                         .Select(group => new
@@ -62,7 +97,15 @@ namespace TP4SCS.API.Controllers
                         })
                         .ToList();
 
-                    return Ok(new ResponseObject<IEnumerable<dynamic>>("Fetch success", groupedCartItems));
+                    var response = new CartWithGroupedItemsResponse
+                    {
+                        Id = cartResponse.Id,
+                        AccountId = cartResponse.AccountId,
+                        TotalPrice = cartResponse.TotalPrice,
+                        GroupedCartItems = groupedCartItems
+                    };
+
+                    return Ok(new ResponseObject<CartWithGroupedItemsResponse>("Fetch success", response));
                 }
 
                 return Ok(new ResponseObject<CartResponse>("Fetch success", cartResponse));

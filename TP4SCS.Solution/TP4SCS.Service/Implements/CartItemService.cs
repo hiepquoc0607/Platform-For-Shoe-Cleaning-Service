@@ -1,4 +1,5 @@
 ﻿using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -14,12 +15,14 @@ namespace TP4SCS.Services.Implements
             _cartItemRepository = cartItemRepository;
             _serviceService = serviceService;
         }
-        public async Task AddItemToCartAsync(int userId, CartItem item)
+        public async Task AddItemToCartAsync(int userId, int serviceId, List<int>? materialIds, int branchId)
         {
-            if (item == null)
+            CartItem item = new CartItem
             {
-                throw new ArgumentNullException(nameof(item), "Mục trong giỏ hàng không được để trống.");
-            }
+                ServiceId = serviceId,
+                BranchId = branchId,
+                MaterialIds = (materialIds != null && materialIds.Any()) ? Util.ConvertListToString(materialIds) : null
+            };
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)

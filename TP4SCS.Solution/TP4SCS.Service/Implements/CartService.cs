@@ -6,6 +6,7 @@ using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -76,11 +77,15 @@ namespace TP4SCS.Services.Implements
                 {
                     totalPrice += await _serviceService.GetServiceFinalPriceAsync(item.ServiceId!.Value);
                 }
-                //if (item.MaterialId.HasValue)
-                //{
-                //    var material = await _materialService.GetMaterialByIdAsync(item.MaterialId.Value);
-                //    totalPrice += material!.Price;
-                //}
+                if (!string.IsNullOrEmpty(item.MaterialIds))
+                {
+                    List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
+                    foreach (var materialId in materialIds)
+                    {
+                        var material = await _materialService.GetMaterialByIdAsync(materialId);
+                        totalPrice += material!.Price;
+                    }
+                }
             }
             return totalPrice;
         }
@@ -99,23 +104,26 @@ namespace TP4SCS.Services.Implements
                 OrderDetails = new List<OrderDetail>()
             };
 
-            decimal finalPrice = 0;
-            if (request.Item.ServiceId.HasValue)
+            decimal finalPrice = await _serviceService.GetServiceFinalPriceAsync(request.Item.ServiceId);
+            var service = await _serviceService.GetServiceByIdAsync(request.Item.ServiceId);
+            service!.OrderedNum++;
+            await _serviceService.UpdateServiceAsync(service);
+
+            if (request.Item.MaterialIds != null && request.Item.MaterialIds.Any())
             {
-                finalPrice = await _serviceService.GetServiceFinalPriceAsync(request.Item.ServiceId.Value);
-                var service = await _serviceService.GetServiceByIdAsync(request.Item.ServiceId.Value);
-                service!.OrderedNum++;
-                await _serviceService.UpdateServiceAsync(service);
-            }
-            if (request.Item.MaterialId.HasValue)
-            {
-                finalPrice += (await _materialService.GetMaterialByIdAsync(request.Item.MaterialId.Value))!.Price;
+                foreach (var materialId in request.Item.MaterialIds)
+                {
+                    var material = await _materialService.GetMaterialByIdAsync(materialId);
+                    finalPrice += material!.Price;
+                    material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == request.Item.BranchId)!.Storage --;
+                    await _materialService.UpdateMaterialAsync(material);
+                }
             }
             order.OrderDetails.Add(new OrderDetail
             {
                 BranchId = request.Item.BranchId,
                 ServiceId = request.Item.ServiceId,
-                //MaterialId = request.Item.MaterialId,
+                MaterialIds = (request.Item.MaterialIds != null && request.Item.MaterialIds.Any()) ? Util.ConvertListToString(request.Item.MaterialIds) : null,
                 Note = request.Note,
                 Price = finalPrice,
             });
@@ -174,18 +182,22 @@ namespace TP4SCS.Services.Implements
                         service!.OrderedNum++;
                         await _serviceService.UpdateServiceAsync(service);
                     }
-                    //if (item.CartItem.MaterialId.HasValue)
-                    //{
-                    //    var material = await _materialService.GetMaterialByIdAsync(item.CartItem.MaterialId.Value);
-                    //    finalPrice += material!.Price;
-                    //    material!.BranchMaterials.SingleOrDefault(m => m.BranchId == item.CartItem.BranchId)!.Storage--;
-                    //    await _materialService.UpdateMaterialAsync(material);
-                    //}
+                    if (!string.IsNullOrEmpty(item.CartItem.MaterialIds))
+                    {
+                        var materialIds = Util.ConvertStringToList(item.CartItem.MaterialIds);
+                        foreach (var materialId in materialIds)
+                        {
+                            var material = await _materialService.GetMaterialByIdAsync(materialId);
+                            finalPrice += material!.Price;
+                            material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.CartItem.BranchId)!.Storage--;
+                            await _materialService.UpdateMaterialAsync(material);
+                        }
+                    }
                     order.OrderDetails.Add(new OrderDetail
                     {
                         BranchId = item.CartItem.BranchId,
                         ServiceId = item.CartItem.ServiceId,
-                        //MaterialId = item.CartItem.MaterialId,
+                        MaterialIds = item.CartItem.MaterialIds,
                         Note = item.Note,
                         Price = finalPrice,
                     });
