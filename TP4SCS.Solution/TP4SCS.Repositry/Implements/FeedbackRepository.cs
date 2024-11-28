@@ -83,7 +83,7 @@ namespace TP4SCS.Repository.Implements
             };
             var feedbacks = await GetAsync(
                 filter: filter,
-                includeProperties: "AssetUrls,OrderItem,OrderItem.Order",
+                includeProperties: "AssetUrls,OrderItem,OrderItem.Order,OrderItem.Branch,OrderItem.Service",
                 orderBy: orderByExpression,
                 pageIndex: pageIndex,
                 pageSize: pageSize);

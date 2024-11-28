@@ -10,8 +10,6 @@ namespace TP4SCS.Library.Models.Response.OrderDetail
 
         public BranchResponse Branch { get; set; } = null!;
 
-        public ServiceResponse? Service { get; set; }
-
-        public MaterialResponse? Material { get; set; }
+        public ServiceResponseV2 Service { get; set; } = null!;
     }
 }
