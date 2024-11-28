@@ -1,10 +1,11 @@
-﻿using TP4SCS.Library.Models.Data;
+﻿using MapsterMapper;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Branch;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Request.Notification;
 using TP4SCS.Library.Models.Request.Order;
 using TP4SCS.Library.Models.Request.ShipFee;
-using TP4SCS.Library.Models.Response.Location;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -23,6 +24,8 @@ namespace TP4SCS.Services.Implements
         private readonly IMaterialService _materialService;
         private readonly IAccountRepository _accountRepository;
         private readonly IShipService _shipService;
+        private readonly IOrderNotificationRepository _orderNotificationRepository;
+        private readonly IMapper _mapper;
 
         public OrderService(
             IOrderRepository orderRepository,
@@ -33,7 +36,9 @@ namespace TP4SCS.Services.Implements
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
             IAccountRepository accountRepository,
-            IShipService shipService)
+            IShipService shipService,
+            IOrderNotificationRepository orderNotificationRepository,
+            IMapper mapper)
         {
             _orderRepository = orderRepository;
             _businessBranchService = businessBranchService;
@@ -44,6 +49,8 @@ namespace TP4SCS.Services.Implements
             _branchRepository = branchRepository;
             _accountRepository = accountRepository;
             _shipService = shipService;
+            _orderNotificationRepository = orderNotificationRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -155,7 +162,7 @@ namespace TP4SCS.Services.Implements
                 CODAmount = Convert.ToInt32(order.OrderPrice)
             };
             var code = await _shipService.CreateShippingOrderAsync(httpClient, shippingOrder);
-            if(code == null)
+            if (code == null)
             {
                 throw new KeyNotFoundException("Tạo mã vận đơn thất bại.");
             }
@@ -188,6 +195,10 @@ namespace TP4SCS.Services.Implements
             await _orderRepository.UpdateOrderAsync(order);
 
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
+            var notification = new CreateOrderNotificationRequest();
+            notification.OrderId = order.Id;
+
+            var newNoti = _mapper.Map<OrderNotification>(notification);
 
             if (Util.IsEqual(status, StatusConstants.CANCELED))
             {
@@ -221,6 +232,9 @@ namespace TP4SCS.Services.Implements
                         }
                     }
                 }
+
+                newNoti.Content = "Bạn Có Một Đơn Hàng Bị Huỷ!";
+                newNoti.IsProviderNoti = true;
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED))
             {
@@ -235,6 +249,9 @@ namespace TP4SCS.Services.Implements
                     }
 
                 }
+
+                newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
+                newNoti.IsProviderNoti = false;
             }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
@@ -248,9 +265,9 @@ namespace TP4SCS.Services.Implements
 
                 await _businessService.UpdateBusinessStatisticAsync(businessId, business);
             }
-            else if(Util.IsEqual(status, StatusConstants.PROCESSING))
+            else if (Util.IsEqual(status, StatusConstants.PROCESSING))
             {
-                
+
                 UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
                 branch.Type = OrderStatistic.PROCESSING;
 
@@ -264,7 +281,27 @@ namespace TP4SCS.Services.Implements
             else if (Util.IsEqual(status, StatusConstants.SHIPPING))
             {
                 await CreateShipOrder(httpClient, existingOrderedId);
+
+                newNoti.Content = "Đơn Hàng Của Bạn Đã Được Vận Chuyển!";
+                newNoti.IsProviderNoti = false;
             }
+            else if (Util.IsEqual(status, StatusConstants.STORAGE))
+            {
+                newNoti.Content = "Đơn Hàng Của Bạn Đã Hoàn Tất Xử Lý!";
+                newNoti.IsProviderNoti = false;
+            }
+            else if (Util.IsEqual(status, StatusConstants.ABANDONED))
+            {
+                newNoti.Content = "Bạn Có Một Đơn Hàng Quá Hạn Lưu Trữ!";
+                newNoti.IsProviderNoti = false;
+            }
+            else if (Util.IsEqual(status, StatusConstants.DELIVERED))
+            {
+                newNoti.Content = "Đơn Hàng Của Bạn Đã Giao Thành Công!";
+                newNoti.IsProviderNoti = false;
+            }
+
+            _ = Task.Run(() => _orderNotificationRepository.CreateOrderNotificationAsync(newNoti));
         }
 
         public async Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request)
