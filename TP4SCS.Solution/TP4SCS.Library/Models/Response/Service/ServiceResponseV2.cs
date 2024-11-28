@@ -1,4 +1,5 @@
-﻿using TP4SCS.Library.Models.Response.Promotion;
+﻿using TP4SCS.Library.Models.Response.AssetUrl;
+using TP4SCS.Library.Models.Response.Promotion;
 
 namespace TP4SCS.Library.Models.Response.Service
 {
@@ -9,5 +10,6 @@ namespace TP4SCS.Library.Models.Response.Service
         public decimal Price { get; set; }
         public string Status { get; set; } = null!;
         public PromotionResponse? Promotion { get; set; }
+        public virtual ICollection<AssetUrlResponse> AssetUrls { get; set; } = new List<AssetUrlResponse>();
     }
 }
