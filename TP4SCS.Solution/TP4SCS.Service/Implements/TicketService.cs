@@ -87,6 +87,8 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 400, "Đơn Hỗ Trợ Chưa Được Xử Lý!");
             }
 
+            var account = await _accountRepository.GetAccountByIdNoTrackingAsync(userid);
+
             var newTicket = _mapper.Map<SupportTicket>(createChildTicketRequest);
             newTicket.ParentTicketId = id;
             newTicket.UserId = userid;
@@ -119,6 +121,15 @@ namespace TP4SCS.Services.Implements
 
                             await _ticketRepository.UpdateTicketAsync(parentTicket);
                         }
+
+                        if (!new[] { RoleConstants.OWNER, RoleConstants.CUSTOMER, RoleConstants.EMPLOYEE }
+                            .Contains(account!.Role) &&
+                            !parentTicket.IsSeen)
+                        {
+                            parentTicket.IsSeen = true;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
                     });
                 }
                 else
@@ -130,6 +141,15 @@ namespace TP4SCS.Services.Implements
                         if (parentTicket.UserId == userid)
                         {
                             parentTicket.IsSeen = false;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
+
+                        if (!new[] { RoleConstants.OWNER, RoleConstants.CUSTOMER, RoleConstants.EMPLOYEE }
+                            .Contains(account!.Role) &&
+                            !parentTicket.IsSeen)
+                        {
+                            parentTicket.IsSeen = true;
 
                             await _ticketRepository.UpdateTicketAsync(parentTicket);
                         }
