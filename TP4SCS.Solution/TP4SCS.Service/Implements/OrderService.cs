@@ -262,6 +262,7 @@ namespace TP4SCS.Services.Implements
                 await CreateShipOrder(httpClient, existingOrderedId);
             }
             order.Status = status;
+
             await _orderRepository.UpdateOrderAsync(order);
         }
 
