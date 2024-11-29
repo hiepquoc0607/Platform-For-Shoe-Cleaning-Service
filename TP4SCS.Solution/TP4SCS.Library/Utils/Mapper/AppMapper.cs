@@ -71,6 +71,11 @@ namespace TP4SCS.Library.Utils.Mapper
             CreateMap<Material, MaterialResponseV2>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)))
                 .ForMember(dest => dest.AssetUrls, opt => opt.MapFrom(src => src.AssetUrls));
+            CreateMap<Material, MaterialResponseV3>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)))
+                .ForMember(dest => dest.AssetUrls, opt => opt.MapFrom(src => src.AssetUrls));
+            // Configure AutoMapper
+
             //AssetUrl Mapping
             CreateMap<AssetUrl, AssetUrlResponse>();
             CreateMap<AssetUrlRequest, AssetUrl>();

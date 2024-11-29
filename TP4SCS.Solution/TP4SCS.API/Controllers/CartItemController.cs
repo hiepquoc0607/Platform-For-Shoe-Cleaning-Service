@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.CartItem;
+using TP4SCS.Library.Models.Response.AssetUrl;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Material;
@@ -56,8 +57,25 @@ namespace TP4SCS.API.Controllers
                     {
                         List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
                         var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                        List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
-                        cartItemResponse.Materials = materialResponse;
+                        List<MaterialResponseV3> materialsResponse = new List<MaterialResponseV3>();
+                        if (materials != null)
+                        {
+                            foreach (var m in materials)
+                            {
+                                materialsResponse.Add(new MaterialResponseV3
+                                {
+                                    Id = m.Id,
+                                    AssetUrls = _mapper.Map<IEnumerable<AssetUrlResponse>>(m.AssetUrls).ToList(),
+                                    BranchId = item.BranchId,
+                                    Name = m.Name,
+                                    Price = m.Price,
+                                    Status = m.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.BranchId)!.Status,
+                                    Storage = m.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.BranchId)!.Storage
+                                });
+                            }
+                        }
+
+                        cartItemResponse.Materials = materialsResponse;
                     }
                 }
                 itemsResponse.Add(cartItemResponse);
@@ -91,8 +109,25 @@ namespace TP4SCS.API.Controllers
                 {
                     List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
                     var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                    List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
-                    cartItemResponse.Materials = materialResponse;
+                    List<MaterialResponseV3> materialsResponse = new List<MaterialResponseV3>();
+                    if (materials != null)
+                    {
+                        foreach (var m in materials)
+                        {
+                            materialsResponse.Add(new MaterialResponseV3
+                            {
+                                Id = m.Id,
+                                AssetUrls = _mapper.Map<IEnumerable<AssetUrlResponse>>(m.AssetUrls).ToList(),
+                                BranchId = item.BranchId,
+                                Name = m.Name,
+                                Price = m.Price,
+                                Status = m.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.BranchId)!.Status,
+                                Storage = m.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.BranchId)!.Storage
+                            });
+                        }
+                    }
+
+                    cartItemResponse.Materials = materialsResponse;
                 }
             }
             return Ok(new ResponseObject<CartItemResponse>("Cart item retrieved successfully", cartItemResponse));
