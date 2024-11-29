@@ -22,6 +22,7 @@ namespace TP4SCS.Library.Models.Response.Ticket
         public string CategoryName { get; set; } = string.Empty;
 
         public int Priority { get; set; }
+
         public string Title { get; set; } = string.Empty;
 
         public string Content { get; set; } = string.Empty;
