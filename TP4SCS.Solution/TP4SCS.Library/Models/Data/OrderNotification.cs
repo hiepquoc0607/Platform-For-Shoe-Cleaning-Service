@@ -12,5 +12,7 @@ public partial class OrderNotification
 
     public string Content { get; set; } = null!;
 
+    public bool IsProviderNoti { get; set; }
+
     public virtual Order Order { get; set; } = null!;
 }

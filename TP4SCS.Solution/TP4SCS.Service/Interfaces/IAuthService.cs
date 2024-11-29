@@ -8,13 +8,15 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
+        Task<ApiResponse<AuthResponse>> LoginOTPAsync(LoginOTPRequest loginOTPRequest);
+
         Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(AccountRegisterRequest customerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> RefreshTokenAsync(RefreshToken refeshToken);
 
-        Task<ApiResponse<AuthResponse>> SendOTPAsync(RefreshToken refeshToken);
+        Task<ApiResponse<AuthResponse>> SendOTPAsync(string email);
 
         Task<ApiResponse<AuthResponse>> SendVerificationEmailAsync(string email);
 

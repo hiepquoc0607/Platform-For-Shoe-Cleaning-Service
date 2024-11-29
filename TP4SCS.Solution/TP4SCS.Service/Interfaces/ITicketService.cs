@@ -24,6 +24,6 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<TicketResponse>> CancelTicketAsync(int id);
 
-        Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(int id);
+        Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(NotifyTicketRequest notifyTicketRequest);
     }
 }

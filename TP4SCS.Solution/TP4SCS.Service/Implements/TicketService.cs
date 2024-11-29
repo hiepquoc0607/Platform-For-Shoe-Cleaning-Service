@@ -87,6 +87,8 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 400, "Đơn Hỗ Trợ Chưa Được Xử Lý!");
             }
 
+            var account = await _accountRepository.GetAccountByIdNoTrackingAsync(userid);
+
             var newTicket = _mapper.Map<SupportTicket>(createChildTicketRequest);
             newTicket.ParentTicketId = id;
             newTicket.UserId = userid;
@@ -112,11 +114,46 @@ namespace TP4SCS.Services.Implements
                         }
 
                         await _assetUrlRepository.AddAssetUrlsAsync(newAsset);
+
+                        if (parentTicket.UserId == userid)
+                        {
+                            parentTicket.IsSeen = false;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
+
+                        if (!new[] { RoleConstants.OWNER, RoleConstants.CUSTOMER, RoleConstants.EMPLOYEE }
+                            .Contains(account!.Role) &&
+                            !parentTicket.IsSeen)
+                        {
+                            parentTicket.IsSeen = true;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
                     });
                 }
                 else
                 {
-                    await _ticketRepository.CreateTicketAsync(newTicket);
+                    await _ticketRepository.RunInTransactionAsync(async () =>
+                    {
+                        await _ticketRepository.CreateTicketAsync(newTicket);
+
+                        if (parentTicket.UserId == userid)
+                        {
+                            parentTicket.IsSeen = false;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
+
+                        if (!new[] { RoleConstants.OWNER, RoleConstants.CUSTOMER, RoleConstants.EMPLOYEE }
+                            .Contains(account!.Role) &&
+                            !parentTicket.IsSeen)
+                        {
+                            parentTicket.IsSeen = true;
+
+                            await _ticketRepository.UpdateTicketAsync(parentTicket);
+                        }
+                    });
 
                     newData = await _ticketRepository.GetTicketByIdAsync(newTicket.Id);
                 }
@@ -214,7 +251,6 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<TicketResponse>("error", 400, "Tạo Đơn Hỗ Trợ Thất Bại!");
             }
-
         }
 
         //Get Ticket By Id
@@ -269,20 +305,31 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
         }
 
-        public async Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(int id)
+        public async Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(NotifyTicketRequest notifyTicketRequest)
         {
-            var email = await _accountRepository.GetAccountEmailByIdAsync(id);
+            var email = await _accountRepository.GetAccountEmailByIdAsync(notifyTicketRequest.AccountId);
 
             if (string.IsNullOrEmpty(email))
             {
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email!");
             }
 
+            var ticket = await _ticketRepository.GetUpdateTicketByIdAsync(notifyTicketRequest.TicketId);
+
+            if (ticket == null)
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn!");
+            }
+
             string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
             string emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Xử Lý, Vui Lòng Xem Xét Và Bổ Sung Thông Tin Nếu Chưa Thoả Mãn Trong Vòng 24h Tới!";
 
+            ticket.AutoClosedTime = DateTime.Now.AddDays(1);
+
             try
             {
+                await _ticketRepository.UpdateTicketAsync(ticket);
+
                 await _emailService.SendEmailAsync(email, emailSubject, emailBody);
 
                 return new ApiResponse<TicketResponse>("error", "Gửi Email Thông Báo Cho Người Dùng Thành Công!", null, 200);

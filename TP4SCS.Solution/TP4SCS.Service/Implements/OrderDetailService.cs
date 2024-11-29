@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -111,11 +110,11 @@ namespace TP4SCS.Services.Implements
             {
                 throw new InvalidOperationException($"Không tìm thấy Order Detail với id: {existingOrderDetailId}");
             }
-            if(orderDetail.ProcessState != null)
+            if (orderDetail.ProcessState != null)
             {
                 existingOrderDetail.ProcessState = orderDetail.ProcessState;
             }
-            if(orderDetail.AssetUrls != null)
+            if (orderDetail.AssetUrls != null)
             {
                 var existingAssetUrls = existingOrderDetail.AssetUrls.ToList();
                 var newAssetUrls = orderDetail.AssetUrls;

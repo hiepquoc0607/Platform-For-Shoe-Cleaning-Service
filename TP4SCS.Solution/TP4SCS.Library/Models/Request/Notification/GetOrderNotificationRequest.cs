@@ -16,13 +16,12 @@ namespace TP4SCS.Library.Models.Request.Notification
         public int Id { get; set; }
 
         [DefaultValue(null)]
-        public IdOption GetByIdType { get; set; }
+        public IdOption IdType { get; set; }
 
         [Required]
         [DefaultValue(10)]
         [Range(1, int.MaxValue)]
         public int PageSize { get; set; } = 10;
-
 
         [Required]
         [DefaultValue(1)]

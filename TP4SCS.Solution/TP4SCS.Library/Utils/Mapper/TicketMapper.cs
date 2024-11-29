@@ -15,6 +15,8 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.ParentTicketId, otp => (int?)null)
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => true)
+                .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.OPENING);
 
             config.NewConfig<CreateOrderTicketRequest, SupportTicket>()
@@ -22,6 +24,8 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.ParentTicketId, otp => (int?)null)
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => true)
+                .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.OPENING);
 
             config.NewConfig<CreateChildTicketRequest, SupportTicket>()
@@ -29,6 +33,8 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.OrderId, otp => (int?)null)
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => false)
+                .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.CLOSED);
         }
     }

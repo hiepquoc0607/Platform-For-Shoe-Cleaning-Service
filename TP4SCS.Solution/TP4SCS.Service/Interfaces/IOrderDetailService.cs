@@ -1,5 +1,4 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.OrderDetail;
 
 namespace TP4SCS.Services.Interfaces
 {

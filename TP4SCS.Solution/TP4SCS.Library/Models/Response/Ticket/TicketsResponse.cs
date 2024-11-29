@@ -29,6 +29,8 @@ namespace TP4SCS.Library.Models.Response.Ticket
 
         public DateTime CreateTime { get; set; }
 
+        public bool IsSeen { get; set; }
+
         public string Status { get; set; } = string.Empty;
     }
 }

@@ -142,10 +142,10 @@ namespace TP4SCS.API.Controllers
         }
 
         [Authorize(Policy = "Moderator")]
-        [HttpPost("{userId}/notify-for-customer")]
-        public async Task<IActionResult> NotifyForCustomerAsync([FromRoute] int userId)
+        [HttpPost("notify-for-customer")]
+        public async Task<IActionResult> NotifyForCustomerAsync([FromQuery] NotifyTicketRequest notifyTicketRequest)
         {
-            var result = await _ticketService.NotifyForCustomerAsync(userId);
+            var result = await _ticketService.NotifyForCustomerAsync(notifyTicketRequest);
 
             if (result.StatusCode != 200)
             {

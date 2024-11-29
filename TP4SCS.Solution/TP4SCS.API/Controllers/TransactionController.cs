@@ -1,10 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.General;
+﻿using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Transaction;
-using TP4SCS.Library.Models.Response.General;
-using TP4SCS.Library.Models.Response.Transaction;
 using TP4SCS.Library.Services;
 
 namespace TP4SCS.WebAPI.Controllers

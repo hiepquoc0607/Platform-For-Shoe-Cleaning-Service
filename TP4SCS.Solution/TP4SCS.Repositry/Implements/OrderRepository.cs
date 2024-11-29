@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
-using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -60,7 +59,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        //.ThenInclude(od => od.Material)
+                    //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                 .SingleOrDefaultAsync(o => o.Id == id);
@@ -112,7 +111,7 @@ namespace TP4SCS.Repository.Implements
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Branch)
                     .Include(o => o.OrderDetails)
-                        //.ThenInclude(od => od.Material)
+                    //.ThenInclude(od => od.Material)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Feedback)
                             .ThenInclude(f => f!.AssetUrls);
@@ -132,6 +131,34 @@ namespace TP4SCS.Repository.Implements
         public async Task UpdateOrderAsync(Order order)
         {
             await UpdateAsync(order);
+        }
+
+        public async Task<int> CountMonthOrderByBusinessId(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderDetails
+                    .Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Month == currentMonth &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .CountAsync();
+        }
+
+        public async Task<int> CountYearOrderByBusinessId(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderDetails
+                    .Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .CountAsync();
         }
     }
 }

@@ -110,6 +110,7 @@ namespace TP4SCS.Repository.Implements
         public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsAsync(GetTicketRequest getTicketRequest)
         {
             var tickets = _dbContext.SupportTickets
+                .AsNoTracking()
                 .Where(t => t.IsParentTicket == true)
                 .Select(t => new TicketsResponse
                 {
@@ -140,12 +141,14 @@ namespace TP4SCS.Repository.Implements
                     OrderId = t.OrderId,
                     Title = t.Title,
                     CreateTime = t.CreateTime,
-                    Status = t.Status
+                    IsSeen = t.IsSeen,
+                    Status = t.Status,
                 })
-                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
-                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
-                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
-                            : 4)
+                .OrderBy(c => c.IsSeen == false ? 1
+                            : c.Status.Equals(StatusConstants.OPENING) ? 2
+                            : c.Status.Equals(StatusConstants.PROCESSING) ? 3
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 4
+                            : 5)
                 .ThenBy(c => c.CreateTime)
                 .ThenByDescending(c => c.Priority)
                 .AsQueryable();

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.OrderDetail;
@@ -7,7 +6,6 @@ using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.Material;
 using TP4SCS.Library.Models.Response.OrderDetail;
 using TP4SCS.Library.Utils.Utils;
-using TP4SCS.Services.Implements;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -36,7 +34,7 @@ namespace TP4SCS.API.Controllers
                 {
                     return NotFound(new ResponseObject<OrderDetailResponseV2>($"Không tìm thấy chi tiết đơn hàng với ID {id}.", null));
                 }
-                
+
                 var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
                 if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
                 {
@@ -45,7 +43,7 @@ namespace TP4SCS.API.Controllers
                     List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
                     response.Materials = materialResponse;
                 }
-                
+
                 return Ok(new ResponseObject<OrderDetailResponseV2>("Lấy chi tiết đơn hàng thành công.", response));
             }
             catch (Exception ex)
@@ -97,7 +95,7 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
-                await _orderDetailService.AddOrderDetailAsync(request.OrderId,request.BranchId,request.ServiceId,request.MaterialIds);
+                await _orderDetailService.AddOrderDetailAsync(request.OrderId, request.BranchId, request.ServiceId, request.MaterialIds);
                 return Ok(new ResponseObject<string>("Thêm chi tiết đơn hàng thành công."));
             }
             catch (InvalidOperationException ex)

@@ -40,5 +40,7 @@ public partial class BusinessProfile
 
     public virtual ICollection<BusinessBranch> BusinessBranches { get; set; } = new List<BusinessBranch>();
 
+    public virtual ICollection<BusinessStatistic> BusinessStatistics { get; set; } = new List<BusinessStatistic>();
+
     public virtual Account Owner { get; set; } = null!;
 }
