@@ -110,42 +110,32 @@ namespace TP4SCS.Repository.Implements
         public async Task<(IEnumerable<TicketsResponse>?, Pagination)> GetTicketsAsync(GetTicketRequest getTicketRequest)
         {
             var tickets = _dbContext.SupportTickets
+                .AsNoTracking()
                 .Where(t => t.IsParentTicket == true)
-                .Select(t => new TicketsResponse
+                .Join(_dbContext.Accounts, t => t.UserId, a => a.Id, (t, a) => new { t, a })  // Join with Accounts for User
+                .Join(_dbContext.Accounts, jt => jt.t.ModeratorId, m => m.Id, (jt, m) => new { jt.t, jt.a, m })  // Join with Accounts for Moderator
+                .Join(_dbContext.TicketCategories, jtm => jtm.t.CategoryId, c => c.Id, (jtm, c) => new { jtm.t, jtm.a, jtm.m, c })  // Join with TicketCategories
+                .Select(jc => new TicketsResponse
                 {
-                    Id = t.Id,
-                    UserId = t.UserId,
-                    FullName = _dbContext.Accounts
-                        .AsNoTracking()
-                        .Where(a => a.Id == t.UserId)
-                        .Select(a => a.FullName)
-                        .FirstOrDefault()!,
-                    ModeratorId = t.ModeratorId,
-                    ModeratorName = _dbContext.Accounts
-                        .AsNoTracking()
-                        .Where(a => a.Id == t.ModeratorId)
-                        .Select(a => a.FullName)
-                        .FirstOrDefault()!,
-                    CategoryId = t.CategoryId,
-                    CategoryName = _dbContext.TicketCategories
-                        .AsNoTracking()
-                        .Where(c => c.Id == t.CategoryId)
-                        .Select(c => c.Name)
-                        .FirstOrDefault()!,
-                    Priority = _dbContext.TicketCategories
-                        .AsNoTracking()
-                        .Where(c => c.Id == t.CategoryId)
-                        .Select(c => c.Priority)
-                        .FirstOrDefault()!,
-                    OrderId = t.OrderId,
-                    Title = t.Title,
-                    CreateTime = t.CreateTime,
-                    Status = t.Status
+                    Id = jc.t.Id,
+                    UserId = jc.t.UserId,
+                    FullName = jc.a.FullName,  // User FullName from join
+                    ModeratorId = jc.t.ModeratorId,
+                    ModeratorName = jc.m.FullName,  // Moderator FullName from join
+                    CategoryId = jc.t.CategoryId,
+                    CategoryName = jc.c.Name,  // Category Name from join
+                    Priority = jc.c.Priority,  // Category Priority from join
+                    OrderId = jc.t.OrderId,
+                    Title = jc.t.Title,
+                    CreateTime = jc.t.CreateTime,
+                    IsSeen = jc.t.IsSeen,
+                    Status = jc.t.Status
                 })
-                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
-                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
-                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
-                            : 4)
+                .OrderBy(c => c.IsSeen == false ? 1
+                            : c.Status.Equals(StatusConstants.OPENING) ? 2
+                            : c.Status.Equals(StatusConstants.PROCESSING) ? 3
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 4
+                            : 5)
                 .ThenBy(c => c.CreateTime)
                 .ThenByDescending(c => c.Priority)
                 .AsQueryable();
