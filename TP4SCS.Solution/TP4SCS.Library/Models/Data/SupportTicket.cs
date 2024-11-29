@@ -22,6 +22,8 @@ public partial class SupportTicket
 
     public bool IsParentTicket { get; set; }
 
+    public bool IsSeen { get; set; }
+
     public DateTime? AutoClosedTime { get; set; }
 
     public string Status { get; set; } = null!;

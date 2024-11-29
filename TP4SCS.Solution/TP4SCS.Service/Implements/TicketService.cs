@@ -115,7 +115,7 @@ namespace TP4SCS.Services.Implements
 
                         if (parentTicket.UserId == userid)
                         {
-                            parentTicket.Status = StatusConstants.REPLIED;
+                            parentTicket.IsSeen = false;
 
                             await _ticketRepository.UpdateTicketAsync(parentTicket);
                         }
@@ -129,7 +129,7 @@ namespace TP4SCS.Services.Implements
 
                         if (parentTicket.UserId == userid)
                         {
-                            parentTicket.Status = StatusConstants.REPLIED;
+                            parentTicket.IsSeen = false;
 
                             await _ticketRepository.UpdateTicketAsync(parentTicket);
                         }
