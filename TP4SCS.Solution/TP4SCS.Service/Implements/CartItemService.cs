@@ -9,14 +9,29 @@ namespace TP4SCS.Services.Implements
     {
         private readonly ICartItemRepository _cartItemRepository;
         private readonly IServiceService _serviceService;
+        private readonly IMaterialService _materialService;
 
-        public CartItemService(ICartItemRepository cartItemRepository, IServiceService serviceService)
+        public CartItemService(ICartItemRepository cartItemRepository, IServiceService serviceService, IMaterialService materialService)
         {
             _cartItemRepository = cartItemRepository;
             _serviceService = serviceService;
+            _materialService = materialService;
         }
         public async Task AddItemToCartAsync(int userId, int serviceId, List<int>? materialIds, int branchId)
         {
+            if(materialIds != null && materialIds.Any())
+            {
+                var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                if(materials == null)
+                {
+                    throw new ArgumentNullException($"Danh sách material không hợp lệ");
+                }
+                var notFoundIds = materialIds.Except(materials.Select(m => m.Id)).ToList();
+                if (notFoundIds.Any())
+                {
+                    throw new ArgumentNullException($"Các Material ID sau không tìm thấy: {string.Join(", ", notFoundIds)}");
+                }
+            }
             CartItem item = new CartItem
             {
                 ServiceId = serviceId,
