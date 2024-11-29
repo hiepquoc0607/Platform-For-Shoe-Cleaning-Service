@@ -189,7 +189,16 @@ namespace TP4SCS.Services.Implements
                         {
                             var material = await _materialService.GetMaterialByIdAsync(materialId);
                             finalPrice += material!.Price;
-                            material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.CartItem.BranchId)!.Storage--;
+                            var branchMaterial = material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == item.CartItem.BranchId);
+                            if(branchMaterial == null)
+                            {
+                                throw new ArgumentException($"Material Id : {materialId} không tồn tại trong Branch có Id : {item.CartItem.BranchId}");
+                            }
+                            if(branchMaterial.Storage == 0)
+                            {
+                                throw new ArgumentException($"Material Id : {materialId} ở Branch có Id : {item.CartItem.BranchId} đã hết hàng.");
+                            }
+                            branchMaterial.Storage--;
                             await _materialService.UpdateMaterialAsync(material);
                         }
                     }
