@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Utils.StaticClass;
+using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -31,17 +32,30 @@ namespace TP4SCS.Repository.Implements
             if (item.ServiceId.HasValue)
             {
                 var service = await _dbContext.Services
+                    .AsNoTracking()
                     .Include(s => s.BranchServices)
+                    .Include(s => s.Materials)
                     .SingleOrDefaultAsync(s => s.Id == item.ServiceId.Value);
                 if (service == null)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không tìm thấy.");
                 }
 
+                if (!string.IsNullOrEmpty(item.MaterialIds))
+                {
+                    List<int> ids = Util.ConvertStringToList(item.MaterialIds);
+                    var notFoundIds = ids.Except(service.Materials.Select(m => m.Id)).ToList();
+                    if (notFoundIds.Any())
+                    {
+                        throw new ArgumentException($"Các Material IDs : {string.Join(", ", notFoundIds)} không tồn tại trong Service có id : {item.ServiceId}");
+                    }
+                }
+
                 if (service.Status.ToUpper() == StatusConstants.UNAVAILABLE)
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} đã ngừng hoạt động.");
                 }
+
                 if (!service.BranchServices.Any(bs => bs.BranchId == item.BranchId))
                 {
                     throw new InvalidOperationException($"Dịch vụ với ID {item.ServiceId} không được cung cấp tại chi nhánh với ID {item.BranchId}.");

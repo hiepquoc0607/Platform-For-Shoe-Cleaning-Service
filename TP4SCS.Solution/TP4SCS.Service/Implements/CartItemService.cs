@@ -19,19 +19,6 @@ namespace TP4SCS.Services.Implements
         }
         public async Task AddItemToCartAsync(int userId, int serviceId, List<int>? materialIds, int branchId)
         {
-            if(materialIds != null && materialIds.Any())
-            {
-                var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
-                if(materials == null)
-                {
-                    throw new ArgumentNullException($"Danh sách material không hợp lệ");
-                }
-                var notFoundIds = materialIds.Except(materials.Select(m => m.Id)).ToList();
-                if (notFoundIds.Any())
-                {
-                    throw new ArgumentNullException($"Các Material ID sau không tìm thấy: {string.Join(", ", notFoundIds)}");
-                }
-            }
             CartItem item = new CartItem
             {
                 ServiceId = serviceId,
