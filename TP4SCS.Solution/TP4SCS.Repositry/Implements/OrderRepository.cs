@@ -132,5 +132,33 @@ namespace TP4SCS.Repository.Implements
         {
             await UpdateAsync(order);
         }
+
+        public async Task<int> CountMonthOrderByBusinessId(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderDetails
+                    .Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Month == currentMonth &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .CountAsync();
+        }
+
+        public async Task<int> CountYearOrderByBusinessId(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderDetails
+                    .Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .CountAsync();
+        }
     }
 }

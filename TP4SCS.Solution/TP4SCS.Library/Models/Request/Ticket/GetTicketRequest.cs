@@ -17,6 +17,7 @@ namespace TP4SCS.Library.Models.Request.Ticket
     {
         OPENING,
         PROCESSING,
+        REPLIED,
         CLOSED,
         CANCELED
     }

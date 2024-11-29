@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -193,6 +194,58 @@ namespace TP4SCS.Repository.Implements
         public async Task UpdateFeedbackAsync(Feedback feedback)
         {
             await UpdateAsync(feedback);
+        }
+
+        public async Task<decimal> GetMonthAverageRatingByBusinessId(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            decimal[] ratings = await _dbContext.Feedbacks
+                .AsNoTracking()
+                .Include(f => f.OrderItem)
+                .ThenInclude(f => f.Branch)
+                .ThenInclude(f => f.Business)
+                .Where(f => f.CreatedTime.Month == currentMonth &&
+                    f.CreatedTime.Year == currentYear &&
+                    f.OrderItem.Branch.Business.Id == id &&
+                    f.Status.Equals(StatusConstants.ACTIVE))
+                .Select(f => f.Rating)
+                .ToArrayAsync();
+
+            decimal result = 0;
+
+            if (ratings.Any())
+            {
+                result = ratings.Average();
+            }
+
+            return result;
+        }
+
+        public async Task<decimal> GetYearAverageRatingByBusinessId(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            decimal[] ratings = await _dbContext.Feedbacks
+                .AsNoTracking()
+                .Include(f => f.OrderItem)
+                .ThenInclude(f => f.Branch)
+                .ThenInclude(f => f.Business)
+                .Where(f => f.CreatedTime.Year == currentYear &&
+                    f.OrderItem.Branch.Business.Id == id &&
+                    f.Status.Equals(StatusConstants.ACTIVE))
+                .Select(f => f.Rating)
+                .ToArrayAsync();
+
+            decimal result = 0;
+
+            if (ratings.Any())
+            {
+                result = ratings.Average();
+            }
+
+            return result;
         }
     }
 }
