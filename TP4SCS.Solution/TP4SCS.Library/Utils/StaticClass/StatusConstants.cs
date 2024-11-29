@@ -44,8 +44,6 @@
         //TICKET STATUS
         public const string OPENING = "OPENING";
 
-        public const string REPLIED = "REPLIED";
-
         public const string CLOSED = "CLOSED";
 
         //TRANSACTION STATUS
