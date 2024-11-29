@@ -190,10 +190,6 @@ namespace TP4SCS.Services.Implements
                 return;
             }
 
-            order.Status = status;
-
-            await _orderRepository.UpdateOrderAsync(order);
-
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
             var notification = new CreateOrderNotificationRequest();
             notification.OrderId = order.Id;
@@ -302,6 +298,9 @@ namespace TP4SCS.Services.Implements
             }
 
             _ = Task.Run(() => _orderNotificationRepository.CreateOrderNotificationAsync(newNoti));
+            
+            order.Status = status;
+            await _orderRepository.UpdateOrderAsync(order);
         }
 
         public async Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request)
