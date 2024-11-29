@@ -183,10 +183,6 @@ namespace TP4SCS.Services.Implements
                 return;
             }
 
-            order.Status = status;
-
-            await _orderRepository.UpdateOrderAsync(order);
-
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
 
             if (Util.IsEqual(status, StatusConstants.CANCELED))
@@ -265,6 +261,8 @@ namespace TP4SCS.Services.Implements
             {
                 await CreateShipOrder(httpClient, existingOrderedId);
             }
+            order.Status = status;
+            await _orderRepository.UpdateOrderAsync(order);
         }
 
         public async Task UpdateOrderAsync(int existingOrderId, UpdateOrderRequest request)
