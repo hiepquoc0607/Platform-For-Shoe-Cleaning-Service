@@ -1,4 +1,7 @@
-﻿using TP4SCS.Library.Models.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Response.BusinessProfile;
+using TP4SCS.Library.Models.Response.Leaderboard;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -9,24 +12,144 @@ namespace TP4SCS.Repository.Implements
         {
         }
 
-        public Task CreateLeaderboardAsync(Leaderboard leaderboard)
+        public async Task CreateLeaderboardAsync(Leaderboard leaderboard)
         {
-            throw new NotImplementedException();
+            await InsertAsync(leaderboard);
         }
 
-        public Task<IEnumerable<Leaderboard>?> GetLeaderboardByMonthAsync()
+        public async Task DeleteLeaderboardAsync(int id)
         {
-            throw new NotImplementedException();
+            await DeleteAsync(id);
         }
 
-        public Task<IEnumerable<Leaderboard>?> GetLeaderboardByWeekAsync()
+        public async Task<LeaderboardResponse?> GetLeaderboardByMonthAsync()
         {
-            throw new NotImplementedException();
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var leaderboardQuery = await _dbContext.Leaderboards
+                .AsNoTracking()
+                .Where(l => l.Month == currentMonth && l.Year == currentYear && l.IsMonth == true)
+                .Select(l => new
+                {
+                    Leaderboard = l,
+                    BusinessIds = l.BusinessIds
+                })
+                .FirstOrDefaultAsync();
+
+            if (leaderboardQuery == null) return null;
+
+            var businessIds = leaderboardQuery.BusinessIds.Split(',').Select(int.Parse).ToArray();
+
+            var businesses = await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .Where(b => businessIds.Contains(b.Id))
+                .Select(b => new BusinessResponse
+                {
+                    Id = b.Id,
+                    OwnerId = b.OwnerId,
+                    Name = b.Name,
+                    Phone = b.Phone,
+                    ImageUrl = b.ImageUrl,
+                    Rating = b.Rating,
+                    Rank = b.Rank,
+                    TotalOrder = b.TotalOrder,
+                    PendingAmount = b.PendingAmount,
+                    ProcessingAmount = b.ProcessingAmount,
+                    FinishedAmount = b.FinishedAmount,
+                    CanceledAmount = b.CanceledAmount,
+                    ToTalServiceNum = b.ToTalServiceNum,
+                    CreatedDate = b.CreatedDate,
+                    RegisteredTime = b.RegisteredTime,
+                    ExpiredTime = b.ExpiredTime,
+                    Status = b.Status
+                })
+                .ToListAsync();
+
+            return new LeaderboardResponse
+            {
+                Id = leaderboardQuery.Leaderboard.Id,
+                Month = leaderboardQuery.Leaderboard.Month,
+                Year = leaderboardQuery.Leaderboard.Year,
+                IsMonth = leaderboardQuery.Leaderboard.IsMonth,
+                IsYear = leaderboardQuery.Leaderboard.IsYear,
+                Businesses = businesses
+            };
         }
 
-        public Task<IEnumerable<Leaderboard>?> GetLeaderboardByYearAsync()
+        public async Task<Leaderboard?> GetLeaderboardByMonthNoTrackingAsync()
         {
-            throw new NotImplementedException();
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Leaderboards
+                .AsNoTracking()
+                .Where(l => l.Month == currentMonth && l.Year == currentYear && l.IsMonth == true)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<LeaderboardResponse?> GetLeaderboardByYearAsync()
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var leaderboardQuery = await _dbContext.Leaderboards
+                .AsNoTracking()
+                .Where(l => l.Year == currentYear && l.IsYear == true)
+                .Select(l => new
+                {
+                    Leaderboard = l,
+                    BusinessIds = l.BusinessIds
+                })
+                .FirstOrDefaultAsync();
+
+            if (leaderboardQuery == null) return null;
+
+            var businessIds = leaderboardQuery.BusinessIds.Split(',').Select(int.Parse).ToArray();
+
+            var businesses = await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .Where(b => businessIds.Contains(b.Id))
+                .Select(b => new BusinessResponse
+                {
+                    Id = b.Id,
+                    OwnerId = b.OwnerId,
+                    Name = b.Name,
+                    Phone = b.Phone,
+                    ImageUrl = b.ImageUrl,
+                    Rating = b.Rating,
+                    Rank = b.Rank,
+                    TotalOrder = b.TotalOrder,
+                    PendingAmount = b.PendingAmount,
+                    ProcessingAmount = b.ProcessingAmount,
+                    FinishedAmount = b.FinishedAmount,
+                    CanceledAmount = b.CanceledAmount,
+                    ToTalServiceNum = b.ToTalServiceNum,
+                    CreatedDate = b.CreatedDate,
+                    RegisteredTime = b.RegisteredTime,
+                    ExpiredTime = b.ExpiredTime,
+                    Status = b.Status
+                })
+                .ToListAsync();
+
+            return new LeaderboardResponse
+            {
+                Id = leaderboardQuery.Leaderboard.Id,
+                Month = leaderboardQuery.Leaderboard.Month,
+                Year = leaderboardQuery.Leaderboard.Year,
+                IsMonth = leaderboardQuery.Leaderboard.IsMonth,
+                IsYear = leaderboardQuery.Leaderboard.IsYear,
+                Businesses = businesses
+            };
+        }
+
+        public async Task<Leaderboard?> GetLeaderboardByYearNoTrackingAsync()
+        {
+            var currentYear = DateTime.Now.Year;
+
+            return await _dbContext.Leaderboards
+                .AsNoTracking()
+                .Where(l => l.Year == currentYear && l.IsYear == true)
+                .FirstOrDefaultAsync();
         }
     }
 }

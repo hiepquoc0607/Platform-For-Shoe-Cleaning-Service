@@ -260,5 +260,10 @@ namespace TP4SCS.Repository.Implements
 
             return (result, paging);
         }
+
+        public async Task<int[]?> GetBusinessIdsAsync()
+        {
+            return await _dbContext.BusinessProfiles.AsNoTracking().Select(b => b.Id).ToArrayAsync();
+        }
     }
 }
