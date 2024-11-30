@@ -383,8 +383,6 @@ namespace TP4SCS.Services.Implements
                         List<string> emails = (await _accountRepository.GetBranchEmailsByOrderIdAsync((int)oldTicket.OrderId))?.ToList() ?? new List<string>();
 
                         await _emailService.SendEmailAsync(email, emailSubject, emailBody);
-
-                        _ = Task.Run(() => _emailService.SendBatchEmailAsync(emails, emailSubject, "Chi Nhánh Hiện Có Đơn Hàng Cần Được Xử Lý Khiếu Nại, Vui Lòng Kiểm Tra Trên Hệ Thống!"));
                     }
                     else if (oldStatus.Equals(StatusConstants.OPENING) && oldTicket.Status.Equals(StatusConstants.CLOSED))
                     {

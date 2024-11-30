@@ -259,7 +259,7 @@ namespace TP4SCS.Services.Implements
             {
                 await _accountRepository.UpdateAccountAsync(account);
 
-                await _emailService.SendEmailAsync(email, "ShoeCareHub OTP Code", account.Otp.ToString()!);
+                await _emailService.SendEmailAsync(email, "ShoeCareHub OTP Code", $"Mã otp để đăng nhập của bạn là:  {account.Otp.ToString()!}");
 
                 return new ApiResponse<AuthResponse>("success", "Gửi OTP Thành Công!", null);
             }
