@@ -134,6 +134,17 @@ namespace TP4SCS.Services.Implements
             await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
         }
 
+        public async Task UpdateContentFeedbackAsync(string content, int existingFeedbackId)
+        {
+            var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
+            if (existingFeedback == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy đánh giá với ID: {existingFeedbackId}.");
+            }
+            existingFeedback.Content = content;
+            await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
+        }
+
         public async Task ReplyFeedbackAsync(string reply, int existingFeedbackId)
         {
             var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
