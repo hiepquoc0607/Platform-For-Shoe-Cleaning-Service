@@ -12,6 +12,8 @@ public partial class PlatformPack
 
     public decimal Price { get; set; }
 
+    public string? Feature { get; set; }
+
     public string Type { get; set; } = null!;
 
     public virtual ICollection<PackSubscription> PackSubscriptions { get; set; } = new List<PackSubscription>();
