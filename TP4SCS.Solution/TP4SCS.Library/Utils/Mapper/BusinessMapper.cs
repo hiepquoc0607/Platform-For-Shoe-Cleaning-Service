@@ -26,6 +26,9 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CreatedDate, otp => DateOnly.FromDateTime(DateTime.Now))
                 .Map(dest => dest.RegisteredTime, otp => DateTime.Now)
                 .Map(dest => dest.ExpiredTime, otp => DateTime.Now)
+                .Map(dest => dest.IsIndividual, otp => true)
+                .Map(dest => dest.IsMaterialSupported, otp => false)
+                .Map(dest => dest.IsLimitServiceNum, otp => true)
                 .Map(dest => dest.Status, otp => StatusConstants.UNREGISTERED);
 
             config.NewConfig<BusinessProfile, UpdateBusinessRequest>();

@@ -65,16 +65,14 @@ namespace TP4SCS.Services.Implements
         //Get Business By Id
         public async Task<ApiResponse<BusinessResponse?>> GetBusinessProfileByIdAsync(int id)
         {
-            var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
+            var business = await _businessRepository.GetBusinessProfileByIdNoTrackingAsync(id);
 
             if (business == null)
             {
                 return new ApiResponse<BusinessResponse?>("error", 404, "Không Tìm Thấy Doanh Nghiệp!");
             }
 
-            var data = _mapper.Map<BusinessResponse>(business);
-
-            return new ApiResponse<BusinessResponse?>("success", "Lấy Dữ Liệu Thành Công!", data);
+            return new ApiResponse<BusinessResponse?>("success", "Lấy Dữ Liệu Thành Công!", business);
         }
 
         //Update Business

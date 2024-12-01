@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.BusinessProfile
+﻿using TP4SCS.Library.Models.Response.PackSubscription;
+
+namespace TP4SCS.Library.Models.Response.BusinessProfile
 {
     public class BusinessResponse
     {
@@ -33,5 +35,7 @@
         public DateTime ExpiredTime { get; set; }
 
         public string Status { get; set; } = string.Empty;
+
+        public List<PackSubscriptionResponse> PackSubscriptions { get; set; } = new List<PackSubscriptionResponse>();
     }
 }

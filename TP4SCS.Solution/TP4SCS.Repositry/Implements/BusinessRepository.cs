@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
+using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Models.Response.PackSubscription;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
@@ -195,6 +197,48 @@ namespace TP4SCS.Repository.Implements
         public async Task<int[]?> GetBusinessIdsAsync()
         {
             return await _dbContext.BusinessProfiles.AsNoTracking().Select(b => b.Id).ToArrayAsync();
+        }
+
+        public async Task<BusinessResponse?> GetBusinessProfileByIdNoTrackingAsync(int id)
+        {
+            return await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .Where(b => b.Id == id)
+                .Select(b => new BusinessResponse
+                {
+                    Id = b.Id,
+                    OwnerId = b.OwnerId,
+                    Name = b.Name,
+                    Phone = b.Phone,
+                    ImageUrl = b.ImageUrl,
+                    Rating = b.Rating,
+                    TotalOrder = b.TotalOrder,
+                    PendingAmount = b.PendingAmount,
+                    ProcessingAmount = b.ProcessingAmount,
+                    FinishedAmount = b.FinishedAmount,
+                    CanceledAmount = b.CanceledAmount,
+                    ToTalServiceNum = b.ToTalServiceNum,
+                    CreatedDate = b.CreatedDate,
+                    RegisteredTime = b.RegisteredTime,
+                    ExpiredTime = b.ExpiredTime,
+                    Status = b.Status,
+                    PackSubscriptions = _dbContext.PackSubscriptions
+                        .AsNoTracking()
+                        .Where(s => s.BusinessId == b.Id)
+                        .Select(s => new PackSubscriptionResponse
+                        {
+                            Id = s.Id,
+                            PackId = s.PackId,
+                            PackName = _dbContext.PlatformPacks
+                                .AsNoTracking()
+                                .Where(p => p.Id == s.PackId)
+                                .Select(p => p.Name)
+                                .SingleOrDefault()!,
+                            SubscriptionTime = s.SubscriptionTime,
+                        })
+                        .ToList()
+                })
+                .SingleOrDefaultAsync();
         }
     }
 }
