@@ -34,6 +34,12 @@ namespace TP4SCS.Library.Models.Response.BusinessProfile
 
         public DateTime ExpiredTime { get; set; }
 
+        public bool IsIndividual { get; set; }
+
+        public bool IsMaterialSupported { get; set; }
+
+        public bool IsLimitServiceNum { get; set; }
+
         public string Status { get; set; } = string.Empty;
 
         public List<PackSubscriptionResponse> PackSubscriptions { get; set; } = new List<PackSubscriptionResponse>();

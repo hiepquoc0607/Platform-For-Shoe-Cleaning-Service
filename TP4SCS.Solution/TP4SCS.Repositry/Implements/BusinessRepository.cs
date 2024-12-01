@@ -196,7 +196,11 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<int[]?> GetBusinessIdsAsync()
         {
-            return await _dbContext.BusinessProfiles.AsNoTracking().Select(b => b.Id).ToArrayAsync();
+            return await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .Where(b => b.Status.Equals(StatusConstants.ACTIVE))
+                .Select(b => b.Id)
+                .ToArrayAsync();
         }
 
         public async Task<BusinessResponse?> GetBusinessProfileByIdNoTrackingAsync(int id)
@@ -221,6 +225,9 @@ namespace TP4SCS.Repository.Implements
                     CreatedDate = b.CreatedDate,
                     RegisteredTime = b.RegisteredTime,
                     ExpiredTime = b.ExpiredTime,
+                    IsIndividual = b.IsIndividual,
+                    IsMaterialSupported = b.IsMaterialSupported,
+                    IsLimitServiceNum = b.IsLimitServiceNum,
                     Status = b.Status,
                     PackSubscriptions = _dbContext.PackSubscriptions
                         .AsNoTracking()

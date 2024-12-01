@@ -5,6 +5,7 @@ using TP4SCS.Library.Models.Request.PlatformPack;
 using TP4SCS.Library.Models.Request.SubscriptionPack;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.SubcriptionPack;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
@@ -59,6 +60,8 @@ namespace TP4SCS.Services.Implements
                 var newPack = _mapper.Map<PlatformPack>(subscriptionPackRequest);
                 newPack.Name = name;
                 newPack.Description = "";
+                newPack.Feature = "";
+                newPack.Type = TypeConstants.REGISTER;
 
                 var secondPack = new PlatformPack();
                 var thirdPack = new PlatformPack();
