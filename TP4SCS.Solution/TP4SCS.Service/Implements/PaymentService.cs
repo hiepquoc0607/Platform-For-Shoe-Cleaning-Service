@@ -14,8 +14,9 @@ namespace TP4SCS.Services.Implements
     public class PaymentService : IPaymentService
     {
         private readonly IBusinessRepository _businessRepository;
-        private readonly IPlatformPackRepository _subscriptionPackRepository;
+        private readonly IPlatformPackRepository _platformPackRepository;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IPackSubscriptionRepository _packSubscriptionRepository;
         private readonly IVnPayService _vnPayService;
         private readonly IMoMoService _moMoService;
         private readonly IMapper _mapper;
@@ -23,13 +24,15 @@ namespace TP4SCS.Services.Implements
         public PaymentService(IBusinessRepository businessRepository,
             IPlatformPackRepository subscriptionPackRepository,
             ITransactionRepository transactionRepository,
+            IPackSubscriptionRepository packSubscriptionRepository,
             IVnPayService vnPayService,
             IMoMoService moMoService,
             IMapper mapper)
         {
             _businessRepository = businessRepository;
-            _subscriptionPackRepository = subscriptionPackRepository;
+            _platformPackRepository = subscriptionPackRepository;
             _transactionRepository = transactionRepository;
+            _packSubscriptionRepository = packSubscriptionRepository;
             _vnPayService = vnPayService;
             _moMoService = moMoService;
             _mapper = mapper;
@@ -49,11 +52,26 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<string?>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByIdNoTrackingAsync(paymentRequest.PackId);
+            var pack = await _platformPackRepository.GetPackByIdNoTrackingAsync(paymentRequest.PackId);
 
             if (pack == null)
             {
                 return new ApiResponse<string?>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+            }
+
+            if (pack.Type.Equals(TypeConstants.FEATURE) && !string.IsNullOrEmpty(pack.Feature))
+            {
+                var featureErrorMessages = new Dictionary<string, Func<bool>>
+                {
+                    { FeatureConstants.BUSINESS, () => !business.IsIndividual },
+                    { FeatureConstants.MATERIAL, () => business.IsMaterialSupported },
+                    { FeatureConstants.SERVICE, () => !business.IsLimitServiceNum }
+                };
+
+                if (featureErrorMessages.TryGetValue(pack.Feature, out var condition) && condition())
+                {
+                    return new ApiResponse<string?>("error", 400, "Doanh Nghiệp Đã Đăng Kí Gói Tính Năng Này!");
+                }
             }
 
             var newTransaction = new Transaction
@@ -75,7 +93,7 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                await _subscriptionPackRepository.RunInTransactionAsync(async () =>
+                await _platformPackRepository.RunInTransactionAsync(async () =>
                 {
                     await _transactionRepository.CreateTransactionAsync(newTransaction);
 
@@ -137,7 +155,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<MoMoResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByNameAsync(transaction.PackName);
+            var pack = await _platformPackRepository.GetPackByNameAsync(transaction.PackName);
 
             if (pack == null)
             {
@@ -161,7 +179,33 @@ namespace TP4SCS.Services.Implements
                     {
                         business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
                     }
+
                     business.Status = StatusConstants.ACTIVE;
+
+                    if (pack.Type.Equals(TypeConstants.FEATURE))
+                    {
+                        PackSubscription newSubscription = new PackSubscription
+                        {
+                            BusinessId = business.Id,
+                            PackId = pack.Id,
+                            SubscriptionTime = DateTime.Now,
+                        };
+
+                        switch (pack.Feature)
+                        {
+                            case FeatureConstants.BUSINESS:
+                                business.IsIndividual = false;
+                                break;
+                            case FeatureConstants.MATERIAL:
+                                business.IsMaterialSupported = true;
+                                break;
+                            case FeatureConstants.SERVICE:
+                                business.IsLimitServiceNum = false;
+                                break;
+                        }
+
+                        await _packSubscriptionRepository.CreatePackSubscriptionAsync(newSubscription);
+                    }
 
                     await _businessRepository.UpdateBusinessProfileAsync(business);
 
@@ -202,7 +246,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<VnPayResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByNameAsync(transaction.PackName);
+            var pack = await _platformPackRepository.GetPackByNameAsync(transaction.PackName);
 
             if (pack == null)
             {
@@ -226,7 +270,33 @@ namespace TP4SCS.Services.Implements
                     {
                         business.ExpiredTime = DateTime.Now.AddMonths(pack.Period);
                     }
+
                     business.Status = StatusConstants.ACTIVE;
+
+                    if (pack.Type.Equals(TypeConstants.FEATURE))
+                    {
+                        PackSubscription newSubscription = new PackSubscription
+                        {
+                            BusinessId = business.Id,
+                            PackId = pack.Id,
+                            SubscriptionTime = DateTime.Now,
+                        };
+
+                        switch (pack.Feature)
+                        {
+                            case FeatureConstants.BUSINESS:
+                                business.IsIndividual = false;
+                                break;
+                            case FeatureConstants.MATERIAL:
+                                business.IsMaterialSupported = true;
+                                break;
+                            case FeatureConstants.SERVICE:
+                                business.IsLimitServiceNum = false;
+                                break;
+                        }
+
+                        await _packSubscriptionRepository.CreatePackSubscriptionAsync(newSubscription);
+                    }
 
                     await _businessRepository.UpdateBusinessProfileAsync(business);
 

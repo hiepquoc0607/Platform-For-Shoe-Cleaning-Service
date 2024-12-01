@@ -11,7 +11,7 @@ namespace TP4SCS.Library.Services
     public class TransactionService : ITransactionService
     {
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IPlatformPackRepository _subscriptionPackRepository;
+        private readonly IPlatformPackRepository _platformPackRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
 
@@ -21,7 +21,7 @@ namespace TP4SCS.Library.Services
             IMapper mapper)
         {
             _transactionRepository = transactionRepository;
-            _subscriptionPackRepository = subscriptionPackRepository;
+            _platformPackRepository = subscriptionPackRepository;
             _accountRepository = accountRepository;
             _mapper = mapper;
         }
@@ -35,7 +35,7 @@ namespace TP4SCS.Library.Services
                 return new ApiResponse<TransactionResponse>("error", 404, "Không Tìm Thấy Thông Tin Tài Khoản!");
             }
 
-            var pack = await _subscriptionPackRepository.GetPackByIdNoTrackingAsync(createTransactionRequest.PackId);
+            var pack = await _platformPackRepository.GetPackByIdNoTrackingAsync(createTransactionRequest.PackId);
 
             if (pack == null)
             {
@@ -107,7 +107,7 @@ namespace TP4SCS.Library.Services
 
         public async Task<ApiResponse<TransactionResponse>> UpdateTransactionAsync(int id, UpdateTransactionRequest updateTransactionRequest)
         {
-            var pack = await _subscriptionPackRepository.GetPackByIdNoTrackingAsync(updateTransactionRequest.PackId);
+            var pack = await _platformPackRepository.GetPackByIdNoTrackingAsync(updateTransactionRequest.PackId);
 
             if (pack == null)
             {

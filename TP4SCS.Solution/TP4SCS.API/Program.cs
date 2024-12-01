@@ -100,6 +100,7 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
 builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationRepository>();
 builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
+builder.Services.AddScoped<IPackSubscriptionRepository, PackSubscriptionRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
