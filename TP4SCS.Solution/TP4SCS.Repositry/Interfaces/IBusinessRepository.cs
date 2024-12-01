@@ -14,8 +14,6 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest);
 
-        Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesByRankingAsync(GetBusinessRequest getBusinessRequest);
-
         Task<(IEnumerable<BusinessProfile>?, Pagination)> GetInvlaidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest);
 
         Task<BusinessProfile?> GetBusinessProfileByIdAsync(int id);

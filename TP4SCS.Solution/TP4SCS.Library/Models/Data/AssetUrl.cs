@@ -8,13 +8,13 @@ public partial class AssetUrl
 
     public int? FeedbackId { get; set; }
 
-    public int? ServiceId { get; set; }
-
     public int? MaterialId { get; set; }
 
-    public int? TicketId { get; set; }
+    public int? ServiceId { get; set; }
 
     public int? OrderDetailId { get; set; }
+
+    public int? TicketId { get; set; }
 
     public string Url { get; set; } = null!;
 

@@ -77,7 +77,7 @@ namespace TP4SCS.API.Controllers
                                 List<int> materialIds = Util.ConvertStringToList(item.MaterialIds);
                                 var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
                                 List<MaterialResponseV3> materialsResponse = new List<MaterialResponseV3>();
-                                if(materials != null)
+                                if (materials != null)
                                 {
                                     foreach (var m in materials)
                                     {

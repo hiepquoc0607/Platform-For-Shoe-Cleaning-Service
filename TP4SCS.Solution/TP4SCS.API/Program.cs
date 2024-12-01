@@ -31,6 +31,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.WriteIndented = false;
+        options.JsonSerializerOptions.DefaultBufferSize = 32 * 1024;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = null;
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -93,7 +95,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-builder.Services.AddScoped<ISubscriptionPackRepository, SubscriptionPackRepository>();
+builder.Services.AddScoped<IPlatformPackRepository, PlatformPackRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
 builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationRepository>();
@@ -114,13 +116,13 @@ builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAssetUrlService, AssetUrlService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
-builder.Services.AddScoped<ISubscriptionPackService, SubscriptionPackService>();
+builder.Services.AddScoped<IPlatformPackService, PlatformPackService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IMoMoService, MoMoService>();
@@ -130,7 +132,7 @@ builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>(
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 
 //Inject Util
-builder.Services.AddScoped<Util>();
+builder.Services.AddTransient<Util>();
 
 //Add HttpClient
 builder.Services.AddHttpClient();

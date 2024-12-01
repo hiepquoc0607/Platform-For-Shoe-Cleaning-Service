@@ -12,5 +12,9 @@ public partial class PlatformStatistic
 
     public int Year { get; set; }
 
+    public bool IsMonth { get; set; }
+
+    public bool IsYear { get; set; }
+
     public string Type { get; set; } = null!;
 }

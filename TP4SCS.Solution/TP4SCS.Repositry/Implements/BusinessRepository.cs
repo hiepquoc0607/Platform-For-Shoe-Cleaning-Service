@@ -56,9 +56,6 @@ namespace TP4SCS.Repository.Implements
                     BusinessSortOption.RATING => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.Rating)
                                 : businesses.OrderBy(b => b.Rating),
-                    BusinessSortOption.RANK => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.Rank)
-                                : businesses.OrderBy(b => b.Rank),
                     BusinessSortOption.TOTAL => getBusinessRequest.IsDecsending
                                 ? businesses.OrderByDescending(b => b.TotalOrder)
                                 : businesses.OrderBy(b => b.TotalOrder),
@@ -191,72 +188,6 @@ namespace TP4SCS.Repository.Implements
             {
                 return (null, paging);
             }
-
-            return (result, paging);
-        }
-
-        public async Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesByRankingAsync(GetBusinessRequest getBusinessRequest)
-        {
-            var businesses = _dbContext.BusinessProfiles
-                .Where(b => b.Status.Equals(StatusConstants.ACTIVE))
-                .OrderBy(b => b.Rank)
-                .AsQueryable();
-
-            //Search
-            if (!string.IsNullOrEmpty(getBusinessRequest.SearchKey))
-            {
-                string searchKey = getBusinessRequest.SearchKey;
-                businesses = businesses.Where(b => EF.Functions.Like(b.Name, $"%{searchKey}%"));
-            }
-
-            //Order Sort
-            if (getBusinessRequest.SortBy != null)
-            {
-                businesses = getBusinessRequest.SortBy switch
-                {
-                    BusinessSortOption.NAME => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.Name)
-                                : businesses.OrderBy(b => b.Name),
-                    BusinessSortOption.RATING => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.Rating)
-                                : businesses.OrderBy(b => b.Rating),
-                    BusinessSortOption.RANK => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.Rank)
-                                : businesses.OrderBy(b => b.Rank),
-                    BusinessSortOption.TOTAL => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.TotalOrder)
-                                : businesses.OrderBy(b => b.TotalOrder),
-                    BusinessSortOption.PENDING => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.PendingAmount)
-                                : businesses.OrderBy(b => b.PendingAmount),
-                    BusinessSortOption.PROCESSING => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.ProcessingAmount)
-                                : businesses.OrderBy(b => b.ProcessingAmount),
-                    BusinessSortOption.FINISHED => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.FinishedAmount)
-                                : businesses.OrderBy(b => b.FinishedAmount),
-                    BusinessSortOption.CANCEL => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.CanceledAmount)
-                                : businesses.OrderBy(b => b.CanceledAmount),
-                    BusinessSortOption.STATUS => getBusinessRequest.IsDecsending
-                                ? businesses.OrderByDescending(b => b.Status)
-                                : businesses.OrderBy(b => b.Status),
-                    _ => businesses
-                };
-            }
-
-            //Count Total Data
-            int totalData = await businesses.AsNoTracking().CountAsync();
-
-            //Paging
-            int skipNum = (getBusinessRequest.PageNum - 1) * getBusinessRequest.PageSize;
-            businesses = businesses.Skip(skipNum).Take(getBusinessRequest.PageSize);
-
-            //Paging Data Calulation
-            var result = await businesses.ToListAsync();
-            int totalPage = (int)Math.Ceiling((decimal)totalData / getBusinessRequest.PageSize);
-
-            var paging = new Pagination(totalData, getBusinessRequest.PageSize, getBusinessRequest.PageNum, totalPage);
 
             return (result, paging);
         }

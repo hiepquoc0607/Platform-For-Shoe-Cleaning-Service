@@ -6,13 +6,17 @@ public partial class BusinessStatistic
 
     public int BusinessId { get; set; }
 
-    public int Value { get; set; }
+    public decimal Value { get; set; }
 
     public int Date { get; set; }
 
     public int Month { get; set; }
 
     public int Year { get; set; }
+
+    public bool IsMonth { get; set; }
+
+    public bool IsYear { get; set; }
 
     public string Type { get; set; } = null!;
 
