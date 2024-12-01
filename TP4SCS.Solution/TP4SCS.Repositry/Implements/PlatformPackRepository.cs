@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -38,10 +39,11 @@ namespace TP4SCS.Repository.Implements
             return await _dbContext.PlatformPacks.AsNoTracking().Where(p => p.Period != 0).MaxAsync(p => p.Id);
         }
 
-        public async Task<IEnumerable<PlatformPack>?> GetPacksAsync()
+        public async Task<IEnumerable<PlatformPack>?> GetRegisterPacksAsync()
         {
             return await _dbContext.PlatformPacks
                 .AsNoTracking()
+                .Where(p => p.Type.Equals(TypeConstants.REGISTER))
                 .OrderBy(p => p.Period)
                 .ToListAsync();
         }
@@ -83,6 +85,15 @@ namespace TP4SCS.Repository.Implements
         public async Task<PlatformPack?> GetPackByPeriodAsync(int period)
         {
             return await _dbContext.PlatformPacks.FirstOrDefaultAsync(p => p.Period == period);
+        }
+
+        public async Task<IEnumerable<PlatformPack>?> GetFeaturePacksAsync()
+        {
+            return await _dbContext.PlatformPacks
+                .AsNoTracking()
+                .Where(p => p.Type.Equals(TypeConstants.FEATURE))
+                .OrderBy(p => p.Period)
+                .ToListAsync();
         }
     }
 }

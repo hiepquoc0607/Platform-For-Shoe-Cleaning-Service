@@ -11,7 +11,7 @@ namespace TP4SCS.Library.Utils.Mapper
         {
             config.NewConfig<PlatformPack, PlatformPackResponse>();
 
-            config.NewConfig<PlatformPackRequest, PlatformPack>();
+            config.NewConfig<RegisterPackRequest, PlatformPack>();
         }
     }
 }

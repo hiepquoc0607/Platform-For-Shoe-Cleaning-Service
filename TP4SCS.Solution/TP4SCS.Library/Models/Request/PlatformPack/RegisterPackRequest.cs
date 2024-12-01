@@ -2,7 +2,7 @@
 
 namespace TP4SCS.Library.Models.Request.SubscriptionPack
 {
-    public class PlatformPackRequest
+    public class RegisterPackRequest
     {
         [Required]
         public string Name { get; set; } = string.Empty;

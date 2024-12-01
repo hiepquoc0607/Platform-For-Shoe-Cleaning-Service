@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TP4SCS.Library.Models.Request.PlatformPack;
 using TP4SCS.Library.Models.Request.SubscriptionPack;
 using TP4SCS.Services.Interfaces;
 
@@ -15,10 +16,23 @@ namespace TP4SCS.API.Controllers
             _subscriptionService = subscriptionService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPacksAsync()
+        [HttpGet("register-packs")]
+        public async Task<IActionResult> GetRegisterPacksAsync()
         {
-            var result = await _subscriptionService.GetPacksAsync();
+            var result = await _subscriptionService.GetRegisterPacksAsync();
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("feature-packs")]
+        public async Task<IActionResult> GetFeaturePacksAsync()
+        {
+            var result = await _subscriptionService.GetFeaturePacksAsync();
 
             if (result.StatusCode != 200)
             {
@@ -41,10 +55,10 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePackAsync([FromBody] PlatformPackRequest subscriptionPackRequest)
+        [HttpPost("register-pack")]
+        public async Task<IActionResult> CreatePackAsync([FromBody] RegisterPackRequest registerPackRequest)
         {
-            var result = await _subscriptionService.CreatePackAsync(subscriptionPackRequest);
+            var result = await _subscriptionService.CreateRegisterPackAsync(registerPackRequest);
 
             if (result.StatusCode != 201)
             {
@@ -54,10 +68,10 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackAsync([FromRoute] int id, [FromBody] PlatformPackRequest subscriptionPackRequest)
+        [HttpPut("{id}/register-pack")]
+        public async Task<IActionResult> UpdateRegisterPackAsync([FromRoute] int id, [FromBody] RegisterPackRequest registerPackRequest)
         {
-            var result = await _subscriptionService.UpdatePackAsync(id, subscriptionPackRequest);
+            var result = await _subscriptionService.UpdateRegisterPackAsync(id, registerPackRequest);
 
             if (result.StatusCode != 200)
             {
@@ -67,10 +81,23 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePackAsync([FromRoute] int id)
+        [HttpPut("{id}/feature-pack")]
+        public async Task<IActionResult> UpdateRegisterPackAsync([FromRoute] int id, [FromBody] FeaturePackRequest featurePackRequest)
         {
-            var result = await _subscriptionService.DeletePackAsync(id);
+            var result = await _subscriptionService.UpdateFeaturePackAsync(id, featurePackRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}/register-pack")]
+        public async Task<IActionResult> DeleteRegisterPackAsync([FromRoute] int id)
+        {
+            var result = await _subscriptionService.DeleteRegisterPackAsync(id);
 
             if (result.StatusCode != 200)
             {

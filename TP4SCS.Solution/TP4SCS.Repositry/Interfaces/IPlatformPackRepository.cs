@@ -4,7 +4,9 @@ namespace TP4SCS.Repository.Interfaces
 {
     public interface IPlatformPackRepository : IGenericRepository<PlatformPack>
     {
-        Task<IEnumerable<PlatformPack>?> GetPacksAsync();
+        Task<IEnumerable<PlatformPack>?> GetRegisterPacksAsync();
+
+        Task<IEnumerable<PlatformPack>?> GetFeaturePacksAsync();
 
         Task<PlatformPack?> GetPackByIdAsync(int id);
 
