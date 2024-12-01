@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
+using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Repository.Interfaces
@@ -17,6 +18,8 @@ namespace TP4SCS.Repository.Interfaces
         Task<(IEnumerable<BusinessProfile>?, Pagination)> GetInvlaidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest);
 
         Task<BusinessProfile?> GetBusinessProfileByIdAsync(int id);
+
+        Task<BusinessResponse?> GetBusinessProfileByIdNoTrackingAsync(int id);
 
         Task<int> GetBusinessProfileMaxIdAsync();
 
