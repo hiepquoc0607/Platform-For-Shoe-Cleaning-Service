@@ -14,14 +14,14 @@ namespace TP4SCS.Services.Implements
     public class PaymentService : IPaymentService
     {
         private readonly IBusinessRepository _businessRepository;
-        private readonly ISubscriptionPackRepository _subscriptionPackRepository;
+        private readonly IPlatformPackRepository _subscriptionPackRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IVnPayService _vnPayService;
         private readonly IMoMoService _moMoService;
         private readonly IMapper _mapper;
 
         public PaymentService(IBusinessRepository businessRepository,
-            ISubscriptionPackRepository subscriptionPackRepository,
+            IPlatformPackRepository subscriptionPackRepository,
             ITransactionRepository transactionRepository,
             IVnPayService vnPayService,
             IMoMoService moMoService,

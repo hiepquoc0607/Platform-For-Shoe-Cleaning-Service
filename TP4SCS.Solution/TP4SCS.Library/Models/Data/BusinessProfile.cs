@@ -14,8 +14,6 @@ public partial class BusinessProfile
 
     public decimal Rating { get; set; }
 
-    public int Rank { get; set; }
-
     public int TotalOrder { get; set; }
 
     public int PendingAmount { get; set; }
@@ -34,6 +32,12 @@ public partial class BusinessProfile
 
     public DateTime ExpiredTime { get; set; }
 
+    public bool IsIndividual { get; set; }
+
+    public bool IsMaterialSupported { get; set; }
+
+    public bool IsLimitServiceNum { get; set; }
+
     public string Status { get; set; } = null!;
 
     public virtual ICollection<AssetUrl> AssetUrls { get; set; } = new List<AssetUrl>();
@@ -43,4 +47,6 @@ public partial class BusinessProfile
     public virtual ICollection<BusinessStatistic> BusinessStatistics { get; set; } = new List<BusinessStatistic>();
 
     public virtual Account Owner { get; set; } = null!;
+
+    public virtual ICollection<PackSubscription> PackSubscriptions { get; set; } = new List<PackSubscription>();
 }

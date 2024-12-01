@@ -4,13 +4,13 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
 {
-    [Route("api/subscription-packs")]
+    [Route("api/platform-packs")]
     [ApiController]
-    public class SubscriptionPackController : ControllerBase
+    public class PlatformPackController : ControllerBase
     {
-        private readonly ISubscriptionPackService _subscriptionService;
+        private readonly IPlatformPackService _subscriptionService;
 
-        public SubscriptionPackController(ISubscriptionPackService subscriptionService)
+        public PlatformPackController(IPlatformPackService subscriptionService)
         {
             _subscriptionService = subscriptionService;
         }
@@ -42,7 +42,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePackAsync([FromBody] SubscriptionPackRequest subscriptionPackRequest)
+        public async Task<IActionResult> CreatePackAsync([FromBody] PlatformPackRequest subscriptionPackRequest)
         {
             var result = await _subscriptionService.CreatePackAsync(subscriptionPackRequest);
 
@@ -55,7 +55,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackAsync([FromRoute] int id, [FromBody] SubscriptionPackRequest subscriptionPackRequest)
+        public async Task<IActionResult> UpdatePackAsync([FromRoute] int id, [FromBody] PlatformPackRequest subscriptionPackRequest)
         {
             var result = await _subscriptionService.UpdatePackAsync(id, subscriptionPackRequest);
 

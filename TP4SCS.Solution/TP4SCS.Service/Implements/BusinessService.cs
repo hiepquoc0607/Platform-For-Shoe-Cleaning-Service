@@ -114,30 +114,6 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        //Update Business Rank
-        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessRankAsync(int id, UpdateBusinessRankRequest updateBusinessRankRequest)
-        {
-            var oldBusiness = await _businessRepository.GetBusinessProfileByIdAsync(id);
-
-            if (oldBusiness == null)
-            {
-                return new ApiResponse<BusinessResponse>("error", 404, "Tài Khoản Chưa Sở Hữu Doanh Nghiệp!");
-            }
-
-            oldBusiness.Rank = updateBusinessRankRequest.Rank;
-
-            try
-            {
-                await _businessRepository.UpdateBusinessProfileAsync(oldBusiness);
-
-                return new ApiResponse<BusinessResponse>("success", "Cập Nhập Xếp Hạng Doanh Nghiệp Thành Công!", null);
-            }
-            catch (Exception)
-            {
-                return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Xếp Hạng Doanh Nghiệp Thất Bại!");
-            }
-        }
-
         public async Task<ApiResponse<BusinessResponse>> UpdateBusinessStatisticAsync(int id, UpdateBusinessStatisticRequest updateBusinessStatisticRequest)
         {
             var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
@@ -306,20 +282,6 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Xác Nhận Doanh Nghiệp Thất Bại!");
             }
 
-        }
-
-        public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetBusinessesByRankAsync(GetBusinessRequest getBusinessRequest)
-        {
-            var (businesses, pagination) = await _businessRepository.GetBusinessesByRankingAsync(getBusinessRequest);
-
-            if (businesses == null)
-            {
-                return new ApiResponse<IEnumerable<BusinessResponse>?>("error", 404, "Không Tìm Thấy Doanh Nghiệp!");
-            }
-
-            var data = businesses.Adapt<IEnumerable<BusinessResponse>>();
-
-            return new ApiResponse<IEnumerable<BusinessResponse>?>("success", "Lấy Dữ Liệu Thành Công!", data, 200, pagination);
         }
     }
 }

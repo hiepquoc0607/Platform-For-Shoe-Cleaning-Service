@@ -5,13 +5,13 @@ using TP4SCS.Library.Models.Response.SubcriptionPack;
 
 namespace TP4SCS.Library.Utils.Mapper
 {
-    public class SubscriptionPackMapper : IRegister
+    public class PlatformPackMapper : IRegister
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<SubscriptionPack, SubscriptionPackResponse>();
+            config.NewConfig<PlatformPack, PlatformPackResponse>();
 
-            config.NewConfig<SubscriptionPackRequest, SubscriptionPack>();
+            config.NewConfig<PlatformPackRequest, PlatformPack>();
         }
     }
 }

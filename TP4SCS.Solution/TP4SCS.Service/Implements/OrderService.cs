@@ -298,7 +298,7 @@ namespace TP4SCS.Services.Implements
             }
 
             _ = Task.Run(() => _orderNotificationRepository.CreateOrderNotificationAsync(newNoti));
-            
+
             order.Status = status;
             await _orderRepository.UpdateOrderAsync(order);
         }

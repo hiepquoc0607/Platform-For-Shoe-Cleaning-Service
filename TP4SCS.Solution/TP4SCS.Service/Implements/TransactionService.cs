@@ -11,12 +11,12 @@ namespace TP4SCS.Library.Services
     public class TransactionService : ITransactionService
     {
         private readonly ITransactionRepository _transactionRepository;
-        private readonly ISubscriptionPackRepository _subscriptionPackRepository;
+        private readonly IPlatformPackRepository _subscriptionPackRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
 
         public TransactionService(ITransactionRepository transactionRepository,
-            ISubscriptionPackRepository subscriptionPackRepository,
+            IPlatformPackRepository subscriptionPackRepository,
             IAccountRepository accountRepository,
             IMapper mapper)
         {

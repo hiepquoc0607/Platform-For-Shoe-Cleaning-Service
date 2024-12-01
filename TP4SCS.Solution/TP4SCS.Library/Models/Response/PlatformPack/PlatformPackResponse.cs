@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace TP4SCS.Library.Models.Response.SubcriptionPack
 {
-    public class SubscriptionPackResponse
+    public class PlatformPackResponse
     {
         public int Id { get; set; }
 

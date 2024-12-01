@@ -10,33 +10,33 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
 {
-    public class SubscriptionPackService : ISubscriptionPackService
+    public class PlatformPackService : IPlatformPackService
     {
-        private readonly ISubscriptionPackRepository _subscriptionRepository;
+        private readonly IPlatformPackRepository _subscriptionRepository;
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public SubscriptionPackService(ISubscriptionPackRepository subscriptionRepository, IMapper mapper, Util util)
+        public PlatformPackService(IPlatformPackRepository subscriptionRepository, IMapper mapper, Util util)
         {
             _subscriptionRepository = subscriptionRepository;
             _mapper = mapper;
             _util = util;
         }
 
-        public async Task<ApiResponse<SubscriptionPackResponse>> CreatePackAsync(SubscriptionPackRequest subscriptionPackRequest)
+        public async Task<ApiResponse<PlatformPackResponse>> CreatePackAsync(PlatformPackRequest subscriptionPackRequest)
         {
             int totalPack = await _subscriptionRepository.CountPackAsync();
 
             if (totalPack >= 3)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Đã Có Tối Đa 3 Gói Đăng Kí!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Đã Có Tối Đa 3 Gói Đăng Kí!");
             }
 
             List<int> periods = await _subscriptionRepository.GetPeriodArrayAsync();
 
             if (periods.Contains(subscriptionPackRequest.Period))
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Thời Hạn Gói Đăng Kí Trùng Lập!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Thời Hạn Gói Đăng Kí Trùng Lập!");
             }
 
             var name = _util.FormatStringName(subscriptionPackRequest.Name);
@@ -45,7 +45,7 @@ namespace TP4SCS.Services.Implements
 
             if (isNameExisted)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
             }
 
             periods.Add(subscriptionPackRequest.Period);
@@ -55,12 +55,12 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                var newPack = _mapper.Map<SubscriptionPack>(subscriptionPackRequest);
+                var newPack = _mapper.Map<PlatformPack>(subscriptionPackRequest);
                 newPack.Name = name;
                 newPack.Description = "";
 
-                var secondPack = new SubscriptionPack();
-                var thirdPack = new SubscriptionPack();
+                var secondPack = new PlatformPack();
+                var thirdPack = new PlatformPack();
 
                 if (newIndex != 0)
                 {
@@ -77,8 +77,8 @@ namespace TP4SCS.Services.Implements
                 }
                 else
                 {
-                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
-                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new SubscriptionPack();
+                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new PlatformPack();
+                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new PlatformPack();
 
                     decimal savePriceOfSecond = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (secondPack.Price / secondPack.Period);
                     string saveOfSeccond = savePriceOfSecond.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
@@ -112,29 +112,29 @@ namespace TP4SCS.Services.Implements
                     });
                 }
 
-                return new ApiResponse<SubscriptionPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
+                return new ApiResponse<PlatformPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
             }
             catch (Exception)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Tạo Gói Đăng Kí Mới Thất Bại!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Tạo Gói Đăng Kí Mới Thất Bại!");
             }
         }
 
-        public async Task<ApiResponse<SubscriptionPackResponse>> DeletePackAsync(int id)
+        public async Task<ApiResponse<PlatformPackResponse>> DeletePackAsync(int id)
         {
             var pack = await _subscriptionRepository.GetPackByIdNoTrackingAsync(id);
 
             if (pack == null)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+                return new ApiResponse<PlatformPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
             List<int> periods = await _subscriptionRepository.GetPeriodArrayAsync();
             periods.Remove(pack.Period);
             periods.Sort();
 
-            var basePack = await _subscriptionRepository.GetPackByPeriodAsync(periods[0]) ?? new SubscriptionPack();
-            var remainPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
+            var basePack = await _subscriptionRepository.GetPackByPeriodAsync(periods[0]) ?? new PlatformPack();
+            var remainPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new PlatformPack();
 
             decimal savePrice = (basePack.Price / periods[0]) - (remainPack.Price / remainPack.Period);
             string save = savePrice.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
@@ -161,56 +161,56 @@ namespace TP4SCS.Services.Implements
                     await _subscriptionRepository.DeletePackAsync(id);
                 });
 
-                return new ApiResponse<SubscriptionPackResponse>("success", "Xoá Gói Đăng Kí Thành Công!", null, 200);
+                return new ApiResponse<PlatformPackResponse>("success", "Xoá Gói Đăng Kí Thành Công!", null, 200);
             }
             catch (Exception)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Xoá Gói Đăng Kí Thất Bại!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Xoá Gói Đăng Kí Thất Bại!");
             }
         }
 
-        public async Task<ApiResponse<SubscriptionPackResponse?>> GetPackByIdAsync(int id)
+        public async Task<ApiResponse<PlatformPackResponse?>> GetPackByIdAsync(int id)
         {
             var pack = await _subscriptionRepository.GetPackByIdAsync(id);
 
             if (pack == null)
             {
-                return new ApiResponse<SubscriptionPackResponse?>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+                return new ApiResponse<PlatformPackResponse?>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
-            var data = _mapper.Map<SubscriptionPackResponse>(pack);
+            var data = _mapper.Map<PlatformPackResponse>(pack);
 
-            return new ApiResponse<SubscriptionPackResponse?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
+            return new ApiResponse<PlatformPackResponse?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
         }
 
-        public async Task<ApiResponse<IEnumerable<SubscriptionPackResponse>?>> GetPacksAsync()
+        public async Task<ApiResponse<IEnumerable<PlatformPackResponse>?>> GetPacksAsync()
         {
             var packs = await _subscriptionRepository.GetPacksAsync();
 
             if (packs == null)
             {
-                return new ApiResponse<IEnumerable<SubscriptionPackResponse>?>("error", 404, "Thông Tin Gói Đăng Kí Trống!");
+                return new ApiResponse<IEnumerable<PlatformPackResponse>?>("error", 404, "Thông Tin Gói Đăng Kí Trống!");
             }
 
-            var data = packs.Adapt<IEnumerable<SubscriptionPackResponse>>();
+            var data = packs.Adapt<IEnumerable<PlatformPackResponse>>();
 
-            return new ApiResponse<IEnumerable<SubscriptionPackResponse>?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
+            return new ApiResponse<IEnumerable<PlatformPackResponse>?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
         }
 
-        public async Task<ApiResponse<SubscriptionPackResponse>> UpdatePackAsync(int id, SubscriptionPackRequest subscriptionPackRequest)
+        public async Task<ApiResponse<PlatformPackResponse>> UpdatePackAsync(int id, PlatformPackRequest subscriptionPackRequest)
         {
             var oldPack = await _subscriptionRepository.GetPackByIdAsync(id);
 
             if (oldPack == null)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+                return new ApiResponse<PlatformPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
             List<int> periods = await _subscriptionRepository.GetPeriodArrayAsync();
 
             if (oldPack.Period != subscriptionPackRequest.Period && periods.Contains(subscriptionPackRequest.Period))
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Thời Hạn Gói Đăng Kí Trùng Lập!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Thời Hạn Gói Đăng Kí Trùng Lập!");
             }
 
             var name = _util.FormatStringName(subscriptionPackRequest.Name);
@@ -219,7 +219,7 @@ namespace TP4SCS.Services.Implements
 
             if (oldPack.Name.Equals(name) == false && isNameExisted)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Tên Gói Đăng Kí Đã Tồn Tại!");
             }
 
             periods.Remove(oldPack.Period);
@@ -231,8 +231,8 @@ namespace TP4SCS.Services.Implements
             try
             {
                 var newPack = _mapper.Map(subscriptionPackRequest, oldPack);
-                var secondPack = new SubscriptionPack();
-                var thirdPack = new SubscriptionPack();
+                var secondPack = new PlatformPack();
+                var thirdPack = new PlatformPack();
 
                 if (newIndex != 0)
                 {
@@ -252,8 +252,8 @@ namespace TP4SCS.Services.Implements
                 }
                 else
                 {
-                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new SubscriptionPack();
-                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new SubscriptionPack();
+                    secondPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[1]) ?? new PlatformPack();
+                    thirdPack = await _subscriptionRepository.GetPackByPeriodAsync(periods[2]) ?? new PlatformPack();
 
                     decimal savePriceOfSecond = (subscriptionPackRequest.Price / subscriptionPackRequest.Period) - (secondPack.Price / secondPack.Period);
                     string saveOfSeccond = savePriceOfSecond.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
@@ -287,11 +287,11 @@ namespace TP4SCS.Services.Implements
                     });
                 }
 
-                return new ApiResponse<SubscriptionPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
+                return new ApiResponse<PlatformPackResponse>("success", "Cập Nhập Gói Đăng Kí Thành Công!", null, 200);
             }
             catch (Exception)
             {
-                return new ApiResponse<SubscriptionPackResponse>("error", 400, "Cập Nhập Gói Đăng Kí Thất Bại!");
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Cập Nhập Gói Đăng Kí Thất Bại!");
             }
         }
     }

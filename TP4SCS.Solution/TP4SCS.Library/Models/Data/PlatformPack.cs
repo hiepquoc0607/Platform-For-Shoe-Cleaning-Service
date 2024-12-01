@@ -1,6 +1,6 @@
 ﻿namespace TP4SCS.Library.Models.Data;
 
-public partial class SubscriptionPack
+public partial class PlatformPack
 {
     public int Id { get; set; }
 
@@ -11,4 +11,8 @@ public partial class SubscriptionPack
     public int Period { get; set; }
 
     public decimal Price { get; set; }
+
+    public string Type { get; set; } = null!;
+
+    public virtual ICollection<PackSubscription> PackSubscriptions { get; set; } = new List<PackSubscription>();
 }
