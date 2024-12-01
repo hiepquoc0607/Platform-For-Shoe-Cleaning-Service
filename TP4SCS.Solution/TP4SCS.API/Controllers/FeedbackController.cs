@@ -25,7 +25,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeedbackss(string? status,
+        public async Task<IActionResult> GetFeedbacks(string? status,
             OrderByEnum orderBy = OrderByEnum.IdDesc,
             int pageIndex = 1, int pageSize = 10)
         {
@@ -200,11 +200,12 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut("{id}/content")]
-        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] string content)
+        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackUpdateRequestV2 request)
         {
             try
             {
-                await _feedbackService.UpdateContentFeedbackAsync(content,id);
+                var feedback = _mapper.Map<Feedback>(request);
+                await _feedbackService.UpdateContentFeedbackAsync(feedback, id);
                 return Ok(new ResponseObject<string>("Cập nhật đánh giá thành công"));
             }
             catch (KeyNotFoundException ex)
