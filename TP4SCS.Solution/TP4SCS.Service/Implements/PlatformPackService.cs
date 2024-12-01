@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using MapsterMapper;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Models.Request.PlatformPack;
 using TP4SCS.Library.Models.Request.SubscriptionPack;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.SubcriptionPack;
@@ -23,7 +24,7 @@ namespace TP4SCS.Services.Implements
             _util = util;
         }
 
-        public async Task<ApiResponse<PlatformPackResponse>> CreatePackAsync(PlatformPackRequest subscriptionPackRequest)
+        public async Task<ApiResponse<PlatformPackResponse>> CreateRegisterPackAsync(RegisterPackRequest subscriptionPackRequest)
         {
             int totalPack = await _subscriptionRepository.CountPackAsync();
 
@@ -120,7 +121,7 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<PlatformPackResponse>> DeletePackAsync(int id)
+        public async Task<ApiResponse<PlatformPackResponse>> DeleteRegisterPackAsync(int id)
         {
             var pack = await _subscriptionRepository.GetPackByIdNoTrackingAsync(id);
 
@@ -169,6 +170,20 @@ namespace TP4SCS.Services.Implements
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<PlatformPackResponse>?>> GetFeaturePacksAsync()
+        {
+            var packs = await _subscriptionRepository.GetFeaturePacksAsync();
+
+            if (packs == null)
+            {
+                return new ApiResponse<IEnumerable<PlatformPackResponse>?>("error", 404, "Thông Tin Gói Tính Năng Trống!");
+            }
+
+            var data = packs.Adapt<IEnumerable<PlatformPackResponse>>();
+
+            return new ApiResponse<IEnumerable<PlatformPackResponse>?>("success", "Lấy Thông Tin Gói Tính Năng Tành Công!", data, 200);
+        }
+
         public async Task<ApiResponse<PlatformPackResponse?>> GetPackByIdAsync(int id)
         {
             var pack = await _subscriptionRepository.GetPackByIdAsync(id);
@@ -183,9 +198,9 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<PlatformPackResponse?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
         }
 
-        public async Task<ApiResponse<IEnumerable<PlatformPackResponse>?>> GetPacksAsync()
+        public async Task<ApiResponse<IEnumerable<PlatformPackResponse>?>> GetRegisterPacksAsync()
         {
-            var packs = await _subscriptionRepository.GetPacksAsync();
+            var packs = await _subscriptionRepository.GetRegisterPacksAsync();
 
             if (packs == null)
             {
@@ -197,7 +212,30 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<PlatformPackResponse>?>("success", "Lấy Thông Tin Gói Đăng Kí Tành Công!", data, 200);
         }
 
-        public async Task<ApiResponse<PlatformPackResponse>> UpdatePackAsync(int id, PlatformPackRequest subscriptionPackRequest)
+        public async Task<ApiResponse<PlatformPackResponse>> UpdateFeaturePackAsync(int id, FeaturePackRequest featurePackRequest)
+        {
+            var oldPack = await _subscriptionRepository.GetPackByIdAsync(id);
+
+            if (oldPack == null)
+            {
+                return new ApiResponse<PlatformPackResponse>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
+            }
+
+            oldPack.Price = featurePackRequest.Price;
+
+            try
+            {
+                await _subscriptionRepository.UpdatePackAsync(oldPack);
+
+                return new ApiResponse<PlatformPackResponse>("success", "Cập Nhập Gói Tính Năng Thành Công!", null, 200);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<PlatformPackResponse>("error", 400, "Cập Nhập Gói Tính Năng Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<PlatformPackResponse>> UpdateRegisterPackAsync(int id, RegisterPackRequest subscriptionPackRequest)
         {
             var oldPack = await _subscriptionRepository.GetPackByIdAsync(id);
 
