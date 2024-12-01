@@ -60,7 +60,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMaterialsByBranchIdAsync(int id)
+        public async Task<IActionResult> GetMaterialsByIdAsync(int id)
         {
             try
             {

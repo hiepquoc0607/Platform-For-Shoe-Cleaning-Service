@@ -107,6 +107,7 @@ namespace TP4SCS.Library.Utils.Mapper
             //Feedback Mapping
             CreateMap<FeedbackRequest, Feedback>();
             CreateMap<FeedbackUpdateRequest, Feedback>();
+            CreateMap<FeedbackUpdateRequestV2, Feedback>();
             CreateMap<Feedback, FeedbackResponse>()
                 .ForMember(dest => dest.OrderItem, opt => opt.MapFrom(src => src.OrderItem)) // OrderItem ánh xạ trực tiếp
                 .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.OrderItem.Order)) // Order ánh xạ qua OrderItem
