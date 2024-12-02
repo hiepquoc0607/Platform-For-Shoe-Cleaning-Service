@@ -44,6 +44,13 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
+        Task<(IEnumerable<Service>?, int)> GetServicesByCategoryIdAsync(
+            int categoryId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc);
 
         Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId);
         Task UpdateServiceAsync(Service service);

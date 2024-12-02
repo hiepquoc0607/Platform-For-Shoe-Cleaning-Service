@@ -356,6 +356,39 @@ namespace TP4SCS.Services.Implements
             return (filteredServices, totalCount);
         }
 
+        public async Task<(IEnumerable<Service>?, int)> GetServicesByCategoryIdAsync(
+            int categoryId,
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
+        {
+            // Chỉ lấy danh sách dịch vụ theo keyword và status từ repository
+            var services = await _serviceRepository.GetServicesAsync(keyword, status, null, null, orderBy);
+
+            // Lọc các dịch vụ theo branchId
+            var filteredServices = services?.Where(s => s.CategoryId == categoryId);
+
+            // Đếm tổng số dịch vụ sau khi lọc
+            int totalCount = filteredServices?.Count() ?? 0;
+
+            // Sắp xếp các dịch vụ dựa trên giá trị của orderBy
+            filteredServices = orderBy == OrderByEnum.IdAsc
+                ? filteredServices?.OrderBy(s => s.Id)
+                : filteredServices?.OrderByDescending(s => s.Id);
+
+            // Thực hiện phân trang nếu pageIndex và pageSize có giá trị
+            if (pageIndex.HasValue && pageSize.HasValue && pageSize > 0)
+            {
+                filteredServices = filteredServices?
+                    .Skip((pageIndex.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value);
+            }
+
+            return (filteredServices, totalCount);
+        }
+
         public Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null)
         {
             return _serviceRepository.GetTotalServiceCountAsync(keyword, status);
