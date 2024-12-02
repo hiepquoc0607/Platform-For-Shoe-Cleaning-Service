@@ -1,7 +1,5 @@
 ﻿using MapsterMapper;
 using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Branch;
-using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Notification;
 using TP4SCS.Library.Models.Request.Order;
@@ -16,10 +14,9 @@ namespace TP4SCS.Services.Implements
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IBusinessBranchService _businessBranchService;
-        private readonly IBusinessService _businessService;
         private readonly IServiceRepository _serviceRepository;
         private readonly IBranchRepository _branchRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IMaterialService _materialService;
         private readonly IAccountRepository _accountRepository;
@@ -29,8 +26,6 @@ namespace TP4SCS.Services.Implements
 
         public OrderService(
             IOrderRepository orderRepository,
-            IBusinessBranchService businessBranchService,
-            IBusinessService businessService,
             IServiceRepository serviceRepository,
             IMaterialService materialService,
             IAddressRepository addressRepository,
@@ -38,11 +33,10 @@ namespace TP4SCS.Services.Implements
             IAccountRepository accountRepository,
             IShipService shipService,
             IOrderNotificationRepository orderNotificationRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IBusinessRepository businessRepository)
         {
             _orderRepository = orderRepository;
-            _businessBranchService = businessBranchService;
-            _businessService = businessService;
             _serviceRepository = serviceRepository;
             _materialService = materialService;
             _addressRepository = addressRepository;
@@ -51,6 +45,7 @@ namespace TP4SCS.Services.Implements
             _shipService = shipService;
             _orderNotificationRepository = orderNotificationRepository;
             _mapper = mapper;
+            _businessRepository = businessRepository;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -184,30 +179,24 @@ namespace TP4SCS.Services.Implements
             {
                 throw new KeyNotFoundException($"Không tìm thấy đơn hàng với ID: {existingOrderedId}");
             }
-
-            if (Util.IsEqual(status, StatusConstants.CANCELED) && Util.IsEqual(order.Status, StatusConstants.APPROVED))
+            if (Util.IsEqual(status, StatusConstants.CANCELED) && !Util.IsEqual(order.Status, StatusConstants.PENDING))
             {
                 return;
             }
-
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
+            var branch = await _branchRepository.GetBranchByIdAsync(branchId);
+            var business = await _businessRepository.GetBusinessProfileByIdAsync(branchId);
+            if (branch == null || business == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy branch với id: {branchId} hoặc business với id: {businessId}");
+            }
             var notification = new CreateOrderNotificationRequest();
             notification.OrderId = order.Id;
 
             var newNoti = _mapper.Map<OrderNotification>(notification);
 
-            if (Util.IsEqual(status, StatusConstants.CANCELED))
+            if (Util.IsEqual(status, StatusConstants.CANCELED) && Util.IsEqual(order.Status, StatusConstants.PENDING))
             {
-                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                branch.Type = OrderStatistic.CANCELED;
-
-                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
-
-                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                business.Type = OrderStatistic.CANCELED;
-
-                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
-
                 var orderDetails = order.OrderDetails;
                 foreach (var od in orderDetails)
                 {
@@ -223,56 +212,57 @@ namespace TP4SCS.Services.Implements
                         foreach (var materialId in materialIds)
                         {
                             var material = await _materialService.GetMaterialByIdAsync(materialId);
-                            material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == od.BranchId)!.Storage--;
+                            material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == od.BranchId)!.Storage++;
                             await _materialService.UpdateMaterialAsync(material);
                         }
                     }
                 }
 
+                business.PendingAmount--;
+                business.CanceledAmount++;
+                branch.PendingAmount--;
+                branch.CanceledAmount++;
+
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
+
                 newNoti.Content = "Bạn Có Một Đơn Hàng Bị Huỷ!";
                 newNoti.IsProviderNoti = true;
             }
-            else if (Util.IsEqual(status, StatusConstants.APPROVED))
+            else if (Util.IsEqual(status, StatusConstants.APPROVED) && Util.IsEqual(order.Status, StatusConstants.PENDING))
             {
-                var orderDetails = order.OrderDetails;
-                foreach (var od in orderDetails)
-                {
-                    //if (od.ServiceId != null && od.MaterialId == null)
-                    if (od.ServiceId != null)
-                    {
-                        var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
-                        await _serviceRepository.UpdateServiceAsync(service!);
-                    }
+                business.PendingAmount--;
+                branch.PendingAmount--;
 
-                }
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
 
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
                 newNoti.IsProviderNoti = false;
             }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
-                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                branch.Type = OrderStatistic.FINISHED;
+                business.FinishedAmount++;
+                branch.FinishedAmount++;
 
-                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
-
-                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                business.Type = OrderStatistic.FINISHED;
-
-                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
             }
             else if (Util.IsEqual(status, StatusConstants.PROCESSING))
             {
+                business.ProcessingAmount++;
+                branch.ProcessingAmount++;
 
-                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                branch.Type = OrderStatistic.PROCESSING;
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
+            }
+            else if (Util.IsEqual(status, StatusConstants.STORAGE))
+            {
+                business.ProcessingAmount--;
+                branch.ProcessingAmount--;
 
-                await _businessBranchService.UpdateBranchStatisticAsync(branchId, branch);
-
-                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                business.Type = OrderStatistic.PROCESSING;
-
-                await _businessService.UpdateBusinessStatisticAsync(businessId, business);
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
             }
             else if (Util.IsEqual(status, StatusConstants.SHIPPING))
             {

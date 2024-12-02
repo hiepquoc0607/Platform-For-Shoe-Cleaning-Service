@@ -12,14 +12,21 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceService _serviceService;
         private readonly IMaterialRepository _materialRepository;
         private readonly IAssetUrlService _assetUrlService;
+        private readonly IBranchRepository _branchRepository;
+        private readonly IBusinessRepository _businessRepository;
+        private readonly IOrderRepository _orderRepository;
 
         public OrderDetailService(IOrderDetailRepository orderDetailRepository, IServiceService serviceService,
-            IMaterialRepository materialRepository, IAssetUrlService assetUrlService)
+            IMaterialRepository materialRepository, IAssetUrlService assetUrlService, IBranchRepository branchRepository,
+            IBusinessRepository businessRepository, IOrderRepository orderRepository)
         {
             _orderDetailRepository = orderDetailRepository;
             _serviceService = serviceService;
             _materialRepository = materialRepository;
             _assetUrlService = assetUrlService;
+            _branchRepository = branchRepository;
+            _businessRepository = businessRepository;
+            _orderRepository = orderRepository;
         }
 
         //public async Task AddOrderDetailsAsync(List<OrderDetail> orderDetails)
@@ -83,9 +90,36 @@ namespace TP4SCS.Services.Implements
             {
                 throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
             }
-            orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);
+            orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);            
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
+
+            var order = await _orderRepository.GetOrderByIdAsync(orderDetail.OrderId);
+            if (order == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy order với id: {orderDetail.OrderId} ");
+            }
+
+            if((Util.IsEqual(order.Status, StatusConstants.STORAGE)))
+            {
+                order.Status = StatusConstants.PROCESSING;
+                var branch = await _branchRepository.GetBranchByIdAsync(branchId);
+                if (branch == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy branch với id: {branchId} ");
+                }
+                var business = await _businessRepository.GetBusinessProfileByIdAsync(branch.BusinessId);
+                if (business == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy business với id: {branch.BusinessId}");
+                }
+
+                business.ProcessingAmount++;
+                branch.ProcessingAmount++;
+
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
+            }
         }
 
         public async Task DeleteOrderDetailAsync(int id)

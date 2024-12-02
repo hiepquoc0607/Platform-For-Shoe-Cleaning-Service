@@ -28,17 +28,17 @@ namespace TP4SCS.Repository.Implements
             var result = await _dbContext.OrderDetails
                 .AsNoTracking()
                 .Where(od => od.Id == id)
-                .Join(_dbContext.BusinessBranches.AsNoTracking(),
-                      od => od.BranchId,
-                      bb => bb.Id,
-                      (od, bb) => new { od.BranchId, bb.BusinessId })
-                .FirstOrDefaultAsync();
+                .Include(od => od.Branch) // Load dữ liệu chi nhánh liên quan
+                .SingleOrDefaultAsync();
 
-            return result != null
-                ? (result.BranchId, result.BusinessId)
-                : (0, 0);
+            if (result == null || result.Branch == null)
+            {
+                return (0, 0); // Trả về (0, 0) nếu không tìm thấy đơn hàng hoặc không có chi nhánh
+            }
+
+            // Trả về BranchId và BusinessId từ Branch
+            return (result.Branch.Id, result.Branch.BusinessId);
         }
-
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _dbContext.Orders
