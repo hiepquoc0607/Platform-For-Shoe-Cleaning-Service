@@ -119,6 +119,19 @@ namespace TP4SCS.API.Controllers
                 );
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("", pagedResponse));
         }
+        [HttpGet("categories/{id}")]
+        public async Task<IActionResult> GetServiceByCategoryId([FromQuery] PagedRequest request, int id)
+        {
+            var (services, total) = await _serviceService.GetServicesByCategoryIdAsync(id, request.Keyword, request.Status, request.PageIndex, request.PageSize, request.OrderBy);
+            var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
+            var pagedResponse = new PagedResponse<ServiceResponse>(
+                    serviceResponses,
+                    total,
+                    request.PageIndex,
+                    request.PageSize
+                );
+            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("", pagedResponse));
+        }
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedServicesAsync([FromQuery] PagedRequest request)
         {
