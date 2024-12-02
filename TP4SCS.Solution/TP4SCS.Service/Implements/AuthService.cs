@@ -129,7 +129,11 @@ namespace TP4SCS.Services.Implements
             switch (data.Role.Trim().ToUpperInvariant())
             {
                 case "OWNER":
-                    data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+                    var business = await _businessRepository.GetBusinessIdByOwnerIdNoTrackingAsync(account.Id);
+                    data.BusinessId = business!.Id;
+                    data.IsIndividual = business.IsIndividual;
+                    data.IsMaterialSupported = business.IsMaterialSupported;
+                    data.IsLimitServiceNum = business.IsLimitServiceNum;
                     break;
                 case "EMPLOYEE":
                     data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
@@ -222,7 +226,11 @@ namespace TP4SCS.Services.Implements
 
             if (data.Role.Equals("OWNER", StringComparison.OrdinalIgnoreCase))
             {
-                data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+                var business = await _businessRepository.GetBusinessIdByOwnerIdNoTrackingAsync(account.Id);
+                data.BusinessId = business!.Id;
+                data.IsIndividual = business.IsIndividual;
+                data.IsMaterialSupported = business.IsMaterialSupported;
+                data.IsLimitServiceNum = business.IsLimitServiceNum;
             }
 
             if (data.Role.Equals("EMPLOYEE", StringComparison.OrdinalIgnoreCase))
@@ -594,7 +602,11 @@ namespace TP4SCS.Services.Implements
             switch (data.Role.Trim().ToUpperInvariant())
             {
                 case "OWNER":
-                    data.BusinessId = await _businessRepository.GetBusinessIdByOwnerIdAsync(account.Id);
+                    var business = await _businessRepository.GetBusinessIdByOwnerIdNoTrackingAsync(account.Id);
+                    data.BusinessId = business!.Id;
+                    data.IsIndividual = business.IsIndividual;
+                    data.IsMaterialSupported = business.IsMaterialSupported;
+                    data.IsLimitServiceNum = business.IsLimitServiceNum;
                     break;
                 case "EMPLOYEE":
                     data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);

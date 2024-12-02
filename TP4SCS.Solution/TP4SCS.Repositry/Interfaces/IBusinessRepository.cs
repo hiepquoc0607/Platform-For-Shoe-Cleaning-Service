@@ -9,6 +9,8 @@ namespace TP4SCS.Repository.Interfaces
     {
         Task<int?> GetBusinessIdByOwnerIdAsync(int id);
 
+        Task<BusinessProfile?> GetBusinessIdByOwnerIdNoTrackingAsync(int id);
+
         Task<int[]?> GetBusinessIdsAsync();
 
         Task<BusinessProfile?> GetBusinessByOwnerIdAsync(int id);
