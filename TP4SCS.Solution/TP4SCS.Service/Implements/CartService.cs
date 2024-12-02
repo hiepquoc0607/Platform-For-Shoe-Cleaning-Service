@@ -7,6 +7,7 @@ using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -21,18 +22,16 @@ namespace TP4SCS.Services.Implements
         private readonly IShipService _shipService;
         private readonly IAddressRepository _addressRepository;
         private readonly IBranchRepository _branchRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IMaterialService _materialService;
-        private readonly IBusinessService _businessService;
-        private readonly IBusinessBranchService _businessBranchService;
 
         public CartService(ICartRepository cartRepository, IServiceService serviceService
             , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
             IShipService shipService,
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
-            IMaterialService materialService,
-            IBusinessService businessService,
-            IBusinessBranchService businessBranchService)
+            IMaterialService materialService, 
+            IBusinessRepository businessRepository)
         {
             _cartRepository = cartRepository;
             _serviceService = serviceService;
@@ -42,8 +41,7 @@ namespace TP4SCS.Services.Implements
             _addressRepository = addressRepository;
             _branchRepository = branchRepository;
             _materialService = materialService;
-            _businessService = businessService;
-            _businessBranchService = businessBranchService;
+            _businessRepository = businessRepository;
         }
 
         public async Task ClearCartAsync(int cartId)
@@ -220,18 +218,26 @@ namespace TP4SCS.Services.Implements
                 order.PendingTime = DateTime.Now;
                 order.CreateTime = DateTime.Now;
                 order.TotalPrice = orderPrice + order.DeliveredFee;
+                order.Status = StatusConstants.PENDING;
 
                 orders.Add(order);
 
-                UpdateBranchStatisticRequest branch = new UpdateBranchStatisticRequest();
-                branch.Type = OrderStatistic.PENDING;
+                var branch = await _branchRepository.GetBranchByIdAsync(group.BranchId);
+                if (branch == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy branch với id: {group.BranchId} ");
+                }
+                var business = await _businessRepository.GetBusinessProfileByIdAsync(branch.BusinessId);
+                if (business == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy business với id: {branch.BusinessId}");
+                }
 
-                await _businessBranchService.UpdateBranchStatisticAsync(order.OrderDetails.FirstOrDefault()!.BranchId, branch);
+                business.PendingAmount++;
+                branch.PendingAmount++;
 
-                UpdateBusinessStatisticRequest business = new UpdateBusinessStatisticRequest();
-                business.Type = OrderStatistic.PENDING;
-
-                await _businessService.UpdateBusinessStatisticAsync((await _businessBranchService.GetBranchByIdAsync(order.OrderDetails.FirstOrDefault()!.BranchId)).Data!.BusinessId, business);
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
             }
 
             await _orderRepository.AddOrdersAsync(orders);
