@@ -59,7 +59,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<string?>("error", 404, "Không Tìm Thấy Thông Tin Gói Đăng Kí!");
             }
 
-            if (pack.Type.Equals(TypeConstants.FEATURE) && !string.IsNullOrEmpty(pack.Feature))
+            if (pack.Type.Equals(TypeConstants.FEATURE))
             {
                 var featureErrorMessages = new Dictionary<string, Func<bool>>
                 {
@@ -68,7 +68,7 @@ namespace TP4SCS.Services.Implements
                     { FeatureConstants.SERVICE, () => !business.IsLimitServiceNum }
                 };
 
-                if (featureErrorMessages.TryGetValue(pack.Feature, out var condition) && condition())
+                if (featureErrorMessages.TryGetValue(pack.Feature!, out var condition) && condition())
                 {
                     return new ApiResponse<string?>("error", 400, "Doanh Nghiệp Đã Đăng Kí Gói Tính Năng Này!");
                 }

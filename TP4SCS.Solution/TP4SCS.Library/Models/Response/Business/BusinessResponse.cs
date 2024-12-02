@@ -1,4 +1,6 @@
-﻿using TP4SCS.Library.Models.Response.PackSubscription;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
+using TP4SCS.Library.Models.Response.PackSubscription;
 
 namespace TP4SCS.Library.Models.Response.BusinessProfile
 {
@@ -42,6 +44,15 @@ namespace TP4SCS.Library.Models.Response.BusinessProfile
 
         public string Status { get; set; } = string.Empty;
 
-        public List<PackSubscriptionResponse> PackSubscriptions { get; set; } = new List<PackSubscriptionResponse>();
+        [JsonIgnore]
+        public List<PackSubscriptionResponse>? PackSubscriptions { get; set; } = null;
+
+        [JsonPropertyName("packSubscriptions")]
+        public List<PackSubscriptionResponse>? PackSubscriptionsSerialized
+        {
+            get => PackSubscriptions?.Any() == true ? PackSubscriptions : null;
+            set => PackSubscriptions = value;
+        }
+
     }
 }
