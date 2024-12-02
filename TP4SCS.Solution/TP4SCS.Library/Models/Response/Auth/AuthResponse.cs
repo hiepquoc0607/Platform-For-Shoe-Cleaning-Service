@@ -13,6 +13,18 @@ namespace TP4SCS.Library.Models.Response.Auth
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [DefaultValue(null)]
+        public bool? IsIndividual { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [DefaultValue(null)]
+        public bool? IsMaterialSupported { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [DefaultValue(null)]
+        public bool? IsLimitServiceNum { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [DefaultValue(null)]
         public int? BranchId { get; set; }
 
         public string Email { get; set; } = string.Empty;
