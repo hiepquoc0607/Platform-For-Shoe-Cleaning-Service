@@ -3,6 +3,7 @@ using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Material;
 using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -11,20 +12,32 @@ namespace TP4SCS.Services.Implements
     public class MaterialService : IMaterialService
     {
         private readonly IMaterialRepository _materialRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IAssetUrlService _assetUrlService;
         private readonly IMapper _mapper;
 
         public MaterialService(IMaterialRepository materialRepository,
             IAssetUrlService assetUrlService,
-            IMapper mapper)
+            IMapper mapper,
+            IBusinessRepository businessRepository)
         {
             _materialRepository = materialRepository;
             _assetUrlService = assetUrlService;
             _mapper = mapper;
+            _businessRepository = businessRepository;
         }
 
         public async Task AddMaterialAsync(MaterialCreateRequest materialRequest, int businessId)
         {
+            var business = await _businessRepository.GetByIDAsync(businessId);
+            if (business == null)
+            {
+                throw new ArgumentNullException($"Không tìm thấy business với id: {businessId}.");
+            }
+            if (business.IsMaterialSupported == false)
+            {
+                throw new ArgumentNullException($"Cửa hàng {business.Name} vui lòng nâng cấp gói đăng ký để thêm mới phụ kiện.");
+            }
             if (materialRequest == null)
             {
                 throw new ArgumentNullException(nameof(materialRequest), "Yêu cầu thêm nguyên liệu không được để trống.");
