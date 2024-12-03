@@ -18,6 +18,7 @@ namespace TP4SCS.Library.Models.Response.Feedback
         public DateTime CreatedTime { get; set; }
 
         public bool IsValidContent { get; set; }
+        public bool IsAllowedUpdate { get; set; }
 
         public bool IsValidAsset { get; set; }
 
