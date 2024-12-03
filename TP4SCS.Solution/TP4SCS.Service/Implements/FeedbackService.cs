@@ -91,7 +91,7 @@ namespace TP4SCS.Services.Implements
             feedback.IsValidAsset = true;
             feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;
-
+            feedback.IsAllowedUpdate = true;
             if (!string.IsNullOrEmpty(feedback.Content))
             {
                 var isValidContent = await _openAIService.ValidateFeedbackContentAsync(httpClient, feedback.Content);
@@ -134,7 +134,7 @@ namespace TP4SCS.Services.Implements
             await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
         }
 
-        public async Task UpdateContentFeedbackAsync(Feedback feedback, int existingFeedbackId)
+        public async Task UpdateContentFeedbackAsync(Feedback feedback, int existingFeedbackId, HttpClient httpClient)
         {
             var existingFeedback = await _feedbackRepository.GetFeedbackByidAsync(existingFeedbackId);
             if (existingFeedback == null)
@@ -143,6 +143,17 @@ namespace TP4SCS.Services.Implements
             }
             existingFeedback.Content = feedback.Content;
             existingFeedback.AssetUrls = feedback.AssetUrls;
+            if (!string.IsNullOrEmpty(feedback.Content))
+            {
+                var isValidContent = await _openAIService.ValidateFeedbackContentAsync(httpClient, feedback.Content);
+
+                feedback.IsValidContent = isValidContent;
+            }
+            else
+            {
+                feedback.IsValidContent = true;
+            }
+            existingFeedback.IsAllowedUpdate = false;
             await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
         }
 

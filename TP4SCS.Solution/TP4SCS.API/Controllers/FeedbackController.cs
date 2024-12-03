@@ -204,8 +204,9 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                var httpClient = _httpClientFactory.CreateClient("ChatGPT");
                 var feedback = _mapper.Map<Feedback>(request);
-                await _feedbackService.UpdateContentFeedbackAsync(feedback, id);
+                await _feedbackService.UpdateContentFeedbackAsync(feedback, id, httpClient);
                 return Ok(new ResponseObject<string>("Cập nhật đánh giá thành công"));
             }
             catch (KeyNotFoundException ex)

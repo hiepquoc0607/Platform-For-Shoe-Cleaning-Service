@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MailKit.Search;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -12,6 +13,7 @@ namespace TP4SCS.Services.Implements
     public class ServiceService : IServiceService
     {
         private readonly IServiceRepository _serviceRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IMapper _mapper;
         private readonly IServiceCategoryRepository _categoryRepository;
         private readonly IPromotionService _promotionService;
@@ -23,7 +25,8 @@ namespace TP4SCS.Services.Implements
             IServiceCategoryRepository categoryRepository,
             IPromotionService promotionService,
             IAssetUrlService assetUrlService,
-            IProcessService processService)
+            IProcessService processService,
+            IBusinessRepository businessRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
@@ -31,10 +34,22 @@ namespace TP4SCS.Services.Implements
             _promotionService = promotionService;
             _assetUrlService = assetUrlService;
             _processService = processService;
+            _businessRepository = businessRepository;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest, int businessId)
         {
+            var business = await _businessRepository.GetByIDAsync(businessId);
+            if(business == null)
+            {
+                throw new ArgumentNullException($"Không tìm thấy business với id: {businessId}.");
+            }
+            if (business.IsLimitServiceNum)
+            {
+                var services = await _serviceRepository.GetServicesAsync(null, null, null, null, OrderByEnum.IdDesc);
+                var count = services?.Where(s => s.BranchServices.Any(bs => bs.Branch.BusinessId == businessId)).Count() ?? 0;
+                if(count >=5) throw new ArgumentNullException($"Cửa hàng {business.Name} vui lòng nâng cấp gói đăng ký để thêm mới dịch vụ.");
+            }
             if (serviceRequest == null)
             {
                 throw new ArgumentNullException(nameof(serviceRequest), "Yêu cầu dịch vụ không được để trống.");
