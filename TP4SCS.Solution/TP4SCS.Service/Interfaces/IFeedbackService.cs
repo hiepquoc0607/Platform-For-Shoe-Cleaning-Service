@@ -26,6 +26,6 @@ namespace TP4SCS.Services.Interfaces
             int pageIndex = 1,
             int pageSize = 10);
         Task ReplyFeedbackAsync(string reply, int existingFeedbackId);
-        Task UpdateContentFeedbackAsync(Feedback feedback, int existingFeedbackId);
+        Task UpdateContentFeedbackAsync(Feedback feedback, int existingFeedbackId, HttpClient httpClient);
     }
 }
