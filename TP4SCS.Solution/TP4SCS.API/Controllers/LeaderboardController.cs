@@ -3,7 +3,6 @@ using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
 {
-    [Route("api/leaderboards")]
     [ApiController]
     public class LeaderboardController : ControllerBase
     {
@@ -14,7 +13,8 @@ namespace TP4SCS.API.Controllers
             _leaderboardService = leaderboardService;
         }
 
-        [HttpGet("/by-month")]
+        [HttpGet]
+        [Route("api/leaderboards/by-month")]
         public async Task<IActionResult> GetLeaderboardByMonthAsync()
         {
             var result = await _leaderboardService.GetLeaderboardByMonthAsync();
@@ -27,7 +27,8 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("/by-year")]
+        [HttpGet]
+        [Route("api/leaderboards/by-year")]
         public async Task<IActionResult> GetLeaderboardByYearAsync()
         {
             var result = await _leaderboardService.GetLeaderboardByMonthAsync();
@@ -41,6 +42,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPut]
+        [Route("api/leaderboards")]
         public async Task<IActionResult> UpdateLeaderboardAsync()
         {
             var result = await _leaderboardService.UpdateLeaderboardAsync();
