@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -18,6 +19,23 @@ namespace TP4SCS.Repository.Implements
         public async Task CreateBranchAsync(BusinessBranch businessBranch)
         {
             await InsertAsync(businessBranch);
+            var branchId = businessBranch.Id;
+            var servicesByBusinessId = _dbContext.Services
+                .Include(s => s.BranchServices)
+                    .ThenInclude(bs => bs.Branch)
+                .Where(s => s.BranchServices.Any(bs => bs.Branch.BusinessId == businessBranch.BusinessId));
+            foreach (var service in servicesByBusinessId)
+            {
+                var branchService = new BranchService
+                {
+                    BranchId = branchId,
+                    ServiceId = service.Id,
+                    Status = StatusConstants.UNAVAILABLE
+                };
+
+                _dbContext.BranchServices.Add(branchService);
+            }
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<BusinessBranch?> GetBranchByIdAsync(int id)
