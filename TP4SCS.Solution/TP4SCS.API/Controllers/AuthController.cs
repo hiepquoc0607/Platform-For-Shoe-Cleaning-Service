@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Auth;
 using TP4SCS.Services.Interfaces;
 
@@ -11,12 +12,14 @@ namespace TP4SCS.API.Controllers
         private readonly IAuthService _authService;
         private readonly IAccountService _accountService;
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public AuthController(IAuthService authService, IAccountService accountService, HttpClient httpClient)
+        public AuthController(IAuthService authService, IAccountService accountService, HttpClient httpClient, IConfiguration config)
         {
             _authService = authService;
             _accountService = accountService;
             _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpPost("login")]
@@ -31,6 +34,40 @@ namespace TP4SCS.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var clientId = _config["GoogleAuthSettings:ClientId"];
+            var redirectUri = _config["GoogleAuthSettings:RedirectUri"];
+            var googleLoginUrl = $"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={clientId}&redirect_uri={redirectUri}&scope=openid%20email%20profile";
+
+            return Redirect(googleLoginUrl);
+        }
+
+        [HttpGet("google-callback")]
+        public async Task<IActionResult> GoogleCallback([FromQuery] string code)
+        {
+            var httpClient = new HttpClient();
+            var tokenResponse = await httpClient.PostAsync("https://oauth2.googleapis.com/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                { "code", code },
+                { "client_id", _config["GoogleAuthSettings:ClientId"]! },
+                { "client_secret", _config["GoogleAuthSettings:ClientSecret"]! },
+                { "redirect_uri", _config["GoogleAuthSettings:RedirectUri"]! },
+                { "grant_type", "authorization_code" }
+                }));
+
+            var tokenResponseJson = await tokenResponse.Content.ReadAsStringAsync();
+            var tokenData = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(tokenResponseJson);
+            var idToken = tokenData!.id_token.ToString();
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            var result = await _authService.LoginGoogleAsync(payload.Email);
+            return Ok(result);
+        }
+
 
         [HttpPost("login-by-otp")]
         public async Task<IActionResult> LoginOTPAsync([FromBody] LoginOTPRequest loginOTPRequest)

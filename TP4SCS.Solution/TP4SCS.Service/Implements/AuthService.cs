@@ -624,5 +624,61 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
+        public async Task<ApiResponse<AuthResponse>> LoginGoogleAsync(string email)
+        {
+            email = email.ToLowerInvariant();
+
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
+            }
+
+            if (account.Status.Equals("SUSPENDED"))
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Tài Khoản Đã Bị Khoá!");
+            }
+
+            if (!account.IsVerified)
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Email Tài Khoản Chưa Được Xác Nhận!");
+            }
+
+            var expiredIn = CaculateSeccond(_time);
+
+            account.RefreshToken = GenerateRefreshToken();
+            account.RefreshExpireTime = DateTime.UtcNow.AddDays(1);
+            account.Otp = null;
+
+            var data = _mapper.Map<AuthResponse>(account);
+            data.Token = GenerateToken(account);
+            data.ExpiresIn = expiredIn;
+
+            switch (data.Role.Trim().ToUpperInvariant())
+            {
+                case "OWNER":
+                    var business = await _businessRepository.GetBusinessIdByOwnerIdNoTrackingAsync(account.Id);
+                    data.BusinessId = business!.Id;
+                    data.IsIndividual = business.IsIndividual;
+                    data.IsMaterialSupported = business.IsMaterialSupported;
+                    data.IsLimitServiceNum = business.IsLimitServiceNum;
+                    break;
+                case "EMPLOYEE":
+                    data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+                    break;
+            }
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
+            }
+        }
     }
 }
