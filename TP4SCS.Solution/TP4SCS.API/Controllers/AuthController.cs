@@ -35,14 +35,18 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("google-login")]
+        [HttpGet("login-by-google")]
         public IActionResult GoogleLogin()
         {
             var clientId = _config["GoogleAuthSettings:ClientId"];
             var redirectUri = _config["GoogleAuthSettings:RedirectUri"];
             var googleLoginUrl = $"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={clientId}&redirect_uri={redirectUri}&scope=openid%20email%20profile";
+            if (!Uri.TryCreate(googleLoginUrl, UriKind.Absolute, out Uri? link))
+            {
+                return BadRequest("Định Dạng URL Không Hợp Lệ!");
+            }
 
-            return Redirect(googleLoginUrl);
+            return Ok(link.ToString());
         }
 
         [HttpGet("google-callback")]
