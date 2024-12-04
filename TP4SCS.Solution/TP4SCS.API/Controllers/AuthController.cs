@@ -41,6 +41,7 @@ namespace TP4SCS.API.Controllers
             var clientId = _config["GoogleAuthSettings:ClientId"];
             var redirectUri = _config["GoogleAuthSettings:RedirectUri"];
             var googleLoginUrl = $"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={clientId}&redirect_uri={redirectUri}&scope=openid%20email%20profile";
+
             if (!Uri.TryCreate(googleLoginUrl, UriKind.Absolute, out Uri? link))
             {
                 return BadRequest("Định Dạng URL Không Hợp Lệ!");
@@ -53,6 +54,7 @@ namespace TP4SCS.API.Controllers
         public async Task<IActionResult> GoogleCallback([FromQuery] string code)
         {
             var httpClient = new HttpClient();
+
             var tokenResponse = await httpClient.PostAsync("https://oauth2.googleapis.com/token",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -68,7 +70,9 @@ namespace TP4SCS.API.Controllers
             var idToken = tokenData!.id_token.ToString();
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+
             var result = await _authService.LoginGoogleAsync(payload.Email);
+
             return Ok(result);
         }
 

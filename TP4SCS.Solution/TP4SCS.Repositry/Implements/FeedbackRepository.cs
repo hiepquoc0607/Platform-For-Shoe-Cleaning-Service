@@ -196,7 +196,7 @@ namespace TP4SCS.Repository.Implements
             await UpdateAsync(feedback);
         }
 
-        public async Task<decimal> GetMonthAverageRatingByBusinessId(int id)
+        public async Task<decimal> GetMonthAverageRatingByBusinessIdAsync(int id)
         {
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
@@ -223,7 +223,7 @@ namespace TP4SCS.Repository.Implements
             return result;
         }
 
-        public async Task<decimal> GetYearAverageRatingByBusinessId(int id)
+        public async Task<decimal> GetYearAverageRatingByBusinessIdAsync(int id)
         {
             var currentYear = DateTime.Now.Year;
 
@@ -247,5 +247,69 @@ namespace TP4SCS.Repository.Implements
 
             return result;
         }
+
+        public async Task<Dictionary<int, decimal>> GetMonthAverageRatingsByBusinessIdAsync(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var feedbacks = await _dbContext.Feedbacks
+                .AsNoTracking()
+                .Include(f => f.OrderItem)
+                .ThenInclude(oi => oi.Branch)
+                .ThenInclude(b => b.Business)
+                .Where(f =>
+                    f.CreatedTime.Month == currentMonth &&
+                    f.CreatedTime.Year == currentYear &&
+                    f.OrderItem.Branch.Business.Id == id &&
+                    f.Status.Equals(StatusConstants.ACTIVE))
+                .ToListAsync();
+
+            var dailyAverages = feedbacks
+                .GroupBy(f => f.CreatedTime.Day)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Average(f => f.Rating)
+                );
+
+            var result = Enumerable.Range(1, 31)
+                .ToDictionary(
+                    day => day,
+                    day => dailyAverages.ContainsKey(day) ? dailyAverages[day] : 0
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, decimal>> GetYearAverageRatingsByBusinessIdAsync(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var feedbacks = await _dbContext.Feedbacks
+                .AsNoTracking()
+                .Include(f => f.OrderItem)
+                .ThenInclude(oi => oi.Branch)
+                .ThenInclude(b => b.Business)
+                .Where(f => f.CreatedTime.Year == currentYear &&
+                            f.OrderItem.Branch.Business.Id == id &&
+                            f.Status.Equals(StatusConstants.ACTIVE))
+                .ToListAsync();
+
+            var monthlyAverages = feedbacks
+                .GroupBy(f => f.CreatedTime.Month)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Average(f => f.Rating)
+                );
+
+            var result = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => monthlyAverages.ContainsKey(month) ? monthlyAverages[month] : 0
+                );
+
+            return result;
+        }
+
     }
 }

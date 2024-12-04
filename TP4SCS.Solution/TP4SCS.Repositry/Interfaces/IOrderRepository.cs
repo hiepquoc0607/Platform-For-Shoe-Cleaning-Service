@@ -26,5 +26,13 @@ namespace TP4SCS.Repository.Interfaces
         Task<int> CountMonthOrderByBusinessId(int id);
 
         Task<int> CountYearOrderByBusinessId(int id);
+
+        Task<Dictionary<int, int>> CountMonthOrdersByBusinessId(int id);
+
+        Task<Dictionary<int, int>> CountYearOrdersByBusinessId(int id);
+
+        Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessId(int id);
+
+        Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessId(int id);
     }
 }

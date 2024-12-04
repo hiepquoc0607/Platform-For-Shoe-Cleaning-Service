@@ -1,13 +1,10 @@
 ﻿using TP4SCS.Library.Models.Data;
-using TP4SCS.Library.Models.Request.Branch;
-using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Request.Cart;
 using TP4SCS.Library.Models.Request.CartItem;
 using TP4SCS.Library.Models.Request.ShipFee;
 using TP4SCS.Library.Models.Response.CartItem;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
-using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -30,7 +27,7 @@ namespace TP4SCS.Services.Implements
             IShipService shipService,
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
-            IMaterialService materialService, 
+            IMaterialService materialService,
             IBusinessRepository businessRepository)
         {
             _cartRepository = cartRepository;

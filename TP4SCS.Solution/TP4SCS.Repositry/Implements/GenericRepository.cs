@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Repository.Interfaces;
@@ -116,6 +117,23 @@ namespace TP4SCS.Repository.Implements
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task BulkInsertAsync(IEnumerable<T> entities)
+        {
+            await _dbContext.BulkInsertAsync(entities);
+        }
+
+        public async Task BulkDeleteAsync(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+                throw new ArgumentException("The IDs collection is null or empty.");
+
+            var entitiesToDelete = await _dbContext.Set<T>()
+                .Where(e => ids.Contains(EF.Property<int>(e, "Id")))
+                .ToListAsync();
+
+            await _dbContext.BulkDeleteAsync(entitiesToDelete);
         }
     }
 }

@@ -15,7 +15,11 @@ namespace TP4SCS.Repository.Interfaces
 
         Task InsertAsync(T entity);
 
+        Task BulkInsertAsync(IEnumerable<T> entities);
+
         Task DeleteAsync(object id);
+
+        Task BulkDeleteAsync(List<int> ids);
 
         Task DeleteAsync(T entityToDelete);
 

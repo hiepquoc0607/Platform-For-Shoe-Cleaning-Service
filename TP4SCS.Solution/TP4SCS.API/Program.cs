@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +101,7 @@ builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
 builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationRepository>();
 builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
 builder.Services.AddScoped<IPackSubscriptionRepository, PackSubscriptionRepository>();
+builder.Services.AddScoped<IBusinessStatisticRepository, BusinessStatisticRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -132,6 +132,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProcessService, ProcessService>();
 builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
+builder.Services.AddScoped<IBusinessStatisticService, BusinessStatisticService>();
 
 //Inject Util
 builder.Services.AddTransient<Util>();

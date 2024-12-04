@@ -160,5 +160,121 @@ namespace TP4SCS.Repository.Implements
                     o.FinishedTime.Value.Year == currentYear)
                 .CountAsync();
         }
+
+        public async Task<Dictionary<int, int>> CountMonthOrdersByBusinessId(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.OrderDetails.Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Month == currentMonth &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var dailyCounts = orders
+                .GroupBy(o => o.FinishedTime!.Value.Day)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Count()
+                );
+
+            var result = Enumerable.Range(1, 31)
+                .ToDictionary(
+                    day => day,
+                    day => dailyCounts.ContainsKey(day) ? dailyCounts[day] : 0
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, int>> CountYearOrdersByBusinessId(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.OrderDetails.Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var monthlyCounts = orders
+                .GroupBy(o => o.FinishedTime!.Value.Month)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Count()
+                );
+
+            var result = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => monthlyCounts.ContainsKey(month) ? monthlyCounts[month] : 0
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessId(int id)
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.OrderDetails.Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Month == currentMonth &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var dailyProfits = orders
+                .GroupBy(o => o.FinishedTime!.Value.Day)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Sum(o => o.OrderPrice)
+                );
+
+            var result = Enumerable.Range(1, 31)
+                .ToDictionary(
+                    day => day,
+                    day => dailyProfits.ContainsKey(day) ? dailyProfits[day] : 0m
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessId(int id)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.OrderDetails.Any(od => od.Branch.Business.Id == id) &&
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var monthlyProfits = orders
+                .GroupBy(o => o.FinishedTime!.Value.Month)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Sum(o => o.OrderPrice)
+                );
+
+            var result = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => monthlyProfits.ContainsKey(month) ? monthlyProfits[month] : 0m
+                );
+
+            return result;
+        }
     }
 }
