@@ -42,8 +42,12 @@ namespace TP4SCS.Repository.Interfaces
             string? status = null,
             OrderByEnum orderBy = OrderByEnum.IdDesc);
 
-        Task<decimal> GetMonthAverageRatingByBusinessId(int id);
+        Task<decimal> GetMonthAverageRatingByBusinessIdAsync(int id);
 
-        Task<decimal> GetYearAverageRatingByBusinessId(int id);
+        Task<decimal> GetYearAverageRatingByBusinessIdAsync(int id);
+
+        Task<Dictionary<int, decimal>> GetMonthAverageRatingsByBusinessIdAsync(int id);
+
+        Task<Dictionary<int, decimal>> GetYearAverageRatingsByBusinessIdAsync(int id);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MailKit.Search;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
@@ -40,7 +39,7 @@ namespace TP4SCS.Services.Implements
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest, int businessId)
         {
             var business = await _businessRepository.GetByIDAsync(businessId);
-            if(business == null)
+            if (business == null)
             {
                 throw new ArgumentNullException($"Không tìm thấy business với id: {businessId}.");
             }
@@ -48,7 +47,7 @@ namespace TP4SCS.Services.Implements
             {
                 var services = await _serviceRepository.GetServicesAsync(null, null, null, null, OrderByEnum.IdDesc);
                 var count = services?.Where(s => s.BranchServices.Any(bs => bs.Branch.BusinessId == businessId)).Count() ?? 0;
-                if(count >=5) throw new ArgumentNullException($"Cửa hàng {business.Name} vui lòng nâng cấp gói đăng ký để thêm mới dịch vụ.");
+                if (count >= 5) throw new ArgumentNullException($"Cửa hàng {business.Name} vui lòng nâng cấp gói đăng ký để thêm mới dịch vụ.");
             }
             if (serviceRequest == null)
             {

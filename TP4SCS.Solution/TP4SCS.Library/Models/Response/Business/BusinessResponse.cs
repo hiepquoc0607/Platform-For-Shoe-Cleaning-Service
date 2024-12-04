@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using TP4SCS.Library.Models.Response.PackSubscription;
 
 namespace TP4SCS.Library.Models.Response.BusinessProfile

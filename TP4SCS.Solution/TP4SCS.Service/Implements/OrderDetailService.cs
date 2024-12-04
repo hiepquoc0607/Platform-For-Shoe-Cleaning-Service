@@ -90,7 +90,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new InvalidOperationException("Dịch vụ được chỉ định không có sẵn hoặc không hoạt động.");
             }
-            orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);            
+            orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
 
@@ -100,7 +100,7 @@ namespace TP4SCS.Services.Implements
                 throw new KeyNotFoundException($"Không tìm thấy order với id: {orderDetail.OrderId} ");
             }
 
-            if((Util.IsEqual(order.Status, StatusConstants.STORAGE)))
+            if ((Util.IsEqual(order.Status, StatusConstants.STORAGE)))
             {
                 order.Status = StatusConstants.PROCESSING;
                 var branch = await _branchRepository.GetBranchByIdAsync(branchId);
