@@ -154,6 +154,8 @@ namespace TP4SCS.Services.Implements
                 feedback.IsValidContent = true;
             }
             existingFeedback.IsAllowedUpdate = false;
+            existingFeedback.Status = StatusConstants.PENDING;
+            existingFeedback.IsValidAsset = true;
             await _feedbackRepository.UpdateFeedbackAsync(existingFeedback);
         }
 
