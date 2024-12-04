@@ -147,7 +147,7 @@ namespace TP4SCS.Services.Implements
             {
                 var isValidContent = await _openAIService.ValidateFeedbackContentAsync(httpClient, feedback.Content);
 
-                feedback.IsValidContent = isValidContent;
+                existingFeedback.IsValidContent = isValidContent;
             }
             else
             {
