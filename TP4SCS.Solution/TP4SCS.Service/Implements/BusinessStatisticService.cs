@@ -224,8 +224,8 @@ namespace TP4SCS.Services.Implements
                 await _businessStatisticRepository.DeleteBusinessStatisticAsync(yearIds.ToList());
             }
 
-            var monthStatistic = await _orderRepository.CountMonthOrdersByBusinessId(id);
-            var yearStatistic = await _orderRepository.CountYearOrdersByBusinessId(id);
+            var monthStatistic = await _orderRepository.CountMonthOrdersByBusinessIdAsync(id);
+            var yearStatistic = await _orderRepository.CountYearOrdersByBusinessIdAsync(id);
 
             List<BusinessStatistic> monthList = new List<BusinessStatistic>();
             List<BusinessStatistic> yearList = new List<BusinessStatistic>();
@@ -274,7 +274,7 @@ namespace TP4SCS.Services.Implements
 
                 return new ApiResponse<BusinessStatisticResponse>("success", "Cập Nhập Thống Kê Đánh Giá Thành Công!", null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ApiResponse<BusinessStatisticResponse>("error", 400, "Cập Nhập Thống Kê Đánh Giá Thất Bại!");
             }
@@ -296,8 +296,8 @@ namespace TP4SCS.Services.Implements
                 await _businessStatisticRepository.DeleteBusinessStatisticAsync(yearIds.ToList());
             }
 
-            var monthStatistic = await _orderRepository.SumMonthOrderProfitByBusinessId(id);
-            var yearStatistic = await _orderRepository.SumYearOrderProfitByBusinessId(id);
+            var monthStatistic = await _orderRepository.SumMonthOrderProfitByBusinessIdAsync(id);
+            var yearStatistic = await _orderRepository.SumYearOrderProfitByBusinessIdAsync(id);
 
             List<BusinessStatistic> monthList = new List<BusinessStatistic>();
             List<BusinessStatistic> yearList = new List<BusinessStatistic>();

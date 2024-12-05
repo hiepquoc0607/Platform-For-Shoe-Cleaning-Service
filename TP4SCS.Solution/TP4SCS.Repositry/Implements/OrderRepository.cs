@@ -133,7 +133,7 @@ namespace TP4SCS.Repository.Implements
             await UpdateAsync(order);
         }
 
-        public async Task<int> CountMonthOrderByBusinessId(int id)
+        public async Task<int> CountMonthOrderByBusinessIdAsync(int id)
         {
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
@@ -148,7 +148,7 @@ namespace TP4SCS.Repository.Implements
                 .CountAsync();
         }
 
-        public async Task<int> CountYearOrderByBusinessId(int id)
+        public async Task<int> CountYearOrderByBusinessIdAsync(int id)
         {
             var currentYear = DateTime.Now.Year;
 
@@ -161,7 +161,7 @@ namespace TP4SCS.Repository.Implements
                 .CountAsync();
         }
 
-        public async Task<Dictionary<int, int>> CountMonthOrdersByBusinessId(int id)
+        public async Task<Dictionary<int, int>> CountMonthOrdersByBusinessIdAsync(int id)
         {
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
@@ -191,7 +191,36 @@ namespace TP4SCS.Repository.Implements
             return result;
         }
 
-        public async Task<Dictionary<int, int>> CountYearOrdersByBusinessId(int id)
+        public async Task<Dictionary<int, int>> CountMonthOrdersAsync()
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Month == currentMonth &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var dailyCounts = orders
+                .GroupBy(o => o.FinishedTime!.Value.Day)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Count()
+                );
+
+            var result = Enumerable.Range(1, 31)
+                .ToDictionary(
+                    day => day,
+                    day => dailyCounts.ContainsKey(day) ? dailyCounts[day] : 0
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, int>> CountYearOrdersByBusinessIdAsync(int id)
         {
             var currentYear = DateTime.Now.Year;
 
@@ -219,7 +248,34 @@ namespace TP4SCS.Repository.Implements
             return result;
         }
 
-        public async Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessId(int id)
+        public async Task<Dictionary<int, int>> CountYearOrdersAsync()
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var orders = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o =>
+                    o.FinishedTime.HasValue &&
+                    o.FinishedTime.Value.Year == currentYear)
+                .ToListAsync();
+
+            var monthlyCounts = orders
+                .GroupBy(o => o.FinishedTime!.Value.Month)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Count()
+                );
+
+            var result = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => monthlyCounts.ContainsKey(month) ? monthlyCounts[month] : 0
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessIdAsync(int id)
         {
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
@@ -249,7 +305,7 @@ namespace TP4SCS.Repository.Implements
             return result;
         }
 
-        public async Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessId(int id)
+        public async Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessIdAsync(int id)
         {
             var currentYear = DateTime.Now.Year;
 

@@ -151,6 +151,60 @@ namespace TP4SCS.Library.Repositories
             return (result, pagination);
         }
 
+        public async Task<Dictionary<int, decimal>> SumMonthProfitAsync()
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var transactions = await _dbContext.Transactions
+                .AsNoTracking()
+                .Where(t =>
+                    t.ProcessTime.Month == currentMonth &&
+                    t.ProcessTime.Year == currentYear)
+                .ToListAsync();
+
+            var dailyProfits = transactions
+                .GroupBy(t => t.ProcessTime.Day)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Sum(t => t.Balance)
+                );
+
+            var result = Enumerable.Range(1, 31)
+                .ToDictionary(
+                    day => day,
+                    day => dailyProfits.ContainsKey(day) ? dailyProfits[day] : 0m
+                );
+
+            return result;
+        }
+
+        public async Task<Dictionary<int, decimal>> SumYearProfitAsync()
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var transactions = await _dbContext.Transactions
+                .AsNoTracking()
+                .Where(t =>
+                    t.ProcessTime.Year == currentYear)
+                .ToListAsync();
+
+            var monthlyProfits = transactions
+                .GroupBy(t => t.ProcessTime.Month)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Sum(t => t.Balance)
+                );
+
+            var result = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => monthlyProfits.ContainsKey(month) ? monthlyProfits[month] : 0m
+                );
+
+            return result;
+        }
+
         public async Task UpdateTransactionAsync(Transaction transaction)
         {
             await UpdateAsync(transaction);

@@ -102,6 +102,7 @@ builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationReposi
 builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
 builder.Services.AddScoped<IPackSubscriptionRepository, PackSubscriptionRepository>();
 builder.Services.AddScoped<IBusinessStatisticRepository, BusinessStatisticRepository>();
+builder.Services.AddScoped<IPlatformStatisticRepository, PlatformStatisticRepository>();
 
 //Inject Service
 builder.Services.AddScoped<IServiceService, ServiceService>();
@@ -133,6 +134,7 @@ builder.Services.AddScoped<IProcessService, ProcessService>();
 builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IBusinessStatisticService, BusinessStatisticService>();
+builder.Services.AddScoped<IPlatformStatisticService, PlatformStatisticService>();
 
 //Inject Util
 builder.Services.AddTransient<Util>();

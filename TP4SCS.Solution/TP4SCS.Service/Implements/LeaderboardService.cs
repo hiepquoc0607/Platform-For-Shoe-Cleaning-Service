@@ -117,8 +117,8 @@ namespace TP4SCS.Services.Implements
                 var monthRating = await _feedbackRepository.GetMonthAverageRatingByBusinessIdAsync(businessId);
                 var yearRating = await _feedbackRepository.GetYearAverageRatingByBusinessIdAsync(businessId);
 
-                var monthOrderNum = await _orderRepository.CountMonthOrderByBusinessId(businessId);
-                var yearOrderNum = await _orderRepository.CountYearOrderByBusinessId(businessId);
+                var monthOrderNum = await _orderRepository.CountMonthOrderByBusinessIdAsync(businessId);
+                var yearOrderNum = await _orderRepository.CountYearOrderByBusinessIdAsync(businessId);
 
                 var monthValue = monthRating * (1 + 0.2m + (decimal)Math.Sqrt((double)monthOrderNum));
                 var yearValue = yearRating * (1 + 0.2m + (decimal)Math.Sqrt((double)yearOrderNum));

@@ -23,16 +23,20 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Order?> GetOrderByCodeAsync(string code);
 
-        Task<int> CountMonthOrderByBusinessId(int id);
+        Task<int> CountMonthOrderByBusinessIdAsync(int id);
 
-        Task<int> CountYearOrderByBusinessId(int id);
+        Task<int> CountYearOrderByBusinessIdAsync(int id);
 
-        Task<Dictionary<int, int>> CountMonthOrdersByBusinessId(int id);
+        Task<Dictionary<int, int>> CountMonthOrdersAsync();
 
-        Task<Dictionary<int, int>> CountYearOrdersByBusinessId(int id);
+        Task<Dictionary<int, int>> CountMonthOrdersByBusinessIdAsync(int id);
 
-        Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessId(int id);
+        Task<Dictionary<int, int>> CountYearOrdersAsync();
 
-        Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessId(int id);
+        Task<Dictionary<int, int>> CountYearOrdersByBusinessIdAsync(int id);
+
+        Task<Dictionary<int, decimal>> SumMonthOrderProfitByBusinessIdAsync(int id);
+
+        Task<Dictionary<int, decimal>> SumYearOrderProfitByBusinessIdAsync(int id);
     }
 }
