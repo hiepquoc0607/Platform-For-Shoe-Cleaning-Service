@@ -4,7 +4,6 @@ using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Models.Response.PlatformStatistic;
 using TP4SCS.Library.Repositories;
 using TP4SCS.Library.Utils.StaticClass;
-using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 

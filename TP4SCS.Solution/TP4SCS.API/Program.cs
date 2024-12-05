@@ -37,6 +37,8 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 
+
+
 #region Authentication UI For Swagger
 builder.Services.AddSwaggerGen(swagger =>
 {
@@ -77,6 +79,9 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 #endregion
+
+//Word Blacklist Path
+var wordFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "WordBlacklist.json");
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
@@ -135,6 +140,7 @@ builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>(
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IBusinessStatisticService, BusinessStatisticService>();
 builder.Services.AddScoped<IPlatformStatisticService, PlatformStatisticService>();
+builder.Services.AddScoped<IWordBlacklistService>(provider => new WordBlacklistService(wordFilePath));
 
 //Inject Util
 builder.Services.AddTransient<Util>();
@@ -154,6 +160,9 @@ builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Read File Config
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
 #region OpenAI
 builder.Services.AddHttpClient("ChatGPT", client =>

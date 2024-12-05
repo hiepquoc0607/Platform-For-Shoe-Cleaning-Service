@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using TP4SCS.Library.Models.Request.OpenAI;
+using TP4SCS.Library.Models.Response.Feedback;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.Services.Implements
@@ -19,7 +20,21 @@ namespace TP4SCS.Services.Implements
 
         public async Task<bool> ValidateFeedbackContentAsync(HttpClient httpClient, string content)
         {
-            var prompt = $"Dùng tất cả kiến thức về ngôn ngữ của bạn và đặc biệt là tiếng Việt để phân tích nội dung đánh giá sau. Trả về 'Valid' nếu nội dung đánh giá phù hợp, và 'Invalid' nếu nội dung đánh giá thô tục, thiếu văn minh, phân biệt chủng tộc, ngôn ngữ đã kích,...:\n\n\"{content}\"";
+            string relativePath = _configuration["WordBlacklist"]!;
+            string blacklistPath = Path.Combine(AppContext.BaseDirectory, relativePath);
+
+            string blacklistJson = await File.ReadAllTextAsync(blacklistPath);
+
+            var blacklist = JsonSerializer.Deserialize<List<WordBlacklistResponse>>(blacklistJson) ?? new List<WordBlacklistResponse>();
+
+            var blacklistDetails = string.Join("\n",
+                blacklist.GroupBy(item => item.Note)
+                         .Select(group => $"{group.Key}: {string.Join(", ", group.Select(item => item.Word))}"));
+
+            var prompt = $@"Danh sách các từ ngữ bị cấm: {blacklistDetails}" +
+                $"Dùng tất cả kiến thức về ngôn ngữ của bạn và đặc biệt là tiếng Việt để phân tích nội dung đánh giá sau." +
+                $"Trả về 'Valid' nếu nội dung đánh giá phù hợp, và 'Invalid' nếu nội dung giống từ cấm trong danh sách các từ bị cấm dưới mọi biến thể có thể ghi được:" +
+                $"\n\n\"{content}\"";
 
             var completionRequest = new ChatCompletionRequest
             {

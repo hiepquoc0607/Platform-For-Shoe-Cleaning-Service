@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.PlatformStatistic;
 using TP4SCS.Services.Interfaces;
 
