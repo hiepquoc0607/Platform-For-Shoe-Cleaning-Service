@@ -19,5 +19,9 @@ namespace TP4SCS.Library.Repositories
         Task UpdateTransactionAsync(Transaction transaction);
 
         Task DeleteTransactionAsync(int id);
+
+        Task<Dictionary<int, decimal>> SumMonthProfitAsync();
+
+        Task<Dictionary<int, decimal>> SumYearProfitAsync();
     }
 }

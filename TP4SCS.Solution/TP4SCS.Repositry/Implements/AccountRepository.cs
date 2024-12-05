@@ -164,7 +164,10 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<int> CountAccountDataAsync()
         {
-            return await _dbContext.Accounts.AsNoTracking().CountAsync();
+            return await _dbContext.Accounts
+                .AsNoTracking()
+                .Where(a => a.Role.Equals(RoleConstants.CUSTOMER) || a.Role.Equals(RoleConstants.OWNER))
+                .CountAsync();
         }
 
         public async Task<Account?> GetAccountByIdForAdminAsync(int id)
