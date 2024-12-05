@@ -17,7 +17,9 @@ namespace TP4SCS.API.Controllers
         private readonly IFeedbackService _feedbackService;
         private readonly IMapper _mapper;
 
-        public FeedbackController(IHttpClientFactory httpClientFactory, IFeedbackService feedbackService, IMapper mapper)
+        public FeedbackController(IHttpClientFactory httpClientFactory,
+            IFeedbackService feedbackService,
+            IMapper mapper)
         {
             _httpClientFactory = httpClientFactory;
             _feedbackService = feedbackService;
@@ -66,6 +68,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpGet("branches/{id}")]
         public async Task<IActionResult> GetFeedbacksByBranchId(int id, int pageIndex = 1, int pageSize = 10)
         {
@@ -86,6 +89,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpGet("business/{id}")]
         public async Task<IActionResult> GetFeedbacksByBusinesshId(int id, int pageIndex = 1, int pageSize = 10)
         {
@@ -106,6 +110,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpGet("accounts/{id}")]
         public async Task<IActionResult> GetFeedbacksByAccountId(int id)
         {
@@ -120,6 +125,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFeedbackById(int id)
         {
@@ -134,6 +140,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateFeedback([FromBody] FeedbackRequest feedbackRequest)
         {
@@ -222,6 +229,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         [HttpPut("{id}/reply")]
         public async Task<IActionResult> ReplyFeedback(int id, [FromBody] string reply)
         {
