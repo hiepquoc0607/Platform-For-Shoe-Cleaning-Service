@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using FirebaseAdmin;
+﻿using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
