@@ -83,7 +83,7 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 #endregion
 
 //Word Blacklist Path
-var wordFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "WordBlacklist.json");
+var wordFilePath = Path.Combine(builder.Environment.ContentRootPath, "WordBlacklist.json");
 
 
 //Inject Repo
@@ -164,16 +164,6 @@ builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-//Firebase Config
-//var firebaseFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "tp4scs-firebase.json");
-
-//builder.Configuration["Firebase:FilePath"] = firebaseFilePath;
-
-//FirebaseApp.Create(new AppOptions
-//{
-//    Credential = GoogleCredential.FromFile(firebaseFilePath)
-//});
 
 //Read File Config
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
