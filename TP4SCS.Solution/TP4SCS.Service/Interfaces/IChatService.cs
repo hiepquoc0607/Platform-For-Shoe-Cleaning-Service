@@ -1,16 +1,17 @@
 ﻿using TP4SCS.Library.Models.Request.Chat;
 using TP4SCS.Library.Models.Response.Chat;
+using TP4SCS.Library.Models.Response.General;
 
 namespace TP4SCS.Services.Interfaces
 {
     public interface IChatService
     {
-        Task<ChatRoomResponse?> CreateChatRoomAsync(ChatRoomRequest roomRequest);
+        Task<ApiResponse<ChatRoomResponse>> CreateChatRoomAsync(ChatRoomRequest roomRequest);
 
-        Task<ChatRoomResponse?> GetChatRoomAsync(int accId1, int accId2);
+        Task<ApiResponse<IEnumerable<ChatRoomResponse>?>> GetChatsRoomAsync(int accId);
 
-        Task SendMessageAsync(MessageRequest message);
+        Task<ApiResponse<MessageResponse>> SendMessageAsync(MessageRequest messageRequest);
 
-        Task<IEnumerable<MessageResponse>> GetMessagesAsync(string roomId);
+        Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(string roomId);
     }
 }
