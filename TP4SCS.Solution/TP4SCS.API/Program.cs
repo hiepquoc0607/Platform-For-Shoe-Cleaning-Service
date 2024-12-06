@@ -166,14 +166,14 @@ builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //Firebase Config
-var firebaseFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "tp4scs-firebase.json");
+//var firebaseFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "tp4scs-firebase.json");
 
-builder.Configuration["Firebase:FilePath"] = firebaseFilePath;
+//builder.Configuration["Firebase:FilePath"] = firebaseFilePath;
 
-FirebaseApp.Create(new AppOptions
-{
-    Credential = GoogleCredential.FromFile(firebaseFilePath)
-});
+//FirebaseApp.Create(new AppOptions
+//{
+//    Credential = GoogleCredential.FromFile(firebaseFilePath)
+//});
 
 //Read File Config
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
