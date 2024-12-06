@@ -1,4 +1,6 @@
-﻿using Mapster;
+﻿using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -83,6 +85,7 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 //Word Blacklist Path
 var wordFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "WordBlacklist.json");
 
+
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
@@ -141,6 +144,7 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IBusinessStatisticService, BusinessStatisticService>();
 builder.Services.AddScoped<IPlatformStatisticService, PlatformStatisticService>();
 builder.Services.AddScoped<IWordBlacklistService>(provider => new WordBlacklistService(wordFilePath));
+builder.Services.AddScoped<IChatService, ChatService>();
 
 //Inject Util
 builder.Services.AddTransient<Util>();
@@ -160,6 +164,16 @@ builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email
 
 //Add Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Firebase Config
+var firebaseFilePath = Path.Combine(builder.Environment.ContentRootPath, "Assets", "tp4scs-firebase.json");
+
+builder.Configuration["Firebase:FilePath"] = firebaseFilePath;
+
+FirebaseApp.Create(new AppOptions
+{
+    Credential = GoogleCredential.FromFile(firebaseFilePath)
+});
 
 //Read File Config
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
