@@ -188,7 +188,7 @@ namespace TP4SCS.Services.Implements
             var business = await _businessRepository.GetBusinessProfileByIdAsync(branchId);
             if (branch == null || business == null)
             {
-                throw new KeyNotFoundException($"Không tìm thấy branch với id: {branchId} hoặc business với id: {businessId}");
+                throw new KeyNotFoundException($"Không tìm thấy branch và business của đơn hàng");
             }
             var notification = new CreateOrderNotificationRequest();
             notification.OrderId = order.Id;

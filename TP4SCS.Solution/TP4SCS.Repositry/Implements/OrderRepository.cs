@@ -27,9 +27,9 @@ namespace TP4SCS.Repository.Implements
         {
             var result = await _dbContext.OrderDetails
                 .AsNoTracking()
-                .Where(od => od.Id == id)
-                .Include(od => od.Branch) // Load dữ liệu chi nhánh liên quan
-                .SingleOrDefaultAsync();
+                .Include(od => od.Branch)
+                .Where(od => od.OrderId == id)
+                .FirstOrDefaultAsync();
 
             if (result == null || result.Branch == null)
             {
