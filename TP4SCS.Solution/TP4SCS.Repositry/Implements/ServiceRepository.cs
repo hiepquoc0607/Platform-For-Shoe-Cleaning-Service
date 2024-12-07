@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
@@ -10,9 +12,11 @@ namespace TP4SCS.Repository.Implements
     public class ServiceRepository : GenericRepository<Service>, IServiceRepository
     {
         private readonly ILeaderboardRepository _leaderboardRepository;
-        public ServiceRepository(ILeaderboardRepository leaderboardRepository, Tp4scsDevDatabaseContext dbContext) : base(dbContext)
+        private readonly IMapper _mapper;
+        public ServiceRepository(ILeaderboardRepository leaderboardRepository, IMapper mapper, Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
             _leaderboardRepository = leaderboardRepository;
+            _mapper = mapper;
         }
 
         public async Task AddServicesAsync(List<Service> services)
@@ -110,7 +114,44 @@ namespace TP4SCS.Repository.Implements
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null,
-            OrderByEnum orderBy = OrderByEnum.Rank)
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
+        {
+            // Xây dựng bộ lọc
+            Expression<Func<Service, bool>> filter = s =>
+                (string.IsNullOrEmpty(keyword) || s.Name.Contains(keyword)) &&
+                (string.IsNullOrEmpty(status) || s.Status.ToLower().Trim() == status.ToLower().Trim());
+
+            // Bắt đầu truy vấn với bộ lọc
+            var query = _dbSet.Where(filter);
+
+            // Bao gồm các thuộc tính liên quan
+            query = query
+                .Include(s => s.ServiceProcesses)
+                .Include(s => s.Promotion)
+                .Include(s => s.AssetUrls)
+                .Include(s => s.Category)
+                .Include(s => s.BranchServices) // Bao gồm BranchServices
+                    .ThenInclude(bs => bs.Branch) // Bao gồm Branch trong BranchServices
+                        .ThenInclude(b => b.Business); // Bao gồm Branch trong BranchServices
+            query = orderBy switch
+            {
+                OrderByEnum.IdDesc => query.OrderByDescending(c => c.Id),
+                _ => query.OrderBy(c => c.Id) // Mặc định sắp xếp theo Id tăng dần
+            };
+            int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
+            int validPageSize = pageSize > 0 ? pageSize.Value : 10;
+
+            query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+
+            // Trả về kết quả
+            return await query.ToListAsync();
+        }
+        public async Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc)
         {
             // Xây dựng bộ lọc
             Expression<Func<Service, bool>> filter = s =>
@@ -123,20 +164,11 @@ namespace TP4SCS.Repository.Implements
             // Lấy leaderboard từ repository
             var leaderShops = await _leaderboardRepository.GetLeaderboardByMonthAsync();
 
-            // Kiểm tra nếu leaderShops có ít hơn 3 hoặc null
-            if (leaderShops == null || leaderShops.Businesses.Count() < 3)
-            {
-                throw new Exception("Danh sách cửa hàng đứng đầu không hợp lệ hoặc không đủ dữ liệu. Vui lòng kiểm tra lại.");
-            }
-
-            // Lấy 3 cửa hàng đứng đầu
-            var top3LeaderShops = leaderShops.Businesses.Take(3).ToList();
-
-            // Áp dụng sắp xếp theo thứ tự cửa hàng trong leaderboard
-            var shopIds = top3LeaderShops.Select(shop => shop.Id).ToList();
-
-            // Áp dụng sắp xếp theo Rank, ưu tiên theo ID cửa hàng trong leaderShops
-
+            // Lấy danh sách BusinessIds xếp hạng cao nhất
+            var businessIds = leaderShops?.Businesses
+                .Take(10) // Lấy tối đa 10 mục
+                .Select(b => b.Id) // Lấy BusinessId
+                .ToList();
 
             // Bao gồm các thuộc tính liên quan
             query = query
@@ -144,44 +176,40 @@ namespace TP4SCS.Repository.Implements
                 .Include(s => s.Promotion)
                 .Include(s => s.AssetUrls)
                 .Include(s => s.Category)
-                .Include(s => s.BranchServices) // Bao gồm BranchServices
-                    .ThenInclude(bs => bs.Branch) // Bao gồm Branch trong BranchServices
-                        .ThenInclude(b => b.Business); // Bao gồm Branch trong BranchServices
-            var allServices = await query.ToListAsync();
-            var orderedServices = allServices.OrderBy(s =>
-            {
-                var businessId = s.BranchServices.FirstOrDefault()?.Branch?.BusinessId ?? -1;
+                .Include(s => s.BranchServices)
+                    .ThenInclude(bs => bs.Branch)
+                        .ThenInclude(b => b.Business);
 
-                // Kiểm tra BusinessId có trong shopIds hay không và trả về thứ tự của nó
-                if (shopIds.Contains(businessId))
+            // Áp dụng sắp xếp
+            query = orderBy switch
+            {
+                OrderByEnum.IdDesc => query.OrderByDescending(c => c.Id),
+                _ => query.OrderBy(c => c.Id)
+            };
+
+            // Phân trang
+            int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
+            int validPageSize = pageSize > 0 ? pageSize.Value : 10;
+
+            query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+
+            // Lấy danh sách dịch vụ
+            var services = await query.ToListAsync();
+
+            // Sử dụng AutoMapper để chuyển đổi sang ServiceResponse
+            var serviceResponses = _mapper.Map<List<ServiceResponseV3>>(services);
+
+            // Gán BusinessRank cho từng ServiceResponse
+            if (businessIds != null && businessIds.Any())
+            {
+                foreach (var serviceResponse in serviceResponses)
                 {
-                    return shopIds.IndexOf(businessId);  // Trả về vị trí của businessId trong shopIds
+                    var rank = businessIds.IndexOf(serviceResponse.BusinessId) + 1;
+                    serviceResponse.BusinessRank = rank > 0 ? rank : null;
                 }
-
-                // Các dịch vụ có BusinessId không có trong shopIds sẽ được xếp sau, trả về giá trị lớn hơn (int.MaxValue)
-                return int.MaxValue;
-            }).ToList();
-
-            // Sắp xếp theo các yêu cầu khác nếu có
-            if (orderBy == OrderByEnum.IdDesc)
-            {
-                orderedServices = orderedServices.OrderByDescending(s => s.Id).ToList();
-            }
-            else if (orderBy == OrderByEnum.IdAsc)
-            {
-                orderedServices = orderedServices.OrderBy(s => s.Id).ToList();
-            }
-            // Thực hiện phân trang nếu có pageIndex và pageSize
-            if (pageIndex.HasValue && pageSize.HasValue)
-            {
-                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value - 1 : 0;
-                int validPageSize = pageSize.Value > 0 ? pageSize.Value : 10;
-
-                orderedServices = orderedServices.Skip(validPageIndex * validPageSize).Take(validPageSize).ToList();
             }
 
-            // Trả về kết quả
-            return orderedServices;
+            return serviceResponses;
         }
 
 

@@ -2,6 +2,7 @@
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.Service;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
 using TP4SCS.Repository.Interfaces;
@@ -162,7 +163,25 @@ namespace TP4SCS.Services.Implements
 
             return await _serviceRepository.GetServicesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
+        public async Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc)
+        {
+            if (pageIndex < 1)
+            {
+                throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
+            }
 
+            if (pageSize < 1)
+            {
+                throw new ArgumentException("Kích thước trang phải lớn hơn 0.");
+            }
+
+            return await _serviceRepository.GetServicesIncludeBusinessRankAsync(keyword, status, pageIndex, pageSize, orderBy);
+        }
         public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
         {
             if (serviceUpdateRequest == null)

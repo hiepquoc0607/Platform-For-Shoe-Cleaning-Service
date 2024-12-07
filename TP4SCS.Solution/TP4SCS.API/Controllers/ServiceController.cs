@@ -26,9 +26,9 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequestV2 pagedRequest)
+        public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
-            var services = await _serviceService.GetServicesAsync(
+            var services = await _serviceService.GetServicesIncludeBusinessRankAsync(
                 pagedRequest.Keyword,
                 pagedRequest.Status,
                 pagedRequest.PageIndex,
@@ -41,18 +41,14 @@ namespace TP4SCS.API.Controllers
                 pagedRequest.Status
             );
 
-            var pagedResponse = new PagedResponse<ServiceResponse>(
-                services?.Select(s =>
-                {
-                    var res = _mapper.Map<ServiceResponse>(s);
-                    return res;
-                }) ?? Enumerable.Empty<ServiceResponse>(),
+            var pagedResponse = new PagedResponse<ServiceResponseV3>(
+                services ?? new List<ServiceResponseV3>(),
                 totalCount,
                 pagedRequest.PageIndex,
                 pagedRequest.PageSize
             );
 
-            return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ thành công", pagedResponse));
+            return Ok(new ResponseObject<PagedResponse<ServiceResponseV3>>("Lấy dịch vụ thành công", pagedResponse));
         }
 
         [HttpGet]

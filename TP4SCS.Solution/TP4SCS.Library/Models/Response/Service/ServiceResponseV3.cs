@@ -7,13 +7,16 @@ using TP4SCS.Library.Models.Response.Promotion;
 
 namespace TP4SCS.Library.Models.Response.Service
 {
-    public class ServiceResponse
+    public class ServiceResponseV3
     {
         public int Id { get; set; }
 
         public ServiceCategoryResponse Category { get; set; } = null!;
 
         public string Name { get; set; } = null!;
+        public int BusinessId { get; set; }
+        public string BusinessName { get; set; } = null!;
+        public int? BusinessRank { get; set; }
 
         public string? Description { get; set; }
 

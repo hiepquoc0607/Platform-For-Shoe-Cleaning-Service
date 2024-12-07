@@ -1,5 +1,6 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Models.Response.Service;
 
 namespace TP4SCS.Repository.Interfaces
 {
@@ -9,7 +10,12 @@ namespace TP4SCS.Repository.Interfaces
         int? pageIndex = null,
         int? pageSize = null,
         OrderByEnum orderBy = OrderByEnum.IdAsc);
-
+        Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdDesc);
         Task<Service?> GetServiceByIdAsync(int id);
 
         Task AddServicesAsync(List<Service> services);

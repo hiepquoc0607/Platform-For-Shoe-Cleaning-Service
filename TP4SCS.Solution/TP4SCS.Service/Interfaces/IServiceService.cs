@@ -1,6 +1,7 @@
 ﻿using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
 using TP4SCS.Library.Models.Request.Service;
+using TP4SCS.Library.Models.Response.Service;
 
 namespace TP4SCS.Services.Interfaces
 {
@@ -22,7 +23,12 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
-
+        Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
+            string? keyword = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null,
+            OrderByEnum orderBy = OrderByEnum.IdAsc);
         Task<(IEnumerable<Service>?, int)> GetDiscountedServicesAsync(
             string? name = null,
             string? status = null,
