@@ -60,6 +60,11 @@ namespace TP4SCS.API.Controllers
         [Route("branches/{id}")]
         public async Task<IActionResult> GetServicesByBranchIdAync(int id, [FromQuery] PagedRequest pagedRequest)
         {
+            if (pagedRequest.PageIndex == 0 || pagedRequest.PageSize == 0)
+            {
+                pagedRequest.PageIndex = 1;
+                pagedRequest.PageSize = 10;
+            }
             // Gọi service và lấy danh sách dịch vụ kèm theo tổng số lượng
             var (services, totalCount) = await _serviceService.GetServicesByBranchIdAsync(
                 id,
@@ -110,6 +115,11 @@ namespace TP4SCS.API.Controllers
         [HttpGet("business/{id}")]
         public async Task<IActionResult> GetServiceByBusinessId([FromQuery] PagedRequest request, int id)
         {
+            if (request.PageIndex == 0 || request.PageSize == 0)
+            {
+                request.PageIndex = 1;
+                request.PageSize = 10;
+            }
             var (services, total) = await _serviceService.GetServicesByBusinessIdAsync(id, request.Keyword, request.Status, request.PageIndex, request.PageSize, request.OrderBy);
             var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
             var pagedResponse = new PagedResponse<ServiceResponse>(
@@ -123,6 +133,11 @@ namespace TP4SCS.API.Controllers
         [HttpGet("categories/{id}")]
         public async Task<IActionResult> GetServiceByCategoryId([FromQuery] PagedRequest request, int id)
         {
+            if (request.PageIndex == 0 || request.PageSize == 0)
+            {
+                request.PageIndex = 1;
+                request.PageSize = 10;
+            }
             var (services, total) = await _serviceService.GetServicesByCategoryIdAsync(id, request.Keyword, request.Status, request.PageIndex, request.PageSize, request.OrderBy);
             var serviceResponses = services?.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>();
             var pagedResponse = new PagedResponse<ServiceResponse>(
@@ -138,6 +153,11 @@ namespace TP4SCS.API.Controllers
         {
             try
             {
+                if (request.PageIndex == 0 || request.PageSize == 0)
+                {
+                    request.PageIndex = 1;
+                    request.PageSize = 10;
+                }
                 var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(request.Keyword, request.Status, request.PageIndex, request.PageSize);
 
                 if (discountedServices == null || !discountedServices.Any())
