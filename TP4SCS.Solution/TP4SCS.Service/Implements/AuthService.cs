@@ -162,7 +162,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
-            if (account.RefreshToken != resetPasswordQuery.Token || account.RefreshExpireTime <= DateTime.Now)
+            if (!account.RefreshToken!.Equals(resetPasswordQuery.Token) || account.RefreshExpireTime <= DateTime.Now)
             {
                 return new ApiResponse<AuthResponse>("error", 400, "Token Không Đúng Hoặc Hết Hạn!");
             }
@@ -265,9 +265,12 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                await _accountRepository.UpdateAccountAsync(account);
+                await _accountRepository.RunInTransactionAsync(async () =>
+                {
+                    await _accountRepository.UpdateAccountAsync(account);
 
-                await _emailService.SendEmailAsync(email, "ShoeCareHub OTP Code", $"Mã otp để đăng nhập của bạn là:  {account.Otp.ToString()!}");
+                    await _emailService.SendEmailAsync(email, "ShoeCareHub OTP Code", $"Mã otp để đăng nhập của bạn là:  {account.Otp.ToString()!}");
+                });
 
                 return new ApiResponse<AuthResponse>("success", "Gửi OTP Thành Công!", null);
             }
@@ -410,16 +413,19 @@ namespace TP4SCS.Services.Implements
             }
 
             account.RefreshToken = GenerateRefreshToken();
-            account.RefreshExpireTime = DateTime.Now.AddSeconds(150);
+            account.RefreshExpireTime = DateTime.Now.AddSeconds(180);
 
             string url = $"https://shoecarehub.xyz/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
             //string url = $"http://localhost:3000/request-reset-password?AccountId={account.Id}&Token={account.RefreshToken}";
 
             try
             {
-                await _emailService.SendEmailAsync(email, "ShoeCareHub Reset Password Link", url);
+                await _accountRepository.RunInTransactionAsync(async () =>
+                {
+                    await _accountRepository.UpdateAsync(account);
 
-                _ = _accountRepository.UpdateAsync(account);
+                    await _emailService.SendEmailAsync(email, "ShoeCareHub Reset Password Link", url);
+                });
 
                 return new ApiResponse<AuthResponse>("success", "Gửi Email Đặt Lại Mật Khẩu Thành Công!", null);
             }
