@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using MapsterMapper;
-using Microsoft.IdentityModel.Tokens;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Response.General;
@@ -345,6 +344,22 @@ namespace TP4SCS.Services.Implements
 
         public async Task<ApiResponse<TicketResponse>> NotifyForOwnerAsync(NotifyTicketForOwnerRequest notifyTicketForOwnerRequest)
         {
+            var cusEmail = await _accountRepository.GetAccountEmailByIdAsync(notifyTicketForOwnerRequest.AccountId);
+
+            if (string.IsNullOrEmpty(cusEmail))
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email Khách Hàng!");
+            }
+
+            var ticket = await _ticketRepository.GetUpdateTicketByIdAsync(notifyTicketForOwnerRequest.TicketId);
+
+            if (ticket == null)
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn Khiếu Nại!");
+            }
+
+            ticket.Status = StatusConstants.RESOLVING;
+
             var order = await _orderRepository.GetOrderByIdAsync(notifyTicketForOwnerRequest.OrderId);
 
             if (order == null)
@@ -352,6 +367,16 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn Hàng!");
             }
 
+            order.CanceledTime = null;
+            order.PendingTime = null;
+            order.ApprovedTime = null;
+            order.RevievedTime = null;
+            order.ProcessingTime = null;
+            order.StoragedTime = null;
+            order.ShippingTime = null;
+            order.DeliveredTime = null;
+            order.FinishedTime = null;
+            order.AbandonedTime = null;
             order.Status = StatusConstants.APPROVED;
 
             var email = await _accountRepository.GetAccountEmailByTicketIdAsync(notifyTicketForOwnerRequest.TicketId);
@@ -365,7 +390,11 @@ namespace TP4SCS.Services.Implements
             {
                 await _ticketRepository.RunInTransactionAsync(async () =>
                 {
+                    await _ticketRepository.UpdateTicketAsync(ticket);
+
                     await _orderRepository.UpdateOrderAsync(order);
+
+                    await _emailService.SendEmailAsync(cusEmail, "ShoeCareHub Đơn Khiếu Nại", "Khiếu Nại Của bạn Đã Được Chấp Thuận Và Đơn Hàng Sẽ Được Xử Lý Lại!");
 
                     await _emailService.SendEmailAsync(email, "ShoeCareHub Đơn Khiếu Nại", "Bạn Có Đơn Hàng Cần Xử Lí Khiếu Nại!");
                 });
@@ -412,7 +441,7 @@ namespace TP4SCS.Services.Implements
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
 
-                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
                     else if (oldTicket.Status.Equals(StatusConstants.OPENING) && oldTicket.OrderId.HasValue)
                     {
@@ -426,13 +455,13 @@ namespace TP4SCS.Services.Implements
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Bị Từ Chối Vui Lòng Kiểm Tra Lại Thông Tin Và Thử Lại!";
 
-                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
                     else
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Hoàn Tất Việc Xử Lý!";
 
-                        _ = _emailService.SendEmailAsync(email, emailSubject, emailBody);
+                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
                 });
 

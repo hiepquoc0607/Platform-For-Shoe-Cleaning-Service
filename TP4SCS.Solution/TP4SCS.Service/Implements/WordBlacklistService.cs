@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
@@ -31,6 +32,15 @@ namespace TP4SCS.Services.Implements
                 var json = await File.ReadAllTextAsync(_filePath);
 
                 var allWords = JsonSerializer.Deserialize<List<WordBlacklistResponse>>(json) ?? new List<WordBlacklistResponse>();
+
+                var isExisted = allWords
+                        .Where(w => w.Word.Contains(wordBlacklistRequest.Word.Trim(), StringComparison.OrdinalIgnoreCase))
+                        .Any();
+
+                if (isExisted == true)
+                {
+                    return new ApiResponse<WordBlacklistResponse>("error", 400, "Từ Đã Tồn Tại Trong Danh Sách Cấm!");
+                }
 
                 var newWord = new WordBlacklistResponse
                 {

@@ -24,6 +24,8 @@ public partial class SupportTicket
 
     public bool IsSeen { get; set; }
 
+    public bool IsOwnerNoti { get; set; }
+
     public DateTime? AutoClosedTime { get; set; }
 
     public string Status { get; set; } = null!;
