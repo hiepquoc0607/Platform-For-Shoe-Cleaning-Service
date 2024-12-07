@@ -17,6 +17,20 @@ namespace TP4SCS.Library.Models.Request.General
 
         public OrderByEnum OrderBy { get; set; } = OrderByEnum.IdAsc;
     }
+    public class PagedRequestV2
+    {
+        public string? Keyword { get; set; } = string.Empty;
+
+        public string? Status { get; set; } = string.Empty;
+
+        [DefaultValue(1)]
+        public int PageIndex { get; set; }
+
+        [DefaultValue(10)]
+        public int PageSize { get; set; }
+
+        public OrderByEnum OrderBy { get; set; } = OrderByEnum.Rank;
+    }
 
     public enum OrderByEnum
     {
@@ -24,7 +38,9 @@ namespace TP4SCS.Library.Models.Request.General
         IdAsc,
 
         [EnumMember(Value = "Id Descending")]
-        IdDesc
+        IdDesc,
+        [EnumMember(Value = "Rank")]
+        Rank
     }
     public enum OrderByEnumV2
     {

@@ -14,6 +14,7 @@ namespace TP4SCS.Library.Models.Response.Service
         public ServiceCategoryResponse Category { get; set; } = null!;
 
         public string Name { get; set; } = null!;
+        public string BusinessName { get; set; } = null!;
 
         public string? Description { get; set; }
 
