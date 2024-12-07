@@ -34,8 +34,11 @@ namespace TP4SCS.Library.Utils.Mapper
         {
             //Service Mapping
             CreateMap<Service, ServiceResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
+            CreateMap<Service, ServiceResponseV3>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)))
-                .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.BranchServices.FirstOrDefault()!.Branch.Business.Name));
+                .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.BranchServices.FirstOrDefault()!.Branch.Business.Name))
+                .ForMember(dest => dest.BusinessId, opt => opt.MapFrom(src => src.BranchServices.FirstOrDefault()!.Branch.BusinessId));
             CreateMap<Service, ServiceCreateResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Util.TranslateGeneralStatus(src.Status)));
             CreateMap<Service, ServiceResponseV2>()
