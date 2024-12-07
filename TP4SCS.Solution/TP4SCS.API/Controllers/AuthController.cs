@@ -186,12 +186,19 @@ namespace TP4SCS.API.Controllers
         {
             var result = await _authService.ResetPasswordAsync(resetPasswordQuery, resetPasswordRequest);
 
+            var url = "https://www.shoecarehub.xyz/reset-success";
+
             if (result.StatusCode != 200)
             {
                 return StatusCode(result.StatusCode, result);
             }
 
-            return Redirect("https://www.shoecarehub.xyz/reset-success");
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? link))
+            {
+                return BadRequest("Định Dạng URL Không Hợp Lệ!");
+            }
+
+            return Ok(link.ToString());
         }
     }
 }
