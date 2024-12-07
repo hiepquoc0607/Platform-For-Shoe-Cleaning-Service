@@ -162,9 +162,14 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 404, "Email Không Tồn Tại!");
             }
 
-            if (!account.RefreshToken!.Equals(resetPasswordQuery.Token) || account.RefreshExpireTime <= DateTime.Now)
+            if (!string.IsNullOrEmpty(account.RefreshToken) && !account.RefreshToken.Equals(resetPasswordQuery.Token))
             {
-                return new ApiResponse<AuthResponse>("error", 400, "Token Không Đúng Hoặc Hết Hạn!");
+                return new ApiResponse<AuthResponse>("error", 400, "Token Không Đúng!");
+            }
+
+            if (account.RefreshExpireTime <= DateTime.Now)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Token Hết Hạn!");
             }
 
             var passwordError = _util.CheckPasswordErrorType(resetPasswordRequest.NewPassword);
