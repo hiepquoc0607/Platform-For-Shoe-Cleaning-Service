@@ -348,5 +348,21 @@ namespace TP4SCS.Repository.Implements
         {
             await DeleteAsync(id);
         }
+
+        public async Task<string?> GetAccountEmailByTicketIdAsync(int id)
+        {
+            return await _dbContext.SupportTickets
+                .AsNoTracking()
+                .Where(t => t.Id == id)
+                .Include(t => t.Order)
+                    .ThenInclude(t => t.OrderDetails)
+                    .ThenInclude(t => t.Branch)
+                    .ThenInclude(t => t.Business)
+                    .ThenInclude(t => t.Owner)
+                .Select(t => t.Order!.OrderDetails
+                    .Select(o => o.Branch.Business.Owner.Email)
+                    .FirstOrDefault())
+                .FirstOrDefaultAsync();
+        }
     }
 }

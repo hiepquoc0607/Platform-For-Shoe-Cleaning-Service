@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
+using Microsoft.IdentityModel.Tokens;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Response.General;
@@ -17,6 +18,7 @@ namespace TP4SCS.Services.Implements
         private readonly ITicketCategoryRepository _ticketCategoryRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IAssetUrlRepository _assetUrlRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
@@ -25,6 +27,7 @@ namespace TP4SCS.Services.Implements
             ITicketCategoryRepository ticketCategoryRepository,
             IAccountRepository accountRepository,
             IAssetUrlRepository assetUrlRepository,
+            IOrderRepository orderRepository,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -305,16 +308,16 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<TicketsResponse>?>("success", "Lấy Thông Tin Hỗ Trợ Thành Công", tickets, 200, pagination);
         }
 
-        public async Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(NotifyTicketRequest notifyTicketRequest)
+        public async Task<ApiResponse<TicketResponse>> NotifyForCustomerAsync(NotifyTicketForCustomerRequest notifyTicketForCustomerRequest)
         {
-            var email = await _accountRepository.GetAccountEmailByIdAsync(notifyTicketRequest.AccountId);
+            var email = await _accountRepository.GetAccountEmailByIdAsync(notifyTicketForCustomerRequest.AccountId);
 
             if (string.IsNullOrEmpty(email))
             {
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email!");
             }
 
-            var ticket = await _ticketRepository.GetUpdateTicketByIdAsync(notifyTicketRequest.TicketId);
+            var ticket = await _ticketRepository.GetUpdateTicketByIdAsync(notifyTicketForCustomerRequest.TicketId);
 
             if (ticket == null)
             {
@@ -337,6 +340,41 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<TicketResponse>("error", 400, "Gửi Email Thông Báo Cho Người Dùng Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<TicketResponse>> NotifyForOwnerAsync(NotifyTicketForOwnerRequest notifyTicketForOwnerRequest)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(notifyTicketForOwnerRequest.OrderId);
+
+            if (order == null)
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn Hàng!");
+            }
+
+            order.Status = StatusConstants.APPROVED;
+
+            var email = await _accountRepository.GetAccountEmailByTicketIdAsync(notifyTicketForOwnerRequest.TicketId);
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email Chủ Doanh Nghiệp!");
+            }
+
+            try
+            {
+                await _ticketRepository.RunInTransactionAsync(async () =>
+                {
+                    await _orderRepository.UpdateOrderAsync(order);
+
+                    await _emailService.SendEmailAsync(email, "ShoeCareHub Đơn Khiếu Nại", "Bạn Có Đơn Hàng Cần Xử Lí Khiếu Nại!");
+                });
+
+                return new ApiResponse<TicketResponse>("success", "Gửi Thông Báo Cho Doanh Nghiệp Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<TicketResponse>("error", 400, "Gửi Thông Báo Cho Doanh Nghiệp Thất Bại!");
             }
         }
 
