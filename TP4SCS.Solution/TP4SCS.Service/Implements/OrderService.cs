@@ -287,7 +287,7 @@ namespace TP4SCS.Services.Implements
                 newNoti.IsProviderNoti = false;
             }
 
-            await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
+            //await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
 
             order.Status = status;
             await _orderRepository.UpdateOrderAsync(order);
