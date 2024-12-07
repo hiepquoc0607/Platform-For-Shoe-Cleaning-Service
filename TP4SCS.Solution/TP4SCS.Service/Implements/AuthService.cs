@@ -505,7 +505,7 @@ namespace TP4SCS.Services.Implements
                     return new ApiResponse<AuthResponse>("error", 400, "Tạo Tài Khoản Thất Bại!");
                 }
 
-                _ = SendVerificationEmailAsync(newAcc.Email);
+                await SendVerificationEmailAsync(newAcc.Email);
 
                 var data = _mapper.Map<AuthResponse>(newAcc);
 

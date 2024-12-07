@@ -151,7 +151,7 @@ namespace TP4SCS.Services.Implements
             int pageSize = 10,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            if (  pageIndex < 1)
+            if (pageIndex < 1)
             {
                 throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }
@@ -170,7 +170,7 @@ namespace TP4SCS.Services.Implements
             int pageSize = 10,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            if ( pageIndex < 1)
+            if (pageIndex < 1)
             {
                 throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }

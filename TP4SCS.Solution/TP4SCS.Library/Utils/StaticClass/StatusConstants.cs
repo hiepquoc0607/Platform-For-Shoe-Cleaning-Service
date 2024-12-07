@@ -44,6 +44,8 @@
         //TICKET STATUS
         public const string OPENING = "OPENING";
 
+        public const string RESOLVING = "RESOLVING";
+
         public const string CLOSED = "CLOSED";
 
         //TRANSACTION STATUS

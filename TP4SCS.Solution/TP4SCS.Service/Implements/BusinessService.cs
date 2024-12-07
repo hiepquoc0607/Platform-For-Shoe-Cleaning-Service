@@ -271,7 +271,7 @@ namespace TP4SCS.Services.Implements
                     });
                 }
 
-                _ = _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
+                await _emailService.SendEmailAsync(email, "Shoe Care Hub Xác Nhận Doanh Nghiệp", emailBody);
 
                 return new ApiResponse<BusinessResponse>("success", "Xác Nhận Doanh Nghiệp Thành Công!", null, 200);
             }

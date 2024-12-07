@@ -16,6 +16,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => true)
                 .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.IsOwnerNoti, otp => false)
                 .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.OPENING);
 
@@ -25,6 +26,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => true)
                 .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.IsOwnerNoti, otp => false)
                 .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.OPENING);
 
@@ -34,6 +36,7 @@ namespace TP4SCS.Library.Utils.Mapper
                 .Map(dest => dest.CreateTime, otp => DateTime.Now)
                 .Map(dest => dest.IsParentTicket, otp => false)
                 .Map(dest => dest.IsSeen, otp => true)
+                .Map(dest => dest.IsOwnerNoti, otp => false)
                 .Map(dest => dest.AutoClosedTime, otp => DateTime.Now)
                 .Map(dest => dest.Status, otp => StatusConstants.CLOSED);
         }
