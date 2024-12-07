@@ -185,7 +185,7 @@ namespace TP4SCS.Services.Implements
             }
             var (branchId, businessId) = await _orderRepository.GetBranchIdAndBusinessIdByOrderId(existingOrderedId);
             var branch = await _branchRepository.GetBranchByIdAsync(branchId);
-            var business = await _businessRepository.GetBusinessProfileByIdAsync(branchId);
+            var business = await _businessRepository.GetBusinessProfileByIdAsync(businessId);
             if (branch == null || business == null)
             {
                 throw new KeyNotFoundException($"Không tìm thấy branch và business của đơn hàng");
