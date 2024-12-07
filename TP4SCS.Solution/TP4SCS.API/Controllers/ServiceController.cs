@@ -26,7 +26,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
+        public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequestV2 pagedRequest)
         {
             var services = await _serviceService.GetServicesAsync(
                 pagedRequest.Keyword,
