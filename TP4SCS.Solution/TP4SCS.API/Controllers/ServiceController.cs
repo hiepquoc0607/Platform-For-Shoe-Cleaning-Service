@@ -28,6 +28,11 @@ namespace TP4SCS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServicesAync([FromQuery] PagedRequest pagedRequest)
         {
+            if (pagedRequest.PageIndex == 0 || pagedRequest.PageSize == 0)
+            {
+                pagedRequest.PageIndex = 1;
+                pagedRequest.PageSize = 10;
+            }
             var services = await _serviceService.GetServicesIncludeBusinessRankAsync(
                 pagedRequest.Keyword,
                 pagedRequest.Status,

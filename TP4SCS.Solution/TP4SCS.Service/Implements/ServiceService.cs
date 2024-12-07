@@ -147,11 +147,11 @@ namespace TP4SCS.Services.Implements
         public async Task<IEnumerable<Service>?> GetServicesAsync(
             string? keyword = null,
             string? status = null,
-            int? pageIndex = null,
-            int? pageSize = null,
+            int pageIndex = 1,
+            int pageSize = 10,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            if (pageIndex < 1)
+            if (  pageIndex < 1)
             {
                 throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }
@@ -166,11 +166,11 @@ namespace TP4SCS.Services.Implements
         public async Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
             string? keyword = null,
             string? status = null,
-            int? pageIndex = null,
-            int? pageSize = null,
+            int pageIndex = 1,
+            int pageSize = 10,
             OrderByEnum orderBy = OrderByEnum.IdAsc)
         {
-            if (pageIndex < 1)
+            if ( pageIndex < 1)
             {
                 throw new ArgumentException("Chỉ số trang phải lớn hơn 0.");
             }

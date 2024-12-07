@@ -138,10 +138,13 @@ namespace TP4SCS.Repository.Implements
                 OrderByEnum.IdDesc => query.OrderByDescending(c => c.Id),
                 _ => query.OrderBy(c => c.Id) // Mặc định sắp xếp theo Id tăng dần
             };
-            int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
-            int validPageSize = pageSize > 0 ? pageSize.Value : 10;
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
+                int validPageSize = pageSize > 0 ? pageSize.Value : 10;
 
-            query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+                query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+            }
 
             // Trả về kết quả
             return await query.ToListAsync();
@@ -188,10 +191,13 @@ namespace TP4SCS.Repository.Implements
             };
 
             // Phân trang
-            int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
-            int validPageSize = pageSize > 0 ? pageSize.Value : 10;
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                int validPageIndex = pageIndex > 0 ? pageIndex.Value - 1 : 0;
+                int validPageSize = pageSize > 0 ? pageSize.Value : 10;
 
-            query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+                query = query.Skip(validPageIndex * validPageSize).Take(validPageSize);
+            }
 
             // Lấy danh sách dịch vụ
             var services = await query.ToListAsync();
