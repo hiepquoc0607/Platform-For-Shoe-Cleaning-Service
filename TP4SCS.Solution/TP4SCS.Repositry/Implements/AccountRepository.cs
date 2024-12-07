@@ -355,7 +355,7 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .Where(t => t.Id == id)
                 .Include(t => t.Order)
-                    .ThenInclude(t => t.OrderDetails)
+                    .ThenInclude(t => t!.OrderDetails)
                     .ThenInclude(t => t.Branch)
                     .ThenInclude(t => t.Business)
                     .ThenInclude(t => t.Owner)

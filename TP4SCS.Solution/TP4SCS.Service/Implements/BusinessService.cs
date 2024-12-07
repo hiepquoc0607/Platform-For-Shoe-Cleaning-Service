@@ -14,6 +14,7 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IBusinessRepository _businessRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IFeedbackRepository _feedbackRepository;
         private readonly IBusinessBranchService _branchService;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
@@ -22,6 +23,7 @@ namespace TP4SCS.Services.Implements
         public BusinessService(IBusinessRepository businessRepository,
             IAccountRepository accountRepository,
             IBusinessBranchService branchService,
+            IFeedbackRepository _feedbackRepository,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -280,6 +282,29 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Xác Nhận Doanh Nghiệp Thất Bại!");
             }
 
+        }
+
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessRatingAsync(int id)
+        {
+            var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
+
+            if (business == null)
+            {
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+            }
+
+            business.Rating = await _feedbackRepository.GetAverageRatingByBusinessIdAsync(id);
+
+            try
+            {
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                return new ApiResponse<BusinessResponse>("success", "Cập Nhập Đánh Giá Doanh Nghiệp Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Đánh Giá Doanh Nghiệp Thất Bại!");
+            }
         }
     }
 }
