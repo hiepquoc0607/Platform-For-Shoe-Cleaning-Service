@@ -20,46 +20,71 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
-        var retries = 3;
+        const int maxRetries = 3;
         var delay = TimeSpan.FromSeconds(2);
-        while (retries > 0)
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            try
+            using (var smtpClient = new SmtpClient())
             {
-                var mailMessage = new MimeMessage();
-                mailMessage.From.Add(new MailboxAddress("ShoeCareHub", _emailSettings.SenderEmail));
-                mailMessage.To.Add(new MailboxAddress($"{toEmail}", toEmail));
-                mailMessage.Subject = subject;
-                mailMessage.Body = new TextPart(TextFormat.Html) { Text = body };
-
-                using (var smtpClient = new SmtpClient())
+                try
                 {
-                    smtpClient.Connect(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+                    var mailMessage = new MimeMessage();
+                    mailMessage.From.Add(new MailboxAddress("ShoeCareHub", _emailSettings.SenderEmail));
+                    mailMessage.To.Add(new MailboxAddress(string.Empty, toEmail));
+                    mailMessage.Subject = subject;
+                    mailMessage.Body = new TextPart(TextFormat.Html) { Text = body };
 
-                    smtpClient.Authenticate(_emailSettings.SenderEmail, _emailSettings.SenderPassword);
+                    smtpClient.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                    smtpClient.Send(mailMessage);
+                    await smtpClient.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
 
-                    smtpClient.Disconnect(true);
+                    if (!string.IsNullOrEmpty(_emailSettings.SenderEmail) && !string.IsNullOrEmpty(_emailSettings.SenderPassword))
+                    {
+                        await smtpClient.AuthenticateAsync(_emailSettings.SenderEmail, _emailSettings.SenderPassword);
+                    }
+
+                    await smtpClient.SendAsync(mailMessage);
+
+                    _logger.LogInformation($"Email sent successfully to {toEmail}.");
+                    return;
                 }
-
-                _logger.LogInformation($"Email sent successfully to {toEmail}.", toEmail);
-                return;
+                catch (SmtpCommandException smtpEx)
+                {
+                    _logger.LogError(smtpEx, $"SMTP command error (Code: {smtpEx.StatusCode}) while sending email to {toEmail}.");
+                }
+                catch (SmtpProtocolException protocolEx)
+                {
+                    _logger.LogError(protocolEx, $"SMTP protocol error while sending email to {toEmail}.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Unexpected error while sending email to {toEmail}.");
+                }
+                finally
+                {
+                    try
+                    {
+                        if (smtpClient.IsConnected)
+                        {
+                            await smtpClient.DisconnectAsync(true);
+                        }
+                    }
+                    catch (Exception disconnectEx)
+                    {
+                        _logger.LogWarning(disconnectEx, "Error while disconnecting SMTP client.");
+                    }
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while sending email.");
-            }
 
-            retries--;
-            if (retries > 0)
+            if (attempt < maxRetries)
             {
-                _logger.LogWarning($"Retrying to send email. Remaining attempts: {retries}.", retries);
+                _logger.LogWarning($"Retrying to send email to {toEmail}. Attempt {attempt} of {maxRetries}.");
                 await Task.Delay(delay);
             }
             else
             {
-                _logger.LogError("Failed to send email after multiple attempts.");
+                _logger.LogError($"Failed to send email to {toEmail} after {maxRetries} attempts.");
             }
         }
     }

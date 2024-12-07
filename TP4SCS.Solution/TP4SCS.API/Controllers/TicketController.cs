@@ -143,9 +143,23 @@ namespace TP4SCS.API.Controllers
 
         [Authorize(Policy = "Moderator")]
         [HttpPost("notify-for-customer")]
-        public async Task<IActionResult> NotifyForCustomerAsync([FromQuery] NotifyTicketRequest notifyTicketRequest)
+        public async Task<IActionResult> NotifyForCustomerAsync([FromBody] NotifyTicketForCustomerRequest notifyTicketForCustomerRequest)
         {
-            var result = await _ticketService.NotifyForCustomerAsync(notifyTicketRequest);
+            var result = await _ticketService.NotifyForCustomerAsync(notifyTicketForCustomerRequest);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Policy = "Moderator")]
+        [HttpPost("notify-for-owner")]
+        public async Task<IActionResult> NotifyForOwnerAsync([FromBody] NotifyTicketForOwnerRequest notifyTicketForOwnerRequest)
+        {
+            var result = await _ticketService.NotifyForOwnerAsync(notifyTicketForOwnerRequest);
 
             if (result.StatusCode != 200)
             {

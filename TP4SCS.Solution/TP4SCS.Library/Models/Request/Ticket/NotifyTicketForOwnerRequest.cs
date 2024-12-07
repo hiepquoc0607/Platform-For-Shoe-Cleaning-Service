@@ -2,12 +2,12 @@
 
 namespace TP4SCS.Library.Models.Request.Ticket
 {
-    public class NotifyTicketRequest
+    public class NotifyTicketForOwnerRequest
     {
         [Required]
-        public int AccountId { get; set; }
+        public int TicketId { get; set; }
 
         [Required]
-        public int TicketId { get; set; }
+        public int OrderId { get; set; }
     }
 }
