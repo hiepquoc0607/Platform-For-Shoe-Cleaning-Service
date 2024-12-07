@@ -228,6 +228,7 @@ namespace TP4SCS.Services.Implements
 
                 newNoti.Content = "Bạn Có Một Đơn Hàng Bị Huỷ!";
                 newNoti.IsProviderNoti = true;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED) && Util.IsEqual(order.Status, StatusConstants.PENDING))
             {
@@ -239,6 +240,7 @@ namespace TP4SCS.Services.Implements
 
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
                 newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
@@ -270,24 +272,26 @@ namespace TP4SCS.Services.Implements
 
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Được Vận Chuyển!";
                 newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
             else if (Util.IsEqual(status, StatusConstants.STORAGE))
             {
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Hoàn Tất Xử Lý!";
                 newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
             else if (Util.IsEqual(status, StatusConstants.ABANDONED))
             {
                 newNoti.Content = "Bạn Có Một Đơn Hàng Quá Hạn Lưu Trữ!";
                 newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
             else if (Util.IsEqual(status, StatusConstants.DELIVERED))
             {
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Giao Thành Công!";
                 newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
-
-            //await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
 
             order.Status = status;
             await _orderRepository.UpdateOrderAsync(order);
