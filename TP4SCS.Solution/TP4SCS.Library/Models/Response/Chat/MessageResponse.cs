@@ -1,4 +1,6 @@
-﻿namespace TP4SCS.Library.Models.Response.Chat
+﻿using System.Text.Json.Serialization;
+
+namespace TP4SCS.Library.Models.Response.Chat
 {
     public class MessageResponse
     {
@@ -12,8 +14,10 @@
 
         public string SenderImageUrl { get; set; } = string.Empty;
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Content { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string>? ImageUrls { get; set; }
 
         public bool IsImage { get; set; }

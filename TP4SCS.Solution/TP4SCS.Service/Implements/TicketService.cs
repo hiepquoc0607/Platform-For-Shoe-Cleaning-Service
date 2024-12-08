@@ -396,7 +396,7 @@ namespace TP4SCS.Services.Implements
 
                     await _orderRepository.UpdateOrderAsync(order);
 
-                    await _emailService.SendEmailAsync(cusEmail, "ShoeCareHub Đơn Khiếu Nại", "Khiếu Nại Của bạn Đã Được Chấp Thuận Và Đơn Hàng Sẽ Được Xử Lý Lại!");
+                    await _emailService.SendEmailAsync(cusEmail, "ShoeCareHub Đơn Khiếu Nại", "Khiếu Nại Của bạn Đã Được Chấp Thuận Và Đơn Hàng Sẽ Được Xử Lý Lại. Vui Lòng Đóng Đơn Sau Khi Hoàn Tất!");
 
                     await _emailService.SendEmailAsync(email, "ShoeCareHub Đơn Khiếu Nại", "Bạn Có Đơn Hàng Cần Xử Lí Khiếu Nại!");
                 });
@@ -427,7 +427,11 @@ namespace TP4SCS.Services.Implements
             var oldStatus = oldTicket.Status;
 
             oldTicket.Status = updateTicketStatusRequest.Status.Trim().ToUpperInvariant();
-            oldTicket.ModeratorId = moderatorId;
+
+            if (updateTicketStatusRequest.Status.Trim().ToUpperInvariant().Equals(StatusConstants.PROCESSING))
+            {
+                oldTicket.ModeratorId = moderatorId;
+            }
 
             try
             {

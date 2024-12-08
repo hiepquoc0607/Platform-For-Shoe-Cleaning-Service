@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TP4SCS.Library.Models.Request.Chat;
 using TP4SCS.Services.Interfaces;
 
@@ -36,10 +38,15 @@ namespace TP4SCS.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
+        [Authorize]
         [HttpGet("get-messages/{roomId}")]
         public async Task<IActionResult> GetMessages([FromRoute] string roomId)
         {
-            var result = await _chatService.GetMessagesAsync(roomId);
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _chatService.GetMessagesAsync(id, roomId);
 
             if (result.StatusCode != 200)
             {
@@ -52,7 +59,7 @@ namespace TP4SCS.API.Controllers
         [HttpGet("get-rooms/{accId}")]
         public async Task<IActionResult> GetChatsRoom([FromRoute] int accId)
         {
-            var result = await _chatService.GetChatsRoomAsync(accId);
+            var result = await _chatService.GetChatRoomsAsync(accId);
 
             if (result.StatusCode != 200)
             {
