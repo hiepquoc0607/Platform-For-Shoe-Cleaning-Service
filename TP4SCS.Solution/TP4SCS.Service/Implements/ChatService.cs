@@ -34,25 +34,32 @@ namespace TP4SCS.Services.Implements
         private async Task AddToFirebaseAsync<T>(string path, T data)
         {
             using var httpClient = new HttpClient();
+
             var json = JsonConvert.SerializeObject(data);
+
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
         }
 
         private async Task<T?> GetFromFirebaseAsync<T>(string path)
         {
             using var httpClient = new HttpClient();
+
             var response = await httpClient.GetStringAsync($"{_firebaseDbUrl}/{path}.json");
+
             return JsonConvert.DeserializeObject<T>(response);
         }
 
         public async Task<ApiResponse<ChatRoomResponse>> CreateChatRoomAsync(ChatRoomRequest roomRequest)
         {
-            var existingRoom = await GetChatRoomAsync(roomRequest.AccountId1, roomRequest.AccountId2);
+            var existingRoom1 = await GetChatRoomAsync(roomRequest.AccountId1, roomRequest.AccountId2);
 
-            if (existingRoom != null)
+            var existingRoom2 = await GetChatRoomAsync(roomRequest.AccountId1, roomRequest.AccountId2);
+
+            if (existingRoom1 != null || existingRoom2 != null)
             {
-                return new ApiResponse<ChatRoomResponse>("error", "Phòng Chat Đã Tồn Tại!", existingRoom, 400);
+                return new ApiResponse<ChatRoomResponse>("error", "Phòng Chat Đã Tồn Tại!", existingRoom1, 400);
             }
 
             var room = new ChatRoomResponse
@@ -133,6 +140,16 @@ namespace TP4SCS.Services.Implements
 
         public async Task<ApiResponse<MessageResponse>> SendMessageAsync(MessageRequest messageRequest)
         {
+            if (!string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
+            {
+                return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Ảnh!");
+            }
+
+            if (messageRequest.ImageUrls!.Count == 0 && messageRequest.IsImage == false)
+            {
+                return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Chữ!");
+            }
+
             var account = await _accountRepository.GetAccountByIdNoTrackingAsync(messageRequest.SenderId);
 
             if (account == null)
@@ -147,10 +164,20 @@ namespace TP4SCS.Services.Implements
                 SenderId = account.Id,
                 SenderFullName = account.FullName,
                 SenderImageUrl = account.ImageUrl!,
-                Content = messageRequest.Content,
                 IsImage = messageRequest.IsImage,
                 Timestamp = DateTime.Now,
             };
+
+            if (messageRequest.IsImage == false)
+            {
+                message.Content = messageRequest.Content;
+                message.ImageUrls = null;
+            }
+            else
+            {
+                message.Content = null;
+                message.ImageUrls = message.ImageUrls;
+            }
 
             try
             {

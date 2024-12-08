@@ -12,7 +12,9 @@
 
         public string SenderImageUrl { get; set; } = string.Empty;
 
-        public string Content { get; set; } = string.Empty;
+        public string? Content { get; set; }
+
+        public List<string>? ImageUrls { get; set; }
 
         public bool IsImage { get; set; }
 
