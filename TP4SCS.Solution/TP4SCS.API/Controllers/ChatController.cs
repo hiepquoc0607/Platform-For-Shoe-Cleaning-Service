@@ -30,10 +30,15 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost("send-message")]
         public async Task<IActionResult> SendMessage([FromBody] MessageRequest messageRequest)
         {
-            var result = await _chatService.SendMessageAsync(messageRequest);
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _chatService.SendMessageAsync(id, messageRequest);
 
             return StatusCode(result.StatusCode, result);
         }

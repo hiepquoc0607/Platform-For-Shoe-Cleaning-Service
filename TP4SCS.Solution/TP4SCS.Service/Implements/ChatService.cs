@@ -1,4 +1,5 @@
-﻿using FirebaseAdmin;
+﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -169,8 +170,26 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<MessageResponse>> SendMessageAsync(MessageRequest messageRequest)
+        public async Task<ApiResponse<MessageResponse>> SendMessageAsync(int id, MessageRequest messageRequest)
         {
+            var room = await GetFromFirebaseAsync<ChatRoomResponse>($"chatRooms/{messageRequest.RoomId}");
+
+            if (room == null)
+            {
+                return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Chat!");
+            }
+
+            if (room.AccountId1 == id)
+            {
+                room.IsAccount1Seen = true;
+                room.IsAccount2Seen = false;
+            }
+            else
+            {
+                room.IsAccount1Seen = false;
+                room.IsAccount2Seen = true;
+            }
+
             if (!string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
             {
                 return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Ảnh!");
@@ -212,6 +231,8 @@ namespace TP4SCS.Services.Implements
 
             try
             {
+                await UpdateToFirebaseAsync($"chatRooms/{messageRequest.RoomId}", room);
+
                 await AddToFirebaseAsync($"messages/{message.RoomId}/{message.Id}", message);
 
                 return new ApiResponse<MessageResponse>("success", "Gửi Tin Nhắn Thành Công!", message, 201);
