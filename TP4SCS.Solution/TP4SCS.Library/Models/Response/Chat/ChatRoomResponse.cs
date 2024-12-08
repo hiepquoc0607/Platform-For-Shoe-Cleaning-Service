@@ -6,6 +6,10 @@
 
         public int AccountId1 { get; set; }
 
+        public bool IsAccount1Seen { get; set; }
+
         public int AccountId2 { get; set; }
+
+        public bool IsAccount2Seen { get; set; }
     }
 }

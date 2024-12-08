@@ -42,6 +42,17 @@ namespace TP4SCS.Services.Implements
             await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
         }
 
+        private async Task UpdateToFirebaseAsync<T>(string path, T data)
+        {
+            using var httpClient = new HttpClient();
+
+            var json = JsonConvert.SerializeObject(data);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await httpClient.PostAsync($"{_firebaseDbUrl}/{path}.json", content);
+        }
+
         private async Task<T?> GetFromFirebaseAsync<T>(string path)
         {
             using var httpClient = new HttpClient();
@@ -66,7 +77,9 @@ namespace TP4SCS.Services.Implements
             {
                 Id = $"{roomRequest.AccountId1}_{roomRequest.AccountId2}",
                 AccountId1 = roomRequest.AccountId1,
-                AccountId2 = roomRequest.AccountId2
+                IsAccount1Seen = true,
+                AccountId2 = roomRequest.AccountId2,
+                IsAccount2Seen = true
             };
 
             try
@@ -87,7 +100,7 @@ namespace TP4SCS.Services.Implements
             return await GetFromFirebaseAsync<ChatRoomResponse>($"chatRooms/{accId1}_{accId2}");
         }
 
-        public async Task<ApiResponse<IEnumerable<ChatRoomResponse>?>> GetChatsRoomAsync(int accId)
+        public async Task<ApiResponse<IEnumerable<ChatRoomResponse>?>> GetChatRoomsAsync(int accId)
         {
             try
             {
@@ -117,10 +130,28 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(string roomId)
+        public async Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(int id, string roomId)
         {
             try
             {
+                var room = await GetFromFirebaseAsync<ChatRoomResponse>($"chatRooms/{roomId}");
+
+                if (room == null)
+                {
+                    return new ApiResponse<IEnumerable<MessageResponse>?>("error", 404, "Không Tìm Thấy Thông Tin Chat!");
+                }
+
+                if (room.AccountId1 == id)
+                {
+                    room.IsAccount1Seen = true;
+                }
+                else
+                {
+                    room.IsAccount2Seen = true;
+                }
+
+                await UpdateToFirebaseAsync($"chatRooms/{roomId}", room);
+
                 var messages = await GetFromFirebaseAsync<Dictionary<string, MessageResponse>>($"messages/{roomId}");
 
                 if (messages == null)

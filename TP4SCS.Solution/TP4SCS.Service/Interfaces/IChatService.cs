@@ -8,10 +8,10 @@ namespace TP4SCS.Services.Interfaces
     {
         Task<ApiResponse<ChatRoomResponse>> CreateChatRoomAsync(ChatRoomRequest roomRequest);
 
-        Task<ApiResponse<IEnumerable<ChatRoomResponse>?>> GetChatsRoomAsync(int accId);
+        Task<ApiResponse<IEnumerable<ChatRoomResponse>?>> GetChatRoomsAsync(int accId);
 
         Task<ApiResponse<MessageResponse>> SendMessageAsync(MessageRequest messageRequest);
 
-        Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(string roomId);
+        Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(int id, string roomId);
     }
 }
