@@ -158,21 +158,21 @@ namespace TP4SCS.API.Controllers
                     request.PageIndex = 1;
                     request.PageSize = 10;
                 }
-                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesAsync(request.Keyword, request.Status, request.PageIndex, request.PageSize);
+                var (discountedServices, totalCount) = await _serviceService.GetDiscountedServicesIncludeBusinessRankAsync(request.Keyword, request.Status, request.PageIndex, request.PageSize);
 
                 if (discountedServices == null || !discountedServices.Any())
                 {
-                    return NotFound(new ResponseObject<IEnumerable<ServiceResponse>>("Không tìm thấy dịch vụ nào đang giảm giá."));
+                    return NotFound(new ResponseObject<IEnumerable<ServiceResponseV3>>("Không tìm thấy dịch vụ nào đang giảm giá."));
                 }
 
-                var pagedResponse = new PagedResponse<ServiceResponse>(
-                    discountedServices.Select(s => _mapper.Map<ServiceResponse>(s)) ?? Enumerable.Empty<ServiceResponse>(),
+                var pagedResponse = new PagedResponse<ServiceResponseV3>(
+                    discountedServices ?? Enumerable.Empty<ServiceResponseV3>(),
                     totalCount,
                     request.PageIndex,
                     request.PageSize
                 );
 
-                return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("Lấy dịch vụ giảm giá thành công.", pagedResponse));
+                return Ok(new ResponseObject<PagedResponse<ServiceResponseV3>>("Lấy dịch vụ giảm giá thành công.", pagedResponse));
             }
             catch (Exception ex)
             {

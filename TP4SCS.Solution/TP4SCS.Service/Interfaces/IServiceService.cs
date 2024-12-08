@@ -34,7 +34,11 @@ namespace TP4SCS.Services.Interfaces
             string? status = null,
             int? pageIndex = null,
             int? pageSize = null);
-
+        Task<(IEnumerable<ServiceResponseV3>?, int)> GetDiscountedServicesIncludeBusinessRankAsync(
+            string? name = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null);
         Task AddServiceAsync(ServiceCreateRequest service, int businessId);
 
         Task DeleteServiceAsync(int id);

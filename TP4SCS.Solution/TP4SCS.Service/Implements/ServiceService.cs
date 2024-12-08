@@ -355,7 +355,34 @@ namespace TP4SCS.Services.Implements
 
             return (discountedServices, totalCount);
         }
+        public async Task<(IEnumerable<ServiceResponseV3>?, int)> GetDiscountedServicesIncludeBusinessRankAsync(
+            string? name = null,
+            string? status = null,
+            int? pageIndex = null,
+            int? pageSize = null)
+        {
+            // Lấy tất cả dịch vụ thỏa mãn điều kiện khuyến mãi trước khi phân trang
+            var allServices = await _serviceRepository.GetServicesIncludeBusinessRankAsync(name, status, null, null, OrderByEnum.IdAsc);
 
+            // Lọc các dịch vụ có khuyến mãi và trạng thái khuyến mãi là "Available"
+            var discountedServices = allServices?.Where(service =>
+                service.Promotion != null &&
+                Util.IsEqual(service.Promotion.Status, StatusConstants.AVAILABLE)
+            );
+
+            // Tính tổng số lượng dịch vụ khuyến mãi
+            var totalCount = discountedServices?.Count() ?? 0;
+
+            // Áp dụng phân trang sau khi đã tính tổng số lượng
+            if (pageIndex.HasValue && pageSize.HasValue)
+            {
+                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value - 1 : 0;
+                int validPageSize = pageSize.Value > 0 ? pageSize.Value : 10;
+                discountedServices = discountedServices?.Skip(validPageIndex * validPageSize).Take(validPageSize);
+            }
+
+            return (discountedServices, totalCount);
+        }
         public async Task<(IEnumerable<Service>?, int)> GetServicesByBranchIdAsync(
             int branchId,
             string? keyword = null,
