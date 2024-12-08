@@ -366,8 +366,8 @@ namespace TP4SCS.Services.Implements
 
             // Lọc các dịch vụ có khuyến mãi và trạng thái khuyến mãi là "Available"
             var discountedServices = allServices?.Where(service =>
-                service.Promotion != null &&
-                Util.IsEqual(service.Promotion.Status, StatusConstants.AVAILABLE)
+                (service.Promotion != null &&
+                Util.IsEqual(service.Promotion.Status, Util.TranslateGeneralStatus(StatusConstants.AVAILABLE)))
             );
 
             // Tính tổng số lượng dịch vụ khuyến mãi
