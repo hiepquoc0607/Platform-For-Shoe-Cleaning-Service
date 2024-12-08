@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
-using FirebaseAdmin;
+﻿using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -16,8 +15,9 @@ namespace TP4SCS.Services.Implements
     {
         private readonly string _firebaseDbUrl = "https://tp4scs-default-rtdb.asia-southeast1.firebasedatabase.app";
         private readonly IAccountRepository _accountRepository;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ChatService(IConfiguration configuration, IAccountRepository accountRepository)
+        public ChatService(IConfiguration configuration, IAccountRepository accountRepository, IHttpClientFactory httpClientFactory)
         {
             var firebaseFilePath = configuration["Firebase:FilePath"];
 
@@ -30,11 +30,12 @@ namespace TP4SCS.Services.Implements
             }
 
             _accountRepository = accountRepository;
+            _httpClientFactory = httpClientFactory;
         }
 
         private async Task AddToFirebaseAsync<T>(string path, T data)
         {
-            using var httpClient = new HttpClient();
+            using var httpClient = _httpClientFactory.CreateClient();
 
             var json = JsonConvert.SerializeObject(data);
 
@@ -43,20 +44,9 @@ namespace TP4SCS.Services.Implements
             await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
         }
 
-        //private async Task UpdateToFirebaseAsync<T>(string path, T data)
-        //{
-        //    using var httpClient = new HttpClient();
-
-        //    var json = JsonConvert.SerializeObject(data);
-
-        //    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        //    await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
-        //}
-
         private async Task<T?> GetFromFirebaseAsync<T>(string path)
         {
-            using var httpClient = new HttpClient();
+            using var httpClient = _httpClientFactory.CreateClient();
 
             var response = await httpClient.GetStringAsync($"{_firebaseDbUrl}/{path}.json");
 
