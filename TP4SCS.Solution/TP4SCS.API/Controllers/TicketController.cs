@@ -169,7 +169,7 @@ namespace TP4SCS.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Policy = "Moderator")]
+        //[Authorize(Policy = "Moderator")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateTicketStatusAsync([FromRoute] int id, [FromBody] UpdateTicketStatusRequest updateTicketStatusRequest)
         {

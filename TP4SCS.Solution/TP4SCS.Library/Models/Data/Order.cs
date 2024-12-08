@@ -42,6 +42,8 @@ public partial class Order
 
     public string? ShippingCode { get; set; }
 
+    public bool IsComplained { get; set; }
+
     public string Status { get; set; } = null!;
 
     public virtual Account Account { get; set; } = null!;
