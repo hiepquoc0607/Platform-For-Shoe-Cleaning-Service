@@ -218,6 +218,10 @@ namespace TP4SCS.Services.Implements
         {
             return await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
         }
+        public async Task<int> GetBusinessIdByOrderItemIdAsync(int id)
+        {
+            return await _businessRepository.GetBusinessIdByOrderItemId(id);
+        }
 
         public async Task<ApiResponse<IEnumerable<BusinessResponse>?>> GetInvalidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest)
         {

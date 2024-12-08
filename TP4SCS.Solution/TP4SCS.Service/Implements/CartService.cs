@@ -110,6 +110,10 @@ namespace TP4SCS.Services.Implements
                 {
                     var material = await _materialService.GetMaterialByIdAsync(materialId);
                     finalPrice += material!.Price;
+                    if (material.BranchMaterials.SingleOrDefault(bm => bm.BranchId == request.Item.BranchId)!.Storage == 0)
+                    {
+                        throw new ArgumentException($"Material Id : {materialId} ở Branch có Id : {request.Item.BranchId} đã hết hàng.");
+                    }
                     material!.BranchMaterials.SingleOrDefault(bm => bm.BranchId == request.Item.BranchId)!.Storage--;
                     await _materialService.UpdateMaterialAsync(material);
                 }
