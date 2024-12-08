@@ -190,13 +190,13 @@ namespace TP4SCS.Services.Implements
                 room.IsAccount2Seen = true;
             }
 
-            if (messageRequest.ImageUrls!.Count == 0 && messageRequest.IsImage == false)
+            if (string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
             {
                 return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Ảnh!");
             }
 
 
-            if (!string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
+            if (messageRequest.ImageUrls!.Count > 0 && messageRequest.IsImage == false)
             {
                 return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Chữ!");
             }
