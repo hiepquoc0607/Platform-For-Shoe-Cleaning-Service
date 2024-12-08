@@ -43,16 +43,16 @@ namespace TP4SCS.Services.Implements
             await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
         }
 
-        private async Task UpdateToFirebaseAsync<T>(string path, T data)
-        {
-            using var httpClient = new HttpClient();
+        //private async Task UpdateToFirebaseAsync<T>(string path, T data)
+        //{
+        //    using var httpClient = new HttpClient();
 
-            var json = JsonConvert.SerializeObject(data);
+        //    var json = JsonConvert.SerializeObject(data);
 
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+        //    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            await httpClient.PostAsync($"{_firebaseDbUrl}/{path}.json", content);
-        }
+        //    await httpClient.PutAsync($"{_firebaseDbUrl}/{path}.json", content);
+        //}
 
         private async Task<T?> GetFromFirebaseAsync<T>(string path)
         {
@@ -151,7 +151,7 @@ namespace TP4SCS.Services.Implements
                     room.IsAccount2Seen = true;
                 }
 
-                await UpdateToFirebaseAsync($"chatRooms/{roomId}", room);
+                await AddToFirebaseAsync($"chatRooms/{roomId}", room);
 
                 var messages = await GetFromFirebaseAsync<Dictionary<string, MessageResponse>>($"messages/{roomId}");
 
@@ -232,7 +232,7 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                await UpdateToFirebaseAsync($"chatRooms/{messageRequest.RoomId}", room);
+                await AddToFirebaseAsync($"chatRooms/{messageRequest.RoomId}", room);
 
                 await AddToFirebaseAsync($"messages/{message.RoomId}/{message.Id}", message);
 
