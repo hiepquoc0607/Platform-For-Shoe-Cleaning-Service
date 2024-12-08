@@ -31,6 +31,8 @@ namespace TP4SCS.Library.Models.Response.Ticket
 
         public bool IsSeen { get; set; }
 
+        public bool IsOwnerNoti { get; set; }
+
         public string Status { get; set; } = string.Empty;
     }
 }

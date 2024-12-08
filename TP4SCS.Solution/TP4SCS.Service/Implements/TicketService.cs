@@ -358,6 +358,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn Khiếu Nại!");
             }
 
+            ticket.IsOwnerNoti = true;
             ticket.Status = StatusConstants.RESOLVING;
 
             var order = await _orderRepository.GetOrderByIdAsync(notifyTicketForOwnerRequest.OrderId);
@@ -377,6 +378,7 @@ namespace TP4SCS.Services.Implements
             order.DeliveredTime = null;
             order.FinishedTime = null;
             order.AbandonedTime = null;
+            order.IsComplained = true;
             order.Status = StatusConstants.APPROVED;
 
             var email = await _accountRepository.GetAccountEmailByTicketIdAsync(notifyTicketForOwnerRequest.TicketId);
