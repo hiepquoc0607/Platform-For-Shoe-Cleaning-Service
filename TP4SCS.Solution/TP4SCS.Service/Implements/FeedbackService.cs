@@ -10,11 +10,13 @@ namespace TP4SCS.Services.Implements
     {
         private readonly IFeedbackRepository _feedbackRepository;
         private readonly IOpenAIService _openAIService;
+        private readonly IBusinessService _businessService;
 
-        public FeedbackService(IFeedbackRepository feedbackRepository, IOpenAIService openAIService)
+        public FeedbackService(IFeedbackRepository feedbackRepository, IOpenAIService openAIService, IBusinessService businessService)
         {
             _feedbackRepository = feedbackRepository;
             _openAIService = openAIService;
+            _businessService = businessService;
         }
 
         public async Task<IEnumerable<Feedback>?> GetFeedbacks(string? status, OrderByEnum order)
@@ -87,7 +89,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Nội dung feedback không được vượt quá 500 ký tự.", nameof(feedback.Content));
             }
-
+            await _businessService.UpdateBusinessRatingAsync(await _businessService.GetBusinessIdByOrderItemIdAsync(feedback.OrderItemId));
             feedback.IsValidAsset = true;
             feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;

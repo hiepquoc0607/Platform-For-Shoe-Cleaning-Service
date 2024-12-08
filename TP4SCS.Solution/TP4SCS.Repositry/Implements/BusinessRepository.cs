@@ -95,7 +95,14 @@ namespace TP4SCS.Repository.Implements
 
             return (result, paging);
         }
-
+        public async Task<int> GetBusinessIdByOrderItemId(int id)
+        {
+            return await _dbContext.OrderDetails
+                .Include(od => od.Branch)
+                .Where(od => od.Id == id)
+                .Select(od => od.Branch.BusinessId)
+                .SingleOrDefaultAsync();
+        }
         public async Task<int?> GetBusinessIdByOwnerIdAsync(int id)
         {
             return await _dbContext.BusinessProfiles
