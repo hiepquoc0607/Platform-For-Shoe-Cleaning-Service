@@ -16,6 +16,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<BusinessProfile?> GetBusinessByOwnerIdAsync(int id);
 
+        Task<BusinessProfile?> GetBusinessByOwnerIdNoTrackingAsync(int id);
+
         Task<(IEnumerable<BusinessProfile>?, Pagination)> GetBusinessesProfilesAsync(GetBusinessRequest getBusinessRequest);
 
         Task<(IEnumerable<BusinessProfile>?, Pagination)> GetInvlaidateBusinessesProfilesAsync(GetInvalidateBusinessRequest getInvalidateBusinessRequest);

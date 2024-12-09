@@ -262,5 +262,12 @@ namespace TP4SCS.Repository.Implements
                 .Where(b => b.OwnerId == id)
                 .SingleOrDefaultAsync();
         }
+
+        public async Task<BusinessProfile?> GetBusinessByOwnerIdNoTrackingAsync(int id)
+        {
+            return await _dbContext.BusinessProfiles
+                .AsNoTracking()
+                .SingleOrDefaultAsync(p => p.OwnerId == id);
+        }
     }
 }

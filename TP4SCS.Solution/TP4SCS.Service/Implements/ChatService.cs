@@ -6,6 +6,7 @@ using System.Text;
 using TP4SCS.Library.Models.Request.Chat;
 using TP4SCS.Library.Models.Response.Chat;
 using TP4SCS.Library.Models.Response.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -15,9 +16,13 @@ namespace TP4SCS.Services.Implements
     {
         private readonly string _firebaseDbUrl = "https://tp4scs-default-rtdb.asia-southeast1.firebasedatabase.app";
         private readonly IAccountRepository _accountRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ChatService(IConfiguration configuration, IAccountRepository accountRepository, IHttpClientFactory httpClientFactory)
+        public ChatService(IConfiguration configuration,
+            IAccountRepository accountRepository,
+            IBusinessRepository businessRepository,
+            IHttpClientFactory httpClientFactory)
         {
             var firebaseFilePath = configuration["Firebase:FilePath"];
 
@@ -30,6 +35,7 @@ namespace TP4SCS.Services.Implements
             }
 
             _accountRepository = accountRepository;
+            _businessRepository = businessRepository;
             _httpClientFactory = httpClientFactory;
         }
 
@@ -198,14 +204,33 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Tài Khoản");
             }
 
+            var fullName = account.FullName;
+            var imageUrl = account.ImageUrl;
+            var isOwner = false;
+
+            if (account.Role.Equals(RoleConstants.OWNER))
+            {
+                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(account.Id);
+
+                if (business == null)
+                {
+                    return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
+                }
+
+                fullName = business.Name;
+                imageUrl = business.ImageUrl;
+                isOwner = true;
+            }
+
             var message = new MessageResponse
             {
                 Id = Guid.NewGuid().ToString(),
                 RoomId = messageRequest.RoomId,
                 SenderId = account.Id,
-                SenderFullName = account.FullName,
-                SenderImageUrl = account.ImageUrl!,
+                FullName = fullName,
+                ImageUrl = fullName,
                 IsImage = messageRequest.IsImage,
+                IsOwner = isOwner,
                 Timestamp = DateTime.Now,
             };
 
