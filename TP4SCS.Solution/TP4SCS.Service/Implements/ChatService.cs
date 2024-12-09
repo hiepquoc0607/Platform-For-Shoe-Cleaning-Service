@@ -86,14 +86,28 @@ namespace TP4SCS.Services.Implements
             {
                 var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(roomRequest.AccountId1);
 
-                acc1Name = business!.Name;
+                if (business == null)
+                {
+                    acc1Name = acc1.FullName;
+                }
+                else
+                {
+                    acc1Name = business.Name;
+                }
             }
 
             if (acc2.Role.Equals(RoleConstants.OWNER))
             {
-                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(roomRequest.AccountId1);
+                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(roomRequest.AccountId2);
 
-                acc2Name = business!.Name;
+                if (business == null)
+                {
+                    acc2Name = acc2.FullName;
+                }
+                else
+                {
+                    acc2Name = business.Name;
+                }
             }
 
             var room = new ChatRoomResponse
