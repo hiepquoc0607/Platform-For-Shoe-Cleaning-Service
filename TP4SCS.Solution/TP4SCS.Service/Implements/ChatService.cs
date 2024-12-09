@@ -270,7 +270,7 @@ namespace TP4SCS.Services.Implements
                 RoomId = messageRequest.RoomId,
                 SenderId = account.Id,
                 FullName = fullName,
-                ImageUrl = fullName,
+                ImageUrl = imageUrl!,
                 IsImage = messageRequest.IsImage,
                 IsOwner = isOwner,
                 Timestamp = DateTime.Now,
