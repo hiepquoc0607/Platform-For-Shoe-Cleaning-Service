@@ -10,9 +10,9 @@ namespace TP4SCS.Library.Models.Response.Chat
 
         public int SenderId { get; set; }
 
-        public string SenderFullName { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
 
-        public string SenderImageUrl { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Content { get; set; }
@@ -21,6 +21,8 @@ namespace TP4SCS.Library.Models.Response.Chat
         public List<string>? ImageUrls { get; set; }
 
         public bool IsImage { get; set; }
+
+        public bool IsOwner { get; set; }
 
         public DateTime Timestamp { get; set; }
     }
