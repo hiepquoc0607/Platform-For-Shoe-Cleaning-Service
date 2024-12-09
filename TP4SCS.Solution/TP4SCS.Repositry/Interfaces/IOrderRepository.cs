@@ -11,6 +11,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Order?> GetOrderByIdAsync(int id);
 
+        Task<Order?> GetUpdateOrderByIdAsync(int id);
+
         Task<IEnumerable<Order>?> GetOrdersAsync(
             string? status = null,
             int? pageIndex = null,

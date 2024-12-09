@@ -332,5 +332,10 @@ namespace TP4SCS.Repository.Implements
 
             return result;
         }
+
+        public async Task<Order?> GetUpdateOrderByIdAsync(int id)
+        {
+            return await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        }
     }
 }
