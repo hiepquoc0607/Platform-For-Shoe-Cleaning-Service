@@ -89,7 +89,7 @@ namespace TP4SCS.Services.Implements
             {
                 throw new ArgumentException("Nội dung feedback không được vượt quá 500 ký tự.", nameof(feedback.Content));
             }
-            await _businessService.UpdateBusinessRatingAsync(await _businessService.GetBusinessIdByOrderItemIdAsync(feedback.OrderItemId),feedback.Rating);
+            await _businessService.UpdateBusinessRatingAsync(await _businessService.GetBusinessIdByOrderItemIdAsync(feedback.OrderItemId), feedback.Rating);
             feedback.IsValidAsset = true;
             feedback.Status = StatusConstants.PENDING;
             feedback.CreatedTime = DateTime.Now;

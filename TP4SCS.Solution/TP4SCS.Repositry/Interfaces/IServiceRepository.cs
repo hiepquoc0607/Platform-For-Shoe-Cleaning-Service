@@ -23,6 +23,7 @@ namespace TP4SCS.Repository.Interfaces
         Task AddServiceAsync(int[] branchIds, int businessId, Service service);
 
         Task UpdateServiceAsync(Service service, int[] branchIds);
+
         Task UpdateServiceAsync(Service service);
 
         Task DeleteServiceAsync(int id);
@@ -30,5 +31,8 @@ namespace TP4SCS.Repository.Interfaces
         Task<int> GetTotalServiceCountAsync(string? keyword = null, string? status = null);
 
         Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null);
+
+        Task<int> CountTotalServiceOfBusinessAsync(int id);
+
     }
 }

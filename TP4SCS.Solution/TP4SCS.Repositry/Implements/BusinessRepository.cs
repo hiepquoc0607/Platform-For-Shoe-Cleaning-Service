@@ -270,9 +270,31 @@ namespace TP4SCS.Repository.Implements
                 .SingleOrDefaultAsync(p => p.OwnerId == id);
         }
 
-        public Task<BusinessProfile?> GetBusinessByServiceIdAsync(int id)
+        public async Task<BusinessProfile?> GetBusinessByServiceIdAsync(int id)
         {
-            throw new NotImplementedException();
+            int businessId = await _dbContext.Services
+                .AsNoTracking()
+                .Where(s => s.Id == id)
+                .Include(s => s.BranchServices)
+                    .ThenInclude(od => od.Branch.BusinessId)
+                .Select(s => s.OrderDetails
+                    .Select(od => od.Branch.BusinessId)
+                    .FirstOrDefault())
+                .SingleOrDefaultAsync();
+
+            return await _dbContext.BusinessProfiles.SingleOrDefaultAsync(b => b.Id == businessId);
+        }
+
+        public async Task<BusinessProfile?> GetBusinessByOrderIdAsync(int id)
+        {
+            int businessId = await _dbContext.OrderDetails
+                .AsNoTracking()
+                .Where(o => o.OrderId == id)
+                .Include(o => o.Branch.BusinessId)
+                .Select(o => o.Branch.BusinessId)
+                .FirstOrDefaultAsync();
+
+            return await _dbContext.BusinessProfiles.SingleOrDefaultAsync(b => b.Id == businessId);
         }
     }
 }
