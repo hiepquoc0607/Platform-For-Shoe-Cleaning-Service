@@ -23,6 +23,10 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessRatingAsync(int id, decimal newRating);
 
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalServiceAsync(int id);
+
+        Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalOrderNumAsync(int id);
+
         Task<ApiResponse<BusinessResponse>> UpdateBusinessSubscriptionAsync(int id, UpdateBusinessSubcriptionRequest updateBusinessSubcriptionRequest);
 
         Task<ApiResponse<BusinessResponse>> UpdateBusinessStatusForAdminAsync(int id, UpdateBusinessStatusRequest updateBusinessStatusRequest);

@@ -359,6 +359,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Đơn Khiếu Nại!");
             }
 
+            ticket.IsSeen = false;
             ticket.IsOwnerNoti = true;
             ticket.Status = StatusConstants.RESOLVING;
 
@@ -432,6 +433,12 @@ namespace TP4SCS.Services.Implements
             if (updateTicketStatusRequest.Status.Trim().ToUpperInvariant().Equals(StatusConstants.PROCESSING))
             {
                 oldTicket.ModeratorId = moderatorId;
+            }
+
+            if (updateTicketStatusRequest.Status.Trim().ToUpperInvariant().Equals(StatusConstants.CLOSED))
+            {
+                oldTicket.IsSeen = true;
+                oldTicket.IsOwnerNoti = false;
             }
 
             try

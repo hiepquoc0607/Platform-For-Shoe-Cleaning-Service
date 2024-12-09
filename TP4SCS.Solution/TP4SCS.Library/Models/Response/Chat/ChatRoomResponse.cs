@@ -6,9 +6,13 @@
 
         public int AccountId1 { get; set; }
 
+        public string Account1FullName { get; set; } = string.Empty;
+
         public bool IsAccount1Seen { get; set; }
 
         public int AccountId2 { get; set; }
+
+        public string Account2FullName { get; set; } = string.Empty;
 
         public bool IsAccount2Seen { get; set; }
     }

@@ -269,5 +269,10 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .SingleOrDefaultAsync(p => p.OwnerId == id);
         }
+
+        public Task<BusinessProfile?> GetBusinessByServiceIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

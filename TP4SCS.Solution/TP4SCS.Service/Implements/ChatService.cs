@@ -14,7 +14,8 @@ namespace TP4SCS.Services.Implements
 {
     public class ChatService : IChatService
     {
-        private readonly string _firebaseDbUrl = "https://tp4scs-default-rtdb.asia-southeast1.firebasedatabase.app";
+        //private readonly string _firebaseDbUrl = "https://tp4scs-default-rtdb.asia-southeast1.firebasedatabase.app";
+        private readonly string _firebaseDbUrl = "https://shoecarehub-4dca3-default-rtdb.asia-southeast1.firebasedatabase.app/";
         private readonly IAccountRepository _accountRepository;
         private readonly IBusinessRepository _businessRepository;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -70,12 +71,39 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<ChatRoomResponse>("error", "Phòng Chat Đã Tồn Tại!", existingRoom1, 400);
             }
 
+            var acc1 = await _accountRepository.GetAccountByIdNoTrackingAsync(roomRequest.AccountId1);
+            var acc2 = await _accountRepository.GetAccountByIdNoTrackingAsync(roomRequest.AccountId2);
+
+            if (acc1 == null || acc2 == null)
+            {
+                return new ApiResponse<ChatRoomResponse>("error", 404, "Không Tìm Thấy Thông Tin Người Dùng!");
+            }
+
+            var acc1Name = acc1.FullName;
+            var acc2Name = acc2.FullName;
+
+            if (acc1.Role.Equals(RoleConstants.OWNER))
+            {
+                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(roomRequest.AccountId1);
+
+                acc1Name = business!.Name;
+            }
+
+            if (acc2.Role.Equals(RoleConstants.OWNER))
+            {
+                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(roomRequest.AccountId1);
+
+                acc2Name = business!.Name;
+            }
+
             var room = new ChatRoomResponse
             {
                 Id = $"{roomRequest.AccountId1}_{roomRequest.AccountId2}",
                 AccountId1 = roomRequest.AccountId1,
+                Account1FullName = acc1Name,
                 IsAccount1Seen = true,
                 AccountId2 = roomRequest.AccountId2,
+                Account2FullName = acc2Name,
                 IsAccount2Seen = true
             };
 
