@@ -1,12 +1,10 @@
 ﻿using Mapster;
 using MapsterMapper;
-using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
-using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -291,7 +289,7 @@ namespace TP4SCS.Services.Implements
 
         }
 
-        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessRatingAsync(int id)
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessRatingAsync(int id, decimal newRating)
         {
             var business = await _businessRepository.GetBusinessProfileByIdAsync(id);
 
@@ -299,8 +297,15 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
             }
-
-            business.Rating = await _feedbackRepository.GetAverageRatingByBusinessIdAsync(id);
+            var (totalRating, ratingCount) = await _feedbackRepository.GetAverageRatingByBusinessIdAsync(id);
+            if (ratingCount == 0)
+            {
+                business.Rating = newRating;
+            }
+            else
+            {
+                business.Rating = (totalRating + newRating) / (ratingCount + 1);
+            }
 
             try
             {

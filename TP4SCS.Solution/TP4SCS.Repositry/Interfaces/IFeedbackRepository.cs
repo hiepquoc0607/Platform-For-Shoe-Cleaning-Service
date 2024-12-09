@@ -46,7 +46,7 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<decimal> GetYearAverageRatingByBusinessIdAsync(int id);
 
-        Task<decimal> GetAverageRatingByBusinessIdAsync(int id);
+        Task<(decimal TotalRating, int RatingCount)> GetAverageRatingByBusinessIdAsync(int id);
 
         Task<Dictionary<int, decimal>> GetMonthAverageRatingsByBusinessIdAsync(int id);
 

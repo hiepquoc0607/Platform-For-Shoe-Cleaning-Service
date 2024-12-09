@@ -311,18 +311,27 @@ namespace TP4SCS.Repository.Implements
             return result;
         }
 
-        public async Task<decimal> GetAverageRatingByBusinessIdAsync(int id)
+        public async Task<(decimal TotalRating, int RatingCount)> GetAverageRatingByBusinessIdAsync(int id)
         {
-            var result = await _dbContext.Feedbacks
+            var ratings = await _dbContext.Feedbacks
                 .AsNoTracking()
                 .Include(f => f.OrderItem)
                 .ThenInclude(oi => oi.Branch)
                 .ThenInclude(b => b.Business)
-                .Where(f => f.Status.Equals(StatusConstants.ACTIVE) &&
-                            f.OrderItem.Branch.Business.Id == id)
+                .Where(f => f.OrderItem.Branch.Business.Id == id)
                 .Select(f => f.Rating)
-                .AverageAsync();
-            return result;
+                .ToListAsync();
+
+            // Tính tổng rating và số lượng rating
+            decimal totalRating = 0;
+            int ratingCount = ratings.Count;
+
+            if (ratingCount > 0)
+            {
+                totalRating = ratings.Sum();
+            }
+
+            return (totalRating, ratingCount);
         }
     }
 }
