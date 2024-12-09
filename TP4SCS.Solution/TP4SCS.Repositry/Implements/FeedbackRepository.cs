@@ -313,7 +313,7 @@ namespace TP4SCS.Repository.Implements
 
         public async Task<decimal> GetAverageRatingByBusinessIdAsync(int id)
         {
-            return await _dbContext.Feedbacks
+            var result = await _dbContext.Feedbacks
                 .AsNoTracking()
                 .Include(f => f.OrderItem)
                 .ThenInclude(oi => oi.Branch)
@@ -322,6 +322,7 @@ namespace TP4SCS.Repository.Implements
                             f.OrderItem.Branch.Business.Id == id)
                 .Select(f => f.Rating)
                 .AverageAsync();
+            return result;
         }
     }
 }

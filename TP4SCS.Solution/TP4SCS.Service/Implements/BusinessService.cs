@@ -1,10 +1,12 @@
 ﻿using Mapster;
 using MapsterMapper;
+using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Business;
 using TP4SCS.Library.Models.Response.BusinessProfile;
 using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Library.Utils.Utils;
+using TP4SCS.Repository.Implements;
 using TP4SCS.Repository.Interfaces;
 using TP4SCS.Services.Interfaces;
 
@@ -23,7 +25,7 @@ namespace TP4SCS.Services.Implements
         public BusinessService(IBusinessRepository businessRepository,
             IAccountRepository accountRepository,
             IBusinessBranchService branchService,
-            IFeedbackRepository _feedbackRepository,
+            IFeedbackRepository feedbackRepository,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -33,6 +35,7 @@ namespace TP4SCS.Services.Implements
             _branchService = branchService;
             _emailService = emailService;
             _mapper = mapper;
+            _feedbackRepository = feedbackRepository;
             _util = util;
         }
 
