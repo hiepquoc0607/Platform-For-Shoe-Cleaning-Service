@@ -202,7 +202,7 @@ namespace TP4SCS.Services.Implements
                 {
                     if (od.ServiceId.HasValue)
                     {
-                        var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);                        
+                        var service = await _serviceRepository.GetServiceByIdAsync(od.ServiceId.Value);
                         service!.OrderedNum--;
                         if (service!.OrderedNum < 0) service!.OrderedNum = 0;
                         await _serviceRepository.UpdateServiceAsync(service);
@@ -235,8 +235,8 @@ namespace TP4SCS.Services.Implements
             {
                 business.PendingAmount--;
                 branch.PendingAmount--;
-                if(branch.PendingAmount < 0) branch.PendingAmount = 0;
-                if(business.PendingAmount < 0) business.PendingAmount = 0;
+                if (branch.PendingAmount < 0) branch.PendingAmount = 0;
+                if (business.PendingAmount < 0) business.PendingAmount = 0;
                 await _businessRepository.UpdateBusinessProfileAsync(business);
                 await _branchRepository.UpdateBranchAsync(branch);
 

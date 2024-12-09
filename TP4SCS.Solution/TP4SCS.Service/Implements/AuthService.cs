@@ -541,7 +541,7 @@ namespace TP4SCS.Services.Implements
 
             try
             {
-                await _emailService.SendEmailAsync(email, "ShoeCareHub Moderator Account Info", body);
+                await _emailService.SendEmailAsync(email, "ShoeCareHub Account Info", body);
 
                 return new ApiResponse<AuthResponse>("success", "Gửi Email Xác Nhận Thành Công!", null);
             }

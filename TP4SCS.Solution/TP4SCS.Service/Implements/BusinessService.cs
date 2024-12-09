@@ -15,6 +15,8 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessRepository _businessRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IFeedbackRepository _feedbackRepository;
+        private readonly IServiceRepository _serviceRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IBusinessBranchService _branchService;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
@@ -24,6 +26,8 @@ namespace TP4SCS.Services.Implements
             IAccountRepository accountRepository,
             IBusinessBranchService branchService,
             IFeedbackRepository feedbackRepository,
+            IServiceRepository serviceRepository,
+            IOrderRepository orderRepository,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -31,9 +35,11 @@ namespace TP4SCS.Services.Implements
             _businessRepository = businessRepository;
             _accountRepository = accountRepository;
             _branchService = branchService;
+            _feedbackRepository = feedbackRepository;
+            _serviceRepository = serviceRepository;
+            _orderRepository = orderRepository;
             _emailService = emailService;
             _mapper = mapper;
-            _feedbackRepository = feedbackRepository;
             _util = util;
         }
 
@@ -319,15 +325,50 @@ namespace TP4SCS.Services.Implements
             }
         }
 
-        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalServiceAsync(int id)
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalServiceAsync(int serviceId)
         {
-            //var business = await _businessRepository.GetB
-            throw new NotImplementedException();
+            var business = await _businessRepository.GetBusinessByServiceIdAsync(serviceId);
+
+            if (business == null)
+            {
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
+            }
+
+            business.ToTalServiceNum = await _serviceRepository.CountTotalServiceOfBusinessAsync(business.Id);
+
+            try
+            {
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                return new ApiResponse<BusinessResponse>("success", "Cập Nhập Tổng Lượng Dịch Vụ Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Tổng Lượng Dịch Vụ Thất Bại!");
+            }
         }
 
-        public Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalOrderNumAsync(int id)
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalOrderNumAsync(int orderId)
         {
-            throw new NotImplementedException();
+            var business = await _businessRepository.GetBusinessByOrderIdAsync(orderId);
+
+            if (business == null)
+            {
+                return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
+            }
+
+            business.TotalOrder = await _orderRepository.CountOrderByBusinessIdAsync(orderId);
+
+            try
+            {
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+
+                return new ApiResponse<BusinessResponse>("success", "Cập Nhập Tổng Đơn Hàng Thành Công!", null);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Tổng Đơn Hàng Thất Bại!");
+            }
         }
     }
 }

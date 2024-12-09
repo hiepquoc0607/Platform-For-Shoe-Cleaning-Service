@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.General;
+using TP4SCS.Library.Utils.StaticClass;
 using TP4SCS.Repository.Interfaces;
 
 namespace TP4SCS.Repository.Implements
@@ -336,6 +337,16 @@ namespace TP4SCS.Repository.Implements
         public async Task<Order?> GetUpdateOrderByIdAsync(int id)
         {
             return await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<int> CountOrderByBusinessIdAsync(int id)
+        {
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderDetails
+                    .Any(od => od.Branch.Business.Id == id) &&
+                    o.Status.Equals(StatusConstants.FINISHED))
+                .CountAsync();
         }
     }
 }

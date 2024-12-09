@@ -177,7 +177,7 @@ namespace TP4SCS.Services.Implements
 
                 if (room == null)
                 {
-                    return new ApiResponse<IEnumerable<MessageResponse>?>("error", 404, "Không Tìm Thấy Thông Tin Chat!");
+                    return new ApiResponse<IEnumerable<MessageResponse>?>("error", 404, "Không Tìm Thấy Phòng Chat!");
                 }
 
                 if (room.AccountId1 == id)
@@ -195,7 +195,7 @@ namespace TP4SCS.Services.Implements
 
                 if (messages == null)
                 {
-                    return new ApiResponse<IEnumerable<MessageResponse>?>("error", 404, "Không Tìm Thấy Thông Tin Chat!");
+                    return new ApiResponse<IEnumerable<MessageResponse>?>("error", 404, "Thông Tin Chat Trống!");
                 }
 
                 var result = messages?.Values.OrderBy(m => m.Timestamp) ?? Enumerable.Empty<MessageResponse>();

@@ -25,6 +25,8 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<Order?> GetOrderByCodeAsync(string code);
 
+        Task<int> CountOrderByBusinessIdAsync(int id);
+
         Task<int> CountMonthOrderByBusinessIdAsync(int id);
 
         Task<int> CountYearOrderByBusinessIdAsync(int id);

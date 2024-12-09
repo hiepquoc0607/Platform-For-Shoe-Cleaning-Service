@@ -280,5 +280,18 @@ namespace TP4SCS.Repository.Implements
         {
             await UpdateAsync(service);
         }
+
+        public async Task<int> CountTotalServiceOfBusinessAsync(int id)
+        {
+            return await _dbContext.Services
+                .AsNoTracking()
+                .Include(s => s.BranchServices)
+                    .ThenInclude(bs => bs.Branch)
+                        .ThenInclude(b => b.Business)
+                .Where(s => s.BranchServices
+                    .Any(bs => bs.Branch.Business.Id == id) &&
+                    s.Status.Equals(StatusConstants.AVAILABLE))
+                .CountAsync();
+        }
     }
 }
