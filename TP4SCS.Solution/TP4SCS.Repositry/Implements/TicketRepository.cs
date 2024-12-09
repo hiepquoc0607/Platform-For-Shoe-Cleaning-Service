@@ -142,6 +142,7 @@ namespace TP4SCS.Repository.Implements
                     Title = t.Title,
                     CreateTime = t.CreateTime,
                     IsSeen = t.IsSeen,
+                    IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status,
                 })
                 .OrderBy(c => c.IsSeen == false ? 1
@@ -262,6 +263,8 @@ namespace TP4SCS.Repository.Implements
                     OrderId = t.OrderId,
                     Title = t.Title,
                     CreateTime = t.CreateTime,
+                    IsSeen = t.IsSeen,
+                    IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status
                 })
                 .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
@@ -378,6 +381,8 @@ namespace TP4SCS.Repository.Implements
                     OrderId = t.OrderId,
                     Title = t.Title,
                     CreateTime = t.CreateTime,
+                    IsSeen = t.IsSeen,
+                    IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status
                 })
                 .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
