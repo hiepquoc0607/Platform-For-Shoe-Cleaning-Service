@@ -35,6 +35,7 @@ namespace TP4SCS.Services.Implements
             _ticketCategoryRepository = ticketCategoryRepository;
             _accountRepository = accountRepository;
             _assetUrlRepository = assetUrlRepository;
+            _orderRepository = orderRepository;
             _emailService = emailService;
             _mapper = mapper;
             _util = util;
@@ -361,7 +362,7 @@ namespace TP4SCS.Services.Implements
             ticket.IsOwnerNoti = true;
             ticket.Status = StatusConstants.RESOLVING;
 
-            var order = await _orderRepository.GetOrderByIdAsync(notifyTicketForOwnerRequest.OrderId);
+            var order = await _orderRepository.GetUpdateOrderByIdAsync(notifyTicketForOwnerRequest.OrderId);
 
             if (order == null)
             {
