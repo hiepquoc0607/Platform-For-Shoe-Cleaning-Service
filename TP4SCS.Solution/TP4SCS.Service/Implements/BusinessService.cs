@@ -318,5 +318,16 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 400, "Cập Nhập Đánh Giá Doanh Nghiệp Thất Bại!");
             }
         }
+
+        public async Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalServiceAsync(int id)
+        {
+            //var business = await _businessRepository.GetB
+            throw new NotImplementedException();
+        }
+
+        public Task<ApiResponse<BusinessResponse>> UpdateBusinessTotalOrderNumAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
