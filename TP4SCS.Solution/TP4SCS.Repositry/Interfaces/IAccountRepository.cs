@@ -16,7 +16,7 @@ namespace TP4SCS.Repository.Interfaces
 
         Task<string> GetAccountEmailByIdAsync(int id);
 
-        Task<string?> GetAccountEmailByTicketIdAsync(int id);
+        Task<Account?> GetAccountEmailByTicketIdAsync(int id);
 
         Task<List<string>?> GetBranchEmailsByOrderIdAsync(int id);
 

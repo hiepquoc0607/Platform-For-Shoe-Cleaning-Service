@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using MapsterMapper;
+using Microsoft.IdentityModel.Tokens;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Response.General;
@@ -18,6 +19,7 @@ namespace TP4SCS.Services.Implements
         private readonly IAccountRepository _accountRepository;
         private readonly IAssetUrlRepository _assetUrlRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IBusinessRepository _businessRepository;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly Util _util;
@@ -27,6 +29,7 @@ namespace TP4SCS.Services.Implements
             IAccountRepository accountRepository,
             IAssetUrlRepository assetUrlRepository,
             IOrderRepository orderRepository,
+            IBusinessRepository businessRepository,
             IEmailService emailService,
             IMapper mapper,
             Util util)
@@ -36,6 +39,7 @@ namespace TP4SCS.Services.Implements
             _accountRepository = accountRepository;
             _assetUrlRepository = assetUrlRepository;
             _orderRepository = orderRepository;
+            _businessRepository = businessRepository;
             _emailService = emailService;
             _mapper = mapper;
             _util = util;
@@ -383,12 +387,21 @@ namespace TP4SCS.Services.Implements
             order.IsComplained = true;
             order.Status = StatusConstants.APPROVED;
 
-            var email = await _accountRepository.GetAccountEmailByTicketIdAsync(notifyTicketForOwnerRequest.TicketId);
+            var owner = await _accountRepository.GetAccountEmailByTicketIdAsync(notifyTicketForOwnerRequest.TicketId);
 
-            if (string.IsNullOrEmpty(email))
+            if (owner == null)
             {
-                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Email Chủ Doanh Nghiệp!");
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Chủ Doanh Nghiệp!");
             }
+
+            var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(owner.Id);
+
+            if (business == null)
+            {
+                return new ApiResponse<TicketResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp!");
+            }
+
+            var body = $"Shop {business.Name} Của Bạn Có Đơn Hàng Với Mã Vận Đơn {order.ShippingCode} Cần Xử Lí Khiếu Nại!";
 
             try
             {
@@ -398,9 +411,10 @@ namespace TP4SCS.Services.Implements
 
                     await _orderRepository.UpdateOrderAsync(order);
 
+                    //here
                     await _emailService.SendEmailAsync(cusEmail, "ShoeCareHub Đơn Khiếu Nại", "Khiếu Nại Của bạn Đã Được Chấp Thuận Và Đơn Hàng Sẽ Được Xử Lý Lại. Vui Lòng Đóng Đơn Sau Khi Hoàn Tất!");
 
-                    await _emailService.SendEmailAsync(email, "ShoeCareHub Đơn Khiếu Nại", "Bạn Có Đơn Hàng Cần Xử Lí Khiếu Nại!");
+                    await _emailService.SendEmailAsync(owner.Email, "ShoeCareHub Đơn Khiếu Nại", body);
                 });
 
                 return new ApiResponse<TicketResponse>("success", "Gửi Thông Báo Cho Doanh Nghiệp Thành Công!", null);
