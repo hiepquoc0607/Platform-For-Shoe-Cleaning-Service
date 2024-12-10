@@ -44,6 +44,19 @@ namespace TP4SCS.API.Controllers
         }
 
         [Authorize]
+        [HttpPost("send-order-message")]
+        public async Task<IActionResult> SendOrderMessageAsync([FromBody] OrderMessageRequest orderMessageRequest)
+        {
+            string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var userId = int.TryParse(userIdClaim, out int id);
+
+            var result = await _chatService.SendOrderMessageAsync(id, orderMessageRequest);
+
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [Authorize]
         [HttpGet("get-messages/{roomId}")]
         public async Task<IActionResult> GetMessagesAsync([FromRoute] string roomId)
         {

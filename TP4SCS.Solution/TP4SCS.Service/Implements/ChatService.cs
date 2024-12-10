@@ -284,6 +284,7 @@ namespace TP4SCS.Services.Implements
                 FullName = fullName,
                 ImageUrl = imageUrl!,
                 IsImage = messageRequest.IsImage,
+                IsOrder = false,
                 IsOwner = isOwner,
                 Timestamp = DateTime.Now,
             };
@@ -302,6 +303,80 @@ namespace TP4SCS.Services.Implements
             try
             {
                 await AddToFirebaseAsync($"chatRooms/{messageRequest.RoomId}", room);
+
+                await AddToFirebaseAsync($"messages/{message.RoomId}/{message.Id}", message);
+
+                return new ApiResponse<MessageResponse>("success", "Gửi Tin Nhắn Thành Công!", message, 201);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<MessageResponse>("error", 400, "Gửi Tin Nhắn Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<MessageResponse>> SendOrderMessageAsync(int id, OrderMessageRequest orderMessageRequest)
+        {
+            var room = await GetFromFirebaseAsync<ChatRoomResponse>($"chatRooms/{orderMessageRequest.RoomId}");
+
+            if (room == null)
+            {
+                return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Chat!");
+            }
+
+            if (room.AccountId1 == id)
+            {
+                room.IsAccount1Seen = true;
+                room.IsAccount2Seen = false;
+            }
+            else
+            {
+                room.IsAccount1Seen = false;
+                room.IsAccount2Seen = true;
+            }
+
+            var account = await _accountRepository.GetAccountByIdNoTrackingAsync(orderMessageRequest.SenderId);
+
+            if (account == null)
+            {
+                return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Tài Khoản");
+            }
+
+            var fullName = account.FullName;
+            var imageUrl = account.ImageUrl;
+            var isOwner = false;
+
+            if (account.Role.Equals(RoleConstants.OWNER))
+            {
+                var business = await _businessRepository.GetBusinessByOwnerIdNoTrackingAsync(account.Id);
+
+                if (business == null)
+                {
+                    return new ApiResponse<MessageResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
+                }
+
+                fullName = business.Name;
+                imageUrl = business.ImageUrl;
+                isOwner = true;
+            }
+
+            var message = new MessageResponse
+            {
+                Id = Guid.NewGuid().ToString(),
+                RoomId = orderMessageRequest.RoomId,
+                SenderId = account.Id,
+                FullName = fullName,
+                ImageUrl = imageUrl!,
+                Content = orderMessageRequest.OrderId.ToString(),
+                ImageUrls = null,
+                IsImage = false,
+                IsOrder = true,
+                IsOwner = isOwner,
+                Timestamp = DateTime.Now,
+            };
+
+            try
+            {
+                await AddToFirebaseAsync($"chatRooms/{orderMessageRequest.RoomId}", room);
 
                 await AddToFirebaseAsync($"messages/{message.RoomId}/{message.Id}", message);
 
