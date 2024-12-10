@@ -17,6 +17,7 @@ namespace TP4SCS.Services.Implements
         private readonly IServiceRepository _serviceRepository;
         private readonly IBranchRepository _branchRepository;
         private readonly IBusinessRepository _businessRepository;
+        private readonly IBusinessService _businessService;
         private readonly IAddressRepository _addressRepository;
         private readonly IMaterialService _materialService;
         private readonly IAccountRepository _accountRepository;
@@ -34,7 +35,8 @@ namespace TP4SCS.Services.Implements
             IShipService shipService,
             IOrderNotificationRepository orderNotificationRepository,
             IMapper mapper,
-            IBusinessRepository businessRepository)
+            IBusinessRepository businessRepository,
+            IBusinessService businessService)
         {
             _orderRepository = orderRepository;
             _serviceRepository = serviceRepository;
@@ -46,6 +48,7 @@ namespace TP4SCS.Services.Implements
             _orderNotificationRepository = orderNotificationRepository;
             _mapper = mapper;
             _businessRepository = businessRepository;
+            _businessService = businessService;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -244,11 +247,35 @@ namespace TP4SCS.Services.Implements
                 newNoti.IsProviderNoti = false;
                 await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
             }
+            else if (Util.IsEqual(status, StatusConstants.APPROVED) && Util.IsEqual(order.Status, StatusConstants.FINISHED))
+            {
+                business.FinishedAmount--;
+                branch.FinishedAmount--;
+                business.TotalOrder--;
+                if (business.FinishedAmount < 0)
+                {
+                    business.FinishedAmount = 0;
+                }
+                if (branch.FinishedAmount < 0)
+                {
+                    branch.FinishedAmount = 0;
+                }
+                if (business.TotalOrder < 0)
+                {
+                    business.TotalOrder = 0;
+                }
+                await _businessRepository.UpdateBusinessProfileAsync(business);
+                await _branchRepository.UpdateBranchAsync(branch);
+
+                newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
+                newNoti.IsProviderNoti = false;
+                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
+            }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
                 business.FinishedAmount++;
                 branch.FinishedAmount++;
-
+                business.TotalOrder++;
                 await _businessRepository.UpdateBusinessProfileAsync(business);
                 await _branchRepository.UpdateBranchAsync(branch);
             }

@@ -333,8 +333,8 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
             }
-
-            business.ToTalServiceNum = await _serviceRepository.CountTotalServiceOfBusinessAsync(business.Id);
+            int currentServiceNum = await _serviceRepository.CountTotalServiceOfBusinessAsync(business.Id);
+            business.ToTalServiceNum = currentServiceNum++;
 
             try
             {
@@ -357,7 +357,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<BusinessResponse>("error", 404, "Không Tìm Thấy Thông Tin Doanh Nghiệp");
             }
 
-            business.TotalOrder = await _orderRepository.CountOrderByBusinessIdAsync(orderId);
+            business.TotalOrder = await _orderRepository.CountOrderByBusinessIdAsync(business.Id);
 
             try
             {

@@ -276,7 +276,7 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .Where(s => s.Id == id)
                 .Include(s => s.BranchServices)
-                    .ThenInclude(od => od.Branch.BusinessId)
+                    .ThenInclude(od => od.Branch)
                 .Select(s => s.OrderDetails
                     .Select(od => od.Branch.BusinessId)
                     .FirstOrDefault())
@@ -290,7 +290,7 @@ namespace TP4SCS.Repository.Implements
             int businessId = await _dbContext.OrderDetails
                 .AsNoTracking()
                 .Where(o => o.OrderId == id)
-                .Include(o => o.Branch.BusinessId)
+                .Include(o => o.Branch)
                 .Select(o => o.Branch.BusinessId)
                 .FirstOrDefaultAsync();
 
