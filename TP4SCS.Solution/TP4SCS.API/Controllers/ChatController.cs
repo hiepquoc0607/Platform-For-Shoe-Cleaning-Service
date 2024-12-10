@@ -18,7 +18,7 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpPost("create-room")]
-        public async Task<IActionResult> CreateChatRoom([FromBody] ChatRoomRequest room)
+        public async Task<IActionResult> CreateChatRoomAsync([FromBody] ChatRoomRequest room)
         {
             var result = await _chatService.CreateChatRoomAsync(room);
 
@@ -32,7 +32,7 @@ namespace TP4SCS.API.Controllers
 
         [Authorize]
         [HttpPost("send-message")]
-        public async Task<IActionResult> SendMessage([FromBody] MessageRequest messageRequest)
+        public async Task<IActionResult> SendMessageAsync([FromBody] MessageRequest messageRequest)
         {
             string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -45,7 +45,7 @@ namespace TP4SCS.API.Controllers
 
         [Authorize]
         [HttpGet("get-messages/{roomId}")]
-        public async Task<IActionResult> GetMessages([FromRoute] string roomId)
+        public async Task<IActionResult> GetMessagesAsync([FromRoute] string roomId)
         {
             string? userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -62,9 +62,22 @@ namespace TP4SCS.API.Controllers
         }
 
         [HttpGet("get-rooms/{accId}")]
-        public async Task<IActionResult> GetChatsRoom([FromRoute] int accId)
+        public async Task<IActionResult> GetChatsRoomAsync([FromRoute] int accId)
         {
             var result = await _chatService.GetChatRoomsAsync(accId);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{roomId}")]
+        public async Task<IActionResult> DeleteChatRoomAsync([FromRoute] string roomId)
+        {
+            var result = await _chatService.DeleteChatRoomAsync(roomId);
 
             if (result.StatusCode != 200)
             {

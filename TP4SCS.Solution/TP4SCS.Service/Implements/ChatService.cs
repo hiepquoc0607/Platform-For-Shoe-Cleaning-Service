@@ -60,6 +60,13 @@ namespace TP4SCS.Services.Implements
             return JsonConvert.DeserializeObject<T>(response);
         }
 
+        private async Task DeleteFromFirebaseAsync(string path)
+        {
+            using var httpClient = _httpClientFactory.CreateClient();
+
+            await httpClient.DeleteAsync($"{_firebaseDbUrl}/{path}.json");
+        }
+
         public async Task<ApiResponse<ChatRoomResponse>> CreateChatRoomAsync(ChatRoomRequest roomRequest)
         {
             var existingRoom1 = await GetChatRoomAsync(roomRequest.AccountId1, roomRequest.AccountId2);
@@ -80,7 +87,10 @@ namespace TP4SCS.Services.Implements
             }
 
             var acc1Name = acc1.FullName;
+            var acc1Url = acc1.ImageUrl;
+
             var acc2Name = acc2.FullName;
+            var acc2Url = acc2.ImageUrl;
 
             if (acc1.Role.Equals(RoleConstants.OWNER))
             {
@@ -115,9 +125,11 @@ namespace TP4SCS.Services.Implements
                 Id = $"{roomRequest.AccountId1}_{roomRequest.AccountId2}",
                 AccountId1 = roomRequest.AccountId1,
                 Account1FullName = acc1Name,
+                Account1ImageUrl = acc1Url ?? "",
                 IsAccount1Seen = true,
                 AccountId2 = roomRequest.AccountId2,
                 Account2FullName = acc2Name,
+                Account2ImageUrl = acc2Url ?? "",
                 IsAccount2Seen = true
             };
 
@@ -228,7 +240,7 @@ namespace TP4SCS.Services.Implements
                 room.IsAccount2Seen = true;
             }
 
-            if (string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
+            if (!string.IsNullOrEmpty(messageRequest.Content) && messageRequest.IsImage == true)
             {
                 return new ApiResponse<MessageResponse>("error", 400, "Message Đang Là Nội Dung Ảnh!");
             }
@@ -298,6 +310,29 @@ namespace TP4SCS.Services.Implements
             catch (Exception)
             {
                 return new ApiResponse<MessageResponse>("error", 400, "Gửi Tin Nhắn Thất Bại!");
+            }
+        }
+
+        public async Task<ApiResponse<string>> DeleteChatRoomAsync(string roomId)
+        {
+            try
+            {
+                var room = await GetFromFirebaseAsync<ChatRoomResponse>($"chatRooms/{roomId}");
+
+                if (room == null)
+                {
+                    return new ApiResponse<string>("error", 404, "Không Tìm Thấy Phòng Chat!");
+                }
+
+                await DeleteFromFirebaseAsync($"messages/{roomId}");
+
+                await DeleteFromFirebaseAsync($"chatRooms/{roomId}");
+
+                return new ApiResponse<string>("success", "Xóa Phòng Chat Thành Công!", roomId);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<string>("error", 400, "Xóa Phòng Chat Thất Bại!");
             }
         }
     }
