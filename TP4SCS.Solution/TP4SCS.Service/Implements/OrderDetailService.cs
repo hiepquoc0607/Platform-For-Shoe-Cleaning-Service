@@ -93,33 +93,6 @@ namespace TP4SCS.Services.Implements
             orderDetail.Price += await _serviceService.GetServiceFinalPriceAsync(orderDetail.ServiceId.Value);
 
             await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
-
-            var order = await _orderRepository.GetOrderByIdAsync(orderDetail.OrderId);
-            if (order == null)
-            {
-                throw new KeyNotFoundException($"Không tìm thấy order với id: {orderDetail.OrderId} ");
-            }
-
-            if ((Util.IsEqual(order.Status, StatusConstants.STORAGE)))
-            {
-                order.Status = StatusConstants.PROCESSING;
-                var branch = await _branchRepository.GetBranchByIdAsync(branchId);
-                if (branch == null)
-                {
-                    throw new KeyNotFoundException($"Không tìm thấy branch với id: {branchId} ");
-                }
-                var business = await _businessRepository.GetBusinessProfileByIdAsync(branch.BusinessId);
-                if (business == null)
-                {
-                    throw new KeyNotFoundException($"Không tìm thấy business với id: {branch.BusinessId}");
-                }
-
-                business.ProcessingAmount++;
-                branch.ProcessingAmount++;
-
-                await _businessRepository.UpdateBusinessProfileAsync(business);
-                await _branchRepository.UpdateBranchAsync(branch);
-            }
         }
 
         public async Task DeleteOrderDetailAsync(int id)
