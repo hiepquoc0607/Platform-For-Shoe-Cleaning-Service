@@ -343,8 +343,9 @@ namespace TP4SCS.Repository.Implements
         {
             return await _dbContext.Orders
                 .AsNoTracking()
-                .Where(o => o.OrderDetails
-                    .Any(od => od.Branch.Business.Id == id) &&
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Branch)
+                .Where(o => o.OrderDetails.Any(od => od.Branch.BusinessId == id) &&
                     o.Status.Equals(StatusConstants.FINISHED))
                 .CountAsync();
         }

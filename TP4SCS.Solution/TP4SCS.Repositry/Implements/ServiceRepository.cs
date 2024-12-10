@@ -287,9 +287,7 @@ namespace TP4SCS.Repository.Implements
                 .AsNoTracking()
                 .Include(s => s.BranchServices)
                     .ThenInclude(bs => bs.Branch)
-                        .ThenInclude(b => b.Business)
-                .Where(s => s.BranchServices
-                    .Any(bs => bs.Branch.Business.Id == id) &&
+                .Where(s => s.BranchServices.Any(bs => bs.Branch.BusinessId == id) &&
                     s.Status.Equals(StatusConstants.AVAILABLE))
                 .CountAsync();
         }
