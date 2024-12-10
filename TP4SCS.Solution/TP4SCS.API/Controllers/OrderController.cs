@@ -185,6 +185,48 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
+        [HttpGet("ship-code/{code}")]
+        public async Task<IActionResult> GetOrderByShipCodeAsync([FromRoute]string code)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByShipCode(code);
+                if (order == null)
+                {
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Không tìm thấy danh sách đơn đặt hàng", new List<OrderResponse>()));
+                }
+                var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(order.Id);
+                if (orderDetails == null || !orderDetails.Any())
+                {
+                    return Ok(new ResponseObject<IEnumerable<OrderResponse>>("Danh sách đơn đặt hàng rỗng", new List<OrderResponse>()));
+                }
+
+                var responseList = new List<OrderDetailResponseV2>();
+
+                foreach (var orderDetail in orderDetails)
+                {
+                    var response = _mapper.Map<OrderDetailResponseV2>(orderDetail);
+
+                    if (!string.IsNullOrEmpty(orderDetail.MaterialIds))
+                    {
+                        List<int> materialIds = Util.ConvertStringToList(orderDetail.MaterialIds);
+                        var materials = await _materialService.GetMaterialsByIdsAsync(materialIds);
+                        List<MaterialResponseV2> materialResponse = _mapper.Map<IEnumerable<MaterialResponseV2>>(materials).ToList();
+                        response.Materials = materialResponse;
+                    }
+
+                    responseList.Add(response);
+                }
+                orderResponse.OrderDetails = responseList;
+                return Ok(new ResponseObject<OrderResponse>("Lấy danh sách đơn hàng theo id thành công.", orderResponse));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
+            }
+        }
         [HttpGet("branches/{id}")]
         public async Task<IActionResult> GetOrdersByBranchIdAsync(
             int id,
