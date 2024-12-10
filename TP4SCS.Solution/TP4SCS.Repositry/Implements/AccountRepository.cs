@@ -349,7 +349,7 @@ namespace TP4SCS.Repository.Implements
             await DeleteAsync(id);
         }
 
-        public async Task<string?> GetAccountEmailByTicketIdAsync(int id)
+        public async Task<Account?> GetAccountEmailByTicketIdAsync(int id)
         {
             return await _dbContext.SupportTickets
                 .AsNoTracking()
@@ -359,9 +359,15 @@ namespace TP4SCS.Repository.Implements
                     .ThenInclude(t => t.Branch)
                     .ThenInclude(t => t.Business)
                     .ThenInclude(t => t.Owner)
-                .Select(t => t.Order!.OrderDetails
+                .Select(t => new Account
+                {
+                    Id = t.Order!.OrderDetails
+                    .Select(o => o.Branch.Business.Owner.Id)
+                    .FirstOrDefault()!,
+                    Email = t.Order!.OrderDetails
                     .Select(o => o.Branch.Business.Owner.Email)
-                    .FirstOrDefault())
+                    .FirstOrDefault()!
+                })
                 .FirstOrDefaultAsync();
         }
     }

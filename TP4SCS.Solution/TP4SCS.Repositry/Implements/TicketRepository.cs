@@ -145,11 +145,12 @@ namespace TP4SCS.Repository.Implements
                     IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status,
                 })
-                .OrderBy(c => c.IsSeen == false ? 1
+                .OrderByDescending(c => c.IsSeen == false ? 1
                             : c.Status.Equals(StatusConstants.OPENING) ? 2
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 3
-                            : c.Status.Equals(StatusConstants.CLOSED) ? 4
-                            : 5)
+                            : c.Status.Equals(StatusConstants.RESOLVING) ? 4
+                            : c.Status.Equals(StatusConstants.CLOSED) ? 5
+                            : 6)
                 .ThenBy(c => c.CreateTime)
                 .ThenByDescending(c => c.Priority)
                 .AsQueryable();
@@ -385,7 +386,7 @@ namespace TP4SCS.Repository.Implements
                     IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status
                 })
-                .OrderBy(c => c.Status.Equals(StatusConstants.OPENING) ? 1
+                .OrderByDescending(c => c.Status.Equals(StatusConstants.OPENING) ? 1
                             : c.Status.Equals(StatusConstants.PROCESSING) ? 2
                             : c.Status.Equals(StatusConstants.CLOSED) ? 3
                             : 4)
