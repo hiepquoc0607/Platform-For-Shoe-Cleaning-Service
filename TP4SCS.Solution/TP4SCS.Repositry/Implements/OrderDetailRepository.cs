@@ -41,7 +41,6 @@ namespace TP4SCS.Repository.Implements
                 }
             }
             order.OrderDetails.Add(orderDetail);
-            order.Status = StatusConstants.PROCESSING;
             order.OrderPrice = order.OrderDetails.Sum(od => od.Price);
             order.TotalPrice = order.OrderDetails.Sum(od => od.Price) + order.DeliveredFee;
             await _dbContext.SaveChangesAsync();
