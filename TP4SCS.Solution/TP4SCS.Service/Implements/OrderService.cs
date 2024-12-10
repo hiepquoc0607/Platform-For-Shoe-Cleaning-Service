@@ -63,6 +63,10 @@ namespace TP4SCS.Services.Implements
         {
             return await _orderRepository.GetOrderByIdAsync(orderId);
         }
+        public async Task<Order?> GetOrderByShipCode(string shipCode)
+        {
+            return await _orderRepository.GetOrderByCodeAsync(shipCode);
+        }
 
         public async Task<IEnumerable<Order>?> GetOrdersByAccountIdAsync(
             int accountId,
