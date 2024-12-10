@@ -267,9 +267,11 @@ namespace TP4SCS.Services.Implements
                 await _businessRepository.UpdateBusinessProfileAsync(business);
                 await _branchRepository.UpdateBranchAsync(branch);
 
-                newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
-                newNoti.IsProviderNoti = false;
-                await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
+                var orderDetails = order.OrderDetails;
+                foreach (var od in orderDetails)
+                {
+                    od.ProcessState = null;
+                }
             }
             else if (Util.IsEqual(status, StatusConstants.FINISHED))
             {
