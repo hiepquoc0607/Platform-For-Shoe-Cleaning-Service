@@ -19,7 +19,6 @@ namespace TP4SCS.Services.Implements
         private readonly IPromotionService _promotionService;
         private readonly IAssetUrlService _assetUrlService;
         private readonly IProcessService _processService;
-        private readonly IBusinessService _businessService;
 
         public ServiceService(IServiceRepository serviceRepository,
             IMapper mapper,
@@ -27,8 +26,7 @@ namespace TP4SCS.Services.Implements
             IPromotionService promotionService,
             IAssetUrlService assetUrlService,
             IProcessService processService,
-            IBusinessRepository businessRepository,
-            IBusinessService businessService)
+            IBusinessRepository businessRepository)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
@@ -37,7 +35,6 @@ namespace TP4SCS.Services.Implements
             _assetUrlService = assetUrlService;
             _processService = processService;
             _businessRepository = businessRepository;
-            _businessService = businessService;
         }
 
         public async Task AddServiceAsync(ServiceCreateRequest serviceRequest, int businessId)
@@ -113,8 +110,8 @@ namespace TP4SCS.Services.Implements
             }
 
             await _serviceRepository.AddServiceAsync(serviceRequest.BranchId, businessId, service);
-
-            await _businessService.UpdateBusinessTotalServiceAsync(service.Id);
+            business.ToTalServiceNum++;
+            await _businessRepository.UpdateAsync(business);
         }
 
         public async Task DeleteServiceAsync(int id)
