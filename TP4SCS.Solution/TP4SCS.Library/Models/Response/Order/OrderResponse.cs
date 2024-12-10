@@ -29,6 +29,7 @@ namespace TP4SCS.Library.Models.Response.Order
         public DateTime? StoragedTime { get; set; }
 
         public DateTime? ShippingTime { get; set; }
+        public bool IsComplained { get; set; }
 
         public DateTime? DeliveredTime { get; set; }
 
