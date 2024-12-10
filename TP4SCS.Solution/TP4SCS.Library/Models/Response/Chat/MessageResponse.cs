@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace TP4SCS.Library.Models.Response.Chat
 {
@@ -22,7 +23,13 @@ namespace TP4SCS.Library.Models.Response.Chat
 
         public bool IsImage { get; set; }
 
-        public bool IsOwner { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DefaultValue(false)]
+        public bool IsOrder { get; set; } = false;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DefaultValue(false)]
+        public bool IsOwner { get; set; } = false;
 
         public DateTime Timestamp { get; set; }
     }

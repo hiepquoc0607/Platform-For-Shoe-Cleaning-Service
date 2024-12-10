@@ -12,6 +12,8 @@ namespace TP4SCS.Services.Interfaces
 
         Task<ApiResponse<MessageResponse>> SendMessageAsync(int id, MessageRequest messageRequest);
 
+        Task<ApiResponse<MessageResponse>> SendOrderMessageAsync(int id, OrderMessageRequest orderMessageRequest);
+
         Task<ApiResponse<IEnumerable<MessageResponse>?>> GetMessagesAsync(int id, string roomId);
 
         Task<ApiResponse<string>> DeleteChatRoomAsync(string roomId);
