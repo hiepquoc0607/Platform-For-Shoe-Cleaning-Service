@@ -1,6 +1,8 @@
 ﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using TP4SCS.Library.Models.Request.Auth;
+using TP4SCS.Library.Models.Response.Auth;
+using TP4SCS.Library.Models.Response.General;
 using TP4SCS.Services.Interfaces;
 
 namespace TP4SCS.API.Controllers
@@ -71,11 +73,27 @@ namespace TP4SCS.API.Controllers
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
 
-            var result = await _authService.LoginGoogleAsync(payload.Email);
+            ApiResponse<AuthResponse> result = await _authService.LoginGoogleAsync(payload.Email);
+            var url = "https://shoecarehub.site/api/auth/get-by-token?token=";
+            if (result.Data != null)
+            {
+                url += result.Data.Token;
+                return Ok(url);
+            }
+            return Redirect("https://www.shoecarehub.xyz/register");
+        }
+        [HttpGet("get-by-token")]
+        public async Task<IActionResult> GetUserByToken([FromQuery] string token)
+        {
+            var result = await _authService.GetUserByToken(token);
+
+            if (result.StatusCode != 200)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
 
             return Ok(result);
         }
-
 
         [HttpPost("login-by-otp")]
         public async Task<IActionResult> LoginOTPAsync([FromBody] LoginOTPRequest loginOTPRequest)

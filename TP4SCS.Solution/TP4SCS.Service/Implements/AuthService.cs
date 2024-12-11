@@ -691,5 +691,90 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
+        public async Task<ApiResponse<AuthResponse>> GetUserByToken(string token)
+        {
+            Account? account = await ParseToken(token);
+
+
+            if (account == null)
+            {
+                return new ApiResponse<AuthResponse>("error", 404, "Account Không Tồn Tại!");
+            }
+
+            if (account.Status.Equals("SUSPENDED"))
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Tài Khoản Đã Bị Khoá!");
+            }
+
+            if (!account.IsVerified)
+            {
+                return new ApiResponse<AuthResponse>("error", 401, "Email Tài Khoản Chưa Được Xác Nhận!");
+            }
+
+
+            var data = _mapper.Map<AuthResponse>(account);
+            data.Token = token;
+
+            switch (data.Role.Trim().ToUpperInvariant())
+            {
+                case "OWNER":
+                    var business = await _businessRepository.GetBusinessIdByOwnerIdNoTrackingAsync(account.Id);
+                    data.BusinessId = business!.Id;
+                    data.IsIndividual = business.IsIndividual;
+                    data.IsMaterialSupported = business.IsMaterialSupported;
+                    data.IsLimitServiceNum = business.IsLimitServiceNum;
+                    break;
+                case "EMPLOYEE":
+                    data.BranchId = await _branchRepository.GetBranchIdByEmployeeIdAsync(account.Id);
+                    break;
+            }
+
+            try
+            {
+                await _accountRepository.UpdateAccountAsync(account);
+
+                return new ApiResponse<AuthResponse>("success", "Đăng Nhập Thành Công!", data);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
+            }
+        }
+        private async Task<Account?> ParseToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+
+            try
+            {
+                // Xác thực token và lấy các claims
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+                // Lấy các claims từ token
+                var claims = principal.Claims;
+                Account? account = await _accountRepository.GetAccountByIdAsync(int.Parse(claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "0"));
+                if (account == null)
+                {
+                    return null;
+                }
+                return account;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi khi token không hợp lệ hoặc hết hạn
+                throw new SecurityTokenException("Invalid token", ex);
+            }
+        }
     }
 }
