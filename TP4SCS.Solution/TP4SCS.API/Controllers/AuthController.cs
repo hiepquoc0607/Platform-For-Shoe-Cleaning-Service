@@ -74,11 +74,10 @@ namespace TP4SCS.API.Controllers
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
 
             ApiResponse<AuthResponse> result = await _authService.LoginGoogleAsync(payload.Email);
-            var url = "https://shoecarehub.site/api/auth/get-by-token?token=";
+            var url = "https://www.shoecarehub.xyz/auth?token=";
             if (result.Data != null)
             {
-                url += result.Data.Token;
-                return Ok(url);
+                return Redirect("https://www.shoecarehub.xyz/auth?token="+ result.Data.Token);
             }
             return Redirect("https://www.shoecarehub.xyz/register");
         }
