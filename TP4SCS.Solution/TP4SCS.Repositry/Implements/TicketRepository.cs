@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.EntityFrameworkCore;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Response.AssetUrl;
@@ -145,14 +146,14 @@ namespace TP4SCS.Repository.Implements
                     IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status,
                 })
-                .OrderByDescending(c => c.IsSeen == false ? 1
-                            : c.Status.Equals(StatusConstants.OPENING) ? 2
-                            : c.Status.Equals(StatusConstants.PROCESSING) ? 3
-                            : c.Status.Equals(StatusConstants.RESOLVING) ? 4
-                            : c.Status.Equals(StatusConstants.CLOSED) ? 5
-                            : 6)
-                .ThenBy(c => c.CreateTime)
+                .OrderByDescending(c => c.Status.Equals(StatusConstants.OPENING))
+                .ThenByDescending(c => c.IsSeen == false)
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.PROCESSING))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.RESOLVING))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.CLOSED))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.CANCELED))
                 .ThenByDescending(c => c.Priority)
+                .ThenBy(c => c.CreateTime)
                 .AsQueryable();
 
             //Search
