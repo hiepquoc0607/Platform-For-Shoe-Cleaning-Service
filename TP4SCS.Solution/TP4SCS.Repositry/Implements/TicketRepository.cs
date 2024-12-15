@@ -25,6 +25,22 @@ namespace TP4SCS.Repository.Implements
             await DeleteAsync(id);
         }
 
+        public async Task<SupportTicket?> GetModeratorChildTicketByParentId(int id)
+        {
+            int[] ids = await _dbContext.Accounts
+                .AsNoTracking()
+                .Where(a => a.Role.Equals(RoleConstants.MODERATOR) &&
+                    a.Status.Equals(StatusConstants.ACTIVE))
+                .Select(a => a.Id)
+                .ToArrayAsync();
+
+            return await _dbContext.SupportTickets
+                .AsNoTracking()
+                .Where(t => ids.Contains(t.UserId) &&
+                    t.ParentTicketId == id)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<TicketResponse?> GetTicketByIdAsync(int id)
         {
             var childTickets = await _dbContext.SupportTickets
