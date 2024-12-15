@@ -120,15 +120,15 @@ namespace TP4SCS.Services.Implements
                 var monthOrderNum = await _orderRepository.CountMonthOrderByBusinessIdAsync(businessId);
                 var yearOrderNum = await _orderRepository.CountYearOrderByBusinessIdAsync(businessId);
 
-                var monthValue = monthRating * (1 + 0.2m + (decimal)Math.Sqrt((double)monthOrderNum));
-                var yearValue = yearRating * (1 + 0.2m + (decimal)Math.Sqrt((double)yearOrderNum));
+                var monthValue = monthRating * (1 + 0.3m + (decimal)Math.Sqrt((double)monthOrderNum));
+                var yearValue = yearRating * (1 + 0.3m + (decimal)Math.Sqrt((double)yearOrderNum));
 
                 monthDictionary.Add(businessId, monthValue);
                 yearDictionary.Add(businessId, yearValue);
             }
 
-            monthDictionary = monthDictionary.OrderBy(x => x.Value).Take(10).ToDictionary(x => x.Key, x => x.Value);
-            yearDictionary = yearDictionary.OrderBy(x => x.Value).Take(10).ToDictionary(x => x.Key, x => x.Value);
+            monthDictionary = monthDictionary.OrderByDescending(x => x.Value).Take(10).ToDictionary(x => x.Key, x => x.Value);
+            yearDictionary = yearDictionary.OrderByDescending(x => x.Value).Take(10).ToDictionary(x => x.Key, x => x.Value);
 
             List<int> topMonthBusinessIds = monthDictionary.Keys.ToList();
             List<int> topYearBusinessIds = yearDictionary.Keys.ToList();

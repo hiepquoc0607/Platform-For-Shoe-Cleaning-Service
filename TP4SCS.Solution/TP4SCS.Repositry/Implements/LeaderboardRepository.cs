@@ -39,6 +39,32 @@ namespace TP4SCS.Repository.Implements
 
             if (leaderboardQuery == null) return null;
 
+            //var businessIds = leaderboardQuery.BusinessIds.Split(',').Select(int.Parse).ToArray();
+
+            //var businesses = await _dbContext.BusinessProfiles
+            //    .AsNoTracking()
+            //    .Where(b => businessIds.Contains(b.Id))
+            //    .Select(b => new BusinessResponse
+            //    {
+            //        Id = b.Id,
+            //        OwnerId = b.OwnerId,
+            //        Name = b.Name,
+            //        Phone = b.Phone,
+            //        ImageUrl = b.ImageUrl,
+            //        Rating = b.Rating,
+            //        TotalOrder = b.TotalOrder,
+            //        PendingAmount = b.PendingAmount,
+            //        ProcessingAmount = b.ProcessingAmount,
+            //        FinishedAmount = b.FinishedAmount,
+            //        CanceledAmount = b.CanceledAmount,
+            //        ToTalServiceNum = b.ToTalServiceNum,
+            //        CreatedDate = b.CreatedDate,
+            //        RegisteredTime = b.RegisteredTime,
+            //        ExpiredTime = b.ExpiredTime,
+            //        Status = b.Status
+            //    })
+            //    .ToListAsync();
+
             var businessIds = leaderboardQuery.BusinessIds.Split(',').Select(int.Parse).ToArray();
 
             var businesses = await _dbContext.BusinessProfiles
@@ -64,6 +90,9 @@ namespace TP4SCS.Repository.Implements
                     Status = b.Status
                 })
                 .ToListAsync();
+
+            // Sort businesses to match the order of businessIds
+            businesses = businesses.OrderBy(b => Array.IndexOf(businessIds, b.Id)).ToList();
 
             return new LeaderboardResponse
             {
