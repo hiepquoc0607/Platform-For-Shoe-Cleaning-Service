@@ -99,10 +99,12 @@ namespace TP4SCS.Services.Implements
                 if (business == null)
                 {
                     acc1Name = acc1.FullName;
+                    acc1Url = acc1.ImageUrl;
                 }
                 else
                 {
                     acc1Name = business.Name;
+                    acc1Url = business.ImageUrl;
                 }
             }
 
@@ -113,10 +115,12 @@ namespace TP4SCS.Services.Implements
                 if (business == null)
                 {
                     acc2Name = acc2.FullName;
+                    acc2Url = acc2.ImageUrl;
                 }
                 else
                 {
                     acc2Name = business.Name;
+                    acc2Url = business.ImageUrl;
                 }
             }
 
