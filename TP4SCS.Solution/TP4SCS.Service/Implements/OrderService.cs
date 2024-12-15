@@ -24,6 +24,7 @@ namespace TP4SCS.Services.Implements
         private readonly IShipService _shipService;
         private readonly IOrderNotificationRepository _orderNotificationRepository;
         private readonly IMapper _mapper;
+        private readonly IEmailService emailService;
 
         public OrderService(
             IOrderRepository orderRepository,
@@ -36,7 +37,8 @@ namespace TP4SCS.Services.Implements
             IOrderNotificationRepository orderNotificationRepository,
             IMapper mapper,
             IBusinessRepository businessRepository,
-            IBusinessService businessService)
+            IBusinessService businessService,
+            IEmailService emailService)
         {
             _orderRepository = orderRepository;
             _serviceRepository = serviceRepository;
@@ -49,6 +51,7 @@ namespace TP4SCS.Services.Implements
             _mapper = mapper;
             _businessRepository = businessRepository;
             _businessService = businessService;
+            this.emailService = emailService;
         }
 
         public async Task<IEnumerable<Order>?> GetOrdersAsync(string? status = null,
@@ -250,6 +253,7 @@ namespace TP4SCS.Services.Implements
                 newNoti.Content = "Đơn Hàng Của Bạn Đã Được Xác Nhận!";
                 newNoti.IsProviderNoti = false;
                 await _orderNotificationRepository.CreateOrderNotificationAsync(newNoti);
+                await emailService.SendEmailAsync(order.Account.Email, "ShoeCareHub Đơn Hàng", "Đơn Hàng Của Bạn Đã Được Xác Nhận");
             }
             else if (Util.IsEqual(status, StatusConstants.APPROVED) && Util.IsEqual(order.Status, StatusConstants.FINISHED))
             {
