@@ -30,7 +30,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
-            return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId);
+            return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId,null,null,null,OrderByEnum.IdDesc);
         }
 
         public async Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId)
