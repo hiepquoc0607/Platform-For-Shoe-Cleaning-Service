@@ -288,6 +288,11 @@ namespace TP4SCS.Services.Implements
                 business.TotalOrder++;
                 await _businessRepository.UpdateBusinessProfileAsync(business);
                 await _branchRepository.UpdateBranchAsync(branch);
+
+                if (order.IsComplained == true)
+                {
+                    await emailService.SendEmailAsync(order.Account.Email, "ShoeCareHub Đơn Hàng", "Đơn Hàng Của Bạn Đã Tái Xử Lý Thành Công. Nếu Không Có Phản Hồi Mới Đơn Khiếu Nại Sẽ Tự Động Đóng Sau 24h");
+                }
             }
             else if (Util.IsEqual(status, StatusConstants.PROCESSING))
             {
