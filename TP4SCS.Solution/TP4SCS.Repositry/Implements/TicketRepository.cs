@@ -403,12 +403,14 @@ namespace TP4SCS.Repository.Implements
                     IsOwnerNoti = t.IsOwnerNoti,
                     Status = t.Status
                 })
-                .OrderByDescending(c => c.Status.Equals(StatusConstants.OPENING) ? 1
-                            : c.Status.Equals(StatusConstants.PROCESSING) ? 2
-                            : c.Status.Equals(StatusConstants.CLOSED) ? 3
-                            : 4)
-                .ThenBy(c => c.CreateTime)
+                .OrderByDescending(c => c.IsOwnerNoti == true)
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.OPENING))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.PROCESSING))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.RESOLVING))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.CLOSED))
+                .ThenByDescending(c => c.Status.Equals(StatusConstants.CANCELED))
                 .ThenByDescending(c => c.Priority)
+                .ThenBy(c => c.CreateTime)
                 .AsQueryable();
 
             //Search

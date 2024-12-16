@@ -468,11 +468,9 @@ namespace TP4SCS.Services.Implements
                     string emailSubject = "ShoeCareHub Đơn Khiếu Nại";
                     string emailBody;
 
-                    if (oldTicket.Status.Equals(StatusConstants.OPENING))
+                    if (oldStatus.Equals(StatusConstants.OPENING) && updateTicketStatusRequest.Status.Equals(StatusConstants.PROCESSING))
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Được Tiếp Nhận Và Đang Được Xử Lý!";
-
-                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
                     //else if (oldTicket.Status.Equals(StatusConstants.OPENING) && oldTicket.OrderId.HasValue)
                     //{
@@ -483,15 +481,13 @@ namespace TP4SCS.Services.Implements
                     else if (oldStatus.Equals(StatusConstants.OPENING) && oldTicket.Status.Equals(StatusConstants.CLOSED))
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Bị Từ Chối Vui Lòng Kiểm Tra Lại Thông Tin Và Thử Lại!";
-
-                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
                     else
                     {
                         emailBody = "Đơn Khiếu Nại Của Bạn Đã Hoàn Tất Việc Xử Lý!";
-
-                        await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                     }
+
+                    await _emailService.SendEmailAsync(email, emailSubject, emailBody);
                 });
 
                 return new ApiResponse<TicketResponse>("error", "Cập Nhập Trạng Thái Đơn Hỗ Trợ Thành Công!", null, 200);
