@@ -18,7 +18,11 @@ namespace TP4SCS.API.Controllers
         private readonly IMaterialService _materialService;
         private readonly IMapper _mapper;
 
-        public CartItemController(ICartItemService cartItemService, IServiceService serviceService, IMaterialService materialService, IMapper mapper)
+        public CartItemController(
+            ICartItemService cartItemService,
+            IServiceService serviceService,
+            IMaterialService materialService,
+            IMapper mapper)
         {
             _cartItemService = cartItemService;
             _serviceService = serviceService;
@@ -156,6 +160,7 @@ namespace TP4SCS.API.Controllers
         //        return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
         //    }
         //}
+
         [HttpPost]
         [Route("api/cartitems")]
         public async Task<IActionResult> AddItemToCart([FromBody] CartItemCreateRequest request)
@@ -208,7 +213,5 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, "Lỗi máy chủ nội bộ: " + ex.Message);
             }
         }
-
-
     }
 }

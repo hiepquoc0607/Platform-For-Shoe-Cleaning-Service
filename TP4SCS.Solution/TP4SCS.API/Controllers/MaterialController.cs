@@ -18,7 +18,10 @@ namespace TP4SCS.API.Controllers
         private readonly IMapper _mapper;
         private readonly IBusinessService _businessService;
 
-        public MaterialController(IMaterialService materialService, IMapper mapper, IBusinessService businessService)
+        public MaterialController(
+            IMaterialService materialService,
+            IMapper mapper,
+            IBusinessService businessService)
         {
             _materialService = materialService;
             _mapper = mapper;

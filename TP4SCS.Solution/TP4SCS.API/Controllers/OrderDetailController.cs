@@ -16,7 +16,10 @@ namespace TP4SCS.API.Controllers
         private readonly IOrderDetailService _orderDetailService;
         private readonly IMaterialService _materialService;
         private readonly IMapper _mapper;
-        public OrderDetailController(IOrderDetailService orderDetailService, IMapper mapper, IMaterialService materialService)
+        public OrderDetailController(
+            IOrderDetailService orderDetailService,
+            IMapper mapper,
+            IMaterialService materialService)
         {
             _orderDetailService = orderDetailService;
             _materialService = materialService;
@@ -107,6 +110,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi: {ex.Message}"));
             }
         }
+
         [HttpPatch("api/orderdetails/{id}")]
         public async Task<IActionResult> UpdateOrderDetail(int id, [FromBody] OrderDetailUpdateRequest request)
         {
@@ -125,6 +129,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>(ex.Message));
             }
         }
+
         [HttpDelete]
         [Route("api/orderdetails/{id}")]
         public async Task<IActionResult> DeleteOrderDetailAsync(int id)

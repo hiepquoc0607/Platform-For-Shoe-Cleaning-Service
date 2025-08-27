@@ -18,7 +18,11 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AddressService(IAddressRepository addressRepository, IShipService shipService, IMapper mapper, Util util)
+        public AddressService(
+            IAddressRepository addressRepository,
+            IShipService shipService,
+            IMapper mapper,
+            Util util)
         {
             _addressRepository = addressRepository;
             _shipService = shipService;

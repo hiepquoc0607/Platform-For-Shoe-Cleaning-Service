@@ -22,8 +22,11 @@ namespace TP4SCS.Repository.Interfaces
 
         // Cập nhật thông tin của Material và trạng thái liên quan đến các BranchMaterials
         Task UpdateMaterialAsync(Material material, int[] branchIds);
+
         Task UpdateQuantityAsync(int quantity, int branchId, int materialId);
+
         Task UpdateMaterialAsync(Material material);
+
         Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids);
     }
 }

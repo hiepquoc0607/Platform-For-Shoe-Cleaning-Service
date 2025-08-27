@@ -11,10 +11,15 @@ namespace TP4SCS.Repository.Interfaces
             int pageIndex = 1,
             int pageSize = 5,
             OrderByEnum orderBy = OrderByEnum.IdAsc);
+
         Task<ServiceCategory?> GetCategoryByIdAsync(int id);
+
         Task<int> GetTotalCategoriesCountAsync(string? keyword = null, string? status = null);
+
         Task AddCategoryAsync(ServiceCategory category);
+
         Task UpdateCategoryAsync(ServiceCategory category);
+
         Task DeleteCategoryAsync(int id);
     }
 }

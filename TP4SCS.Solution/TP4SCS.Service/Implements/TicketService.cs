@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using MapsterMapper;
-using Microsoft.IdentityModel.Tokens;
 using TP4SCS.Library.Models.Data;
 using TP4SCS.Library.Models.Request.Ticket;
 using TP4SCS.Library.Models.Response.General;

@@ -55,7 +55,6 @@ namespace TP4SCS.Repository.Implements
             };
         }
 
-
         public async Task<PlatformStatisticResponse?> GetPlatformStatisticAsync(GetPlatformStatisticRequest getPlatformStatisticRequest)
         {
             var statisticsQuery = _dbContext.PlatformStatistics.AsNoTracking().AsQueryable();

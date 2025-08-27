@@ -62,7 +62,6 @@ namespace TP4SCS.Repository.Implements
             }
         }
 
-
         public async Task UpdateAssetUrlAsync(AssetUrl assetUrl)
         {
             await UpdateAsync(assetUrl);

@@ -12,13 +12,12 @@ namespace TP4SCS.Services.Implements
         //private readonly string _bucketName = "whalehome-project.appspot.com";
         //private readonly StorageClient _storageClient;
         private IAssetUrlRepository _assetUrlRepository;
+
         public AssetUrlService(IAssetUrlRepository assetUrlRepository)
         {
             //var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase.json");
             //GoogleCredential credential = GoogleCredential.FromFile(credentialPath);
             //_storageClient = StorageClient.Create(credential);
-
-
             _assetUrlRepository = assetUrlRepository;
         }
 
@@ -52,14 +51,17 @@ namespace TP4SCS.Services.Implements
             await _assetUrlRepository.AddAssetUrlsAsync(assetUrls);
             return assetUrls;
         }
+
         public async Task DeleteAssetUrlsAsync(int id)
         {
             await _assetUrlRepository.DeleteAssetUrlAsync(id);
         }
+
         public async Task UpdateAssetUrlsAsync(List<AssetUrl> assetUrls)
         {
             await _assetUrlRepository.UpdateAssetUrlsAsync(assetUrls);
         }
+
         public async Task DeleteAssetUrlAsync(int assetUrlId)
         {
             var assetUrl = await _assetUrlRepository.GetAssetUrlByIdAsync(assetUrlId);
@@ -69,9 +71,6 @@ namespace TP4SCS.Services.Implements
             }
             await _assetUrlRepository.DeleteAssetUrlAsync(assetUrlId);
         }
-
-
-
 
         // Phương thức upload ảnh
         //public async Task<FileResponse> UploadFileAsync(IFormFile file)
@@ -103,6 +102,7 @@ namespace TP4SCS.Services.Implements
         //        throw new Exception($"Lỗi upload hình ảnh: {ex.Message}");
         //    }
         //}
+
         //public async Task DeleteImageAsync(string fileUrl)
         //{
         //    var exist = await CheckImageExistsAsync(fileUrl);
@@ -140,11 +140,13 @@ namespace TP4SCS.Services.Implements
             var fileName = WebUtility.UrlDecode(segments[segments.Length - 1]); // Phần cuối cùng của URL là tên tệp
             return fileName.Split('?')[0]; // Xóa tham số truy vấn nếu có
         }
+
         private string GenerateFileName(string originalFileName)
         {
             var fileExtension = Path.GetExtension(originalFileName);
             return $"{Guid.NewGuid()}{fileExtension}";
         }
+
         private bool IsImage(IFormFile file)
         {
             if (file == null || file.Length == 0)

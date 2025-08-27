@@ -24,7 +24,8 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public AccountService(IAccountRepository accountRepository,
+        public AccountService(
+            IAccountRepository accountRepository,
             IBusinessRepository businessRepository,
             IAuthService authService,
             IBusinessBranchService businessBranchService,
@@ -374,5 +375,4 @@ namespace TP4SCS.Services.Implements
             return new ApiResponse<IEnumerable<EmployeeResponse>?>("success", "Lấy dữ liệu thành công!", data, 200, pagination);
         }
     }
-
 }

@@ -22,7 +22,8 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public BusinessService(IBusinessRepository businessRepository,
+        public BusinessService(
+            IBusinessRepository businessRepository,
             IAccountRepository accountRepository,
             IBusinessBranchService branchService,
             IFeedbackRepository feedbackRepository,
@@ -225,6 +226,7 @@ namespace TP4SCS.Services.Implements
         {
             return await _businessRepository.GetBusinessIdByOwnerIdAsync(id);
         }
+
         public async Task<int> GetBusinessIdByOrderItemIdAsync(int id)
         {
             return await _businessRepository.GetBusinessIdByOrderItemId(id);

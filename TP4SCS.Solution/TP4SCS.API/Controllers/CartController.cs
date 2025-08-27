@@ -22,7 +22,13 @@ namespace TP4SCS.API.Controllers
         private readonly ICartItemService _cartItemService;
         private readonly IMapper _mapper;
 
-        public CartController(ICartService cartService, IServiceService serviceService, IMaterialService materialService, ICartItemService cartItemService, IHttpClientFactory httpClientFactory, IMapper mapper)
+        public CartController(
+            ICartService cartService,
+            IServiceService serviceService,
+            IMaterialService materialService,
+            ICartItemService cartItemService,
+            IHttpClientFactory httpClientFactory,
+            IMapper mapper)
         {
             _cartService = cartService;
             _serviceService = serviceService;
@@ -140,6 +146,7 @@ namespace TP4SCS.API.Controllers
         //    var total = await _cartService.GetCartTotalAsync(id);
         //    return Ok(new { Total = total });
         //}
+
         [HttpPost("api/carts/cart/checkout")]
         public async Task<IActionResult> CheckoutForCartItemAsync([FromBody] CheckoutCartRequest request)
         {
@@ -182,6 +189,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, $"Lỗi máy chủ nội bộ: {ex.Message}");
             }
         }
+
         [HttpGet("api/carts/cart/checkout/feeship")]
         public async Task<IActionResult> Feeship(int addressId, int branchId, int quantity)
         {
@@ -231,6 +239,7 @@ namespace TP4SCS.API.Controllers
         //        return BadRequest(ex.Message);
         //    }
         //}
+
         [HttpDelete]
         [Route("api/carts/{id}/clear")]
         public async Task<IActionResult> ClearCart(int id)

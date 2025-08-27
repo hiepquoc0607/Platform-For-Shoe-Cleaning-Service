@@ -70,6 +70,5 @@ namespace TP4SCS.Services.Interfaces
         Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId);
 
         Task UpdateServiceAsync(Service service);
-
     }
 }

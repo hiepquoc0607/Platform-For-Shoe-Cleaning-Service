@@ -17,6 +17,7 @@ namespace TP4SCS.Services.Implements
             _serviceService = serviceService;
             _materialService = materialService;
         }
+
         public async Task AddItemToCartAsync(int userId, int serviceId, List<int>? materialIds, int branchId)
         {
             CartItem item = new CartItem
@@ -27,6 +28,7 @@ namespace TP4SCS.Services.Implements
             };
             await _cartItemRepository.AddItemToCartAsync(userId, item);
         }
+
         public async Task<CartItem?> GetCartItemByIdAsync(int itemId)
         {
             return await _cartItemRepository.GetCartItemByIdAsync(itemId);
@@ -70,6 +72,5 @@ namespace TP4SCS.Services.Implements
 
             return totalPrice;
         }
-
     }
 }

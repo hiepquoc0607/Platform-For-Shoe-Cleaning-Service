@@ -195,6 +195,5 @@ namespace TP4SCS.Repository.Implements
             // Cập nhật lại Material trong cơ sở dữ liệu
             await UpdateAsync(material);
         }
-
     }
 }

@@ -44,6 +44,7 @@ namespace TP4SCS.API.Controllers
             );
             return Ok(new ResponseObject<PagedResponse<ProcessResponse>>("Lấy quá trình của dịch vụ thành công", pagedResponse));
         }
+
         [HttpGet("by-service/{id}")]
         public async Task<IActionResult> GetProcessesByServiceId(
             [FromRoute] int id,

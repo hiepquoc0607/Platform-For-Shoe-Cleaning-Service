@@ -10,7 +10,9 @@ namespace TP4SCS.Services.Interfaces
             int? businessId = null,
             int? feedbackId = null,
             int? serviceId = null);
+
         Task DeleteAssetUrlAsync(int assetUrlId);
+
         Task UpdateAssetUrlsAsync(List<AssetUrl> assetUrls);
     }
 }

@@ -148,6 +148,7 @@ namespace TP4SCS.API.Controllers
                 );
             return Ok(new ResponseObject<PagedResponse<ServiceResponse>>("", pagedResponse));
         }
+
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedServicesAsync([FromQuery] PagedRequest request)
         {

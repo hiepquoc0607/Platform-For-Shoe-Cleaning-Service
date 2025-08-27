@@ -17,7 +17,8 @@ namespace TP4SCS.API.Controllers
         private readonly IFeedbackService _feedbackService;
         private readonly IMapper _mapper;
 
-        public FeedbackController(IHttpClientFactory httpClientFactory,
+        public FeedbackController(
+            IHttpClientFactory httpClientFactory,
             IFeedbackService feedbackService,
             IMapper mapper)
         {
@@ -164,6 +165,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"Đã xảy ra lỗi không mong muốn: {ex.Message}"));
             }
         }
+
         // DELETE: api/feedbacks/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFeedback(int id)

@@ -207,7 +207,6 @@ namespace TP4SCS.Repository.Implements
                 .Select(int.Parse)
                 .ToList();
 
-
             var accounts = _dbContext.Accounts
                 .Where(a => idList.Contains(a.Id))
                 .Select(a => new EmployeeResponse

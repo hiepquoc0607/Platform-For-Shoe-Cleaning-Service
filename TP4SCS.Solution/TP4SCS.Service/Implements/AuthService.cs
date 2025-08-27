@@ -635,6 +635,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
+
         public async Task<ApiResponse<AuthResponse>> LoginGoogleAsync(string email)
         {
             email = email.ToLowerInvariant();
@@ -691,6 +692,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
+
         public async Task<ApiResponse<AuthResponse>> GetUserByToken(string token)
         {
             Account? account = await ParseToken(token);
@@ -710,7 +712,6 @@ namespace TP4SCS.Services.Implements
             {
                 return new ApiResponse<AuthResponse>("error", 401, "Email Tài Khoản Chưa Được Xác Nhận!");
             }
-
 
             var data = _mapper.Map<AuthResponse>(account);
             data.Token = token;
@@ -740,6 +741,7 @@ namespace TP4SCS.Services.Implements
                 return new ApiResponse<AuthResponse>("error", 400, "Đăng Nhập Thất Bại!");
             }
         }
+
         private async Task<Account?> ParseToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

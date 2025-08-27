@@ -77,10 +77,11 @@ namespace TP4SCS.API.Controllers
             var url = "https://www.shoecarehub.xyz/auth?token=";
             if (result.Data != null)
             {
-                return Redirect("https://www.shoecarehub.xyz/auth?token="+ result.Data.Token);
+                return Redirect("https://www.shoecarehub.xyz/auth?token=" + result.Data.Token);
             }
             return Redirect("https://www.shoecarehub.xyz/register");
         }
+
         [HttpGet("get-by-token")]
         public async Task<IActionResult> GetUserByToken([FromQuery] string token)
         {

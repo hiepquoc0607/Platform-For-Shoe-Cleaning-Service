@@ -22,8 +22,11 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessRepository _businessRepository;
         private readonly IMaterialService _materialService;
 
-        public CartService(ICartRepository cartRepository, IServiceService serviceService
-            , ICartItemRepository cartItemRepository, IOrderRepository orderRepository,
+        public CartService(
+            ICartRepository cartRepository,
+            IServiceService serviceService,
+            ICartItemRepository cartItemRepository,
+            IOrderRepository orderRepository,
             IShipService shipService,
             IAddressRepository addressRepository,
             IBranchRepository branchRepository,
@@ -84,6 +87,7 @@ namespace TP4SCS.Services.Implements
             }
             return totalPrice;
         }
+
         public async Task CheckoutForServiceAsync(HttpClient httpClient, CheckoutForServiceRequest request)
         {
             List<Order> orders = new List<Order>();
@@ -135,7 +139,6 @@ namespace TP4SCS.Services.Implements
             orders.Add(order);
             await _orderRepository.AddOrdersAsync(orders);
         }
-
 
         public async Task CheckoutForCartAsync(HttpClient httpClient, CheckoutCartRequest request)
         {
@@ -254,7 +257,6 @@ namespace TP4SCS.Services.Implements
                 await _cartItemRepository.RemoveItemsFromCartAsync(allCartItemIds);
             }
         }
-
 
         private async Task<List<CartItemForCheckoutResponse>> toCartItemForCheckoutResponse(List<CartItemForCheckoutRequest> request)
         {
@@ -390,7 +392,6 @@ namespace TP4SCS.Services.Implements
         //    }
         //}
 
-
         public async Task<decimal> GetFeeShip(HttpClient httpClient, int addressId, int branchId, int quantity)
         {
             var address = await _addressRepository.GetByIDAsync(addressId);
@@ -433,7 +434,5 @@ namespace TP4SCS.Services.Implements
 
             return totalFeeShip;
         }
-
-
     }
 }

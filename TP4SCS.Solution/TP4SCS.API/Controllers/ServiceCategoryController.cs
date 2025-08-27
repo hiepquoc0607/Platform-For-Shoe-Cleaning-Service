@@ -65,6 +65,7 @@ namespace TP4SCS.API.Controllers
                 return NotFound(new ResponseObject<string>(ex.Message));
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateCategoryAync([FromBody] ServiceCategoryRequest request)
         {
@@ -127,6 +128,7 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(500, new ResponseObject<string>($"An error occurred: {ex.Message}"));
             }
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoryAync(int id)
         {

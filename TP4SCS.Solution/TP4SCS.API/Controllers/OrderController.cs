@@ -186,7 +186,7 @@ namespace TP4SCS.API.Controllers
             }
         }
         [HttpGet("ship-code/{code}")]
-        public async Task<IActionResult> GetOrderByShipCodeAsync([FromRoute]string code)
+        public async Task<IActionResult> GetOrderByShipCodeAsync([FromRoute] string code)
         {
             try
             {

@@ -29,14 +29,17 @@ namespace TP4SCS.Services.Implements
         public async Task AddMaterialAsync(MaterialCreateRequest materialRequest, int businessId)
         {
             var business = await _businessRepository.GetByIDAsync(businessId);
+
             if (business == null)
             {
                 throw new ArgumentNullException($"Không tìm thấy business với id: {businessId}.");
             }
+
             if (business.IsMaterialSupported == false)
             {
                 throw new ArgumentNullException($"Cửa hàng {business.Name} vui lòng nâng cấp gói đăng ký để thêm mới phụ kiện.");
             }
+
             if (materialRequest == null)
             {
                 throw new ArgumentNullException(nameof(materialRequest), "Yêu cầu thêm nguyên liệu không được để trống.");
@@ -56,6 +59,7 @@ namespace TP4SCS.Services.Implements
 
             await _materialRepository.AddMaterialAsync(materialRequest.BranchId, businessId, material);
         }
+
         public async Task DeleteMaterialAsync(int id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);
@@ -78,11 +82,14 @@ namespace TP4SCS.Services.Implements
             // Xóa Material
             await _materialRepository.DeleteMaterialAsync(id);
         }
+
         public async Task<Material?> GetMaterialByIdAsync(int id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);
+
             return material;
         }
+
         public async Task<(IEnumerable<Material> materials, int total)> GetMaterialsAsync(
             string? keyword = null,
             string? status = null,
@@ -110,10 +117,12 @@ namespace TP4SCS.Services.Implements
 
             return (paginatedMaterials, total);
         }
+
         public async Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids)
         {
             return await _materialRepository.GetMaterialsByIdsAsync(ids);
         }
+
         public async Task UpdateMaterialAsync(MaterialUpdateRequest materialUpdateRequest, int existingMaterialId)
         {
             if (materialUpdateRequest == null)

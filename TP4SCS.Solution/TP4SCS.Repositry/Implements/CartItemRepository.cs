@@ -8,11 +8,8 @@ namespace TP4SCS.Repository.Implements
 {
     public class CartItemRepository : GenericRepository<CartItem>, ICartItemRepository
     {
-
-
         public CartItemRepository(Tp4scsDevDatabaseContext dbContext) : base(dbContext)
         {
-
         }
 
         public async Task AddItemToCartAsync(int userId, CartItem item)
@@ -88,7 +85,6 @@ namespace TP4SCS.Repository.Implements
                 includeProperties: "Service"
             );
         }
-
 
         public async Task RemoveItemsFromCartAsync(List<int> itemIds)
         {

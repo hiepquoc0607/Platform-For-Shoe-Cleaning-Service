@@ -16,9 +16,14 @@ namespace TP4SCS.Services.Implements
         private readonly IBusinessRepository _businessRepository;
         private readonly IOrderRepository _orderRepository;
 
-        public OrderDetailService(IOrderDetailRepository orderDetailRepository, IServiceService serviceService,
-            IMaterialRepository materialRepository, IAssetUrlService assetUrlService, IBranchRepository branchRepository,
-            IBusinessRepository businessRepository, IOrderRepository orderRepository)
+        public OrderDetailService(
+            IOrderDetailRepository orderDetailRepository,
+            IServiceService serviceService,
+            IMaterialRepository materialRepository,
+            IAssetUrlService assetUrlService,
+            IBranchRepository branchRepository,
+            IBusinessRepository businessRepository,
+            IOrderRepository orderRepository)
         {
             _orderDetailRepository = orderDetailRepository;
             _serviceService = serviceService;
@@ -155,6 +160,5 @@ namespace TP4SCS.Services.Implements
             }
             await _orderDetailRepository.UpdateOrderDetailAsync(existingOrderDetail);
         }
-
     }
 }

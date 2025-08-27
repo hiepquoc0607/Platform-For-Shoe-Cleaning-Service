@@ -23,6 +23,7 @@ namespace TP4SCS.Services.Implements
         {
             return await _feedbackRepository.GetFeedbacksAsync(status, null, null, order);
         }
+
         public async Task<Feedback?> GetFeedbackByIdAsync(int id)
         {
             return await _feedbackRepository.GetFeedbackByidAsync(id);
@@ -30,7 +31,7 @@ namespace TP4SCS.Services.Implements
 
         public async Task<IEnumerable<Feedback>?> GetFeedbackByServiceId(int serviceId)
         {
-            return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId,null,null,null,OrderByEnum.IdDesc);
+            return await _feedbackRepository.GetFeedbacksByServiceIdAsync(serviceId, null, null, null, OrderByEnum.IdDesc);
         }
 
         public async Task<IEnumerable<Feedback>?> GetFeedbackByAccountId(int accountId)
@@ -78,6 +79,7 @@ namespace TP4SCS.Services.Implements
             // Trả về danh sách phân trang và tổng số feedbacks
             return (pagedFeedbacks, totalCount);
         }
+
         public async Task AddFeedbacksAsync(HttpClient httpClient, Feedback feedback)
         {
             if (feedback.Rating < 0 || feedback.Rating > 5)

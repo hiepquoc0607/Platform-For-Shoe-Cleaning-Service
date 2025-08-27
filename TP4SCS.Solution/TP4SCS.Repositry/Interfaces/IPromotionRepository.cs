@@ -11,7 +11,9 @@ namespace TP4SCS.Repository.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdAsc);
 
         Task<Promotion?> GetPromotionByIdAsync(int id);
+
         Task<int> GetTotalPromotionsCountAsync(string? keyword = null, string? status = null);
+
         Task AddPromotionAsync(Promotion promotion);
 
         Task UpdatePromotionAsync(Promotion promotion);

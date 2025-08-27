@@ -22,6 +22,5 @@ namespace TP4SCS.Repository.Implements
         {
             await InsertAsync(packSubscription);
         }
-
     }
 }

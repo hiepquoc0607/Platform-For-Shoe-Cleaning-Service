@@ -82,7 +82,6 @@ namespace TP4SCS.Services.Implements
             return (pagedProcesses, totalCount);
         }
 
-
         public async Task<ServiceProcess?> GetProcessByIdAsync(int id)
         {
             var process = await _processRepository.GetProocessByIdAsync(id);

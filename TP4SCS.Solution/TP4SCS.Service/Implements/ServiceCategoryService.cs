@@ -36,10 +36,12 @@ namespace TP4SCS.Services.Implements
             category.Status = category.Status.ToUpper().Trim();
             await _categoryRepository.AddCategoryAsync(category);
         }
+
         public async Task<int> GetTotalServiceCategoriesCountAsync(string? keyword = null, string? status = null)
         {
             return await _categoryRepository.GetTotalCategoriesCountAsync(keyword, status);
         }
+
         public async Task DeleteServiceCategoryAsync(int id)
         {
             var category = await _categoryRepository.GetCategoryByIdAsync(id);

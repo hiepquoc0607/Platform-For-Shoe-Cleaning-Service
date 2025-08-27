@@ -86,7 +86,6 @@ namespace TP4SCS.Services.Implements
                 throw new ArgumentException("Danh mục này đã ngưng hoạt động.");
             }
 
-
             var service = _mapper.Map<Service>(serviceRequest);
             service.CreateTime = DateTime.Now;
 
@@ -164,6 +163,7 @@ namespace TP4SCS.Services.Implements
 
             return await _serviceRepository.GetServicesAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
+
         public async Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
             string? keyword = null,
             string? status = null,
@@ -183,6 +183,7 @@ namespace TP4SCS.Services.Implements
 
             return await _serviceRepository.GetServicesIncludeBusinessRankAsync(keyword, status, pageIndex, pageSize, orderBy);
         }
+
         public async Task UpdateServiceAsync(ServiceUpdateRequest serviceUpdateRequest, int existingServiceId)
         {
             if (serviceUpdateRequest == null)
@@ -356,6 +357,7 @@ namespace TP4SCS.Services.Implements
 
             return (discountedServices, totalCount);
         }
+
         public async Task<(IEnumerable<ServiceResponseV3>?, int)> GetDiscountedServicesIncludeBusinessRankAsync(
             string? name = null,
             string? status = null,
@@ -384,6 +386,7 @@ namespace TP4SCS.Services.Implements
 
             return (discountedServices, totalCount);
         }
+
         public async Task<(IEnumerable<Service>?, int)> GetServicesByBranchIdAsync(
             int branchId,
             string? keyword = null,
@@ -454,10 +457,12 @@ namespace TP4SCS.Services.Implements
         {
             return _serviceRepository.GetTotalServiceCountAsync(keyword, status);
         }
+
         public async Task UpdateServiceAsync(Service service)
         {
             await _serviceRepository.UpdateServiceAsync(service);
         }
+
         public async Task<decimal> GetServiceFinalPriceAsync(int serviceId)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(serviceId);
@@ -481,6 +486,7 @@ namespace TP4SCS.Services.Implements
 
             return finalPrice;
         }
+
         public async Task<(IEnumerable<Service>?, int)> GetServicesByBusinessIdAsync(
             int businessId,
             string? keyword = null,

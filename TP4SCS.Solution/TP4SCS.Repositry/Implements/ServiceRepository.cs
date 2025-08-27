@@ -149,6 +149,7 @@ namespace TP4SCS.Repository.Implements
             // Trả về kết quả
             return await query.ToListAsync();
         }
+
         public async Task<IEnumerable<ServiceResponseV3>?> GetServicesIncludeBusinessRankAsync(
             string? keyword = null,
             string? status = null,
@@ -217,7 +218,6 @@ namespace TP4SCS.Repository.Implements
 
             return serviceResponses;
         }
-
 
         public async Task<IEnumerable<Service>> GetServicesAsync(string? keyword = null, string? status = null)
         {

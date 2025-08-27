@@ -9,8 +9,11 @@ namespace TP4SCS.Services.Interfaces
         Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest loginRequest);
 
         Task<ApiResponse<AuthResponse>> LoginOTPAsync(LoginOTPRequest loginOTPRequest);
+
         Task<ApiResponse<AuthResponse>> LoginGoogleAsync(string email);
+
         Task<ApiResponse<AuthResponse>> GetUserByToken(string token);
+
         Task<ApiResponse<AuthResponse>> CustomerRegisterAsync(AccountRegisterRequest customerRegisterRequest);
 
         Task<ApiResponse<AuthResponse>> OwnerRegisterAsync(HttpClient httpClient, OwnerRegisterRequest ownerRegisterRequest);

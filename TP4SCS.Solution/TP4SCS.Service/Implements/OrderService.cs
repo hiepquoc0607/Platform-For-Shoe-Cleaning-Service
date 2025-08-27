@@ -66,6 +66,7 @@ namespace TP4SCS.Services.Implements
         {
             return await _orderRepository.GetOrderByIdAsync(orderId);
         }
+
         public async Task<Order?> GetOrderByShipCode(string shipCode)
         {
             return await _orderRepository.GetOrderByCodeAsync(shipCode);
@@ -97,6 +98,7 @@ namespace TP4SCS.Services.Implements
             }
             return orders.Where(o => o.OrderDetails.Any(od => od.BranchId == branchId));
         }
+
         public async Task<IEnumerable<Order>?> GetOrdersByBusinessIdAsync(
             int businessId,
             string? status = null,
@@ -126,6 +128,7 @@ namespace TP4SCS.Services.Implements
 
         //    await UpdateOrderStatusAsync(orderId, StatusConstants.APPROVED);
         //}
+
         public async Task CreateShipOrder(HttpClient httpClient, int orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -174,6 +177,7 @@ namespace TP4SCS.Services.Implements
             order.ShippingCode = code;
             await _orderRepository.UpdateOrderAsync(order);
         }
+
         public async Task UpdateOrderStatusAsync(HttpClient httpClient, int existingOrderedId, string newStatus)
         {
             if (!Util.IsValidOrderStatus(newStatus))
@@ -410,7 +414,5 @@ namespace TP4SCS.Services.Implements
             // Cập nhật đơn hàng trong cơ sở dữ liệu
             await _orderRepository.UpdateOrderAsync(existingOrder);
         }
-
-
     }
 }

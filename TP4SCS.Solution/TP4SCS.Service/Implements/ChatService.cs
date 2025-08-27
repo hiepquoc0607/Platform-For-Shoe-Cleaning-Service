@@ -164,7 +164,8 @@ namespace TP4SCS.Services.Implements
                 if (chatRooms == null)
                 {
                     return new ApiResponse<IEnumerable<ChatRoomResponse>?>("error", 404, "Thông Tin Phòng Chat Trống!");
-                };
+                }
+                ;
 
                 var filteredRooms = chatRooms
                     .Where(cr => cr.Key.Split('_').Contains(accId.ToString()))

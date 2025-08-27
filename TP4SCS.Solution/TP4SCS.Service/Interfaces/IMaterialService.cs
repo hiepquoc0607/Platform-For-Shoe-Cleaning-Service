@@ -7,7 +7,9 @@ namespace TP4SCS.Services.Interfaces
     public interface IMaterialService
     {
         Task AddMaterialAsync(MaterialCreateRequest materialRequest, int businessId);
+
         Task<IEnumerable<Material>?> GetMaterialsByIdsAsync(List<int> ids);
+
         Task DeleteMaterialAsync(int id);
 
         Task<Material?> GetMaterialByIdAsync(int id);
@@ -36,6 +38,7 @@ namespace TP4SCS.Services.Interfaces
             int? pageIndex = null,
             int? pageSize = null,
             OrderByEnum orderBy = OrderByEnum.IdDesc);
+
         Task<(IEnumerable<Material>?, int)> GetMaterialsByServiceIdAsync(
             int serviceId,
             string? keyword = null,
@@ -45,6 +48,7 @@ namespace TP4SCS.Services.Interfaces
             OrderByEnum orderBy = OrderByEnum.IdDesc);
 
         Task UpdateMaterialAsync(int quantity, int branchId, int materialId);
+
         Task UpdateMaterialAsync(Material material);
     }
 }

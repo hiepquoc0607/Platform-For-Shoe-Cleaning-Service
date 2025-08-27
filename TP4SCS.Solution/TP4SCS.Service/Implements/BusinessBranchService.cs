@@ -20,7 +20,12 @@ namespace TP4SCS.Services.Implements
         private readonly IMapper _mapper;
         private readonly Util _util;
 
-        public BusinessBranchService(IBusinessRepository businessRepository, IBranchRepository branchRepository, IShipService shipService, IMapper mapper, Util util)
+        public BusinessBranchService(
+            IBusinessRepository businessRepository,
+            IBranchRepository branchRepository,
+            IShipService shipService,
+            IMapper mapper,
+            Util util)
         {
             _businessRepository = businessRepository;
             _branchRepository = branchRepository;
