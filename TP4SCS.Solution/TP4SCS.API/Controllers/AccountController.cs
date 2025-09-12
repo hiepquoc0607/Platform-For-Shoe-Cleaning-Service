@@ -75,8 +75,6 @@ namespace TP4SCS.API.Controllers
                 return StatusCode(result.StatusCode, result);
             }
 
-            int newAccId = await _accountService.GetAccountMaxIdAsync();
-
             return StatusCode(result.StatusCode, result);
         }
 
@@ -95,8 +93,6 @@ namespace TP4SCS.API.Controllers
             {
                 return StatusCode(result.StatusCode, result);
             }
-
-            int newAccId = await _accountService.GetAccountMaxIdAsync();
 
             return StatusCode(result.StatusCode, result);
         }

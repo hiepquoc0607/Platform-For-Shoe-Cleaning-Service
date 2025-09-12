@@ -37,8 +37,6 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 
-
-
 #region Authentication UI For Swagger
 builder.Services.AddSwaggerGen(swagger =>
 {
@@ -81,8 +79,9 @@ builder.Services.AddDbContext<Tp4scsDevDatabaseContext>(options =>
 #endregion
 
 //Word Blacklist Path
-var wordFilePath = Path.Combine(builder.Environment.ContentRootPath, "WordBlacklist.json");
-
+var wordFilePath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    builder.Configuration["ResourceJsonPath"]!);
 
 //Inject Repo
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
@@ -277,13 +276,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
 }
 
 app.UseSwagger();
 
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS"));
+app.UseSwaggerUI(c =>
+{
+    // Hides the "Schemas" section at the bottom
+    c.DefaultModelsExpandDepth(-1);
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP4SCS");
+});
 
 app.UseMiddleware<ResponseMiddleware>();
 
@@ -302,5 +304,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-

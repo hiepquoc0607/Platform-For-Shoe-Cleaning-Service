@@ -14,8 +14,7 @@ namespace TP4SCS.Services.Implements
 {
     public class ChatService : IChatService
     {
-        //private readonly string _firebaseDbUrl = "https://tp4scs-default-rtdb.asia-southeast1.firebasedatabase.app";
-        private readonly string _firebaseDbUrl = "https://shoecarehub-4dca3-default-rtdb.asia-southeast1.firebasedatabase.app/";
+        private readonly string _firebaseDbUrl = "TP4SCSProjectFirebaseUrl";
         private readonly IAccountRepository _accountRepository;
         private readonly IBusinessRepository _businessRepository;
         private readonly IHttpClientFactory _httpClientFactory;

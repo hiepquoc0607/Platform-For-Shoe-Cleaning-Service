@@ -1,0 +1,120 @@
+## .gitignore for ASP.NET Web API + Visual Studio + .NET SDK tools
+## Source: https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+## Customized for modern ASP.NET Web API projects
+
+############################################################
+# Build results
+############################################################
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+artifacts/
+bld/
+[Ll]og/
+[Ll]ogs/
+*.log
+
+# Platform-specific build folders
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+############################################################
+# .NET Core
+############################################################
+project.lock.json
+project.fragment.lock.json
+
+# User secrets (ASP.NET Core)
+**/secrets.json
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+############################################################
+# NuGet
+############################################################
+*.nupkg
+*.snupkg
+*.nuspec
+.nuget/
+packages/
+*.dll.config
+project.assets.json
+PackageSourceMapping.json
+
+############################################################
+# Testing & coverage
+############################################################
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+*.testsettings
+*.vsmdi
+*.psess
+*.vsp
+*.vspx
+*.appxupload
+CodeCoverage/
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# MSTest
+*.trx
+
+############################################################
+# Logs & binary logs
+############################################################
+*.binlog
+
+############################################################
+# IDE-specific files
+############################################################
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.cache
+*.dbmdl
+
+# VS Code
+.vscode/
+
+# Rider (JetBrains)
+.idea/
+*.sln.iml
+
+############################################################
+# IIS Express
+############################################################
+iisexpress/
+*.vspscc
+*.vssscc
+
+############################################################
+# Temporary/Backup Files
+############################################################
+~$*
+*~
+*.bak
+*.tmp
+*.swp
+*.orig
+*.rej
+
+############################################################
+# Others
+############################################################
+_ReSharper*/
+*.DotSettings.user
