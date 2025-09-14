@@ -69,55 +69,55 @@ Open `appsettings.json` and set the external integrations and environment-specif
 
 Find the Jwt section and fill required elements bellow<br>
 
-[Jwt Section](https://github.com/user-attachments/assets/202b6b27-c6f5-4f4c-8c73-916c541df4ba)
+![Jwt Section](https://github.com/user-attachments/assets/202b6b27-c6f5-4f4c-8c73-916c541df4ba)
 
 ***2.5.2 Configure the Database Connection String setting***<br>
 
 Find the DefaultConnection in the Database ConnectionStrings section and fill required elements bellow<br>
 
-[Database Section](https://github.com/user-attachments/assets/00845524-0df5-4016-9463-973ef5212ff4)
+![Database Section](https://github.com/user-attachments/assets/00845524-0df5-4016-9463-973ef5212ff4)
 
 ***2.5.3 Configure the Email SMTP Server setting***<br>
 
 Find the EmailSettings section and fill required elements bellow<br>
 
-[Email Section](https://github.com/user-attachments/assets/b13befaf-6095-4a70-b53c-171f2538ebab)
+![Email Section](https://github.com/user-attachments/assets/b13befaf-6095-4a70-b53c-171f2538ebab)
 
 ***2.5.4 Configure the Google Identity Authentication setting***<br>
 
 Find the GoogleAuthSettings section and fill required elements bellow<br>
 
-[Google Auth Section](https://github.com/user-attachments/assets/f3060f28-3220-4efc-82c6-7febe186f2ec)
+![Google Auth Section](https://github.com/user-attachments/assets/f3060f28-3220-4efc-82c6-7febe186f2ec)
 
 ***2.5.5 Configure the GiaoHangNhanh API Key setting***<br>
 
 Find the GHN_API section and fill required elements bellow<br>
 
-[GNH Section](https://github.com/user-attachments/assets/45bcae0a-61b8-4598-872f-b845e447cb0a)
+![GNH Section](https://github.com/user-attachments/assets/45bcae0a-61b8-4598-872f-b845e447cb0a)
 
 ***2.5.6 Configure the OpenAI API Key setting***<br>
 
 Find the OpenAIKey section and fill required elements bellow<br>
 
-[OpenAI Section](https://github.com/user-attachments/assets/e7df77ea-5d81-49a9-b7aa-5911dcb8cb3e)
+![OpenAI Section](https://github.com/user-attachments/assets/e7df77ea-5d81-49a9-b7aa-5911dcb8cb3e)
 
 ***2.5.7 Configure the VnPay API Key setting***<br>
 
 Find the VnPAY section and fill required elements bellow<br>
 
-[VnPay Section](https://github.com/user-attachments/assets/0f0c8dd8-13cc-4837-88e2-9d3af4d67833)
+![VnPay Section](https://github.com/user-attachments/assets/0f0c8dd8-13cc-4837-88e2-9d3af4d67833)
 
 ***2.5.8 Configure the MoMo API Key setting***<br>
 
 Find the Momo section and fill required elements bellow<br>
 
-[MoMo Section](https://github.com/user-attachments/assets/9fb35a0a-6616-4102-9b45-9352ffdb55dc)
+![MoMo Section](https://github.com/user-attachments/assets/9fb35a0a-6616-4102-9b45-9352ffdb55dc)
 
 ***2.5.9 Configure the Firebase setting***<br>
 
 Find the FilePath in the Firebase section and fill required elements bellow<br>
 
-[Firebase Section](https://github.com/user-attachments/assets/f151778c-dbe9-4f39-9ccf-bb07941d8c67)
+![Firebase Section](https://github.com/user-attachments/assets/f151778c-dbe9-4f39-9ccf-bb07941d8c67)
 
 **2.6 Build and run the project**<br>
 
