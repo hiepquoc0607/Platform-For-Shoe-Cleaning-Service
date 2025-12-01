@@ -28,7 +28,7 @@ Customers place orders through a simple UI; providers manage orders, subscriptio
 ## Technologies
 - **Backend**: ASP.NET Core 8 Web API + EF Core  
 - **Database**: SQL Server
-- **Integrations**: [Google Identity](https://developers.google.com/identity), [GiaoHangNhanh](https://ghn.vn/), [OpenAI](https://openai.com/api/), [VnPay](https://vnpay.vn/), [MoMo](https://www.momo.vn/), [Firebase](https://firebase.google.com/)
+- **Integrations**: [Google OAuth](https://developers.google.com/identity/protocols/oauth2), [GiaoHangNhanh](https://ghn.vn/), [OpenAI](https://openai.com/api/), [VnPay](https://vnpay.vn/), [MoMo](https://www.momo.vn/), [Firebase](https://firebase.google.com/)
 
 ---
 
