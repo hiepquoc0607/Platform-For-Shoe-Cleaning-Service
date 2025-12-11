@@ -83,7 +83,7 @@ Find the EmailSettings section and fill required elements bellow<br>
 
 ![Email Section](https://github.com/user-attachments/assets/b13befaf-6095-4a70-b53c-171f2538ebab)
 
-***2.5.4 Configure the Google Identity Authentication setting***<br>
+***2.5.4 Configure the Google Oauth Authentication setting***<br>
 
 Find the GoogleAuthSettings section and fill required elements bellow<br>
 
